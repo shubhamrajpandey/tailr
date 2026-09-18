@@ -1,0 +1,34 @@
+import * as React from "react";
+import { cn } from "@/shared/lib/utils";
+
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon?: React.ReactNode;
+}
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, icon, ...props }, ref) => {
+    return (
+      <div className="relative flex items-center w-full">
+        {icon && (
+          <div className="absolute left-2.5 text-neutral-400 pointer-events-none flex items-center justify-center">
+            {icon}
+          </div>
+        )}
+        <input
+          type={type}
+          className={cn(
+            "flex h-8 w-full rounded-lg border border-white/10 bg-neutral-900/60 px-3 py-1 text-xs text-neutral-200 placeholder:text-neutral-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500/80 focus-visible:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50",
+            icon && "pl-8",
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+      </div>
+    );
+  }
+);
+Input.displayName = "Input";
+
+export { Input };
