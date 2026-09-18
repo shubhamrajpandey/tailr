@@ -25,6 +25,17 @@ const badgeVariants = cva(
           "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300 font-medium",
         ghosted:
           "border-slate-500/25 bg-slate-500/10 text-slate-700 dark:text-slate-400 font-medium",
+        // AI Tailoring Change & Source Types
+        rephrase:
+          "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold",
+        reorder:
+          "border-indigo-500/30 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 font-semibold",
+        emphasize:
+          "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold",
+        ai_tailored:
+          "border-indigo-500/30 bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 font-semibold shadow-2xs",
+        manual:
+          "border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/5 text-neutral-700 dark:text-neutral-300 font-medium",
       },
     },
     defaultVariants: {
@@ -42,7 +53,12 @@ export type BadgeVariant =
   | "interview"
   | "offer"
   | "rejected"
-  | "ghosted";
+  | "ghosted"
+  | "rephrase"
+  | "reorder"
+  | "emphasize"
+  | "ai_tailored"
+  | "manual";
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
@@ -59,6 +75,11 @@ function Badge({ className, variant, dot = true, children, ...props }: BadgeProp
     offer: "bg-emerald-500 dark:bg-emerald-400",
     rejected: "bg-rose-500 dark:bg-rose-400",
     ghosted: "bg-slate-500 dark:bg-slate-500",
+    rephrase: "bg-amber-500 dark:bg-amber-400",
+    reorder: "bg-indigo-500 dark:bg-indigo-400",
+    emphasize: "bg-emerald-500 dark:bg-emerald-400",
+    ai_tailored: "bg-indigo-600 dark:bg-indigo-400 animate-pulse",
+    manual: "bg-neutral-500 dark:bg-neutral-400",
     default: "bg-neutral-500 dark:bg-neutral-400",
     secondary: "bg-neutral-500 dark:bg-neutral-500",
     outline: "bg-neutral-500 dark:bg-neutral-400",
