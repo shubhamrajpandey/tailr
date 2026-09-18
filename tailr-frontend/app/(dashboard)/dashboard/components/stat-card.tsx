@@ -48,36 +48,36 @@ export function StatCard({
   const gradientId = React.useId();
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#111216]/90 p-4 transition-all duration-200 hover:border-white/[0.14] hover:bg-[#15161b] shadow-xs flex flex-col justify-between">
+    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#111216]/90 p-5 transition-all duration-200 hover:border-white/[0.14] hover:bg-[#15161b] shadow-xs flex flex-col justify-between">
       {/* Top Header: Label and Icon */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-neutral-400 tracking-wide">
+        <span className="text-sm font-semibold text-neutral-300 tracking-wide">
           {label}
         </span>
         {Icon && (
-          <div className="p-1 rounded-md text-neutral-500 bg-white/[0.03] border border-white/[0.05]">
-            <Icon className="h-3.5 w-3.5" />
+          <div className="p-1.5 rounded-md text-neutral-400 bg-white/[0.03] border border-white/[0.06]">
+            <Icon className="h-4 w-4" />
           </div>
         )}
       </div>
 
       {/* Main Metric Value & Delta + Sparkline Bottom */}
-      <div className="mt-3 flex items-end justify-between">
+      <div className="mt-4 flex items-end justify-between">
         <div className="space-y-1.5">
-          <div className="text-2xl font-bold tracking-tight text-white font-sans">
+          <div className="text-3xl font-extrabold tracking-tight text-white font-sans">
             {value}
           </div>
           <div className="flex items-center gap-1.5">
             <span
               className={cn(
-                "inline-flex items-center gap-0.5 text-[11px] font-medium font-mono",
+                "inline-flex items-center gap-1 text-xs font-semibold font-mono",
                 isUp ? "text-emerald-400" : "text-rose-400"
               )}
             >
               {isUp ? (
-                <TrendingUp className="h-3 w-3 stroke-[2.5]" />
+                <TrendingUp className="h-3.5 w-3.5 stroke-[2.5]" />
               ) : (
-                <TrendingDown className="h-3 w-3 stroke-[2.5]" />
+                <TrendingDown className="h-3.5 w-3.5 stroke-[2.5]" />
               )}
               {delta}
             </span>

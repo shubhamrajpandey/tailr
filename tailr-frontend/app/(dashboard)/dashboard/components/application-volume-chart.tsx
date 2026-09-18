@@ -35,12 +35,12 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   if (active && payload && payload.length) {
     const item = payload[0].payload;
     return (
-      <div className="rounded-lg border border-white/10 bg-[#17181f]/95 px-3 py-2 text-xs shadow-xl backdrop-blur-md">
-        <p className="font-semibold text-white flex items-center justify-between gap-3">
+      <div className="rounded-lg border border-white/10 bg-[#17181f]/95 px-3.5 py-2.5 text-xs shadow-xl backdrop-blur-md">
+        <p className="font-semibold text-white text-sm flex items-center justify-between gap-3">
           <span>{item.day} ({item.fullDate})</span>
           <span className="font-mono text-indigo-400 font-bold">{item.applications} applied</span>
         </p>
-        <p className="text-[10px] text-neutral-400 mt-0.5">
+        <p className="text-xs text-neutral-400 mt-1">
           {item.isPeak ? "🔥 Peak submission day" : "Scheduled submissions"}
         </p>
       </div>
@@ -64,23 +64,23 @@ export function ApplicationVolumeChart({
     <div className="rounded-xl border border-white/[0.08] bg-[#111216]/90 p-5 transition-all duration-200 hover:border-white/[0.12] shadow-xs flex flex-col justify-between">
       {/* Chart Card Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1 rounded-md text-neutral-400 bg-white/[0.04] border border-white/[0.06]">
-            <BarChart2 className="h-3.5 w-3.5 text-indigo-400" />
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-md text-neutral-400 bg-white/[0.04] border border-white/[0.06]">
+            <BarChart2 className="h-4 w-4 text-indigo-400" />
           </div>
-          <h2 className="text-xs font-semibold text-neutral-200 tracking-wide">
+          <h2 className="text-sm font-semibold text-neutral-200 tracking-wide">
             Application Volume Trend
           </h2>
         </div>
 
         {/* Range Selector */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/10 bg-white/[0.03] text-[11px] font-medium text-neutral-400 hover:text-white hover:bg-white/[0.06] transition-colors">
-            <Calendar className="h-3 w-3" />
+          <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/10 bg-white/[0.03] text-xs font-medium text-neutral-300 hover:text-white hover:bg-white/[0.06] transition-colors">
+            <Calendar className="h-3.5 w-3.5 text-neutral-400" />
             <span>{range}</span>
-            <ChevronDown className="h-3 w-3 text-neutral-500" />
+            <ChevronDown className="h-3.5 w-3.5 text-neutral-400" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuContent align="end" className="w-36">
             {["Last 7 days", "Last week", "Last month"].map((r) => (
               <DropdownMenuItem
                 key={r}
@@ -95,15 +95,15 @@ export function ApplicationVolumeChart({
       </div>
 
       {/* Headline Metric Above the Chart */}
-      <div className="mt-4 flex items-baseline gap-3">
-        <div className="text-3xl font-extrabold tracking-tight text-white font-sans">
+      <div className="mt-5 flex items-baseline gap-3">
+        <div className="text-4xl font-extrabold tracking-tight text-white font-sans">
           {totalWeekly}
         </div>
-        <div className="flex items-center gap-1 text-xs font-semibold text-emerald-400 font-mono">
-          <TrendingUp className="h-3.5 w-3.5 stroke-[2.5]" />
+        <div className="flex items-center gap-1.5 text-sm font-bold text-emerald-400 font-mono">
+          <TrendingUp className="h-4 w-4 stroke-[2.5]" />
           <span>{weeklyDelta}</span>
         </div>
-        <span className="text-[11px] text-neutral-500 font-medium">applications submitted</span>
+        <span className="text-xs text-neutral-400 font-medium">applications submitted</span>
       </div>
 
       {/* Main Bar Chart */}
@@ -131,13 +131,13 @@ export function ApplicationVolumeChart({
               dataKey="day"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#71717a", fontSize: 11 }}
+              tick={{ fill: "#a1a1aa", fontSize: 12, fontWeight: 500 }}
               dy={6}
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "#52525b", fontSize: 10 }}
+              tick={{ fill: "#71717a", fontSize: 11, fontWeight: 500 }}
               allowDecimals={false}
               dx={-5}
             />

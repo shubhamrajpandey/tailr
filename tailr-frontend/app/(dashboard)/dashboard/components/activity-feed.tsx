@@ -52,16 +52,16 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
     <div className="rounded-xl border border-white/[0.08] bg-[#111216]/90 p-5 transition-all duration-200 hover:border-white/[0.12] shadow-xs flex flex-col h-full">
       {/* Feed Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xs font-semibold text-neutral-200 tracking-wide">
+        <h2 className="text-sm font-semibold text-neutral-200 tracking-wide">
           Latest Updates
         </h2>
-        <div className="p-1 rounded-md text-neutral-500 bg-white/[0.03] border border-white/[0.05]">
-          <History className="h-3.5 w-3.5" />
+        <div className="p-1.5 rounded-md text-neutral-400 bg-white/[0.03] border border-white/[0.06]">
+          <History className="h-4 w-4" />
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="mt-3">
+      <div className="mt-3.5">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full grid grid-cols-3 bg-white/[0.03] border-white/[0.06]">
             <TabsTrigger value="today">Today</TabsTrigger>
@@ -72,53 +72,53 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
       </div>
 
       {/* Quick Search inside Activity */}
-      <div className="mt-3">
+      <div className="mt-3.5">
         <Input
           type="text"
-          placeholder="Search activities"
+          placeholder="Search activities..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          icon={<Search className="h-3.5 w-3.5" />}
-          className="h-7 text-[11px] bg-white/[0.02]"
+          icon={<Search className="h-4 w-4" />}
+          className="h-8.5 text-xs bg-white/[0.02]"
         />
       </div>
 
       {/* Counter subtext */}
-      <div className="mt-3 flex items-center justify-between text-[11px] text-neutral-400 font-medium">
+      <div className="mt-3.5 flex items-center justify-between text-xs text-neutral-300 font-medium">
         <span>{filteredActivities.length} activities logged</span>
-        <span className="text-[10px] text-neutral-500 font-mono">Live Sync</span>
+        <span className="text-xs text-neutral-400 font-mono">Live Sync</span>
       </div>
 
       {/* Activity List Timeline */}
-      <div className="mt-3 flex-1 overflow-y-auto pr-1 space-y-3">
+      <div className="mt-3.5 flex-1 overflow-y-auto pr-1 space-y-3">
         {filteredActivities.length === 0 ? (
-          <div className="py-10 text-center text-xs text-neutral-500">
+          <div className="py-10 text-center text-sm text-neutral-500">
             No activities found for this period.
           </div>
         ) : (
           filteredActivities.map((act) => (
             <div
               key={act.id}
-              className="group relative flex items-start gap-3 rounded-lg p-2 transition-colors hover:bg-white/[0.03] border border-transparent hover:border-white/[0.05]"
+              className="group relative flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-white/[0.04] border border-transparent hover:border-white/[0.06]"
             >
-              <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/[0.04] border border-white/[0.08]">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-white/[0.04] border border-white/[0.08]">
                 {getEventIcon(act.type)}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1">
-                  <span className="text-xs font-semibold text-neutral-200 truncate group-hover:text-white transition-colors">
+                  <span className="text-sm font-semibold text-neutral-100 truncate group-hover:text-white transition-colors">
                     {act.title}
                   </span>
-                  <span className="text-[10px] font-mono text-neutral-500 shrink-0">
+                  <span className="text-xs font-mono text-neutral-400 shrink-0">
                     {formatRelativeTime(act.timestamp)}
                   </span>
                 </div>
-                <p className="text-[11px] text-neutral-400 mt-0.5 line-clamp-1">
+                <p className="text-xs text-neutral-300 mt-1 line-clamp-1 font-normal">
                   {act.description}
                 </p>
-                <div className="mt-1 flex items-center gap-1 text-[10px] text-neutral-500">
-                  <span className="text-neutral-400 font-medium">{act.companyName}</span>
+                <div className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-400">
+                  <span className="text-neutral-300 font-semibold">{act.companyName}</span>
                   <span>•</span>
                   <span className="truncate">{act.positionTitle}</span>
                 </div>
@@ -129,13 +129,13 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
       </div>
 
       {/* Footer Link */}
-      <div className="pt-3 mt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px]">
+      <div className="pt-3 mt-2 border-t border-white/[0.06] flex items-center justify-between text-xs">
         <button
           type="button"
-          className="text-neutral-400 hover:text-indigo-400 font-medium transition-colors flex items-center gap-1"
+          className="text-neutral-300 hover:text-indigo-400 font-medium transition-colors flex items-center gap-1.5"
         >
           <span>View all activity history</span>
-          <ArrowRight className="h-3 w-3" />
+          <ArrowRight className="h-3.5 w-3.5" />
         </button>
       </div>
     </div>

@@ -18,8 +18,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "flex h-8 w-full rounded-lg border border-white/10 bg-neutral-900/60 px-3 py-1 text-xs text-neutral-200 placeholder:text-neutral-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500/80 focus-visible:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50",
-            icon && "pl-8",
+            "flex h-9 w-full rounded-lg border border-white/10 bg-neutral-900/60 px-3 py-1.5 text-sm text-neutral-200 placeholder:text-neutral-500 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-indigo-500/80 focus-visible:border-indigo-500/50 disabled:cursor-not-allowed disabled:opacity-50",
+            icon && "pl-8.5",
             className
           )}
           ref={ref}
