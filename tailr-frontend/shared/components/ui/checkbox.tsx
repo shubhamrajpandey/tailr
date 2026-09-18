@@ -24,7 +24,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
         />
         <div
           className={cn(
-            "h-4 w-4 shrink-0 rounded border border-white/20 bg-neutral-900 transition-colors peer-focus-visible:ring-1 peer-focus-visible:ring-indigo-500 peer-checked:bg-indigo-600 peer-checked:border-indigo-500 flex items-center justify-center text-white",
+            "h-4 w-4 shrink-0 rounded border border-neutral-300 dark:border-white/20 bg-white dark:bg-neutral-900 transition-colors peer-focus-visible:ring-1 peer-focus-visible:ring-indigo-500 peer-checked:bg-indigo-600 peer-checked:border-indigo-600 flex items-center justify-center text-white",
             className
           )}
         >

@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/shared/components/ui/dropdown-menu";
+import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
 
 interface TopBarProps {
   dateRange?: string;
@@ -29,22 +30,25 @@ export function TopBar({
     <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
       {/* Top Meta Bar: Breadcrumbs & Header Actions */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-sm text-neutral-400 font-medium">
-          <span className="flex items-center gap-2 text-neutral-300 font-medium">
+        <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+          <span className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
             <span className="h-2 w-2 rounded-full bg-indigo-500 inline-block" />
             Overview
           </span>
-          <span className="text-neutral-600">/</span>
-          <span className="text-neutral-100 font-bold">Dashboard</span>
+          <span className="text-neutral-300 dark:text-neutral-600">/</span>
+          <span className="text-neutral-900 dark:text-neutral-100 font-bold">Dashboard</span>
         </div>
 
         <div className="flex items-center gap-2.5">
+          {/* Theme Toggle Button (Dark / Light mode) */}
+          <ThemeToggle />
+
           {/* Date Range Selector Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-white/10 bg-neutral-900/80 text-sm font-medium text-neutral-200 hover:bg-neutral-800 hover:text-white transition-colors shadow-xs">
-              <Calendar className="h-4 w-4 text-neutral-400" />
+            <DropdownMenuTrigger className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
+              <Calendar className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
               <span>{selectedRange}</span>
-              <ChevronDown className="h-3.5 w-3.5 text-neutral-400 ml-0.5" />
+              <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400 ml-0.5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               {["Today", "Last 7 days", "Last week", "Last 30 days", "All time"].map(
@@ -52,7 +56,7 @@ export function TopBar({
                   <DropdownMenuItem
                     key={range}
                     onClick={() => handleSelect(range)}
-                    className={selectedRange === range ? "text-indigo-400 font-semibold" : ""}
+                    className={selectedRange === range ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
                   >
                     {range}
                   </DropdownMenuItem>
@@ -64,39 +68,38 @@ export function TopBar({
           {/* Notifications button */}
           <button
             type="button"
-            className="relative p-2.5 rounded-lg border border-white/10 bg-neutral-900/80 text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors shadow-xs"
+            className="relative p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
             title="Notifications"
           >
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-neutral-950" />
+            <Bell className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-neutral-950" />
           </button>
 
           {/* Quick Actions More */}
           <button
             type="button"
-            className="p-2.5 rounded-lg border border-white/10 bg-neutral-900/80 text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors shadow-xs"
+            className="p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
             title="Dashboard options"
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
           </button>
         </div>
       </div>
 
-      {/* Greeting Title & Subtitle */}
+      {/* Greeting Title & Subtitle (No emoji, clean typography) */}
       <div className="flex items-end justify-between mt-1">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+          <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
             Hello, Shubham Raj Pandey
-            <span className="inline-block animate-bounce text-2xl">👋</span>
           </h1>
-          <p className="text-sm text-neutral-400 mt-1.5 font-medium">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-medium">
             Here are the latest insights from your job applications and tailoring pipeline.
           </p>
         </div>
 
         <div className="hidden md:flex items-center gap-2 text-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             <span className="font-mono text-xs font-semibold">Gemini 1.5 Pro Connected</span>
           </div>
         </div>

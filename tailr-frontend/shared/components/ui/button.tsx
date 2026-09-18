@@ -8,17 +8,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-white text-neutral-950 shadow-sm hover:bg-neutral-200 border border-white/20",
+          "bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-sm hover:bg-neutral-800 dark:hover:bg-neutral-200 border border-neutral-800 dark:border-white/20",
         primary:
-          "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 border border-indigo-400/30",
+          "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 border border-indigo-500/30",
         secondary:
-          "bg-neutral-900/80 text-neutral-200 border border-white/10 hover:bg-neutral-800 hover:text-white",
+          "bg-white dark:bg-neutral-900/80 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-white/10 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-950 dark:hover:text-white",
         outline:
-          "border border-white/10 bg-transparent text-neutral-300 hover:bg-white/[0.04] hover:text-white",
+          "border border-neutral-200 dark:border-white/10 bg-transparent text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.04] hover:text-neutral-950 dark:hover:text-white",
         ghost:
-          "text-neutral-400 hover:bg-white/[0.06] hover:text-white",
+          "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white",
         destructive:
-          "bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20",
+          "bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20",
       },
       size: {
         default: "h-9 px-3.5 py-1.5",

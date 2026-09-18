@@ -21,7 +21,7 @@ export default function DashboardPage() {
   } = useDashboardData();
 
   return (
-    <div className="flex min-h-screen bg-[#090a0c] text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
       {/* Left Sidebar Navigation */}
       <Sidebar />
 
@@ -53,7 +53,7 @@ export default function DashboardPage() {
                   delta={stats.responseRateDelta}
                   direction="up"
                   icon={MessageSquareText}
-                  sparklineColor="emerald"
+                  sparklineColor="indigo"
                   sparklineData={[15, 20, 18, 25, 22, 28, 30]}
                 />
                 <StatCard
@@ -62,7 +62,7 @@ export default function DashboardPage() {
                   delta={stats.interviewConversionDelta}
                   direction="up"
                   icon={Sparkles}
-                  sparklineColor="amber"
+                  sparklineColor="indigo"
                   sparklineData={[8, 10, 9, 14, 12, 18, 22]}
                 />
               </div>

@@ -53,7 +53,7 @@ function TabsList({
   return (
     <div
       className={cn(
-        "inline-flex h-8 items-center justify-center rounded-lg bg-neutral-900/90 p-1 text-neutral-400 border border-white/5",
+        "inline-flex h-8 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-900/90 p-1 text-neutral-500 dark:text-neutral-400 border border-neutral-200 dark:border-white/5",
         className
       )}
       {...props}
@@ -84,8 +84,8 @@ function TabsTrigger({
       className={cn(
         "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-xs font-medium transition-all duration-150 cursor-pointer",
         isActive
-          ? "bg-neutral-800 text-white shadow-xs border border-white/10 font-semibold"
-          : "text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.03]",
+          ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-xs border border-neutral-200/80 dark:border-white/10 font-semibold"
+          : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-white/[0.03]",
         className
       )}
       {...props}

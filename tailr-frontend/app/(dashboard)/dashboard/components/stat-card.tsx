@@ -18,7 +18,7 @@ export function StatCard({
   delta,
   direction = "up",
   icon: Icon,
-  sparklineColor = "emerald",
+  sparklineColor = "indigo",
   sparklineData = [12, 18, 15, 24, 28, 22, 35],
 }: StatCardProps) {
   const isUp = direction === "up";
@@ -38,7 +38,7 @@ export function StatCard({
     })
     .join(" ");
 
-  const strokeColorClass = {
+  const strokeColor = {
     emerald: "#10b981",
     rose: "#f43f5e",
     indigo: "#6366f1",
@@ -48,15 +48,15 @@ export function StatCard({
   const gradientId = React.useId();
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#111216]/90 p-5 transition-all duration-200 hover:border-white/[0.14] hover:bg-[#15161b] shadow-xs flex flex-col justify-between">
+    <div className="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.14] hover:bg-neutral-50/50 dark:hover:bg-[#15161b] shadow-xs flex flex-col justify-between">
       {/* Top Header: Label and Icon */}
       <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-neutral-300 tracking-wide">
+        <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-300 tracking-wide">
           {label}
         </span>
         {Icon && (
-          <div className="p-1.5 rounded-md text-neutral-400 bg-white/[0.03] border border-white/[0.06]">
-            <Icon className="h-4 w-4" />
+          <div className="p-1.5 rounded-md text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.03] border border-neutral-200 dark:border-white/[0.06]">
+            <Icon className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
           </div>
         )}
       </div>
@@ -64,14 +64,14 @@ export function StatCard({
       {/* Main Metric Value & Delta + Sparkline Bottom */}
       <div className="mt-4 flex items-end justify-between">
         <div className="space-y-1.5">
-          <div className="text-3xl font-extrabold tracking-tight text-white font-sans">
+          <div className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
             {value}
           </div>
           <div className="flex items-center gap-1.5">
             <span
               className={cn(
                 "inline-flex items-center gap-1 text-xs font-semibold font-mono",
-                isUp ? "text-emerald-400" : "text-rose-400"
+                isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
               )}
             >
               {isUp ? (
@@ -84,7 +84,7 @@ export function StatCard({
           </div>
         </div>
 
-        {/* Dynamic Glowing Sparkline SVG */}
+        {/* Dynamic Sparkline SVG */}
         <div className="shrink-0 w-24 h-9">
           <svg
             viewBox={`0 0 ${width} ${height}`}
@@ -92,8 +92,8 @@ export function StatCard({
           >
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={strokeColorClass} stopOpacity="0.3" />
-                <stop offset="100%" stopColor={strokeColorClass} stopOpacity="0.0" />
+                <stop offset="0%" stopColor={strokeColor} stopOpacity="0.25" />
+                <stop offset="100%" stopColor={strokeColor} stopOpacity="0.0" />
               </linearGradient>
             </defs>
             {/* Gradient Fill under path */}
@@ -104,7 +104,7 @@ export function StatCard({
             {/* Smooth Stroke */}
             <polyline
               fill="none"
-              stroke={strokeColorClass}
+              stroke={strokeColor}
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"

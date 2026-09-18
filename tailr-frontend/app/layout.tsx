@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Urbanist, Geist_Mono } from "next/font/google";
+import { ThemeProvider } from "@/shared/components/providers/theme-provider";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -38,9 +39,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${urbanist.variable} ${geistMono.variable} h-full antialiased dark`}
+      suppressHydrationWarning
+      className={`${urbanist.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
