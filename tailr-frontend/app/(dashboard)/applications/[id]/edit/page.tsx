@@ -1,0 +1,140 @@
+"use client";
+
+import * as React from "react";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { Sidebar } from "@/shared/components/layout/sidebar";
+import { ApplicationForm } from "../../components/application-form";
+import { useApplications } from "@/shared/hooks/use-applications";
+import { ApplicationFormValues } from "@/shared/lib/validations/application";
+import { Button } from "@/shared/components/ui/button";
+
+export default function EditApplicationPage() {
+  const params = useParams();
+  const router = useRouter();
+  const id = params?.id as string;
+  const { getApplication, updateApplication, isLoaded } = useApplications();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const application = getApplication(id);
+
+  const handleSubmit = async (values: ApplicationFormValues) => {
+    setIsSubmitting(true);
+    try {
+      updateApplication(id, values);
+      router.push(`/applications/${id}`);
+    } catch {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isLoaded) {
+    return (
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100">
+        <Sidebar />
+        <div className="flex-1 p-10 flex items-center justify-center text-sm text-neutral-400">
+          Loading application...
+        </div>
+      </div>
+    );
+  }
+
+  if (!application) {
+    return (
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100">
+        <Sidebar />
+        <div className="flex-1 p-10 flex flex-col items-center justify-center gap-3">
+          <h2 className="text-xl font-bold">Application Not Found</h2>
+          <p className="text-sm text-neutral-400">
+            Cannot edit an application that does not exist.
+          </p>
+          <Link href="/applications" className="mt-2">
+            <Button variant="primary" className="gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Applications
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+      {/* Sidebar Navigation */}
+      <Sidebar />
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        {/* Page Top Header Bar */}
+        <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
+          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+            <Link
+              href="/dashboard"
+              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
+            >
+              Overview
+            </Link>
+            <span className="text-neutral-300 dark:text-neutral-600">/</span>
+            <Link
+              href="/applications"
+              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
+            >
+              Applications
+            </Link>
+            <span className="text-neutral-300 dark:text-neutral-600">/</span>
+            <Link
+              href={`/applications/${application.id}`}
+              className="hover:text-neutral-900 dark:hover:text-white transition-colors truncate max-w-[200px]"
+            >
+              {application.companyName}
+            </Link>
+            <span className="text-neutral-300 dark:text-neutral-600">/</span>
+            <span className="text-neutral-900 dark:text-neutral-100 font-bold">Edit</span>
+          </div>
+
+          <div className="flex items-center gap-3 mt-1">
+            <Link
+              href={`/applications/${application.id}`}
+              className="p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
+              title="Back to Details"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+                Edit Application: {application.companyName}
+              </h1>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+                Update position details, job description, or status tracking.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        {/* Content Area with Pre-Filled Form */}
+        <main className="flex-1 px-8 pb-12 max-w-4xl">
+          <ApplicationForm
+            mode="edit"
+            initialValues={{
+              companyName: application.companyName,
+              companyWebsite: application.companyWebsite || "",
+              positionTitle: application.positionTitle,
+              jobDescriptionRaw: application.jobDescriptionRaw || "",
+              positionOpenDate: application.positionOpenDate || "",
+              appliedDate: application.appliedDate || "",
+              applied: application.applied,
+              status: application.status,
+              hrName: application.hrName || "",
+              hrLinkedinUrl: application.hrLinkedinUrl || "",
+            }}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit}
+            onCancel={() => router.push(`/applications/${application.id}`)}
+          />
+        </main>
+      </div>
+    </div>
+  );
+}

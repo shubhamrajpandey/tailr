@@ -46,10 +46,10 @@ const mainNavItems: NavItem[] = [
     title: "Applications",
     icon: Briefcase,
     subItems: [
-      { title: "All Applications", href: "/dashboard" },
-      { title: "Active Pipeline", href: "/dashboard", badge: 6 },
-      { title: "Interview Stage", href: "/dashboard", badge: 3 },
-      { title: "Offers", href: "/dashboard", badge: 1 },
+      { title: "All Applications", href: "/applications" },
+      { title: "Active Pipeline", href: "/applications", badge: 6 },
+      { title: "Interview Stage", href: "/applications", badge: 3 },
+      { title: "Offers", href: "/applications", badge: 1 },
     ],
   },
   {
