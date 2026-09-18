@@ -1,15 +1,30 @@
-# Elysia with Bun runtime
+# ⚡ Tailr Backend
 
-## Getting Started
-To get started with this template, simply paste this command into your terminal:
+The high-performance API service for **Tailr**, built with [ElysiaJS](https://elysiajs.com/) and powered by [Bun](https://bun.sh/).
+
+## 🛠️ Responsibilities
+- **AI Tailoring Engine**: Direct server-side integration with the Google Gemini API.
+- **Strict Anti-Hallucination Validator**: Deterministically ensures no hallucinated skills, tools, or dates are added to the resume.
+- **Persistence Layer**: Manages `master_resume`, `applications`, and `resume_versions`.
+- **PDF Generation**: Generates PDF exports from HTML/CSS templates.
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
 ```bash
-bun create elysia ./elysia-example
+bun install
 ```
 
-## Development
-To start the development server run:
+### 2. Environment Variables
+Copy `.env.example` to `.env`:
+```bash
+cp .env.example .env
+```
+Provide your `GEMINI_API_KEY`, `DATABASE_URL`, and optionally `PORT` (defaults to `3001`).
+
+### 3. Run Development Server
 ```bash
 bun run dev
 ```
 
-Open http://localhost:3000/ with your browser to see the result.
+Server will start on [http://localhost:3001](http://localhost:3001).
