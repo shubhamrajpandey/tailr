@@ -19,6 +19,7 @@ import {
   PanelLeftOpen,
   LineChart,
   Layers,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/avatar";
@@ -184,6 +185,11 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       ],
     },
     {
+      title: "Cover Letter",
+      href: "/cover-letter",
+      icon: Mail,
+    },
+    {
       title: "Companies & HR",
       href: "/companies",
       icon: Building2,
@@ -209,7 +215,11 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                 : item.title === "Resumes"
                 ? isResumeRoute
                 : false);
-            const isDirectActive = item.href ? pathname === item.href : false;
+            const isDirectActive = item.href
+              ? item.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.href)
+              : false;
             const hasActiveSub = item.subItems?.some(
               (sub) => sub.isActive || pathname === sub.href.split("?")[0]
             );
