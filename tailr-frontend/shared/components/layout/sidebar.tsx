@@ -62,17 +62,17 @@ interface NavItem {
 const analyticsNavItems: NavItem[] = [
   {
     title: "Response Rates",
-    href: "/analytics/responses",
+    href: "/analytics?tab=responses",
     icon: TrendingUp,
   },
   {
     title: "Conversion Funnel",
-    href: "/analytics/funnel",
+    href: "/analytics?tab=funnel",
     icon: LineChart,
   },
   {
     title: "Tailoring Analytics",
-    href: "/analytics/tailoring",
+    href: "/analytics?tab=tailoring",
     icon: Layers,
   },
 ];
@@ -358,7 +358,10 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
         <div className="space-y-1">
           {analyticsNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const currentTab = searchParams.get("tab") || "responses";
+            const targetTab = item.href?.split("=")[1];
+            const isActive =
+              pathname === "/analytics" && currentTab === targetTab;
 
             if (isCollapsed) {
               return (
