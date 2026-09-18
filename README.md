@@ -12,7 +12,8 @@ A personal, single-user web app that tailors your resume to a specific job descr
 
 ## Tech stack
 
-- Next.js (App Router) + TypeScript
+- Next.js (App Router) + TypeScript — frontend
+- ElysiaJS + Bun — backend
 - [Database — e.g. SQLite / Supabase Postgres]
 - Drizzle ORM
 - Gemini API for resume tailoring
@@ -23,6 +24,15 @@ A personal, single-user web app that tailors your resume to a specific job descr
 ```bash
 git clone https://github.com/yourusername/tailr.git
 cd tailr
+
+# backend
+cd backend
+bun install
+cp .env.example .env   # then fill in your own values
+bun run dev
+
+# frontend (in a new terminal)
+cd frontend
 npm install
 cp .env.example .env.local   # then fill in your own values
 npm run dev
@@ -30,7 +40,7 @@ npm run dev
 
 ### Environment variables
 
-See `.env.example` for the required variables (Gemini API key, database URL).
+See each folder's `.env.example` for the required variables — backend needs the Gemini API key and database URL, frontend needs the backend's API URL.
 
 ## Status
 
