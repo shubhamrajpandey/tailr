@@ -14,6 +14,7 @@ import {
   Eye,
   Sparkles,
   Plus,
+  X,
 } from "lucide-react";
 import { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
@@ -40,29 +41,56 @@ import { formatDate } from "@/shared/lib/utils";
 
 interface ApplicationsListTableProps {
   applications: Application[];
+  currentStatusFilter?: string;
+  onStatusFilterChange?: (status: string) => void;
   onStatusChange?: (id: string, newStatus: ApplicationStatus) => void;
   onDelete?: (id: string) => void;
 }
 
 type SortField = "companyName" | "appliedDate" | "status";
 
+const FILTER_OPTIONS: Array<{ key: string; label: string }> = [
+  { key: "ALL", label: "All Statuses" },
+  { key: "ACTIVE", label: "Active Pipeline" },
+  { key: "WISHLIST", label: "Wishlist" },
+  { key: "APPLIED", label: "Applied" },
+  { key: "INTERVIEW", label: "Interview Stage" },
+  { key: "OFFER", label: "Offers" },
+  { key: "REJECTED", label: "Rejected" },
+  { key: "GHOSTED", label: "Ghosted" },
+];
+
 export function ApplicationsListTable({
   applications,
+  currentStatusFilter = "ALL",
+  onStatusFilterChange,
   onStatusChange,
   onDelete,
 }: ApplicationsListTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
+  const [internalStatusFilter, setInternalStatusFilter] = React.useState<string>(currentStatusFilter);
+  const statusFilter = onStatusFilterChange ? currentStatusFilter : internalStatusFilter;
   const [sortField, setSortField] = React.useState<SortField>("appliedDate");
   const [sortAsc, setSortAsc] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+
+  const handleFilterSelect = (newFilter: string) => {
+    setInternalStatusFilter(newFilter);
+    onStatusFilterChange?.(newFilter);
+  };
 
   // Filter & Search logic
   const filteredApplications = React.useMemo(() => {
     return applications
       .filter((app) => {
-        const matchesStatus =
-          statusFilter === "ALL" || app.status === statusFilter;
+        const matchesStatus = (() => {
+          if (statusFilter === "ALL") return true;
+          if (statusFilter === "ACTIVE") {
+            return app.status !== "REJECTED" && app.status !== "GHOSTED";
+          }
+          return app.status === statusFilter;
+        })();
+
         const query = searchQuery.toLowerCase();
         const matchesSearch =
           app.companyName.toLowerCase().includes(query) ||
@@ -116,13 +144,16 @@ export function ApplicationsListTable({
     filteredApplications.length > 0 &&
     filteredApplications.every((app) => selectedIds.has(app.id));
 
+  const activeOption =
+    FILTER_OPTIONS.find((opt) => opt.key === statusFilter) || FILTER_OPTIONS[0];
+
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs transition-all duration-200">
       {/* Controls Bar: Search & Status Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-white/[0.06]">
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Search Input */}
-          <div className="w-72">
+          <div className="w-64 sm:w-72">
             <Input
               type="text"
               placeholder="Search company, role, HR..."
@@ -137,22 +168,32 @@ export function ApplicationsListTable({
           <DropdownMenu>
             <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
               <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-              <span>{statusFilter === "ALL" ? "All Statuses" : statusFilter}</span>
+              <span>{activeOption.label}</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-40">
-              {["ALL", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].map(
-                (status) => (
-                  <DropdownMenuItem
-                    key={status}
-                    onClick={() => setStatusFilter(status)}
-                    className={statusFilter === status ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
-                  >
-                    {status === "ALL" ? "All Statuses" : status}
-                  </DropdownMenuItem>
-                )
-              )}
+            <DropdownMenuContent align="start" className="w-44">
+              {FILTER_OPTIONS.map((opt) => (
+                <DropdownMenuItem
+                  key={opt.key}
+                  onClick={() => handleFilterSelect(opt.key)}
+                  className={statusFilter === opt.key ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                >
+                  {opt.label}
+                </DropdownMenuItem>
+              ))}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Clear Filter Chip (Visible when filtering) */}
+          {statusFilter !== "ALL" && (
+            <button
+              type="button"
+              onClick={() => handleFilterSelect("ALL")}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+            >
+              <span>{activeOption.label}</span>
+              <X className="h-3 w-3" />
+            </button>
+          )}
         </div>
 
         {/* Counter & New Button */}
@@ -224,12 +265,23 @@ export function ApplicationsListTable({
                       ? "Try adjusting your search query or status filter to see results."
                       : "Start tracking your job search by adding your first job application."}
                   </p>
-                  <Link href="/applications/new" className="mt-2">
-                    <Button variant="primary" size="sm" className="gap-1.5">
-                      <Plus className="h-4 w-4" />
-                      Add Application
+                  {statusFilter !== "ALL" ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleFilterSelect("ALL")}
+                      className="mt-2"
+                    >
+                      Clear Status Filter
                     </Button>
-                  </Link>
+                  ) : (
+                    <Link href="/applications/new" className="mt-2">
+                      <Button variant="primary" size="sm" className="gap-1.5">
+                        <Plus className="h-4 w-4" />
+                        Add Application
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

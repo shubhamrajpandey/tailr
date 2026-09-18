@@ -2,19 +2,93 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { ApplicationsListTable } from "./components/applications-list-table";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { Button } from "@/shared/components/ui/button";
 
-export default function ApplicationsPage() {
+const STATUS_TITLES: Record<string, { title: string; desc: string }> = {
+  ACTIVE: {
+    title: "Active Pipeline",
+    desc: "Applications currently in motion (wishlist, applied, interview, and offer stages).",
+  },
+  INTERVIEW: {
+    title: "Interview Stage",
+    desc: "Roles with active interview processes and recruiter screens.",
+  },
+  OFFER: {
+    title: "Received Offers",
+    desc: "Job offers currently extended or under negotiation.",
+  },
+  APPLIED: {
+    title: "Submitted Applications",
+    desc: "Applications formally submitted and waiting on feedback.",
+  },
+  WISHLIST: {
+    title: "Wishlist Roles",
+    desc: "Target roles and companies you are preparing to tailor resumes for.",
+  },
+  REJECTED: {
+    title: "Archived / Rejected",
+    desc: "Positions that have concluded without an offer.",
+  },
+  GHOSTED: {
+    title: "Ghosted Roles",
+    desc: "Applications with no recruiter response after extended follow-up.",
+  },
+};
+
+function ApplicationsView() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const rawStatus = searchParams.get("status");
+
+  const currentStatusFilter = React.useMemo(() => {
+    if (!rawStatus) return "ALL";
+    const upper = rawStatus.toUpperCase();
+    if (
+      [
+        "ACTIVE",
+        "WISHLIST",
+        "APPLIED",
+        "INTERVIEW",
+        "OFFER",
+        "REJECTED",
+        "GHOSTED",
+      ].includes(upper)
+    ) {
+      return upper;
+    }
+    return "ALL";
+  }, [rawStatus]);
+
   const {
     applications,
     isLoaded,
     updateStatus,
     deleteApplication,
   } = useApplications();
+
+  const handleStatusFilterChange = (newStatus: string) => {
+    if (newStatus === "ALL") {
+      router.push("/applications");
+    } else {
+      router.push(`/applications?status=${newStatus.toLowerCase()}`);
+    }
+  };
+
+  const statusMeta =
+    currentStatusFilter !== "ALL"
+      ? STATUS_TITLES[currentStatusFilter] || {
+          title: "Filtered Applications",
+          desc: "Viewing filtered job applications.",
+        }
+      : {
+          title: "Job Applications",
+          desc: "Track and manage every role in your pipeline from initial wishlist to final offer.",
+        };
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
@@ -33,16 +107,29 @@ export default function ApplicationsPage() {
               Overview
             </Link>
             <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">Applications</span>
+            <Link
+              href="/applications"
+              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
+            >
+              Applications
+            </Link>
+            {currentStatusFilter !== "ALL" && (
+              <>
+                <span className="text-neutral-300 dark:text-neutral-600">/</span>
+                <span className="text-neutral-900 dark:text-neutral-100 font-bold">
+                  {statusMeta.title}
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                Job Applications
+                {statusMeta.title}
               </h1>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-medium">
-                Track and manage every role in your pipeline from initial wishlist to final offer.
+                {statusMeta.desc}
               </p>
             </div>
 
@@ -62,6 +149,8 @@ export default function ApplicationsPage() {
           {isLoaded ? (
             <ApplicationsListTable
               applications={applications}
+              currentStatusFilter={currentStatusFilter}
+              onStatusFilterChange={handleStatusFilterChange}
               onStatusChange={updateStatus}
               onDelete={deleteApplication}
             />
@@ -73,5 +162,19 @@ export default function ApplicationsPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ApplicationsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
+          Loading...
+        </div>
+      }
+    >
+      <ApplicationsView />
+    </React.Suspense>
   );
 }
