@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -15,7 +16,6 @@ import {
   HelpCircle,
   ChevronDown,
   Search,
-  Sparkles,
   MoreVertical,
   PanelLeftClose,
 } from "lucide-react";
@@ -97,12 +97,19 @@ export function Sidebar() {
     <aside className="w-64 shrink-0 bg-[#0c0d10] border-r border-white/[0.06] flex flex-col h-screen sticky top-0 select-none z-30">
       {/* Brand Header */}
       <div className="h-14 px-4 flex items-center justify-between border-b border-white/[0.05]">
-        <Link href="/dashboard" className="flex items-center gap-2.5">
-          <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-indigo-500/20 border border-indigo-400/30">
-            <Sparkles className="h-4 w-4" />
+        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+          <div className="h-8 w-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center p-1 group-hover:border-indigo-500/40 group-hover:bg-white/[0.07] transition-all shadow-xs">
+            <Image
+              src="/tailr_bg_remove_logo.png"
+              alt="Tailr Logo"
+              width={26}
+              height={26}
+              className="object-contain drop-shadow"
+              priority
+            />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sm tracking-tight text-white flex items-center gap-1.5">
+            <span className="font-semibold text-sm tracking-tight text-white flex items-center gap-1.5 font-sans">
               Tailr
               <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 v1.0

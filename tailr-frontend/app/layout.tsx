@@ -18,6 +18,16 @@ export const metadata: Metadata = {
   title: "Tailr — AI Resume Tailoring & Job Application Tracker",
   description:
     "Zero-hallucination AI resume tailoring and precision job application tracker.",
+  icons: {
+    icon: [
+      {
+        url: "/tailr_bg_remove_logo.png",
+        type: "image/png",
+      },
+    ],
+    shortcut: "/tailr_bg_remove_logo.png",
+    apple: "/tailr_bg_remove_logo.png",
+  },
 };
 
 export default function RootLayout({
