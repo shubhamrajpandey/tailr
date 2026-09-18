@@ -1,0 +1,7 @@
+echo "Running frontend checks..."
+cd tailr-frontend && npm run lint && npm run typecheck
+cd ..
+
+echo "Running backend checks..."
+cd tailr-backend && bun run lint && bun run typecheck
+cd ..
