@@ -141,7 +141,7 @@ function MasterResumeEditor({
         </header>
 
         {/* Content Canvas */}
-        <main className="flex-1 px-8 py-8 space-y-6 max-w-6xl w-full">
+        <main className="flex-1 px-8 py-8 space-y-6 w-full">
           {/* Basics Section */}
           <BasicsSectionForm
             basics={formData.basics}

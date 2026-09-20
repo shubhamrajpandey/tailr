@@ -52,6 +52,7 @@ function DropdownMenuTrigger({
 }: {
   children: React.ReactNode;
   className?: string;
+  asChild?: boolean;
 }) {
   const context = React.useContext(DropdownMenuContext);
   if (!context) throw new Error("DropdownMenuTrigger must be used in DropdownMenu");

@@ -11,7 +11,6 @@ import {
   Building2,
   TrendingUp,
   Settings,
-  HelpCircle,
   ChevronDown,
   Search,
   MoreVertical,
@@ -20,9 +19,18 @@ import {
   LineChart,
   Layers,
   Mail,
+  BookOpen,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/shared/components/ui/dropdown-menu";
 import { useApplications } from "@/shared/hooks/use-applications";
 
 const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
@@ -75,6 +83,19 @@ const analyticsNavItems: NavItem[] = [
     title: "Tailoring Analytics",
     href: "/analytics?tab=tailoring",
     icon: Layers,
+  },
+];
+
+const supportNavItems: NavItem[] = [
+  {
+    title: "Settings",
+    href: "/settings",
+    icon: Settings,
+  },
+  {
+    title: "Docs",
+    href: "/docs",
+    icon: BookOpen,
   },
 ];
 
@@ -427,41 +448,58 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
           </div>
         )}
         <div className="space-y-1">
-          {isCollapsed ? (
-            <>
+          {supportNavItems.map((item) => {
+            const Icon = item.icon;
+            const isDirectActive = item.href
+              ? pathname.startsWith(item.href)
+              : false;
+
+            if (isCollapsed) {
+              return (
+                <Link
+                  key={item.title}
+                  href={item.href || "#"}
+                  title={item.title}
+                  className={cn(
+                    "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative group",
+                    isDirectActive
+                      ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  {isDirectActive && (
+                    <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                  )}
+                </Link>
+              );
+            }
+
+            return (
               <Link
-                href="/settings"
-                title="Settings"
-                className="flex items-center justify-center h-10 w-10 mx-auto rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors"
+                key={item.title}
+                href={item.href || "#"}
+                className={cn(
+                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                  isDirectActive
+                    ? "bg-neutral-100 dark:bg-white/[0.08] text-neutral-950 dark:text-white shadow-xs font-semibold"
+                    : "text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                )}
               >
-                <Settings className="h-5 w-5" />
+                <span className="flex items-center gap-3">
+                  <Icon
+                    className={cn(
+                      "h-4.5 w-4.5",
+                      isDirectActive
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-neutral-500 dark:text-neutral-400"
+                    )}
+                  />
+                  {item.title}
+                </span>
               </Link>
-              <Link
-                href="/docs"
-                title="Documentation"
-                className="flex items-center justify-center h-10 w-10 mx-auto rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors"
-              >
-                <HelpCircle className="h-5 w-5" />
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/settings"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors"
-              >
-                <Settings className="h-4.5 w-4.5 text-neutral-500 dark:text-neutral-400" />
-                Settings
-              </Link>
-              <Link
-                href="/docs"
-                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors"
-              >
-                <HelpCircle className="h-4.5 w-4.5 text-neutral-500 dark:text-neutral-400" />
-                Documentation
-              </Link>
-            </>
-          )}
+            );
+          })}
         </div>
       </div>
     </div>
@@ -508,7 +546,7 @@ export function Sidebar() {
         {!isCollapsed ? (
           <>
             <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-              <div className="h-8 w-8 rounded-lg bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 flex items-center justify-center p-1 group-hover:border-indigo-500/40 group-hover:bg-neutral-200/80 dark:group-hover:bg-white/[0.07] transition-all shadow-xs shrink-0">
+              <div className="h-8 w-8 rounded-lg bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1 group-hover:border-indigo-500/40 group-hover:bg-neutral-900 dark:group-hover:bg-white/[0.07] transition-all shadow-xs shrink-0">
                 <Image
                   src="/tailr_bg_remove_logo.png"
                   alt="Tailr Logo"
@@ -603,23 +641,51 @@ export function Sidebar() {
                 </span>
               </div>
             </div>
-            <button
-              type="button"
-              className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white p-1.5 rounded transition-colors"
-            >
-              <MoreVertical className="h-4 w-4" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <button
+                  type="button"
+                  className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white p-1.5 rounded transition-colors cursor-pointer"
+                  title="Profile Options"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <Link href="/settings">
+                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link href="/docs">
+                  <DropdownMenuItem className="gap-2 cursor-pointer">
+                    <BookOpen className="h-4 w-4" />
+                    <span>Documentation</span>
+                  </DropdownMenuItem>
+                </Link>
+                <DropdownMenuSeparator />
+                <Link href="/login">
+                  <DropdownMenuItem className="gap-2 text-rose-600 dark:text-rose-400 cursor-pointer">
+                    <LogOut className="h-4 w-4" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ) : (
           <div className="flex justify-center p-1.5 cursor-pointer" title="Shubham Raj Pandey (Single-User)">
-            <div className="relative">
-              <Avatar
-                fallback="SP"
-                size="default"
-                className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30 font-bold"
-              />
-              <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c0d10]" />
-            </div>
+            <Link href="/login">
+              <div className="relative">
+                <Avatar
+                  fallback="SP"
+                  size="default"
+                  className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-500/30 font-bold"
+                />
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c0d10]" />
+              </div>
+            </Link>
           </div>
         )}
       </div>

@@ -132,7 +132,7 @@ function TailorWorkspaceForm({
         </header>
 
         {/* Content Canvas */}
-        <main className="flex-1 px-8 py-8 space-y-8 max-w-6xl w-full">
+        <main className="flex-1 px-8 py-8 space-y-8 w-full">
           {/* Step 1: Input Job Description & Target Role */}
           <TailoringPromptInput
             jobDescription={jobDescription}
