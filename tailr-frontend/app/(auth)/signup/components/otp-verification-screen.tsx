@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import {
   ShieldCheck,
   CheckCircle2,
@@ -10,34 +9,36 @@ import {
   Loader2,
   AlertCircle,
   RefreshCw,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import {
+  useVerifyOtpMutation,
+  useResendOtpMutation,
+  extractErrorMessage,
+} from "@/shared/hooks/auth/use-auth-mutations";
 
 interface OtpVerificationScreenProps {
   email: string;
   fullName: string;
-  expectedOtp: string;
-  onResendOtp: () => void;
+  onResendOtp?: () => void; // optional callback for parent notification
   onBackToSignup: () => void;
 }
 
 export function OtpVerificationScreen({
   email,
   fullName,
-  expectedOtp,
   onResendOtp,
   onBackToSignup,
 }: OtpVerificationScreenProps) {
-  const router = useRouter();
   const [digits, setDigits] = React.useState<string[]>(["", "", "", "", "", ""]);
-  const [isVerifying, setIsVerifying] = React.useState(false);
-  const [isVerified, setIsVerified] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [resendNotification, setResendNotification] = React.useState<string | null>(null);
   const [countdown, setCountdown] = React.useState(30);
 
   const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+
+  const verifyMutation = useVerifyOtpMutation();
+  const resendMutation = useResendOtpMutation();
 
   // Focus the first input on load
   React.useEffect(() => {
@@ -118,49 +119,52 @@ export function OtpVerificationScreen({
       return;
     }
 
-    setIsVerifying(true);
     setError(null);
 
-    setTimeout(() => {
-      if (enteredCode === expectedOtp) {
-        setIsVerified(true);
-        setIsVerifying(false);
-
-        // Transition to dashboard after success feedback
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 1200);
-      } else {
-        setIsVerifying(false);
-        setError("Invalid verification code. Please check your email or click Resend OTP.");
-      }
-    }, 800);
+    verifyMutation.mutate(
+      { email, otp: enteredCode },
+      {
+        onError: (err) => {
+          setError(extractErrorMessage(err));
+          // Clear the inputs on wrong code so user can re-enter
+          setDigits(["", "", "", "", "", ""]);
+          setTimeout(() => inputRefs.current[0]?.focus(), 50);
+        },
+        // onSuccess: handled in useVerifyOtpMutation → dispatches setCredentials + router.push
+      },
+    );
   };
 
   const handleResendClick = () => {
-    if (countdown > 0) return;
+    if (countdown > 0 || resendMutation.isPending) return;
+
     setError(null);
     setDigits(["", "", "", "", "", ""]);
-    onResendOtp();
-    setCountdown(30);
-    setResendNotification("A new 6-digit code has been sent to your email!");
-    inputRefs.current[0]?.focus();
 
-    setTimeout(() => {
-      setResendNotification(null);
-    }, 4000);
-  };
-
-  const handleAutoFillDemo = () => {
-    const chars = expectedOtp.split("");
-    setDigits(chars);
-    setError(null);
-    inputRefs.current[5]?.focus();
+    resendMutation.mutate(
+      { email },
+      {
+        onSuccess: () => {
+          setCountdown(30);
+          setResendNotification("A new 6-digit code has been sent to your email!");
+          inputRefs.current[0]?.focus();
+          setTimeout(() => setResendNotification(null), 4000);
+          onResendOtp?.();
+        },
+        onError: (err) => {
+          setError(extractErrorMessage(err));
+        },
+      },
+    );
   };
 
   const isComplete = digits.every((d) => d !== "");
+  const isVerifying = verifyMutation.isPending;
 
-  if (isVerified) {
+  // ─── Success State ────────────────────────────────────────────────────────────
+  // verifyMutation.onSuccess redirects to /dashboard, but we show the
+  // celebration screen in the brief moment before navigation fires.
+  if (verifyMutation.isSuccess) {
     return (
       <div className="w-full max-w-sm mx-auto text-center space-y-6 py-8 animate-in zoom-in-95 duration-200">
         <div className="h-16 w-16 rounded-2xl bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg">
@@ -182,6 +186,7 @@ export function OtpVerificationScreen({
     );
   }
 
+  // ─── OTP Entry State ──────────────────────────────────────────────────────────
   return (
     <div className="w-full max-w-sm mx-auto space-y-6">
       {/* Header Badge & Title */}
@@ -208,19 +213,10 @@ export function OtpVerificationScreen({
         </div>
       </div>
 
-      {/* Demo helper pill for seamless developer & reviewer testing */}
-      <div className="flex items-center justify-between p-2.5 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-xs text-indigo-900 dark:text-indigo-300">
-        <div className="flex items-center gap-1.5">
-          <Sparkles className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-          <span>Demo OTP: <strong className="font-mono tracking-widest">{expectedOtp}</strong></span>
-        </div>
-        <button
-          type="button"
-          onClick={handleAutoFillDemo}
-          className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-        >
-          Auto-fill
-        </button>
+      {/* Check-your-email hint */}
+      <div className="flex items-center gap-2 p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 text-xs text-indigo-900 dark:text-indigo-300">
+        <ShieldCheck className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+        <span>Check your inbox (and spam folder) for a 6-digit code from Tailr.</span>
       </div>
 
       {/* Resend notification alert */}
@@ -248,6 +244,7 @@ export function OtpVerificationScreen({
               ref={(el) => {
                 inputRefs.current[idx] = el;
               }}
+              id={`otp-digit-${idx}`}
               type="text"
               inputMode="numeric"
               pattern="[0-9]*"
@@ -256,7 +253,8 @@ export function OtpVerificationScreen({
               onChange={(e) => handleDigitChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
               onPaste={handlePaste}
-              className={`h-12 w-11 sm:w-12 text-center font-mono text-xl font-bold rounded-xl border bg-white dark:bg-neutral-900/60 text-neutral-950 dark:text-white transition-all outline-none focus:ring-2 ${
+              disabled={isVerifying}
+              className={`h-12 w-11 sm:w-12 text-center font-mono text-xl font-bold rounded-xl border bg-white dark:bg-neutral-900/60 text-neutral-950 dark:text-white transition-all outline-none focus:ring-2 disabled:opacity-60 ${
                 error
                   ? "border-rose-400 dark:border-rose-600 focus:ring-rose-500/20"
                   : digit
@@ -269,6 +267,7 @@ export function OtpVerificationScreen({
 
         {/* Verify Email Action Button */}
         <Button
+          id="otp-verify-submit"
           type="submit"
           disabled={!isComplete || isVerifying}
           className="w-full h-11 rounded-xl font-semibold text-sm bg-neutral-950 hover:bg-neutral-900 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 shadow-sm transition-all duration-150 cursor-pointer active:scale-[0.99] disabled:opacity-50"
@@ -303,9 +302,14 @@ export function OtpVerificationScreen({
               <button
                 type="button"
                 onClick={handleResendClick}
-                className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                disabled={resendMutation.isPending}
+                className="inline-flex items-center gap-1 font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer disabled:opacity-50"
               >
-                <RefreshCw className="h-3 w-3" />
+                {resendMutation.isPending ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-3 w-3" />
+                )}
                 <span>Resend OTP</span>
               </button>
             </div>

@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -16,14 +15,14 @@ import {
   DialogFooter,
 } from "@/shared/components/ui/dialog";
 import { SocialAuthButtons } from "./social-auth-buttons";
+import { useLoginMutation, extractErrorMessage } from "@/shared/hooks/auth/use-auth-mutations";
 
 export function AuthForm() {
-  const router = useRouter();
-  const [email, setEmail] = React.useState("achmadhakim@gmail.com");
-  const [password, setPassword] = React.useState("••••••••");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = React.useState(true);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
 
   // Forgot password dialog state
   const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);
@@ -31,29 +30,41 @@ export function AuthForm() {
   const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
   const [isForgotLoading, setIsForgotLoading] = React.useState(false);
 
+  const loginMutation = useLoginMutation();
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setFormError(null);
 
-    // Smooth transition to dashboard
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 600);
+    if (!email.trim()) {
+      setFormError("Please enter your email address.");
+      return;
+    }
+    if (!password) {
+      setFormError("Please enter your password.");
+      return;
+    }
+
+    loginMutation.mutate(
+      { email: email.trim().toLowerCase(), password },
+      {
+        onError: (error) => {
+          setFormError(extractErrorMessage(error));
+        },
+      },
+    );
   };
 
   const handleSocialSignIn = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 600);
+    // Google OAuth — placeholder until OAuth integration is added
+    setFormError("Google sign-in is not yet configured. Please use email and password.");
   };
 
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail) return;
     setIsForgotLoading(true);
+    // TODO: wire to /auth/forgot-password when endpoint is added
     setTimeout(() => {
       setIsForgotLoading(false);
       setForgotSubmitted(true);
@@ -67,6 +78,8 @@ export function AuthForm() {
     setForgotPasswordOpen(true);
   };
 
+  const isLoading = loginMutation.isPending;
+
   return (
     <div className="w-full max-w-sm mx-auto space-y-6">
       {/* Title & Subtitle */}
@@ -79,6 +92,14 @@ export function AuthForm() {
         </p>
       </div>
 
+      {/* Form-level error */}
+      {formError && (
+        <div className="flex items-center gap-2 p-3 text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl animate-in fade-in">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          <span>{formError}</span>
+        </div>
+      )}
+
       {/* Main Authentication Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email Field */}
@@ -87,13 +108,19 @@ export function AuthForm() {
             Email Address <span className="text-rose-500">*</span>
           </label>
           <Input
+            id="login-email"
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (formError) setFormError(null);
+            }}
             placeholder="name@example.com"
             icon={<Mail className="h-4 w-4 text-neutral-400" />}
             className="h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10"
+            autoComplete="email"
+            disabled={isLoading}
           />
         </div>
 
@@ -103,10 +130,14 @@ export function AuthForm() {
             Password <span className="text-rose-500">*</span>
           </label>
           <Input
+            id="login-password"
             type={showPassword ? "text" : "password"}
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (formError) setFormError(null);
+            }}
             placeholder="Enter your password"
             icon={<Lock className="h-4 w-4 text-neutral-400" />}
             rightElement={
@@ -124,6 +155,8 @@ export function AuthForm() {
               </button>
             }
             className="h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10"
+            autoComplete="current-password"
+            disabled={isLoading}
           />
         </div>
 
@@ -155,6 +188,7 @@ export function AuthForm() {
 
         {/* Sign In Primary Button */}
         <Button
+          id="login-submit"
           type="submit"
           disabled={isLoading}
           className="w-full h-11 rounded-xl font-semibold text-sm bg-neutral-950 hover:bg-neutral-900 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 shadow-sm transition-all duration-150 cursor-pointer active:scale-[0.99] mt-2"
@@ -162,7 +196,7 @@ export function AuthForm() {
           {isLoading ? (
             <span className="flex items-center gap-2">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Please wait...</span>
+              <span>Signing in...</span>
             </span>
           ) : (
             <span className="flex items-center justify-center gap-1.5">
@@ -241,6 +275,7 @@ export function AuthForm() {
                   Email Address
                 </label>
                 <Input
+                  id="forgot-password-email"
                   type="email"
                   required
                   value={forgotEmail}

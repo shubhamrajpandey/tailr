@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Urbanist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/providers/theme-provider";
+import { ReduxProvider } from "@/shared/components/providers/redux-provider";
+import { QueryProvider } from "@/shared/components/providers/query-provider";
+import { AuthProvider } from "@/shared/components/providers/auth-provider";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -43,14 +46,20 @@ export default function RootLayout({
       className={`${urbanist.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <ReduxProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="dark"
+                enableSystem
+                disableTransitionOnChange
+              >
+                {children}
+              </ThemeProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

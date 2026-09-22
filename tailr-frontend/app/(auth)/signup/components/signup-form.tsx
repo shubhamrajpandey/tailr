@@ -20,6 +20,8 @@ interface SignupFormProps {
   onProceedToOtp: (data: { fullName: string; email: string; password: string }) => void;
   onGoogleSignIn: () => void;
   isLoading?: boolean;
+  /** Server-side error from the signup mutation (e.g. EMAIL_TAKEN) */
+  serverError?: string | null;
 }
 
 export function SignupForm({
@@ -28,6 +30,7 @@ export function SignupForm({
   onProceedToOtp,
   onGoogleSignIn,
   isLoading = false,
+  serverError = null,
 }: SignupFormProps) {
   const [fullName, setFullName] = React.useState(initialFullName);
   const [email, setEmail] = React.useState(initialEmail);
@@ -82,11 +85,11 @@ export function SignupForm({
         </p>
       </div>
 
-      {/* Error Alert if any */}
-      {error && (
+      {/* Error Alert — local validation OR server error */}
+      {(error ?? serverError) && (
         <div className="flex items-center gap-2 p-3 text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:rose-900/50 rounded-xl animate-in fade-in">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{error}</span>
+          <span>{error ?? serverError}</span>
         </div>
       )}
 
