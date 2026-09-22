@@ -29,7 +29,7 @@ export default function ResumeVersionsPage() {
         />
 
         {/* Header Bar */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
+        <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-3">

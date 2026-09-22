@@ -209,7 +209,7 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between border-b border-neutral-200/80 dark:border-white/[0.06] bg-slate-50/90 dark:bg-[#090a0c]/90 backdrop-blur-md transition-colors select-none",
+        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between bg-slate-50/90 dark:bg-[#090a0c]/90 backdrop-blur-md transition-colors select-none",
         className
       )}
     >

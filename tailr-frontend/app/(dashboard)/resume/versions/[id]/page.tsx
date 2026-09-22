@@ -111,7 +111,7 @@ export default function ResumeVersionDetailPage() {
         </div>
 
         {/* Header Bar (Hidden during Print) */}
-        <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
+        <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0">
               {isEditingLabel ? (
