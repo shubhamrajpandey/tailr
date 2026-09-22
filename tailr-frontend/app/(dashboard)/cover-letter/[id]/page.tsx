@@ -41,7 +41,7 @@ export default function CoverLetterDetailPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-neutral-950 items-center justify-center text-sm text-neutral-400">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
         Loading cover letter...
       </div>
     );
@@ -49,7 +49,7 @@ export default function CoverLetterDetailPage() {
 
   if (!coverLetter) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans">
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans">
         <Sidebar />
         <div className="flex-1 p-12 text-center space-y-4">
           <p className="text-sm text-neutral-500">Cover letter not found.</p>
@@ -120,7 +120,7 @@ export default function CoverLetterDetailPage() {
   );
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
       {/* Sidebar (hidden when printing) */}
       <div className="print:hidden">
         <Sidebar />

@@ -48,120 +48,127 @@ function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
   }
   if (pathname === "/applications") {
     return [
-      { label: "Management", href: "/applications" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Applications" },
     ];
   }
   if (pathname === "/applications/new") {
     return [
-      { label: "Management", href: "/applications" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Applications", href: "/applications" },
       { label: "New Application" },
     ];
   }
   if (pathname.startsWith("/applications/") && pathname.endsWith("/edit")) {
     return [
-      { label: "Management", href: "/applications" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Applications", href: "/applications" },
       { label: "Edit Application" },
     ];
   }
   if (pathname.startsWith("/applications/")) {
     return [
-      { label: "Management", href: "/applications" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Applications", href: "/applications" },
       { label: "Application Details" },
     ];
   }
   if (pathname === "/resume") {
     return [
-      { label: "Documents", href: "/resume" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Master Resume" },
     ];
   }
   if (pathname === "/resume/tailor") {
     return [
-      { label: "Documents", href: "/resume" },
-      { label: "Resume Tailor" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Resume", href: "/resume" },
+      { label: "Tailor Resume" },
     ];
   }
   if (pathname === "/resume/versions") {
     return [
-      { label: "Documents", href: "/resume" },
-      { label: "Version History" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Resume", href: "/resume" },
+      { label: "Saved Versions" },
     ];
   }
   if (pathname.startsWith("/resume/versions/")) {
     return [
-      { label: "Documents", href: "/resume" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Resume", href: "/resume" },
+      { label: "Saved Versions", href: "/resume/versions" },
       { label: "Version Comparison" },
     ];
   }
   if (pathname.startsWith("/resumes")) {
     return [
-      { label: "Documents", href: "/resume" },
-      { label: "Resumes" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Resume" },
     ];
   }
   if (pathname === "/cover-letter") {
     return [
-      { label: "Documents", href: "/cover-letter" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Cover Letters" },
     ];
   }
   if (pathname === "/cover-letter/new") {
     return [
-      { label: "Documents", href: "/cover-letter" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Cover Letters", href: "/cover-letter" },
       { label: "New Letter" },
     ];
   }
   if (pathname.startsWith("/cover-letter/")) {
     return [
-      { label: "Documents", href: "/cover-letter" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Cover Letters", href: "/cover-letter" },
       { label: "View Letter" },
     ];
   }
   if (pathname.startsWith("/analytics")) {
     return [
-      { label: "Insights", href: "/analytics" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Analytics" },
     ];
   }
   if (pathname.startsWith("/companies")) {
     return [
-      { label: "Network", href: "/companies" },
-      { label: "Target Companies" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Companies" },
     ];
   }
   if (pathname.startsWith("/settings")) {
     return [
-      { label: "Preferences", href: "/settings" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Settings" },
     ];
   }
   if (pathname.startsWith("/docs")) {
     return [
-      { label: "Resources", href: "/docs" },
+      { label: "Overview", href: "/dashboard" },
       { label: "Documentation" },
     ];
   }
   if (pathname.startsWith("/n8n")) {
     return [
-      { label: "Automation", href: "/n8n" },
-      { label: "n8n Webhooks" },
+      { label: "Overview", href: "/dashboard" },
+      { label: "Automation" },
     ];
   }
 
   const segments = pathname.split("/").filter(Boolean);
-  return segments.map((seg, idx) => ({
-    label: seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "),
-    href:
-      idx < segments.length - 1
-        ? `/${segments.slice(0, idx + 1).join("/")}`
-        : undefined,
-  }));
+  return [
+    { label: "Overview", href: "/dashboard" },
+    ...segments.map((seg, idx) => ({
+      label: seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "),
+      href:
+        idx < segments.length - 1
+          ? `/${segments.slice(0, idx + 1).join("/")}`
+          : undefined,
+    })),
+  ];
 }
 
 export function TopBar({
@@ -202,7 +209,7 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/80 dark:bg-[#0c0d10]/80 backdrop-blur-md transition-colors select-none",
+        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between border-b border-neutral-200/80 dark:border-white/[0.06] bg-slate-50/90 dark:bg-[#090a0c]/90 backdrop-blur-md transition-colors select-none",
         className
       )}
     >
@@ -252,7 +259,7 @@ export function TopBar({
         {/* Date Range Selector Dropdown (Dashboard & Analytics) */}
         {shouldShowDateRange && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
+            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
               <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
               <span>{selectedRange}</span>
               <ChevronDown className="h-3 w-3 text-neutral-400 ml-0.5" />
@@ -280,7 +287,7 @@ export function TopBar({
         {/* Notifications Button */}
         <button
           type="button"
-          className="relative p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer"
+          className="relative p-2 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
           title="Notifications"
         >
           <Bell className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
@@ -290,7 +297,7 @@ export function TopBar({
         {/* Quick Options More */}
         <button
           type="button"
-          className="p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer"
+          className="p-2 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
           title="More options"
         >
           <MoreHorizontal className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
@@ -298,7 +305,7 @@ export function TopBar({
 
         {/* User Profile & Logout Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer">
+          <DropdownMenuTrigger className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer">
             <Avatar
               fallback={initials}
               size="sm"

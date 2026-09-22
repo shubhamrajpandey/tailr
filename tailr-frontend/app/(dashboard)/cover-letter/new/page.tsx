@@ -130,7 +130,7 @@ function NewCoverLetterWorkspace() {
   const isFormValid = companyName.trim().length > 0 && positionTitle.trim().length > 0;
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
       {/* Sidebar Navigation */}
       <Sidebar />
 
