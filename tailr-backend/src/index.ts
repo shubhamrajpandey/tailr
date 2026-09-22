@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { jwt } from "@elysiajs/jwt";
+import { swagger } from "@elysiajs/swagger";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/error";
 import { authRoutes } from "./modules/auth/auth.routes";
@@ -32,7 +33,46 @@ const app = new Elysia()
     })
   )
 
-  // 4. System Health Check Endpoint
+  // 4. Interactive OpenAPI / Swagger Documentation at /swagger
+  .use(
+    swagger({
+      path: "/swagger",
+      documentation: {
+        info: {
+          title: "Tailr Authentication & Identity API",
+          version: "1.0.0",
+          description:
+            "Production-ready authentication system featuring Bun-native argon2id password hashing, 6-digit OTP email verification, and secure HttpOnly refresh token rotation.",
+          contact: {
+            name: "Shubham Raj Pandey",
+            email: "support@tailr.io",
+          },
+        },
+        tags: [
+          {
+            name: "Auth",
+            description: "User registration, OTP verification, credential login, and session rotation",
+          },
+          {
+            name: "System",
+            description: "Service health, database connection checks, and diagnostics",
+          },
+        ],
+        components: {
+          securitySchemes: {
+            bearerAuth: {
+              type: "http",
+              scheme: "bearer",
+              bearerFormat: "JWT",
+              description: "Enter your Bearer JWT access token to authenticate",
+            },
+          },
+        },
+      },
+    })
+  )
+
+  // 5. System Health Check Endpoint
   .get("/health", async () => {
     const isDbConnected = await checkDatabaseHealth();
     return {

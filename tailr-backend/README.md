@@ -28,3 +28,9 @@ bun run dev
 ```
 
 Server will start on [http://localhost:3001](http://localhost:3001).
+
+## 📖 API Documentation & Swagger UI
+
+- **Interactive Swagger UI**: [http://localhost:3001/swagger](http://localhost:3001/swagger)
+- **OpenAPI 3.0 JSON Spec**: [http://localhost:3001/swagger/json](http://localhost:3001/swagger/json)
+- Full guide & step-by-step interactive testing walkthrough: see [SWAGGER.md](./SWAGGER.md).

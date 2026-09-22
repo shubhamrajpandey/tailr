@@ -31,7 +31,20 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     body: SignupBody,
     detail: {
       tags: ["Auth"],
-      summary: "Register a new user and dispatch 6-digit verification code",
+      summary: "Register user and dispatch OTP",
+      description:
+        "Creates a new user profile with Bun argon2id password hashing, generates a 6-digit cryptographic OTP, and sends a verification email. Account is activated only after OTP confirmation.",
+      responses: {
+        200: {
+          description: "Signup successful, OTP email dispatched.",
+        },
+        400: {
+          description: "Validation error or mismatched passwords.",
+        },
+        409: {
+          description: "An account with this email already exists.",
+        },
+      },
     },
   })
 
@@ -40,7 +53,17 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     body: VerifyOtpBody,
     detail: {
       tags: ["Auth"],
-      summary: "Verify 6-digit OTP code and authenticate user",
+      summary: "Verify OTP code & activate account",
+      description:
+        "Verifies the single-use 6-digit OTP code against the SHA-256 hash in PostgreSQL, marks user as verified, issues a short-lived JWT access token, and sets an HttpOnly/Secure refresh cookie.",
+      responses: {
+        200: {
+          description: "Account successfully activated and authenticated.",
+        },
+        400: {
+          description: "Invalid or expired OTP verification code.",
+        },
+      },
     },
   })
 
@@ -50,7 +73,17 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     body: ResendOtpBody,
     detail: {
       tags: ["Auth"],
-      summary: "Resend a new 6-digit verification OTP (rate limited to 1 per 30s)",
+      summary: "Resend 6-digit verification code",
+      description:
+        "Invalidates any previous active OTPs and sends a fresh 6-digit verification code to the registered email. Enforces a 30-second rate-limit cooldown per email/IP.",
+      responses: {
+        200: {
+          description: "Fresh OTP code sent.",
+        },
+        429: {
+          description: "Rate limit exceeded (cooldown active).",
+        },
+      },
     },
   })
 
@@ -60,7 +93,23 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     body: LoginBody,
     detail: {
       tags: ["Auth"],
-      summary: "Authenticate user and issue access token + HttpOnly refresh cookie",
+      summary: "User credential login",
+      description:
+        "Validates email and password against Bun-native argon2id hash. Enforces account verification. On success, issues a short-lived JWT access token and sets an HttpOnly refresh cookie.",
+      responses: {
+        200: {
+          description: "Login successful.",
+        },
+        401: {
+          description: "Invalid credentials.",
+        },
+        403: {
+          description: "Account unverified (triggers automatic OTP resend).",
+        },
+        429: {
+          description: "Rate limit exceeded.",
+        },
+      },
     },
   })
 
@@ -68,7 +117,17 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   .post("/refresh", (ctx) => authController.refresh(ctx as any), {
     detail: {
       tags: ["Auth"],
-      summary: "Rotate access token and refresh token via HttpOnly cookie",
+      summary: "Rotate access and refresh tokens",
+      description:
+        "Reads the HttpOnly refresh token cookie, validates against PostgreSQL, revokes the old token, persists a new refresh token, updates the cookie, and issues a fresh JWT access token.",
+      responses: {
+        200: {
+          description: "Token pair rotated successfully.",
+        },
+        401: {
+          description: "Missing, expired, or revoked refresh token.",
+        },
+      },
     },
   })
 
@@ -76,7 +135,14 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   .post("/logout", (ctx) => authController.logout(ctx as any), {
     detail: {
       tags: ["Auth"],
-      summary: "Revoke refresh token on server and clear HttpOnly cookie",
+      summary: "Logout user and revoke session",
+      description:
+        "Revokes the refresh token server-side in the PostgreSQL database and instructs the browser to clear the HttpOnly cookie.",
+      responses: {
+        200: {
+          description: "Logged out successfully.",
+        },
+      },
     },
   })
 
@@ -95,7 +161,18 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       app.get("/me", (ctx) => authController.me(ctx as any), {
         detail: {
           tags: ["Auth"],
-          summary: "Fetch authenticated user profile",
+          summary: "Get current authenticated user",
+          description:
+            "Returns profile data for the authenticated user decoded from the Bearer JWT access token.",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: {
+              description: "User profile payload.",
+            },
+            401: {
+              description: "Missing or invalid Bearer token.",
+            },
+          },
         },
       })
   );
