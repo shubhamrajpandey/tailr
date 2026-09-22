@@ -1,6 +1,6 @@
 import { authService } from "./auth.service";
 import { generateSecureRandomToken } from "../../utils/crypto";
-import { UnauthorizedError } from "../../middleware/error";
+import { BadRequestError, UnauthorizedError } from "../../middleware/error";
 import { env } from "../../config/env";
 import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
 
@@ -41,7 +41,14 @@ export class AuthController {
     jwtAccess: any;
     cookie: any;
   }) {
-    const user = await authService.verifyOtp(body);
+    const otpCode = body.code || body.otp;
+    if (!otpCode) {
+      throw new BadRequestError("Verification code must be exactly 6 numeric digits.");
+    }
+    const user = await authService.verifyOtp({
+      email: body.email,
+      code: otpCode,
+    });
 
     // Issue JWT Access Token (Short-lived, e.g. 15m)
     const accessToken = await jwtAccess.sign({

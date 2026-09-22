@@ -117,6 +117,10 @@ export class AuthService {
    * Verifies the 6-digit OTP and activates the user account.
    */
   async verifyOtp(input: VerifyOtpInput) {
+    const code = input.code || input.otp;
+    if (!code) {
+      throw new BadRequestError("Verification code must be exactly 6 numeric digits.");
+    }
     const email = input.email.trim().toLowerCase();
     const now = new Date();
 
@@ -134,7 +138,7 @@ export class AuthService {
       throw new BadRequestError("Verification code is invalid or has expired. Please request a new code.");
     }
 
-    const inputCodeHash = hashToken(input.code);
+    const inputCodeHash = hashToken(code);
     if (activeOtp.codeHash !== inputCodeHash) {
       throw new BadRequestError("Invalid verification code. Please check and try again.");
     }

@@ -122,7 +122,7 @@ export function OtpVerificationScreen({
     setError(null);
 
     verifyMutation.mutate(
-      { email, otp: enteredCode },
+      { email, code: enteredCode, otp: enteredCode },
       {
         onError: (err) => {
           setError(extractErrorMessage(err));

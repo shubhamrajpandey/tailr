@@ -51,9 +51,14 @@ export const authQueryKeys = {
  */
 function extractErrorMessage(error: unknown, fallback?: string): string {
   const axiosError = error as AxiosError<ApiErrorBody>;
-  const code = axiosError?.response?.data?.error?.code;
-  const serverMessage = axiosError?.response?.data?.error?.message;
+  const errorObj = axiosError?.response?.data?.error;
+  const code = errorObj?.code;
+  const serverMessage = errorObj?.message;
+  const details = errorObj?.details;
 
+  if (typeof details === "string" && details.trim().length > 0) {
+    return details;
+  }
   if (code) {
     return getErrorMessage(code, serverMessage ?? fallback);
   }

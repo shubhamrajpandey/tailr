@@ -30,6 +30,7 @@ export interface ApiErrorBody {
   error: {
     code: ApiErrorCode;
     message: string;
+    details?: unknown;
   };
 }
 
@@ -91,7 +92,8 @@ export interface SignupRequest {
 
 export interface VerifyOtpRequest {
   email: string;
-  otp: string;
+  code: string;
+  otp?: string;
 }
 
 export interface ResendOtpRequest {

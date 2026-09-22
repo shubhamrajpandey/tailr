@@ -35,12 +35,22 @@ export const VerifyOtpBody = t.Object({
     format: "email",
     error: "Please provide a valid email address.",
   }),
-  code: t.String({
-    minLength: 6,
-    maxLength: 6,
-    pattern: "^[0-9]{6}$",
-    error: "Verification code must be exactly 6 numeric digits.",
-  }),
+  code: t.Optional(
+    t.String({
+      minLength: 6,
+      maxLength: 6,
+      pattern: "^[0-9]{6}$",
+      error: "Verification code must be exactly 6 numeric digits.",
+    })
+  ),
+  otp: t.Optional(
+    t.String({
+      minLength: 6,
+      maxLength: 6,
+      pattern: "^[0-9]{6}$",
+      error: "Verification code must be exactly 6 numeric digits.",
+    })
+  ),
 });
 
 export type VerifyOtpInput = typeof VerifyOtpBody.static;
