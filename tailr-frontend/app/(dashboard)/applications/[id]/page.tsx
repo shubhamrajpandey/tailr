@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { ApplicationDetailHeader } from "../components/application-detail-header";
 import { ApplicationDetailInfo } from "../components/application-detail-info";
 import { useApplications } from "@/shared/hooks/use-applications";
@@ -57,6 +58,15 @@ export default function ApplicationDetailPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        {/* Fixed Top Navigation Bar */}
+        <TopBar
+          breadcrumbs={[
+            { label: "Overview", href: "/dashboard" },
+            { label: "Applications", href: "/applications" },
+            { label: `${application.companyName} (${application.positionTitle})` },
+          ]}
+        />
+
         <main className="flex-1 px-8 pt-7 pb-12 space-y-6">
           {/* Header Banner & Status Bar */}
           <ApplicationDetailHeader

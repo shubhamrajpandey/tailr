@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Plus, Mail, CheckCircle2, FileEdit } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
@@ -25,22 +26,12 @@ export default function CoverLettersPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Page Top Header Bar */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">
-              Cover Letters
-            </span>
-          </div>
+        {/* Fixed Top Navigation Bar */}
+        <TopBar />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+        {/* Page Top Header Bar */}
+        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">

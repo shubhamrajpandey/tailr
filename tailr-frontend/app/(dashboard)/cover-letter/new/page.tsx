@@ -10,6 +10,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
@@ -135,29 +136,18 @@ function NewCoverLetterWorkspace() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        {/* Fixed Top Navigation Bar */}
+        <TopBar
+          breadcrumbs={[
+            { label: "Overview", href: "/dashboard" },
+            { label: "Cover Letters", href: "/cover-letter" },
+            { label: "New Letter" },
+          ]}
+        />
+
         {/* Page Top Header Bar */}
         <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <Link
-              href="/cover-letter"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Cover Letters
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">
-              New Letter
-            </span>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 Cover Letter Generator

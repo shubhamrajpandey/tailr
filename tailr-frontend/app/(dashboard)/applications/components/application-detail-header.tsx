@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
   ExternalLink,
   Edit,
   Trash2,
@@ -52,21 +51,6 @@ export function ApplicationDetailHeader({
 
   return (
     <div className="space-y-4">
-      {/* Breadcrumbs & Navigation */}
-      <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-        <Link
-          href="/applications"
-          className="flex items-center gap-1.5 hover:text-neutral-900 dark:hover:text-white transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          <span>Applications</span>
-        </Link>
-        <span className="text-neutral-300 dark:text-neutral-600">/</span>
-        <span className="text-neutral-900 dark:text-neutral-100 font-semibold truncate max-w-xs">
-          {application.companyName} — {application.positionTitle}
-        </span>
-      </div>
-
       {/* Main Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 shadow-xs">
         {/* Company Avatar & Position Info */}

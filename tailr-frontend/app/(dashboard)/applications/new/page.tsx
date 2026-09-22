@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { ApplicationForm } from "../components/application-form";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { ApplicationFormValues } from "@/shared/lib/validations/application";
@@ -31,27 +32,18 @@ export default function NewApplicationPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+        {/* Fixed Top Navigation Bar */}
+        <TopBar
+          breadcrumbs={[
+            { label: "Overview", href: "/dashboard" },
+            { label: "Applications", href: "/applications" },
+            { label: "New" },
+          ]}
+        />
+
         {/* Page Top Header Bar */}
         <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <Link
-              href="/applications"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Applications
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">New</span>
-          </div>
-
-          <div className="flex items-center gap-3 mt-1">
+          <div className="flex items-center gap-3">
             <Link
               href="/applications"
               className="p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"

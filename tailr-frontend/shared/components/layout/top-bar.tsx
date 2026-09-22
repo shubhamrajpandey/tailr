@@ -2,7 +2,17 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Calendar, Bell, ChevronDown, MoreHorizontal, LogOut, Loader2, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import {
+  Calendar,
+  Bell,
+  ChevronDown,
+  MoreHorizontal,
+  LogOut,
+  Loader2,
+  Settings,
+  BookOpen,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,29 +24,175 @@ import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
 import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
+import { cn } from "@/shared/lib/utils";
+
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
 
 interface TopBarProps {
+  breadcrumbs?: BreadcrumbItem[];
+  showDateRange?: boolean;
   dateRange?: string;
   onDateRangeChange?: (range: string) => void;
+  className?: string;
+}
+
+function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
+  if (pathname === "/dashboard" || pathname === "/") {
+    return [
+      { label: "Overview", href: "/dashboard" },
+      { label: "Dashboard" },
+    ];
+  }
+  if (pathname === "/applications") {
+    return [
+      { label: "Management", href: "/applications" },
+      { label: "Applications" },
+    ];
+  }
+  if (pathname === "/applications/new") {
+    return [
+      { label: "Management", href: "/applications" },
+      { label: "Applications", href: "/applications" },
+      { label: "New Application" },
+    ];
+  }
+  if (pathname.startsWith("/applications/") && pathname.endsWith("/edit")) {
+    return [
+      { label: "Management", href: "/applications" },
+      { label: "Applications", href: "/applications" },
+      { label: "Edit Application" },
+    ];
+  }
+  if (pathname.startsWith("/applications/")) {
+    return [
+      { label: "Management", href: "/applications" },
+      { label: "Applications", href: "/applications" },
+      { label: "Application Details" },
+    ];
+  }
+  if (pathname === "/resume") {
+    return [
+      { label: "Documents", href: "/resume" },
+      { label: "Master Resume" },
+    ];
+  }
+  if (pathname === "/resume/tailor") {
+    return [
+      { label: "Documents", href: "/resume" },
+      { label: "Resume Tailor" },
+    ];
+  }
+  if (pathname === "/resume/versions") {
+    return [
+      { label: "Documents", href: "/resume" },
+      { label: "Version History" },
+    ];
+  }
+  if (pathname.startsWith("/resume/versions/")) {
+    return [
+      { label: "Documents", href: "/resume" },
+      { label: "Version Comparison" },
+    ];
+  }
+  if (pathname.startsWith("/resumes")) {
+    return [
+      { label: "Documents", href: "/resume" },
+      { label: "Resumes" },
+    ];
+  }
+  if (pathname === "/cover-letter") {
+    return [
+      { label: "Documents", href: "/cover-letter" },
+      { label: "Cover Letters" },
+    ];
+  }
+  if (pathname === "/cover-letter/new") {
+    return [
+      { label: "Documents", href: "/cover-letter" },
+      { label: "Cover Letters", href: "/cover-letter" },
+      { label: "New Letter" },
+    ];
+  }
+  if (pathname.startsWith("/cover-letter/")) {
+    return [
+      { label: "Documents", href: "/cover-letter" },
+      { label: "Cover Letters", href: "/cover-letter" },
+      { label: "View Letter" },
+    ];
+  }
+  if (pathname.startsWith("/analytics")) {
+    return [
+      { label: "Insights", href: "/analytics" },
+      { label: "Analytics" },
+    ];
+  }
+  if (pathname.startsWith("/companies")) {
+    return [
+      { label: "Network", href: "/companies" },
+      { label: "Target Companies" },
+    ];
+  }
+  if (pathname.startsWith("/settings")) {
+    return [
+      { label: "Preferences", href: "/settings" },
+      { label: "Settings" },
+    ];
+  }
+  if (pathname.startsWith("/docs")) {
+    return [
+      { label: "Resources", href: "/docs" },
+      { label: "Documentation" },
+    ];
+  }
+  if (pathname.startsWith("/n8n")) {
+    return [
+      { label: "Automation", href: "/n8n" },
+      { label: "n8n Webhooks" },
+    ];
+  }
+
+  const segments = pathname.split("/").filter(Boolean);
+  return segments.map((seg, idx) => ({
+    label: seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "),
+    href:
+      idx < segments.length - 1
+        ? `/${segments.slice(0, idx + 1).join("/")}`
+        : undefined,
+  }));
 }
 
 export function TopBar({
+  breadcrumbs,
+  showDateRange,
   dateRange = "Last week",
   onDateRangeChange,
+  className,
 }: TopBarProps) {
+  const pathname = usePathname();
   const [selectedRange, setSelectedRange] = React.useState(dateRange);
   const user = useAppSelector((s) => s.auth.user);
   const logoutMutation = useLogoutMutation();
 
-  const fullName = user?.fullName || "Shubham Raj Pandey";
+  const fullName = user?.fullName || "User";
   const userEmail = user?.email || "";
-  const initials = fullName
-    .split(" ")
-    .filter(Boolean)
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase() || "SP";
+  const firstName = fullName.split(" ")[0] || "User";
+  const initials =
+    fullName
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "U";
+
+  const resolvedBreadcrumbs = breadcrumbs || getDefaultBreadcrumbs(pathname);
+
+  // Auto-enable date range filter on dashboard and analytics unless explicitly passed
+  const shouldShowDateRange =
+    showDateRange ?? (pathname === "/dashboard" || pathname.startsWith("/analytics"));
 
   const handleSelect = (range: string) => {
     setSelectedRange(range);
@@ -44,36 +200,74 @@ export function TopBar({
   };
 
   return (
-    <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-      {/* Top Meta Bar: Breadcrumbs & Header Actions */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-          <span className="flex items-center gap-2 text-neutral-700 dark:text-neutral-300 font-medium">
-            <span className="h-2 w-2 rounded-full bg-indigo-500 inline-block" />
-            Overview
-          </span>
-          <span className="text-neutral-300 dark:text-neutral-600">/</span>
-          <span className="text-neutral-900 dark:text-neutral-100 font-bold">Dashboard</span>
+    <header
+      className={cn(
+        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/80 dark:bg-[#0c0d10]/80 backdrop-blur-md transition-colors select-none",
+        className
+      )}
+    >
+      {/* Left: Dynamic Interactive Breadcrumbs */}
+      <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
+        <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50 inline-block shrink-0 animate-pulse" />
+        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+          {resolvedBreadcrumbs.map((crumb, idx) => {
+            const isLast = idx === resolvedBreadcrumbs.length - 1;
+            return (
+              <React.Fragment key={`${crumb.label}-${idx}`}>
+                {crumb.href && !isLast ? (
+                  <Link
+                    href={crumb.href}
+                    className="text-neutral-500 dark:text-neutral-400 font-medium hover:text-neutral-950 dark:hover:text-white transition-colors"
+                  >
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span
+                    className={cn(
+                      "font-semibold",
+                      isLast
+                        ? "text-neutral-900 dark:text-neutral-100 font-bold"
+                        : "text-neutral-500 dark:text-neutral-400 font-medium"
+                    )}
+                  >
+                    {crumb.label}
+                  </span>
+                )}
+                {!isLast && (
+                  <span className="text-neutral-300 dark:text-neutral-600 font-normal">
+                    /
+                  </span>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
+      </nav>
 
-        <div className="flex items-center gap-2.5">
-          {/* Theme Toggle Button (Dark / Light mode) */}
-          <ThemeToggle />
+      {/* Right: Actions, Theme, Date Selector & User Profile */}
+      <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Theme Toggle Button */}
+        <ThemeToggle />
 
-          {/* Date Range Selector Dropdown */}
+        {/* Date Range Selector Dropdown (Dashboard & Analytics) */}
+        {shouldShowDateRange && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3.5 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
-              <Calendar className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
+              <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
               <span>{selectedRange}</span>
-              <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400 ml-0.5" />
+              <ChevronDown className="h-3 w-3 text-neutral-400 ml-0.5" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
+            <DropdownMenuContent align="end" className="w-36">
               {["Today", "Last 7 days", "Last week", "Last 30 days", "All time"].map(
                 (range) => (
                   <DropdownMenuItem
                     key={range}
                     onClick={() => handleSelect(range)}
-                    className={selectedRange === range ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                    className={
+                      selectedRange === range
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                        : ""
+                    }
                   >
                     {range}
                   </DropdownMenuItem>
@@ -81,92 +275,79 @@ export function TopBar({
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+        )}
 
-          {/* Notifications button */}
-          <button
-            type="button"
-            className="relative p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
-            title="Notifications"
-          >
-            <Bell className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-            <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-neutral-950" />
-          </button>
+        {/* Notifications Button */}
+        <button
+          type="button"
+          className="relative p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer"
+          title="Notifications"
+        >
+          <Bell className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-neutral-950" />
+        </button>
 
-          {/* Quick Actions More */}
-          <button
-            type="button"
-            className="p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
-            title="Dashboard options"
-          >
-            <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-          </button>
+        {/* Quick Options More */}
+        <button
+          type="button"
+          className="p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer"
+          title="More options"
+        >
+          <MoreHorizontal className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+        </button>
 
-          {/* User Profile & Quick Logout Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer">
-              <Avatar
-                fallback={initials}
-                size="sm"
-                className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold h-6 w-6 text-xs"
-              />
-              <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 max-w-[120px] truncate hidden sm:inline">
-                {fullName.split(" ")[0]}
-              </span>
-              <ChevronDown className="h-3 w-3 text-neutral-400" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              <div className="px-3 py-2">
-                <p className="text-xs font-semibold text-neutral-900 dark:text-white truncate">
-                  {fullName}
+        {/* User Profile & Logout Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs cursor-pointer">
+            <Avatar
+              fallback={initials}
+              size="sm"
+              className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold h-6 w-6 text-[11px]"
+            />
+            <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 max-w-[100px] truncate hidden sm:inline">
+              {firstName}
+            </span>
+            <ChevronDown className="h-3 w-3 text-neutral-400" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <div className="px-3 py-2">
+              <p className="text-xs font-semibold text-neutral-900 dark:text-white truncate">
+                {fullName}
+              </p>
+              {userEmail && (
+                <p className="text-[11px] text-neutral-500 truncate mt-0.5">
+                  {userEmail}
                 </p>
-                {userEmail && (
-                  <p className="text-[11px] text-neutral-500 truncate mt-0.5">
-                    {userEmail}
-                  </p>
-                )}
-              </div>
-              <DropdownMenuSeparator />
-              <Link href="/settings">
-                <DropdownMenuItem className="gap-2 text-xs cursor-pointer">
-                  <User className="h-3.5 w-3.5" />
-                  <span>Account Settings</span>
-                </DropdownMenuItem>
-              </Link>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => logoutMutation.mutate()}
-                disabled={logoutMutation.isPending}
-                className="gap-2 text-xs text-rose-600 dark:text-rose-400 cursor-pointer focus:text-rose-700 dark:focus:text-rose-300"
-              >
-                {logoutMutation.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <LogOut className="h-3.5 w-3.5" />
-                )}
-                <span>{logoutMutation.isPending ? "Signing Out..." : "Log Out"}</span>
+              )}
+            </div>
+            <DropdownMenuSeparator />
+            <Link href="/settings">
+              <DropdownMenuItem className="gap-2 text-xs cursor-pointer">
+                <Settings className="h-3.5 w-3.5" />
+                <span>Account Settings</span>
               </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
-      {/* Greeting Title & Subtitle (No emoji, clean typography) */}
-      <div className="flex items-end justify-between mt-1">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
-            Hello, {fullName}
-          </h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-medium">
-            Here are the latest insights from your job applications and tailoring pipeline.
-          </p>
-        </div>
-
-        <div className="hidden md:flex items-center gap-2 text-sm">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-            <span className="font-mono text-xs font-semibold">Gemini 1.5 Pro Connected</span>
-          </div>
-        </div>
+            </Link>
+            <Link href="/docs">
+              <DropdownMenuItem className="gap-2 text-xs cursor-pointer">
+                <BookOpen className="h-3.5 w-3.5" />
+                <span>Documentation</span>
+              </DropdownMenuItem>
+            </Link>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+              className="gap-2 text-xs text-rose-600 dark:text-rose-400 cursor-pointer focus:text-rose-700 dark:focus:text-rose-300"
+            >
+              {logoutMutation.isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <LogOut className="h-3.5 w-3.5" />
+              )}
+              <span>{logoutMutation.isPending ? "Signing Out..." : "Log Out"}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

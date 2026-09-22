@@ -4,6 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Sparkles, Save, RotateCcw, Check, ArrowRight } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
@@ -66,22 +67,12 @@ function MasterResumeEditor({
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Header Bar */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md sticky top-0 z-20">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">
-              Master Resume
-            </span>
-          </div>
+        {/* Fixed Top Navigation Bar */}
+        <TopBar />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+        {/* Header Bar */}
+        <header className="px-8 pt-6 pb-4 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/50 dark:bg-[#0c0d10]/50">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-3">
                 Master Resume

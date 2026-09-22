@@ -15,6 +15,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Input } from "@/shared/components/ui/input";
@@ -97,29 +98,21 @@ export default function ResumeVersionDetailPage() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Header Bar (Hidden during Print) */}
-        <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md sticky top-0 z-20">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <Link
-              href="/resume/versions"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Saved Versions
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold truncate">
-              {version.label}
-            </span>
-          </div>
+        {/* Fixed Top Navigation Bar */}
+        <div className="print:hidden">
+          <TopBar
+            breadcrumbs={[
+              { label: "Overview", href: "/dashboard" },
+              { label: "Resume", href: "/resume" },
+              { label: "Saved Versions", href: "/resume/versions" },
+              { label: version.label },
+            ]}
+          />
+        </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+        {/* Header Bar (Hidden during Print) */}
+        <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0">
               {isEditingLabel ? (
                 <div className="flex items-center gap-2 max-w-md">

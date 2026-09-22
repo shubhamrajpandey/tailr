@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { TrendingUp, LineChart, Layers } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import {
   Tabs,
   TabsList,
@@ -61,26 +61,12 @@ function AnalyticsDashboard() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Page Top Header Bar */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-          <div className="flex items-center gap-2.5 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            <Link
-              href="/dashboard"
-              className="hover:text-neutral-900 dark:hover:text-white transition-colors"
-            >
-              Overview
-            </Link>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-500 dark:text-neutral-400">
-              Analytics
-            </span>
-            <span className="text-neutral-300 dark:text-neutral-600">/</span>
-            <span className="text-neutral-900 dark:text-neutral-100 font-bold">
-              {activeMeta.title}
-            </span>
-          </div>
+        {/* Fixed Top Navigation Bar */}
+        <TopBar />
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-1">
+        {/* Page Top Header Bar */}
+        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 {activeMeta.title}
