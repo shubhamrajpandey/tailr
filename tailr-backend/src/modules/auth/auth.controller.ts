@@ -19,6 +19,17 @@ function getRefreshTokenCookieOptions() {
   };
 }
 
+function getAccessTokenCookieOptions() {
+  return {
+    httpOnly: false,
+    secure: env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge: 7 * 24 * 60 * 60, // 7 days
+    domain: env.COOKIE_DOMAIN,
+  };
+}
+
 export class AuthController {
   async signup({ body }: { body: SignupInput }) {
     const result = await authService.signup(body);
@@ -65,6 +76,10 @@ export class AuthController {
     cookie.refreshToken.set({
       value: rawRefreshToken,
       ...getRefreshTokenCookieOptions(),
+    });
+    cookie.accessToken.set({
+      value: accessToken,
+      ...getAccessTokenCookieOptions(),
     });
 
     return {
@@ -114,10 +129,14 @@ export class AuthController {
     const rawRefreshToken = generateSecureRandomToken(32);
     await authService.persistRefreshToken(user.id, rawRefreshToken);
 
-    // Store Refresh Token in HttpOnly cookie
+    // Store Refresh Token and Access Token in cookies
     cookie.refreshToken.set({
       value: rawRefreshToken,
       ...getRefreshTokenCookieOptions(),
+    });
+    cookie.accessToken.set({
+      value: accessToken,
+      ...getAccessTokenCookieOptions(),
     });
 
     return {
@@ -156,10 +175,14 @@ export class AuthController {
       name: user.fullName,
     });
 
-    // Update HttpOnly cookie with new rotated refresh token
+    // Update cookies with new rotated tokens
     cookie.refreshToken.set({
       value: newRefreshToken,
       ...getRefreshTokenCookieOptions(),
+    });
+    cookie.accessToken.set({
+      value: newAccessToken,
+      ...getAccessTokenCookieOptions(),
     });
 
     return {
@@ -177,8 +200,12 @@ export class AuthController {
       await authService.revokeRefreshToken(rawRefreshToken);
     }
 
-    // Clear HttpOnly cookie
+    // Clear cookies
     cookie.refreshToken.remove({
+      path: "/",
+      domain: env.COOKIE_DOMAIN,
+    });
+    cookie.accessToken.remove({
       path: "/",
       domain: env.COOKIE_DOMAIN,
     });

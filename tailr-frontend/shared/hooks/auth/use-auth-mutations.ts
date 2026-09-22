@@ -20,6 +20,7 @@ import {
   setAuthStep,
   setCredentials,
 } from "@/shared/store/auth-slice";
+import { setAuthCookie, removeAuthCookie } from "@/shared/lib/cookie";
 import {
   getErrorMessage,
   type ApiErrorBody,
@@ -113,6 +114,7 @@ export function useVerifyOtpMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
       router.push("/dashboard");
     },
@@ -160,6 +162,7 @@ export function useLoginMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
       router.push("/dashboard");
     },
@@ -188,14 +191,15 @@ export function useLogoutMutation() {
         .then((res) => res.data),
 
     onSuccess: () => {
+      removeAuthCookie();
       dispatch(clearCredentials());
       queryClient.clear(); // purge all cached server data
       router.push("/login");
     },
 
     onError: () => {
-      // Even if the server call fails, clear local state and redirect.
-      // The user should never be stuck in a "logged in" state client-side.
+      // Even if the server call fails, clear local state, cookies, and redirect.
+      removeAuthCookie();
       dispatch(clearCredentials());
       queryClient.clear();
       router.push("/login");

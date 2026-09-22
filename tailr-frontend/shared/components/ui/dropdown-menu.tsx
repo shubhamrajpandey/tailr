@@ -99,22 +99,27 @@ function DropdownMenuItem({
   className,
   children,
   destructive = false,
+  disabled = false,
 }: {
   onClick?: () => void;
   className?: string;
   children: React.ReactNode;
   destructive?: boolean;
+  disabled?: boolean;
 }) {
   const context = React.useContext(DropdownMenuContext);
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={() => {
+        if (disabled) return;
         onClick?.();
         context?.setOpen(false);
       }}
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-xs outline-none transition-colors hover:bg-neutral-100 dark:hover:bg-white/[0.08] text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white",
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none",
         destructive && "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300",
         className
       )}

@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { useRefreshQuery } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { setCredentials } from "@/shared/store/auth-slice";
+import { setAuthCookie } from "@/shared/lib/cookie";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -30,6 +31,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
+      setAuthCookie(data.data.accessToken);
       dispatch(
         setCredentials({
           user: data.data.user,

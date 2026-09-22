@@ -23,6 +23,11 @@ import axios, {
 import { store } from "@/shared/store";
 import { clearCredentials, setCredentials } from "@/shared/store/auth-slice";
 import type { RefreshResponse } from "@/shared/types/auth";
+import {
+  getAuthTokenFromCookie,
+  setAuthCookie,
+  removeAuthCookie,
+} from "./cookie";
 
 // ─── Singleton flag — one refresh at a time ─────────────────────────────────────
 let isRefreshing = false;
@@ -53,13 +58,14 @@ export const authApiClient = axios.create({
 });
 
 // ─── Request Interceptor ────────────────────────────────────────────────────────
-// Attaches the in-memory access token as a Bearer header on every request.
+// Attaches the access token from Redux or Cookie as a Bearer header.
 
 authApiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const { accessToken } = store.getState().auth;
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    const token =
+      store.getState().auth.accessToken || getAuthTokenFromCookie();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
@@ -113,7 +119,8 @@ authApiClient.interceptors.response.use(
       );
       const { user, accessToken: newToken } = data.data;
 
-      // Hydrate Redux with the new token.
+      // Hydrate Redux with the new token and sync cookies.
+      setAuthCookie(newToken);
       store.dispatch(setCredentials({ user, accessToken: newToken }));
 
       // Retry all queued requests with the new token.
@@ -127,6 +134,7 @@ authApiClient.interceptors.response.use(
       return authApiClient(originalRequest);
     } catch {
       // Refresh failed — the session is truly expired.
+      removeAuthCookie();
       store.dispatch(clearCredentials());
       refreshSubscribers = [];
 
