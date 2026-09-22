@@ -21,6 +21,7 @@ import {
   Mail,
   BookOpen,
   LogOut,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/avatar";
@@ -214,6 +215,12 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       title: "Companies & HR",
       href: "/companies",
       icon: Building2,
+    },
+    {
+      title: "n8n Automation",
+      href: "/n8n",
+      icon: Zap,
+      badge: "n8n",
     },
   ];
 

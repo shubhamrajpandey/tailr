@@ -25,8 +25,8 @@ export default function LoginPage() {
           </div>
 
           {/* Bottom Footer */}
-          <footer className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-4 border-t border-transparent sm:border-neutral-100 dark:sm:border-white/[0.04]">
-            <span>© 2025 Tailr</span>
+          <footer className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400 pt-4 border-t border-transparent sm:border-neutral-100 dark:sm:border-white/[0.04]">
+            <span>© 2026 Shubham Raj Pandey. All rights reserved.</span>
             <div className="flex items-center gap-1">
               <span>Need help?</span>
               <Link

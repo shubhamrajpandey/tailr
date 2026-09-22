@@ -3,26 +3,39 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/shared/components/ui/dialog";
 import { SocialAuthButtons } from "./social-auth-buttons";
 
 export function AuthForm() {
   const router = useRouter();
-  const [isSignUp, setIsSignUp] = React.useState(false);
   const [email, setEmail] = React.useState("achmadhakim@gmail.com");
   const [password, setPassword] = React.useState("••••••••");
   const [showPassword, setShowPassword] = React.useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = React.useState(true);
   const [isLoading, setIsLoading] = React.useState(false);
 
+  // Forgot password dialog state
+  const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);
+  const [forgotEmail, setForgotEmail] = React.useState("");
+  const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
+  const [isForgotLoading, setIsForgotLoading] = React.useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Smooth navigation to dashboard
+    // Smooth transition to dashboard
     setTimeout(() => {
       setIsLoading(false);
       router.push("/dashboard");
@@ -37,17 +50,32 @@ export function AuthForm() {
     }, 600);
   };
 
+  const handleForgotPasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail) return;
+    setIsForgotLoading(true);
+    setTimeout(() => {
+      setIsForgotLoading(false);
+      setForgotSubmitted(true);
+    }, 700);
+  };
+
+  const handleOpenForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setForgotEmail(email || "");
+    setForgotSubmitted(false);
+    setForgotPasswordOpen(true);
+  };
+
   return (
     <div className="w-full max-w-sm mx-auto space-y-6">
       {/* Title & Subtitle */}
       <div className="text-center space-y-1.5">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-950 dark:text-white font-sans">
-          {isSignUp ? "Create Your Account" : "Sign In to Continue"}
+          Sign In to Continue
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-          {isSignUp
-            ? "Start your career acceleration journey."
-            : "Access all your tools in one place."}
+          Access all your tools in one place.
         </p>
       </div>
 
@@ -99,7 +127,7 @@ export function AuthForm() {
           />
         </div>
 
-        {/* Remember Me & Forgot Password Row */}
+        {/* Keep Me Logged In & Forgot Password Row */}
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-2">
             <Checkbox
@@ -116,18 +144,13 @@ export function AuthForm() {
             </label>
           </div>
 
-          {!isSignUp && (
-            <Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                alert("Reset link sent to demo email address.");
-              }}
-              className="text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white underline underline-offset-4 transition-colors"
-            >
-              Forgot Password?
-            </Link>
-          )}
+          <button
+            type="button"
+            onClick={handleOpenForgotPassword}
+            className="text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+          >
+            Forgot Password?
+          </button>
         </div>
 
         {/* Sign In Primary Button */}
@@ -141,10 +164,11 @@ export function AuthForm() {
               <Loader2 className="h-4 w-4 animate-spin" />
               <span>Please wait...</span>
             </span>
-          ) : isSignUp ? (
-            "Create Account"
           ) : (
-            "Sign In"
+            <span className="flex items-center justify-center gap-1.5">
+              <span>Sign In</span>
+              <ArrowRight className="h-4 w-4" />
+            </span>
           )}
         </Button>
       </form>
@@ -156,27 +180,106 @@ export function AuthForm() {
         </div>
         <div className="relative flex justify-center text-xs">
           <span className="bg-white dark:bg-[#090a0c] px-3 text-neutral-400 font-medium">
-            Or
+            Or continue with
           </span>
         </div>
       </div>
 
-      {/* Social Sign-In (Google / Apple) */}
-      <SocialAuthButtons onSocialClick={handleSocialSignIn} />
+      {/* Social Sign-In (Google only) */}
+      <SocialAuthButtons
+        isLoading={isLoading}
+        onSocialClick={handleSocialSignIn}
+      />
 
-      {/* Toggle Sign In / Sign Up */}
+      {/* Switch to Sign Up Screen */}
       <div className="text-center pt-2">
         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-          {isSignUp ? "Already have an account? " : "Don't have an account? "}
-          <button
-            type="button"
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="font-bold text-neutral-900 dark:text-white hover:underline cursor-pointer transition-colors"
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            className="font-bold text-neutral-900 dark:text-white hover:underline transition-colors ml-1"
           >
-            {isSignUp ? "Sign In" : "Sign Up"}
-          </button>
+            Sign Up
+          </Link>
         </p>
       </div>
+
+      {/* Forgot Password Dialog */}
+      <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reset Your Password</DialogTitle>
+            <DialogDescription>
+              Enter the email address associated with your account and we will send you a link to reset your password.
+            </DialogDescription>
+          </DialogHeader>
+
+          {forgotSubmitted ? (
+            <div className="py-6 flex flex-col items-center text-center space-y-3">
+              <div className="h-12 w-12 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center">
+                <CheckCircle2 className="h-6 w-6" />
+              </div>
+              <p className="text-sm font-semibold text-neutral-900 dark:text-white">
+                Password reset link sent!
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">
+                We sent instructions to <span className="font-semibold text-neutral-800 dark:text-neutral-200">{forgotEmail}</span>. Check your inbox and spam folders.
+              </p>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => setForgotPasswordOpen(false)}
+                className="mt-2 text-xs h-9 rounded-lg"
+              >
+                Done
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleForgotPasswordSubmit} className="space-y-4 pt-2">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+                  Email Address
+                </label>
+                <Input
+                  type="email"
+                  required
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  icon={<Mail className="h-4 w-4 text-neutral-400" />}
+                  className="h-10 text-xs rounded-xl"
+                  autoFocus
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setForgotPasswordOpen(false)}
+                  className="text-xs"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isForgotLoading || !forgotEmail}
+                  className="text-xs"
+                >
+                  {isForgotLoading ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Sending...</span>
+                    </span>
+                  ) : (
+                    "Send Reset Link"
+                  )}
+                </Button>
+              </DialogFooter>
+            </form>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
