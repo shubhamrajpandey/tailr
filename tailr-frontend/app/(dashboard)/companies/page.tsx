@@ -3,82 +3,47 @@
 import * as React from "react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
-import { useCompanies } from "@/shared/hooks/use-companies";
-import { useDebounce } from "@/shared/hooks/use-debounce";
-import { Company } from "@/shared/types/company";
-import { CompanySearchFilter } from "./components/company-search-filter";
-import { CompanyTable } from "./components/company-table";
-import { CompanyDetailDialog } from "./components/company-detail-dialog";
 import { Badge } from "@/shared/components/ui/badge";
+import { useCompaniesQuery } from "@/shared/hooks/use-companies";
+import type { Company } from "@/shared/types/company";
+import { AlphabetSidebar } from "./components/alphabet-sidebar";
+import { CompanySearch } from "./components/company-search";
+import { CompanyList } from "./components/company-list";
+import { CompanyDetailDialog } from "./components/company-detail-dialog";
 
 export default function CompaniesPage() {
-  const { companies, totalCount } = useCompanies();
-
-  // Filter States
+  // ── Filter state ────────────────────────────────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [selectedIndustry, setSelectedIndustry] = React.useState<string>("ALL");
-  const [selectedHiringStatus, setSelectedHiringStatus] = React.useState<string>("ALL");
+  const [selectedLetter, setSelectedLetter] = React.useState<string>("");
 
-  // Debounced search query for render performance optimization
-  const debouncedSearch = useDebounce(searchQuery, 200);
+  // When user types a search, clear the letter filter
+  const handleSearchChange = React.useCallback((value: string) => {
+    setSearchQuery(value);
+    if (value.trim()) setSelectedLetter("");
+  }, []);
 
-  // Detail Modal State (kept strictly at the page level)
-  const [selectedCompany, setSelectedCompany] = React.useState<Company | null>(null);
+  // When user picks a letter, clear the search
+  const handleLetterSelect = React.useCallback((letter: string) => {
+    setSelectedLetter(letter);
+    setSearchQuery("");
+  }, []);
+
+  // ── Data fetching ────────────────────────────────────────────────────────
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    isError,
+    fetchNextPage,
+    refetch,
+  } = useCompaniesQuery({ search: searchQuery, letter: selectedLetter });
+
+  // ── Detail dialog state ─────────────────────────────────────────────────
+  const [selectedCompany, setSelectedCompany] =
+    React.useState<Company | null>(null);
   const [isDetailOpen, setIsDetailOpen] = React.useState<boolean>(false);
 
-  // Extract distinct industries from company list via useMemo
-  const industries = React.useMemo(() => {
-    const set = new Set<string>();
-    companies.forEach((c) => {
-      if (c.industry) set.add(c.industry);
-    });
-    return Array.from(set).sort();
-  }, [companies]);
-
-  // Derived filtered company list computed via useMemo
-  const filteredCompanies = React.useMemo(() => {
-    const query = debouncedSearch.trim().toLowerCase();
-
-    return companies.filter((c) => {
-      // 1. Search Query Filter
-      if (query) {
-        const matchesName = c.name.toLowerCase().includes(query);
-        const matchesIndustry = c.industry.toLowerCase().includes(query);
-        const matchesLocation = c.location.toLowerCase().includes(query);
-        const matchesRecruiter = c.hrContact.name.toLowerCase().includes(query);
-        const matchesEmail = c.hrContact.email
-          ? c.hrContact.email.toLowerCase().includes(query)
-          : false;
-
-        if (
-          !matchesName &&
-          !matchesIndustry &&
-          !matchesLocation &&
-          !matchesRecruiter &&
-          !matchesEmail
-        ) {
-          return false;
-        }
-      }
-
-      // 2. Industry Filter
-      if (selectedIndustry !== "ALL" && c.industry !== selectedIndustry) {
-        return false;
-      }
-
-      // 3. Hiring Status Filter
-      if (
-        selectedHiringStatus !== "ALL" &&
-        c.hiringStatus !== selectedHiringStatus
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [companies, debouncedSearch, selectedIndustry, selectedHiringStatus]);
-
-  // Memoized handlers passed to memoized children
   const handleSelectCompany = React.useCallback((company: Company) => {
     setSelectedCompany(company);
     setIsDetailOpen(true);
@@ -89,79 +54,86 @@ export default function CompaniesPage() {
     setIsDetailOpen(false);
   }, []);
 
-  const handleResetFilters = React.useCallback(() => {
-    setSearchQuery("");
-    setSelectedIndustry("ALL");
-    setSelectedHiringStatus("ALL");
-  }, []);
-
-  // Stats
-  const activelyHiringCount = React.useMemo(() => {
-    return companies.filter((c) => c.hiringStatus === "ACTIVELY_HIRING").length;
-  }, [companies]);
+  // Total loaded count for the badge
+  const loadedCount = data?.pages.reduce((acc, p) => acc + p.data.length, 0) ?? 0;
+  const hasMore = data?.pages.at(-1)?.pageInfo.hasMore ?? false;
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar Navigation */}
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Main Content Area */}
+      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Fixed Top Navigation Bar */}
         <TopBar />
 
-        {/* Page Top Header Bar */}
+        {/* Page Header */}
         <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5">
                 <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                  Companies & HR
+                  Companies
                 </h1>
-                <Badge variant="secondary" dot={false} className="font-semibold text-xs">
-                  {totalCount} Verified Directories
-                </Badge>
+                {!isLoading && (
+                  <Badge
+                    variant="secondary"
+                    dot={false}
+                    className="font-semibold text-xs"
+                  >
+                    {loadedCount}
+                    {hasMore ? "+" : ""} listed
+                  </Badge>
+                )}
               </div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-medium">
-                Verified target employers and direct recruiter contacts. Click any row to view complete talent profiles and launch resume tailoring.
+                IT companies in Nepal — curated by admins. Click any card for
+                details and AI resume tailoring.
               </p>
-            </div>
-
-            {/* Quick Stats Pills */}
-            <div className="flex items-center gap-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-200/80 dark:border-emerald-500/20 bg-emerald-50/60 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>{activelyHiringCount} Actively Hiring</span>
-              </div>
             </div>
           </div>
         </header>
 
-        {/* Content Container */}
-        <main className="px-8 pb-12 flex-1 space-y-6">
-          {/* Search, Filter & Counter Bar */}
-          <CompanySearchFilter
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedIndustry={selectedIndustry}
-            onIndustryChange={setSelectedIndustry}
-            selectedHiringStatus={selectedHiringStatus}
-            onHiringStatusChange={setSelectedHiringStatus}
-            industries={industries}
-            totalCount={totalCount}
-            filteredCount={filteredCompanies.length}
-          />
+        {/* Content */}
+        <main className="px-8 pb-12 flex-1">
+          {/* Search bar */}
+          <div className="mb-5">
+            <CompanySearch
+              value={searchQuery}
+              onChange={handleSearchChange}
+              disabled={isLoading}
+            />
+          </div>
 
-          {/* Companies Table */}
-          <CompanyTable
-            companies={filteredCompanies}
-            selectedCompanyId={selectedCompany?.id}
-            onSelectCompany={handleSelectCompany}
-            onResetFilters={handleResetFilters}
-          />
+          {/* Two-column layout: alphabet sidebar + list */}
+          <div className="flex gap-5 items-start">
+            {/* A–Z sidebar */}
+            <AlphabetSidebar
+              selectedLetter={selectedLetter}
+              onSelectLetter={handleLetterSelect}
+              disabled={isLoading}
+            />
+
+            {/* Company list */}
+            <div className="flex-1 min-w-0">
+              <CompanyList
+                data={data}
+                isLoading={isLoading}
+                isFetchingNextPage={isFetchingNextPage}
+                hasNextPage={hasNextPage ?? false}
+                isError={isError}
+                searchQuery={searchQuery}
+                selectedLetter={selectedLetter}
+                selectedCompanyId={selectedCompany?.id}
+                onSelectCompany={handleSelectCompany}
+                onLoadMore={fetchNextPage}
+                onRetry={refetch}
+              />
+            </div>
+          </div>
         </main>
 
-        {/* Detail Modal Dialog */}
+        {/* Detail dialog */}
         <CompanyDetailDialog
           company={selectedCompany}
           isOpen={isDetailOpen}

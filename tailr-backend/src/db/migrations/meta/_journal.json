@@ -8,6 +8,13 @@
       "when": 1790063450748,
       "tag": "0000_cool_umar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790090371526,
+      "tag": "0001_add_companies_and_user_role",
+      "breakpoints": true
     }
   ]
 }

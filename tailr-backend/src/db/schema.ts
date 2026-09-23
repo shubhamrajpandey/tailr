@@ -11,7 +11,7 @@ import {
 import { relations, sql } from "drizzle-orm";
 
 /**
- * Users table: stores user profile, hashed credentials, and verification status.
+ * Users table: stores user profile, hashed credentials, verification status, and role.
  */
 export const users = pgTable(
   "users",
@@ -21,6 +21,7 @@ export const users = pgTable(
     email: varchar("email", { length: 255 }).notNull().unique(),
     passwordHash: text("password_hash").notNull(),
     isVerified: boolean("is_verified").default(false).notNull(),
+    role: varchar("role", { length: 50 }).default("user").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -86,11 +87,49 @@ export const refreshTokens = pgTable(
  */
 export const usersRelations = relations(users, ({ many }) => ({
   refreshTokens: many(refreshTokens),
+  companies: many(companies),
 }));
 
 export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
   user: one(users, {
     fields: [refreshTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+/**
+ * Companies table: static IT company directory curated by admins.
+ * Explicitly not a job board — no real-time hiring status or application counts.
+ */
+export const companies = pgTable(
+  "companies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 255 }).notNull(),
+    description: text("description"),
+    industry: varchar("industry", { length: 100 }).default("IT").notNull(),
+    websiteUrl: varchar("website_url", { length: 500 }),
+    logoUrl: varchar("logo_url", { length: 500 }),
+    createdBy: uuid("created_by")
+      .notNull()
+      .references(() => users.id, { onDelete: "restrict" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("companies_name_idx").on(table.name),
+    index("companies_created_at_id_idx").on(table.createdAt, table.id),
+    index("companies_name_lower_idx").on(sql`lower(${table.name})`),
+  ]
+);
+
+export const companiesRelations = relations(companies, ({ one }) => ({
+  creator: one(users, {
+    fields: [companies.createdBy],
     references: [users.id],
   }),
 }));
@@ -101,3 +140,5 @@ export type Otp = typeof otps.$inferSelect;
 export type NewOtp = typeof otps.$inferInsert;
 export type RefreshToken = typeof refreshTokens.$inferSelect;
 export type NewRefreshToken = typeof refreshTokens.$inferInsert;
+export type Company = typeof companies.$inferSelect;
+export type NewCompany = typeof companies.$inferInsert;

@@ -5,6 +5,7 @@ import { swagger } from "@elysiajs/swagger";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/error";
 import { authRoutes } from "./modules/auth/auth.routes";
+import { companiesRoutes } from "./modules/companies/companies.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -54,6 +55,10 @@ const app = new Elysia()
             description: "User registration, OTP verification, credential login, and session rotation",
           },
           {
+            name: "Companies",
+            description: "Static IT company directory — admin-managed, paginated, with search and A–Z filtering",
+          },
+          {
             name: "System",
             description: "Service health, database connection checks, and diagnostics",
           },
@@ -87,6 +92,9 @@ const app = new Elysia()
 
   // 5. Mount Authentication Module Routes (/auth/*)
   .use(authRoutes)
+
+  // 6. Mount Companies Directory Routes (/companies, /admin/companies)
+  .use(companiesRoutes)
 
   // 6. Bind to Port
   .listen({

@@ -1,29 +1,32 @@
-export type HiringStatus =
-  | "ACTIVELY_HIRING"
-  | "SELECTIVE"
-  | "FREEZE"
-  | "UNKNOWN";
-
-export interface HRContact {
-  name: string;
-  title?: string;
-  email?: string | null;
-  linkedinUrl?: string | null;
-  avatarUrl?: string | null;
-  notes?: string;
-}
-
+/**
+ * API-aligned company shape returned by GET /companies and GET /companies/:id.
+ * Explicitly excludes hiring-status, HR contacts, and application counts —
+ * this is a static directory, not a job board.
+ */
 export interface Company {
   id: string;
   name: string;
-  website: string;
-  linkedinUrl?: string | null;
+  description: string | null;
   industry: string;
-  location: string;
-  employeeCount?: string;
-  description?: string;
-  hiringStatus?: HiringStatus;
-  hrContact: HRContact;
-  activeApplicationsCount?: number;
-  createdAt?: string;
+  websiteUrl: string | null;
+  logoUrl: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CompanyPageInfo {
+  hasMore: boolean;
+  nextCursor: string | null;
+}
+
+export interface CompanyListResponse {
+  success: boolean;
+  data: Company[];
+  pageInfo: CompanyPageInfo;
+}
+
+export interface CompanyDetailResponse {
+  success: boolean;
+  data: { company: Company };
 }
