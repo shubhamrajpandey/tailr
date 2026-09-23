@@ -9,15 +9,13 @@ import {
   Briefcase,
   FileText,
   Building2,
-  TrendingUp,
   Settings,
   ChevronDown,
   Search,
   MoreVertical,
   PanelLeftClose,
   PanelLeftOpen,
-  LineChart,
-  Layers,
+  BarChart3,
   Mail,
   BookOpen,
   LogOut,
@@ -74,19 +72,9 @@ interface NavItem {
 
 const analyticsNavItems: NavItem[] = [
   {
-    title: "Response Rates",
-    href: "/analytics?tab=responses",
-    icon: TrendingUp,
-  },
-  {
-    title: "Conversion Funnel",
-    href: "/analytics?tab=funnel",
-    icon: LineChart,
-  },
-  {
-    title: "Tailoring Analytics",
-    href: "/analytics?tab=tailoring",
-    icon: Layers,
+    title: "Analytics",
+    href: "/analytics",
+    icon: BarChart3,
   },
 ];
 
@@ -399,10 +387,8 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
         <div className="space-y-1">
           {analyticsNavItems.map((item) => {
             const Icon = item.icon;
-            const currentTab = searchParams.get("tab") || "responses";
-            const targetTab = item.href?.split("=")[1];
             const isActive =
-              pathname === "/analytics" && currentTab === targetTab;
+              pathname === "/analytics" || pathname.startsWith("/analytics");
 
             if (isCollapsed) {
               return (
