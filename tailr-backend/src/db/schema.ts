@@ -107,9 +107,19 @@ export const companies = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     name: varchar("name", { length: 255 }).notNull(),
     description: text("description"),
+    sector: varchar("sector", { length: 100 }).default("Technology").notNull(),
     industry: varchar("industry", { length: 100 }).default("IT").notNull(),
     websiteUrl: varchar("website_url", { length: 500 }),
+    linkedinUrl: varchar("linkedin_url", { length: 500 }),
+    location: varchar("location", { length: 255 }).default("Kathmandu, Nepal"),
+    hrName: varchar("hr_name", { length: 255 }),
+    hrEmail: varchar("hr_email", { length: 255 }),
+    hrLinkedin: varchar("hr_linkedin", { length: 500 }),
     logoUrl: varchar("logo_url", { length: 500 }),
+    techStack: text("tech_stack")
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull(),
     createdBy: uuid("created_by")
       .notNull()
       .references(() => users.id, { onDelete: "restrict" }),
@@ -122,6 +132,7 @@ export const companies = pgTable(
   },
   (table) => [
     index("companies_name_idx").on(table.name),
+    index("companies_sector_idx").on(table.sector),
     index("companies_created_at_id_idx").on(table.createdAt, table.id),
     index("companies_name_lower_idx").on(sql`lower(${table.name})`),
   ]

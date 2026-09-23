@@ -15,6 +15,13 @@
       "when": 1790090371526,
       "tag": "0001_add_companies_and_user_role",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790143856969,
+      "tag": "0002_fearless_black_queen",
+      "breakpoints": true
     }
   ]
 }

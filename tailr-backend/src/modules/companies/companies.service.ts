@@ -31,9 +31,16 @@ export function toPublicCompany(row: Company) {
     id: row.id,
     name: row.name,
     description: row.description ?? null,
+    sector: row.sector || row.industry || "Technology",
     industry: row.industry,
     websiteUrl: row.websiteUrl ?? null,
+    linkedinUrl: row.linkedinUrl ?? null,
+    location: row.location ?? "Kathmandu, Nepal",
+    hrName: row.hrName ?? null,
+    hrEmail: row.hrEmail ?? null,
+    hrLinkedin: row.hrLinkedin ?? null,
     logoUrl: row.logoUrl ?? null,
+    techStack: row.techStack ?? [],
     createdBy: row.createdBy,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
@@ -48,12 +55,20 @@ export class CompaniesService {
    * verified JWT payload, never from the request body.
    */
   async create(input: CreateCompanyInput, adminId: string): Promise<PublicCompany> {
+    const sectorVal = input.sector?.trim() || input.industry?.trim() || "Technology";
     const values: NewCompany = {
       name: input.name.trim(),
       description: input.description?.trim() ?? null,
-      industry: input.industry?.trim() ?? "IT",
+      sector: sectorVal,
+      industry: sectorVal,
       websiteUrl: input.websiteUrl?.trim() ?? null,
+      linkedinUrl: input.linkedinUrl?.trim() ?? null,
+      location: input.location?.trim() ?? "Kathmandu, Nepal",
+      hrName: input.hrName?.trim() ?? null,
+      hrEmail: input.hrEmail?.trim() ?? null,
+      hrLinkedin: input.hrLinkedin?.trim() ?? null,
       logoUrl: input.logoUrl?.trim() ?? null,
+      techStack: input.techStack ?? [],
       createdBy: adminId,
     };
 
@@ -84,11 +99,29 @@ export class CompaniesService {
     if (input.name !== undefined) patch.name = input.name.trim();
     if (input.description !== undefined)
       patch.description = input.description.trim() || null;
-    if (input.industry !== undefined) patch.industry = input.industry.trim();
+    if (input.sector !== undefined) {
+      patch.sector = input.sector.trim();
+      patch.industry = input.sector.trim();
+    } else if (input.industry !== undefined) {
+      patch.industry = input.industry.trim();
+      patch.sector = input.industry.trim();
+    }
     if (input.websiteUrl !== undefined)
       patch.websiteUrl = input.websiteUrl.trim() || null;
+    if (input.linkedinUrl !== undefined)
+      patch.linkedinUrl = input.linkedinUrl.trim() || null;
+    if (input.location !== undefined)
+      patch.location = input.location.trim() || null;
+    if (input.hrName !== undefined)
+      patch.hrName = input.hrName.trim() || null;
+    if (input.hrEmail !== undefined)
+      patch.hrEmail = input.hrEmail.trim() || null;
+    if (input.hrLinkedin !== undefined)
+      patch.hrLinkedin = input.hrLinkedin.trim() || null;
     if (input.logoUrl !== undefined)
       patch.logoUrl = input.logoUrl.trim() || null;
+    if (input.techStack !== undefined)
+      patch.techStack = input.techStack;
 
     const [updated] = await db
       .update(companies)
@@ -103,13 +136,13 @@ export class CompaniesService {
    * Returns a cursor-paginated list of companies.
    *
    * Filter precedence: search > letter (per spec).
-   * When search is provided, letter is ignored.
+   * Supports filtering by sector and tech stack.
    */
   async list(query: CompanyListQueryInput): Promise<{
     data: PublicCompany[];
     pageInfo: { hasMore: boolean; nextCursor: string | null };
   }> {
-    const limit = Math.min(query.limit ?? 20, 100);
+    const limit = Math.min(query.limit ?? 50, 100);
     const decoded = query.cursor ? decodeCursor(query.cursor) : null;
 
     // Build WHERE conditions
@@ -119,8 +152,15 @@ export class CompaniesService {
     const letter = query.letter?.toUpperCase();
 
     if (search) {
-      // Case-insensitive partial match on name (search wins over letter)
-      conditions.push(ilike(companies.name, `%${search}%`));
+      // Case-insensitive match on name, sector, location, or tech stack
+      conditions.push(
+        or(
+          ilike(companies.name, `%${search}%`),
+          ilike(companies.sector, `%${search}%`),
+          ilike(companies.location, `%${search}%`),
+          sql`array_to_string(${companies.techStack}, ' ') ILIKE ${`%${search}%`}`
+        ) as ReturnType<typeof sql>
+      );
     } else if (letter) {
       // Name starts with the given letter (server-side, case-insensitive)
       conditions.push(
@@ -129,6 +169,14 @@ export class CompaniesService {
           ilike(companies.name, `${letter.toLowerCase()}%`)
         ) as ReturnType<typeof sql>
       );
+    }
+
+    if (query.sector?.trim()) {
+      conditions.push(ilike(companies.sector, `%${query.sector.trim()}%`));
+    }
+
+    if (query.tech?.trim()) {
+      conditions.push(sql`${query.tech.trim()} = ANY(${companies.techStack})`);
     }
 
     // Cursor condition: rows before the current cursor position

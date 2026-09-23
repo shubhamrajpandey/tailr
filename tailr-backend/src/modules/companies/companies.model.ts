@@ -15,6 +15,12 @@ export const CreateCompanyBody = t.Object({
       error: "Description must be 5000 characters or fewer.",
     })
   ),
+  sector: t.Optional(
+    t.String({
+      maxLength: 100,
+      error: "Sector must be 100 characters or fewer.",
+    })
+  ),
   industry: t.Optional(
     t.String({
       maxLength: 100,
@@ -27,12 +33,43 @@ export const CreateCompanyBody = t.Object({
       error: "Website URL must be 500 characters or fewer.",
     })
   ),
+  linkedinUrl: t.Optional(
+    t.String({
+      maxLength: 500,
+      error: "LinkedIn URL must be 500 characters or fewer.",
+    })
+  ),
+  location: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "Location must be 255 characters or fewer.",
+    })
+  ),
+  hrName: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "HR name must be 255 characters or fewer.",
+    })
+  ),
+  hrEmail: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "HR email must be 255 characters or fewer.",
+    })
+  ),
+  hrLinkedin: t.Optional(
+    t.String({
+      maxLength: 500,
+      error: "HR LinkedIn URL must be 500 characters or fewer.",
+    })
+  ),
   logoUrl: t.Optional(
     t.String({
       maxLength: 500,
       error: "Logo URL must be 500 characters or fewer.",
     })
   ),
+  techStack: t.Optional(t.Array(t.String({ maxLength: 100 }))),
 });
 
 export type CreateCompanyInput = typeof CreateCompanyBody.static;
@@ -55,6 +92,12 @@ export const UpdateCompanyBody = t.Object({
       error: "Description must be 5000 characters or fewer.",
     })
   ),
+  sector: t.Optional(
+    t.String({
+      maxLength: 100,
+      error: "Sector must be 100 characters or fewer.",
+    })
+  ),
   industry: t.Optional(
     t.String({
       maxLength: 100,
@@ -67,21 +110,53 @@ export const UpdateCompanyBody = t.Object({
       error: "Website URL must be 500 characters or fewer.",
     })
   ),
+  linkedinUrl: t.Optional(
+    t.String({
+      maxLength: 500,
+      error: "LinkedIn URL must be 500 characters or fewer.",
+    })
+  ),
+  location: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "Location must be 255 characters or fewer.",
+    })
+  ),
+  hrName: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "HR name must be 255 characters or fewer.",
+    })
+  ),
+  hrEmail: t.Optional(
+    t.String({
+      maxLength: 255,
+      error: "HR email must be 255 characters or fewer.",
+    })
+  ),
+  hrLinkedin: t.Optional(
+    t.String({
+      maxLength: 500,
+      error: "HR LinkedIn URL must be 500 characters or fewer.",
+    })
+  ),
   logoUrl: t.Optional(
     t.String({
       maxLength: 500,
       error: "Logo URL must be 500 characters or fewer.",
     })
   ),
+  techStack: t.Optional(t.Array(t.String({ maxLength: 100 }))),
 });
 
 export type UpdateCompanyInput = typeof UpdateCompanyBody.static;
 
 /**
  * Query parameters for listing companies.
- * - search: case-insensitive partial match on name
+ * - search: case-insensitive partial match on name or techStack
  * - letter: companies starting with that letter (A–Z)
- * - search wins when both are sent
+ * - sector: filter by sector
+ * - tech: filter by specific tech stack tag
  * - cursor: base64url-encoded pagination cursor
  * - limit: page size (1–100, default 20)
  */
@@ -95,6 +170,8 @@ export const CompanyListQuery = t.Object({
       error: "letter must be a single A–Z character.",
     })
   ),
+  sector: t.Optional(t.String()),
+  tech: t.Optional(t.String()),
   cursor: t.Optional(t.String()),
   limit: t.Optional(
     t.Numeric({

@@ -29,6 +29,7 @@ export const companyKeys = {
 async function fetchCompanies(
   search: string,
   letter: string,
+  sector: string | undefined,
   pageParam: string | null
 ): Promise<CompanyListResponse> {
   const params = new URLSearchParams();
@@ -40,10 +41,14 @@ async function fetchCompanies(
     params.set("letter", letter);
   }
 
+  if (sector?.trim() && sector !== "All") {
+    params.set("sector", sector.trim());
+  }
+
   if (pageParam) {
     params.set("cursor", pageParam);
   }
-  params.set("limit", "20");
+  params.set("limit", "50");
 
   const { data } = await authApiClient.get<CompanyListResponse>(
     `/companies?${params.toString()}`
@@ -65,6 +70,8 @@ interface UseCompaniesQueryOptions {
   search: string;
   /** A single A–Z character for alphabetical filtering */
   letter: string;
+  /** Optional sector filter */
+  sector?: string;
 }
 
 /**
@@ -74,7 +81,7 @@ interface UseCompaniesQueryOptions {
  * - `search` and `letter` are mutually exclusive; search wins.
  * - Returns TanStack Query `useInfiniteQuery` result.
  */
-export function useCompaniesQuery({ search, letter }: UseCompaniesQueryOptions) {
+export function useCompaniesQuery({ search, letter, sector }: UseCompaniesQueryOptions) {
   const debouncedSearch = useDebounce(search, 300);
 
   // While search has chars, letter is ignored (matches API spec)
@@ -84,19 +91,20 @@ export function useCompaniesQuery({ search, letter }: UseCompaniesQueryOptions) 
     CompanyListResponse,
     Error,
     InfiniteData<CompanyListResponse>,
-    ReturnType<typeof companyKeys.list>,
+    readonly [...readonly ["companies", "list"], { search?: string; letter?: string; sector?: string }],
     string | null
   >({
-    queryKey: companyKeys.list({
+    queryKey: [...companyKeys.lists(), {
       search: debouncedSearch,
       letter: effectiveLetter,
-    }),
+      sector: sector ?? "",
+    }] as const,
     queryFn: ({ pageParam }) =>
-      fetchCompanies(debouncedSearch, effectiveLetter, pageParam ?? null),
+      fetchCompanies(debouncedSearch, effectiveLetter, sector, pageParam ?? null),
     initialPageParam: null,
     getNextPageParam: (lastPage) =>
       lastPage.pageInfo.hasMore ? lastPage.pageInfo.nextCursor : undefined,
-    staleTime: 60_000, // 1 minute — company data changes rarely
+    staleTime: 60_000,
   });
 }
 

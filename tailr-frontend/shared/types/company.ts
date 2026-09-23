@@ -1,15 +1,20 @@
 /**
  * API-aligned company shape returned by GET /companies and GET /companies/:id.
- * Explicitly excludes hiring-status, HR contacts, and application counts —
- * this is a static directory, not a job board.
  */
 export interface Company {
   id: string;
   name: string;
   description: string | null;
+  sector: string;
   industry: string;
   websiteUrl: string | null;
+  linkedinUrl: string | null;
+  location: string;
+  hrName: string | null;
+  hrEmail: string | null;
+  hrLinkedin: string | null;
   logoUrl: string | null;
+  techStack: string[];
   createdBy: string;
   createdAt: string;
   updatedAt: string;
