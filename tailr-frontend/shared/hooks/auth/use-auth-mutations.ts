@@ -230,7 +230,7 @@ export function useRefreshQuery() {
         .then((res) => res.data),
 
     staleTime: Infinity,
-    retry: 1,
+    retry: false,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
 

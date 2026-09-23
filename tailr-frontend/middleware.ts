@@ -46,11 +46,8 @@ export function middleware(request: NextRequest) {
     request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
-  // An access token is valid if it's well-formed and not expired.
-  // If only a refresh token is present, we allow entering protected routes so client-side bootstrapping can refresh.
   const hasValidAccessToken = isTokenValid(accessToken);
   const hasRefreshToken = Boolean(refreshToken);
-  const isAuthenticated = hasValidAccessToken || hasRefreshToken;
 
   const isProtectedRoute = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -60,8 +57,24 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // 1. Unauthenticated user trying to access protected route -> Redirect to /login & clear stale cookies
-  if (isProtectedRoute && !isAuthenticated) {
+  // 1. Root route "/" handling
+  if (pathname === "/") {
+    if (hasValidAccessToken) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    const loginUrl = new URL("/login", request.url);
+    const response = NextResponse.redirect(loginUrl);
+    if (!hasRefreshToken) {
+      response.cookies.delete("tailr_access_token");
+      response.cookies.delete("accessToken");
+      response.cookies.delete("refreshToken");
+    }
+    return response;
+  }
+
+  // 2. Unauthenticated user trying to access protected route -> Redirect to /login & clear stale cookies
+  // If a refresh token is present, allow access so client-side AuthProvider can attempt silent refresh.
+  if (isProtectedRoute && !hasValidAccessToken && !hasRefreshToken) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     const response = NextResponse.redirect(loginUrl);
@@ -71,9 +84,20 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // 2. Authenticated user trying to access /login or /signup -> Redirect to /dashboard
-  if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // 3. Auth routes (/login, /signup)
+  if (isAuthRoute) {
+    // Only redirect to /dashboard if the user actually has a valid, active access token
+    if (hasValidAccessToken) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    // If visiting /login or /signup without a valid access token, allow access and
+    // clear any stale/broken auth cookies to break any redirect or refresh loops
+    const response = NextResponse.next();
+    response.cookies.delete("tailr_access_token");
+    response.cookies.delete("accessToken");
+    response.cookies.delete("refreshToken");
+    return response;
   }
 
   return NextResponse.next();
