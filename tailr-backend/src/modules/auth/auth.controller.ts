@@ -189,6 +189,11 @@ export class AuthController {
       success: true,
       message: "Access token rotated successfully.",
       data: {
+        user: {
+          id: user.id,
+          fullName: user.fullName,
+          email: user.email,
+        },
         accessToken: newAccessToken,
       },
     };

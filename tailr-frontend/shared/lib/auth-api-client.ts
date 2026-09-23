@@ -88,9 +88,11 @@ authApiClient.interceptors.response.use(
     const isRefreshEndpoint = originalRequest.url?.includes("/auth/refresh");
     const alreadyRetried = originalRequest._retried === true;
 
-    // If this isn't a 401, or it already retried, or it IS the refresh call
-    // itself failing — give up and reject.
     if (!is401 || alreadyRetried || isRefreshEndpoint) {
+      if (is401 && isRefreshEndpoint) {
+        removeAuthCookie();
+        store.dispatch(clearCredentials());
+      }
       return Promise.reject(error);
     }
 

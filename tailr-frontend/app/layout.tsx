@@ -45,7 +45,7 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${urbanist.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body suppressHydrationWarning className="min-h-full flex flex-col font-sans">
         <ReduxProvider>
           <QueryProvider>
             <AuthProvider>
