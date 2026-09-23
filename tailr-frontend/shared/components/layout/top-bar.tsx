@@ -21,6 +21,7 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
+import { LanguageSelector } from "@/shared/components/ui/language-selector";
 import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -253,6 +254,9 @@ export function TopBar({
 
       {/* Right: Actions, Theme, Date Selector & User Profile */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        {/* Language Selector Dropdown */}
+        <LanguageSelector variant="outline" />
+
         {/* Theme Toggle Button */}
         <ThemeToggle />
 

@@ -555,12 +555,12 @@ export function Sidebar() {
         {!isCollapsed ? (
           <>
             <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
-              <div className="h-8 w-8 rounded-lg bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1 group-hover:border-indigo-500/40 group-hover:bg-neutral-900 dark:group-hover:bg-white/[0.07] transition-all shadow-xs shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1 group-hover:border-indigo-500/40 group-hover:bg-neutral-900 dark:group-hover:bg-white/[0.07] transition-all shadow-xs shrink-0">
                 <Image
                   src="/tailr_bg_remove_logo.png"
                   alt="Tailr Logo"
-                  width={36}
-                  height={36}
+                  width={40}
+                  height={40}
                   className="object-contain drop-shadow"
                   priority
                 />

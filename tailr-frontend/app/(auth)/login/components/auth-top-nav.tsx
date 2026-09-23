@@ -3,26 +3,10 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Globe, ChevronDown, Check } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/shared/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
-
-const LANGUAGES = [
-  { code: "ENG", label: "English (US)" },
-  { code: "ESP", label: "Español" },
-  { code: "FRA", label: "Français" },
-  { code: "DEU", label: "Deutsch" },
-  { code: "JPN", label: "日本語" },
-];
+import { LanguageSelector } from "@/shared/components/ui/language-selector";
 
 export function AuthTopNav() {
-  const [selectedLang, setSelectedLang] = React.useState("ENG");
-
   return (
     <header className="flex items-center justify-between w-full py-4">
       {/* Brand Icon Mark */}
@@ -46,33 +30,7 @@ export function AuthTopNav() {
       {/* Header Actions: Theme Toggle + Language Selector */}
       <div className="flex items-center gap-2">
         <ThemeToggle />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
-            >
-              <Globe className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-              <span>{selectedLang}</span>
-              <ChevronDown className="h-3 w-3 text-neutral-400 transition-transform group-data-[state=open]:rotate-180" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            {LANGUAGES.map((lang) => (
-              <DropdownMenuItem
-                key={lang.code}
-                onClick={() => setSelectedLang(lang.code)}
-                className="flex items-center justify-between text-xs cursor-pointer"
-              >
-                <span>{lang.label}</span>
-                {selectedLang === lang.code && (
-                  <Check className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                )}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <LanguageSelector variant="ghost" />
       </div>
     </header>
   );
