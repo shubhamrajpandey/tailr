@@ -22,6 +22,12 @@ interface AuthState {
   isAuthenticated: boolean;
   /** Tracks which step the signup flow is on for UI coordination. */
   authStep: AuthStep;
+  /**
+   * True while AuthProvider's initial /auth/refresh call is in-flight.
+   * ProtectedRoute waits for this to be false before deciding to redirect.
+   * Starts true on every hard refresh (Redux resets to initialState).
+   */
+  isBootstrapping: boolean;
 }
 
 const initialState: AuthState = {
@@ -29,6 +35,7 @@ const initialState: AuthState = {
   accessToken: null,
   isAuthenticated: false,
   authStep: "signup",
+  isBootstrapping: true,
 };
 
 // ─── Slice ──────────────────────────────────────────────────────────────────────
@@ -49,6 +56,7 @@ export const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
       state.authStep = "done";
+      state.isBootstrapping = false;
     },
 
     /**
@@ -60,6 +68,7 @@ export const authSlice = createSlice({
       state.accessToken = null;
       state.isAuthenticated = false;
       state.authStep = "signup";
+      state.isBootstrapping = false;
     },
 
     /**

@@ -40,7 +40,7 @@ function isTokenValid(token?: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Retrieve auth token from cookies (never from localStorage)
+  // Retrieve auth token from cookies
   const accessToken =
     request.cookies.get("tailr_access_token")?.value ||
     request.cookies.get("accessToken")?.value;
@@ -57,47 +57,17 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // 1. Root route "/" handling
-  if (pathname === "/") {
-    if (hasValidAccessToken) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-    const loginUrl = new URL("/login", request.url);
-    const response = NextResponse.redirect(loginUrl);
-    if (!hasRefreshToken) {
-      response.cookies.delete("tailr_access_token");
-      response.cookies.delete("accessToken");
-      response.cookies.delete("refreshToken");
-    }
-    return response;
-  }
-
-  // 2. Unauthenticated user trying to access protected route -> Redirect to /login & clear stale cookies
-  // If a refresh token is present, allow access so client-side AuthProvider can attempt silent refresh.
+  // 1. Unauthenticated user on a protected route with NO tokens at all → hard redirect to /login
+  //    If a refresh token exists, let the client-side AuthProvider handle the refresh flow.
   if (isProtectedRoute && !hasValidAccessToken && !hasRefreshToken) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
-    const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete("tailr_access_token");
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    return response;
+    return NextResponse.redirect(loginUrl);
   }
 
-  // 3. Auth routes (/login, /signup)
-  if (isAuthRoute) {
-    // Only redirect to /dashboard if the user actually has a valid, active access token
-    if (hasValidAccessToken) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    // If visiting /login or /signup without a valid access token, allow access and
-    // clear any stale/broken auth cookies to break any redirect or refresh loops
-    const response = NextResponse.next();
-    response.cookies.delete("tailr_access_token");
-    response.cookies.delete("accessToken");
-    response.cookies.delete("refreshToken");
-    return response;
+  // 2. Already authenticated (valid access token) user visiting /login or /signup → /dashboard
+  if (isAuthRoute && hasValidAccessToken) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return NextResponse.next();

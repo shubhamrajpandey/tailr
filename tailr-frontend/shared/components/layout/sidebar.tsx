@@ -559,8 +559,8 @@ export function Sidebar() {
                 <Image
                   src="/tailr_bg_remove_logo.png"
                   alt="Tailr Logo"
-                  width={26}
-                  height={26}
+                  width={36}
+                  height={36}
                   className="object-contain drop-shadow"
                   priority
                 />
