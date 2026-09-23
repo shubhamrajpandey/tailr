@@ -63,7 +63,7 @@ export default function NewApplicationPage() {
         </header>
 
         {/* Content Area with Form */}
-        <main className="flex-1 px-8 pb-12 max-w-4xl">
+        <main className="flex-1 px-8 pb-12 w-full">
           <ApplicationForm
             mode="create"
             isSubmitting={isSubmitting}

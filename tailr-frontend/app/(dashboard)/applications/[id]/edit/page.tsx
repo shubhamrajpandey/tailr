@@ -100,7 +100,7 @@ export default function EditApplicationPage() {
         </header>
 
         {/* Content Area with Pre-Filled Form */}
-        <main className="flex-1 px-8 pb-12 max-w-4xl">
+        <main className="flex-1 px-8 pb-12 w-full">
           <ApplicationForm
             mode="edit"
             initialValues={{
