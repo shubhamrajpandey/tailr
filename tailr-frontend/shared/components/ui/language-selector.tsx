@@ -70,8 +70,8 @@ export function LanguageSelector({
 
   const triggerStyles =
     variant === "outline"
-      ? "inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs cursor-pointer"
-      : "inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer";
+      ? "h-8 inline-flex items-center gap-1.5 px-2.5 sm:px-3 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs cursor-pointer"
+      : "h-8 inline-flex items-center gap-2 px-3 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer";
 
   return (
     <DropdownMenu>

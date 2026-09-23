@@ -263,7 +263,7 @@ export function TopBar({
         {/* Date Range Selector Dropdown (Dashboard & Analytics) */}
         {shouldShowDateRange && (
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs">
+            <DropdownMenuTrigger className="h-8 inline-flex items-center gap-1.5 px-3 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs cursor-pointer">
               <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
               <span>{selectedRange}</span>
               <ChevronDown className="h-3 w-3 text-neutral-400 ml-0.5" />
@@ -291,7 +291,7 @@ export function TopBar({
         {/* Notifications Button */}
         <button
           type="button"
-          className="relative p-2 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
+          className="relative h-8 w-8 inline-flex items-center justify-center rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
           title="Notifications"
         >
           <Bell className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
@@ -301,7 +301,7 @@ export function TopBar({
         {/* Quick Options More */}
         <button
           type="button"
-          className="p-2 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
+          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
           title="More options"
         >
           <MoreHorizontal className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
@@ -309,11 +309,11 @@ export function TopBar({
 
         {/* User Profile & Logout Dropdown */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer">
+          <DropdownMenuTrigger className="h-8 inline-flex items-center gap-2 pl-1.5 pr-2.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer">
             <Avatar
               fallback={initials}
               size="sm"
-              className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold h-6 w-6 text-[11px]"
+              className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold h-5.5 w-5.5 text-[10px]"
             />
             <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 max-w-[100px] truncate hidden sm:inline">
               {firstName}
