@@ -75,7 +75,7 @@ export default function SettingsLayout({
 
         {/* Content Area - Full width, smoothly scrollable */}
         <main className="flex-1 h-full overflow-y-auto px-6 sm:px-8 py-7 pb-28">
-          <div className="max-w-4xl">{children}</div>
+          <div className="w-full">{children}</div>
         </main>
       </div>
     </div>
