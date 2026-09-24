@@ -28,7 +28,6 @@ import {
 } from "@/shared/components/ui/dialog";
 import { SettingsSection } from "./settings-section";
 import { SaveChangesBar } from "./save-changes-bar";
-import { ApiPendingBadge, ApiPendingNotice } from "./api-pending-badge";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { useAppSelector } from "@/shared/store/hooks";
 
@@ -195,13 +194,6 @@ export function AccountPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Notice about backend API status */}
-      <ApiPendingNotice
-        title="Profile Synchronization"
-        description="Profile changes are reflected immediately in your active session and client-generated documents. Full server-side synchronization requires PATCH /auth/profile."
-        endpoint="PATCH /auth/profile"
-      />
-
       {successFeedback && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -381,11 +373,6 @@ export function AccountPanel() {
                     {emailError}
                   </p>
                 )}
-                <ApiPendingBadge
-                  endpoint="POST /auth/resend-otp"
-                  label="Uses Backend OTP"
-                  className="mt-2"
-                />
               </div>
 
               <DialogFooter>

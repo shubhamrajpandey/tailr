@@ -12,7 +12,6 @@ import {
 import { Switch } from "@/shared/components/ui/switch";
 import { SettingsSection } from "./settings-section";
 import { SaveChangesBar } from "./save-changes-bar";
-import { ApiPendingNotice } from "./api-pending-badge";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { NotificationSettings } from "@/shared/types/settings";
 
@@ -46,11 +45,6 @@ export function NotificationsPanel() {
 
   return (
     <div className="space-y-6">
-      <ApiPendingNotice
-        title="Email Notifications Dispatch"
-        description="Notifications are sent to your verified email via the backend Nodemailer / SMTP module. Real-time background event dispatch requires background worker queue integration."
-        endpoint="POST /notifications/preferences"
-      />
 
       {successFeedback && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">

@@ -135,9 +135,9 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
       {/* 1. Mobile & Tablet Navigation Bar (< md): Horizontal scrollable pill track */}
       <nav
         aria-label="Settings categories mobile"
-        className="md:hidden w-full pb-3 border-b border-neutral-200 dark:border-white/[0.08]"
+        className="md:hidden shrink-0 w-full px-4 sm:px-6 py-2.5 border-b border-neutral-200 dark:border-white/[0.08] bg-white/80 dark:bg-[#0c0d10]/80 backdrop-blur-xs z-10"
       >
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none px-0.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none px-0.5">
           {allItems.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -166,11 +166,11 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
         </div>
       </nav>
 
-      {/* 2. Desktop Fixed/Sticky Navigation Sidebar (>= md) */}
+      {/* 2. Desktop Fixed Navigation Sidebar (>= md) */}
       <aside
         aria-label="Settings navigation"
         className={cn(
-          "hidden md:block w-64 shrink-0 sticky top-20 self-start max-h-[calc(100vh-6rem)] overflow-y-auto pr-2 pb-6",
+          "hidden md:block w-64 shrink-0 h-full overflow-y-auto px-4 py-6 border-r border-neutral-200 dark:border-white/[0.06] select-none",
           className
         )}
       >

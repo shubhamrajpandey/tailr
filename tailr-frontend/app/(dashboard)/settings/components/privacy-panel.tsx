@@ -13,7 +13,6 @@ import { SettingsSection } from "./settings-section";
 import { Button } from "@/shared/components/ui/button";
 import { Switch } from "@/shared/components/ui/switch";
 import { SaveChangesBar } from "./save-changes-bar";
-import { ApiPendingNotice } from "./api-pending-badge";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -98,12 +97,6 @@ export function PrivacyPanel() {
 
   return (
     <div className="space-y-6">
-      <ApiPendingNotice
-        title="GDPR & Data Compliance"
-        description="All user records are isolated in private tenant tables. Client exports package all local storage and CRM applications directly into portable JSON."
-        endpoint="GET /auth/export-data"
-      />
-
       {successFeedback && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />

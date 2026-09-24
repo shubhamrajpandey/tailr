@@ -20,7 +20,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/shared/components/ui/dialog";
-import { ApiPendingBadge, ApiPendingNotice } from "./api-pending-badge";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 
 const CONFIRMATION_PHRASE = "DELETE MY ACCOUNT";
@@ -76,12 +75,6 @@ export function DangerZonePanel() {
 
   return (
     <div className="space-y-6">
-      <ApiPendingNotice
-        title="Account Deletion & Data Cascade"
-        description="Account deletion permanently deletes user records from PostgreSQL, revoking all active sessions in refresh_tokens and cascading through company CRM data."
-        endpoint="DELETE /auth/account"
-      />
-
       {deactivateFeedback && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs font-medium animate-in fade-in duration-200">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
@@ -241,11 +234,6 @@ export function DangerZonePanel() {
                 </p>
               )}
             </div>
-
-            <ApiPendingBadge
-              endpoint="DELETE /auth/account"
-              label="Requires Backend Deletion Endpoint"
-            />
           </div>
 
           <DialogFooter>

@@ -29,7 +29,6 @@ import {
 } from "@/shared/components/ui/dialog";
 import { SettingsSection } from "./settings-section";
 import { SaveChangesBar } from "./save-changes-bar";
-import { ApiPendingBadge, ApiPendingNotice } from "./api-pending-badge";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 
 const passwordSchema = z
@@ -157,13 +156,6 @@ export function SecurityPanel() {
 
   return (
     <div className="space-y-6">
-      {/* Backend API Notice */}
-      <ApiPendingNotice
-        title="Security & Session Management"
-        description="The backend database stores Argon2id password hashes and refresh_tokens for active sessions. Direct password rotation and live session sync require dedicated endpoints."
-        endpoint="POST /auth/change-password"
-      />
-
       {/* Section 1: Change Password */}
       <SettingsSection
         title="Change Password"
@@ -310,11 +302,7 @@ export function SecurityPanel() {
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-2">
-            <ApiPendingBadge
-              endpoint="POST /auth/change-password"
-              label="Backend Endpoint Needed"
-            />
+          <div className="flex items-center justify-end pt-2">
             <Button
               type="submit"
               variant="primary"
@@ -430,16 +418,6 @@ export function SecurityPanel() {
             );
           })}
         </div>
-
-        <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-white/5 flex items-center justify-between">
-          <span className="text-[11px] text-neutral-500">
-            Backed by PostgreSQL <code className="font-mono text-[10px]">refresh_tokens</code> table.
-          </span>
-          <ApiPendingBadge
-            endpoint="GET /auth/sessions"
-            label="Live Session Sync Pending"
-          />
-        </div>
       </SettingsSection>
 
       {/* Section 3: Two-Factor Authentication (2FA) */}
@@ -485,16 +463,6 @@ export function SecurityPanel() {
               }}
             />
           </div>
-        </div>
-
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-[11px] text-neutral-500">
-            TOTP secret encryption requires backend schema extension.
-          </span>
-          <ApiPendingBadge
-            endpoint="POST /auth/2fa/setup"
-            label="2FA API Pending"
-          />
         </div>
       </SettingsSection>
 
@@ -574,11 +542,6 @@ export function SecurityPanel() {
                 className="font-mono text-center tracking-widest text-base font-bold"
               />
             </div>
-
-            <ApiPendingBadge
-              endpoint="POST /auth/2fa/verify"
-              label="Mocked Preview (Backend Setup Required)"
-            />
           </div>
 
           <DialogFooter>

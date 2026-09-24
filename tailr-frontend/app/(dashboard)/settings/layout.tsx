@@ -29,17 +29,17 @@ export default function SettingsLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
       {/* Primary Dashboard Sidebar Navigation */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col h-screen min-w-0 overflow-hidden">
         {/* Top Navbar */}
         <TopBar />
 
         {/* Settings Header Bar */}
-        <header className="px-6 sm:px-8 pt-7 pb-5 border-b border-neutral-200 dark:border-white/[0.06] bg-white/50 dark:bg-[#0c0d10]/50 backdrop-blur-xs">
+        <header className="shrink-0 px-6 sm:px-8 py-5 border-b border-neutral-200 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
@@ -70,14 +70,14 @@ export default function SettingsLayout({
           </div>
         </header>
 
-        {/* Responsive Content Area with Sticky Settings Sidebar */}
-        <main className="px-6 sm:px-8 py-7 flex-1 w-full">
-          <div className="flex flex-col md:flex-row md:items-start gap-8 w-full">
-            {/* Sticky / Responsive Settings Nav */}
-            <SettingsSidebar />
+        {/* Responsive Content Area: Left Fixed Sidebar + Right Independent Scroll */}
+        <main className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden w-full">
+          {/* Left Settings Sidebar - Fixed in View */}
+          <SettingsSidebar />
 
-            {/* Right-Side Independently Scrollable Panel */}
-            <div className="flex-1 min-w-0 pb-16">{children}</div>
+          {/* Right Content Panel - Independently Scrollable */}
+          <div className="flex-1 h-full overflow-y-auto px-6 sm:px-8 py-6 pb-28">
+            <div className="max-w-4xl">{children}</div>
           </div>
         </main>
       </div>
