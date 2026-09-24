@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  CartesianGrid,
+  ReferenceLine,
 } from "recharts";
 import { TrendingUp } from "lucide-react";
 import { ResponseTrendPoint } from "@/shared/types/analytics";
@@ -35,17 +35,19 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
         </p>
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-4">
-            <span className="text-neutral-500 dark:text-neutral-400">Response Rate:</span>
+            <span className="text-neutral-500 dark:text-neutral-400">Applications:</span>
             <span className="font-mono text-indigo-600 dark:text-indigo-400 font-bold">
-              {item.responseRate}%
+              {item.appliedCount}
             </span>
           </div>
-          <div className="flex items-center justify-between gap-4">
-            <span className="text-neutral-500 dark:text-neutral-400">Responses:</span>
-            <span className="font-mono text-indigo-600 dark:text-indigo-400 font-medium">
-              {item.responseCount} of {item.appliedCount} applied
-            </span>
-          </div>
+          {item.responseCount > 0 && (
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-neutral-500 dark:text-neutral-400">Responses:</span>
+              <span className="font-mono text-indigo-500 dark:text-indigo-300 font-medium">
+                {item.responseCount}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -56,21 +58,26 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
 
-  const averageRate = React.useMemo(() => {
+  const maxVal = React.useMemo(() => {
+    if (data.length === 0) return 5;
+    return Math.max(...data.map((d) => d.appliedCount));
+  }, [data]);
+
+  const avgVal = React.useMemo(() => {
     if (data.length === 0) return 0;
-    const total = data.reduce((acc, curr) => acc + curr.responseRate, 0);
-    return Math.round(total / data.length);
+    const total = data.reduce((acc, curr) => acc + curr.appliedCount, 0);
+    return Math.round((total / data.length) * 10) / 10;
   }, [data]);
 
   return (
     <AnalyticsChartCard
       title="Response Rate Over Time"
-      description="Weekly bucketed response percentage (interviews, offers, and formal rejections)"
+      description="Weekly bucketed outreach activity (interviews, offers, and formal rejections)"
       icon={TrendingUp}
       hasData={hasData && data.length > 0}
       action={
         <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-50 dark:bg-indigo-500/15 border border-indigo-200/60 dark:border-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-xs font-semibold">
-          <span>Avg {averageRate}%</span>
+          <span>Avg {avgVal} / day</span>
         </div>
       }
     >
@@ -78,7 +85,7 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 15, right: 10, left: -20, bottom: 0 }}
+            margin={{ top: 20, right: 10, left: -25, bottom: 5 }}
             onMouseMove={(state) => {
               if (state && state.activeTooltipIndex !== undefined) {
                 const idx = Number(state.activeTooltipIndex);
@@ -87,44 +94,78 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
             }}
             onMouseLeave={() => setHoveredIndex(null)}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={false}
-              className="stroke-neutral-200/70 dark:stroke-white/5"
+            <defs>
+              {/* Vibrant glowing gradient for active/peak bar */}
+              <linearGradient id="activeBarGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#818cf8" />
+                <stop offset="35%" stopColor="#6366f1" />
+                <stop offset="100%" stopColor="#312e81" stopOpacity={0.85} />
+              </linearGradient>
+
+              {/* Sleek muted tone for inactive bars */}
+              <linearGradient id="inactiveBarGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#2c2e47" />
+                <stop offset="100%" stopColor="#1e2034" />
+              </linearGradient>
+
+              <linearGradient id="inactiveBarGradientLight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#c7d2fe" />
+                <stop offset="100%" stopColor="#a5b4fc" />
+              </linearGradient>
+            </defs>
+
+            {/* Subtle dashed horizontal reference line at y = 5 */}
+            <ReferenceLine
+              y={5}
+              stroke="currentColor"
+              strokeDasharray="4 4"
+              className="stroke-neutral-300 dark:stroke-white/10"
             />
+
             <XAxis
               dataKey="period"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: "currentColor", fontSize: 11, fontWeight: 500 }}
-              className="text-neutral-500 dark:text-neutral-400"
-              dy={6}
+              tick={{ fill: "currentColor", fontSize: 12, fontWeight: 500 }}
+              className="text-neutral-600 dark:text-neutral-300 font-sans"
+              dy={10}
             />
+
             <YAxis
               axisLine={false}
               tickLine={false}
               tick={{ fill: "currentColor", fontSize: 11, fontWeight: 500 }}
-              className="text-neutral-400 dark:text-neutral-500"
-              unit="%"
-              domain={[0, 100]}
+              className="text-neutral-400 dark:text-neutral-500 font-sans"
+              domain={[0, 8]}
+              ticks={[0, 2, 4, 6, 8]}
               allowDecimals={false}
             />
+
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ fill: "rgba(100, 116, 139, 0.08)", radius: 6 }}
             />
+
             <Bar
-              dataKey="responseRate"
-              radius={[6, 6, 2, 2]}
+              dataKey="appliedCount"
+              radius={[6, 6, 0, 0]}
               maxBarSize={44}
             >
-              {data.map((_, index) => {
-                const isHovered = hoveredIndex === index;
+              {data.map((item, index) => {
+                const isHighlighted =
+                  hoveredIndex !== null
+                    ? hoveredIndex === index
+                    : item.appliedCount === maxVal;
+
                 return (
                   <Cell
                     key={`cell-${index}`}
-                    fill={isHovered ? "#4f46e5" : "#6366f1"}
-                    className="transition-colors duration-150 cursor-pointer"
+                    fill={
+                      isHighlighted
+                        ? "url(#activeBarGradient)"
+                        : "url(#inactiveBarGradient)"
+                    }
+                    className="transition-all duration-200 cursor-pointer"
                   />
                 );
               })}
