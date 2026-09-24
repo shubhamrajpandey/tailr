@@ -42,7 +42,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-neutral-500 dark:text-neutral-400">Responses:</span>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+            <span className="font-mono text-indigo-600 dark:text-indigo-400 font-medium">
               {item.responseCount} of {item.appliedCount} applied
             </span>
           </div>

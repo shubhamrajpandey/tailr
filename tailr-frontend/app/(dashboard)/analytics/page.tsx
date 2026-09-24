@@ -90,7 +90,7 @@ function AnalyticsDashboard() {
                 delta={responseAnalytics.responseRateDelta}
                 direction="up"
                 icon={Percent}
-                sparklineColor="emerald"
+                sparklineColor="indigo"
                 sparklineData={
                   responseAnalytics.sparklineResponseRates.length > 0
                     ? responseAnalytics.sparklineResponseRates
@@ -104,7 +104,7 @@ function AnalyticsDashboard() {
                 delta={`${interviewCount} interviews secured`}
                 direction="up"
                 icon={Users}
-                sparklineColor="purple"
+                sparklineColor="indigo"
                 sparklineData={[1, 2, 2, 3, 4, interviewCount]}
               />
 
@@ -114,7 +114,7 @@ function AnalyticsDashboard() {
                 delta={responseAnalytics.avgDaysDelta}
                 direction="up"
                 icon={Clock}
-                sparklineColor="amber"
+                sparklineColor="indigo"
                 sparklineData={[7, 6.5, 6.0, 5.5, 5.0, responseAnalytics.avgDaysToResponse]}
               />
             </div>

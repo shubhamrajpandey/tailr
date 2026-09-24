@@ -3,7 +3,6 @@
 import * as React from "react";
 import { PieChart } from "lucide-react";
 import { OutcomeBreakdownItem } from "@/shared/types/analytics";
-import { Badge } from "@/shared/components/ui/badge";
 import { AnalyticsChartCard } from "./analytics-chart-card";
 
 interface OutcomeBreakdownCardProps {
@@ -36,7 +35,7 @@ export function OutcomeBreakdownCard({
             <div
               key={item.status}
               style={{ width: `${item.percentage}%` }}
-              className={`${item.colorClass} transition-all duration-300 relative group`}
+              className={`${item.colorClass.split(" ")[0]} transition-all duration-300 relative group`}
               title={`${item.label}: ${item.count} (${item.percentage}%)`}
             />
           ))}
@@ -50,9 +49,10 @@ export function OutcomeBreakdownCard({
               className="flex items-center justify-between p-2.5 rounded-lg border border-neutral-100 dark:border-white/5 bg-neutral-50/50 dark:bg-white/[0.02] hover:bg-neutral-100/60 dark:hover:bg-white/[0.04] transition-colors"
             >
               <div className="flex items-center gap-2.5">
-                <Badge variant={item.badgeVariant} dot={true}>
-                  {item.label}
-                </Badge>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
+                  <span className={`h-2 w-2 rounded-full inline-block shrink-0 ${item.colorClass.split(" ")[0]}`} />
+                  <span>{item.label}</span>
+                </span>
               </div>
 
               <div className="flex items-center gap-3 text-xs">
