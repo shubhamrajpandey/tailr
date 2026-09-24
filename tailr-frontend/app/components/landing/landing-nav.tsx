@@ -2,10 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Menu, X, ChevronRight } from "lucide-react";
+import { Sparkles, ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
-import { LanguageSelector } from "@/shared/components/ui/language-selector";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
 
@@ -24,10 +23,10 @@ export function LandingNav() {
 
   const navLinks = [
     { label: "Features", href: "#features" },
-    { label: "How It Works", href: "#workflow" },
-    { label: "Preview", href: "#preview" },
+    { label: "Benefits", href: "#workflow" },
+    { label: "Trusted", href: "#preview" },
     { label: "Pricing", href: "#pricing" },
-    { label: "FAQ", href: "#faq" },
+    { label: "Questions", href: "#faq" },
   ];
 
   return (
@@ -42,19 +41,16 @@ export function LandingNav() {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-xs shadow-indigo-500/30 group-hover:scale-105 transition-transform">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs shadow-indigo-500/30 group-hover:scale-105 transition-transform">
             <Sparkles className="h-4.5 w-4.5" />
           </div>
           <span className="font-extrabold text-lg tracking-tight text-neutral-950 dark:text-white font-sans">
             Tailr
           </span>
-          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
-            AI Operating System
-          </span>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-600 dark:text-neutral-400">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -67,8 +63,7 @@ export function LandingNav() {
         </nav>
 
         {/* Right Action Buttons */}
-        <div className="hidden sm:flex items-center gap-2.5">
-          <LanguageSelector variant="ghost" />
+        <div className="hidden sm:flex items-center gap-4">
           <ThemeToggle />
 
           {authUser ? (
@@ -76,28 +71,27 @@ export function LandingNav() {
               <Button
                 variant="primary"
                 size="sm"
-                className="gap-2 shadow-xs shadow-indigo-500/30"
+                className="gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2 text-xs font-semibold shadow-xs"
               >
-                <span>Go to Dashboard</span>
+                <span>Dashboard</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
           ) : (
             <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-xs font-semibold">
-                  Sign In
-                </Button>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors"
+              >
+                Log In
               </Link>
               <Link href="/register">
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="gap-1.5 text-xs shadow-xs shadow-indigo-500/30"
+                <button
+                  type="button"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2 text-sm font-semibold shadow-xs transition-colors cursor-pointer"
                 >
-                  <span>Get Started</span>
-                  <ChevronRight className="h-3.5 w-3.5" />
-                </Button>
+                  Sign Up (Free)
+                </button>
               </Link>
             </>
           )}
