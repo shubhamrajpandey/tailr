@@ -70,15 +70,12 @@ export default function SettingsLayout({
           </div>
         </header>
 
-        {/* Responsive Content Area: Left Fixed Sidebar + Right Independent Scroll */}
-        <main className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden w-full">
-          {/* Left Settings Sidebar - Fixed in View */}
-          <SettingsSidebar />
+        {/* Horizontal Settings Navigation Tabs */}
+        <SettingsSidebar />
 
-          {/* Right Content Panel - Independently Scrollable */}
-          <div className="flex-1 h-full overflow-y-auto px-6 sm:px-8 py-6 pb-28">
-            <div className="max-w-4xl">{children}</div>
-          </div>
+        {/* Content Area - Full width, smoothly scrollable */}
+        <main className="flex-1 h-full overflow-y-auto px-6 sm:px-8 py-7 pb-28">
+          <div className="max-w-4xl">{children}</div>
         </main>
       </div>
     </div>
