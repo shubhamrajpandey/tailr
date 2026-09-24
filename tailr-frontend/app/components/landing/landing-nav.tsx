@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight, Menu, X } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, Menu, X } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -34,23 +35,30 @@ export function LandingNav() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 select-none",
         isScrolled
-          ? "bg-white/80 dark:bg-[#090a0c]/80 backdrop-blur-md border-b border-neutral-200/80 dark:border-white/10 shadow-xs"
+          ? "bg-white/85 dark:bg-[#090a0c]/85 backdrop-blur-md border-b border-neutral-200/80 dark:border-white/10 shadow-xs"
           : "bg-transparent border-b border-transparent"
       )}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
+        {/* Brand Logo with public/tailr_bg_remove_logo.png */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xs shadow-indigo-500/30 group-hover:scale-105 transition-transform">
-            <Sparkles className="h-4.5 w-4.5" />
+          <div className="h-9 w-9 rounded-xl bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1.5 shadow-xs group-hover:scale-105 transition-transform">
+            <Image
+              src="/tailr_bg_remove_logo.png"
+              alt="Tailr Logo"
+              width={28}
+              height={28}
+              className="object-contain"
+              priority
+            />
           </div>
-          <span className="font-extrabold text-lg tracking-tight text-neutral-950 dark:text-white font-sans">
+          <span className="font-extrabold text-2xl tracking-tight text-neutral-950 dark:text-white font-sans">
             Tailr
           </span>
         </Link>
 
-        {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+        {/* Desktop Nav Links (Increased font size matching screenshot) */}
+        <nav className="hidden md:flex items-center gap-9 lg:gap-11 text-base font-medium text-neutral-800 dark:text-neutral-200">
           {navLinks.map((link) => (
             <a
               key={link.label}
@@ -63,32 +71,30 @@ export function LandingNav() {
         </nav>
 
         {/* Right Action Buttons */}
-        <div className="hidden sm:flex items-center gap-4">
-          <ThemeToggle />
-
+        <div className="hidden sm:flex items-center gap-6">
           {authUser ? (
             <Link href="/dashboard">
               <Button
                 variant="primary"
                 size="sm"
-                className="gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2 text-xs font-semibold shadow-xs"
+                className="gap-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-5 py-2.5 text-sm font-semibold shadow-xs"
               >
                 <span>Dashboard</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
           ) : (
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors"
+                className="text-base font-medium text-neutral-800 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white transition-colors"
               >
                 Log In
               </Link>
               <Link href="/register">
                 <button
                   type="button"
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-4 py-2 text-sm font-semibold shadow-xs transition-colors cursor-pointer"
+                  className="bg-[#635bff] hover:bg-[#5349e0] text-white rounded-xl px-5 py-2.5 text-base font-medium shadow-xs transition-colors cursor-pointer"
                 >
                   Sign Up (Free)
                 </button>
