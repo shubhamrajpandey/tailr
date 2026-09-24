@@ -140,7 +140,23 @@ function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
       { label: "Companies" },
     ];
   }
-  if (pathname.startsWith("/settings")) {
+  if (pathname.startsWith("/settings/")) {
+    const sub = pathname.replace("/settings/", "");
+    const subLabel =
+      sub === "danger-zone"
+        ? "Danger Zone"
+        : sub === "crm"
+        ? "Applications CRM"
+        : sub === "ai"
+        ? "AI & Models"
+        : sub.charAt(0).toUpperCase() + sub.slice(1);
+    return [
+      { label: "Overview", href: "/dashboard" },
+      { label: "Settings", href: "/settings/account" },
+      { label: subLabel },
+    ];
+  }
+  if (pathname === "/settings") {
     return [
       { label: "Overview", href: "/dashboard" },
       { label: "Settings" },

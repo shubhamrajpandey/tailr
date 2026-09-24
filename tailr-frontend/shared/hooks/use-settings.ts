@@ -37,6 +37,18 @@ function getSnapshot(): UserSettings {
         ...DEFAULT_USER_SETTINGS.applications,
         ...(parsed.applications || {}),
       },
+      notifications: {
+        ...DEFAULT_USER_SETTINGS.notifications,
+        ...(parsed.notifications || {}),
+      },
+      appearance: {
+        ...DEFAULT_USER_SETTINGS.appearance,
+        ...(parsed.appearance || {}),
+      },
+      privacy: {
+        ...DEFAULT_USER_SETTINGS.privacy,
+        ...(parsed.privacy || {}),
+      },
     };
     cachedRaw = raw;
     cachedSnapshot = merged;
@@ -144,6 +156,51 @@ export function useSettings() {
     [persist]
   );
 
+  const updateNotifications = React.useCallback(
+    (values: Partial<UserSettings["notifications"]>) => {
+      const current = getSnapshot();
+      const next: UserSettings = {
+        ...current,
+        notifications: {
+          ...current.notifications,
+          ...values,
+        },
+      };
+      persist(next);
+    },
+    [persist]
+  );
+
+  const updateAppearance = React.useCallback(
+    (values: Partial<UserSettings["appearance"]>) => {
+      const current = getSnapshot();
+      const next: UserSettings = {
+        ...current,
+        appearance: {
+          ...current.appearance,
+          ...values,
+        },
+      };
+      persist(next);
+    },
+    [persist]
+  );
+
+  const updatePrivacy = React.useCallback(
+    (values: Partial<UserSettings["privacy"]>) => {
+      const current = getSnapshot();
+      const next: UserSettings = {
+        ...current,
+        privacy: {
+          ...current.privacy,
+          ...values,
+        },
+      };
+      persist(next);
+    },
+    [persist]
+  );
+
   const resetToDefaults = React.useCallback(() => {
     persist(DEFAULT_USER_SETTINGS);
   }, [persist]);
@@ -154,6 +211,9 @@ export function useSettings() {
     updateAI,
     updateResume,
     updateApplications,
+    updateNotifications,
+    updateAppearance,
+    updatePrivacy,
     resetToDefaults,
   };
 }

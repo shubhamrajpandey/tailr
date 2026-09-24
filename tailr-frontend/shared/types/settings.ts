@@ -50,11 +50,35 @@ export interface ApplicationSettings {
   ghostedThresholdDays: number | null;
 }
 
+export interface NotificationSettings {
+  applicationUpdates: boolean;
+  followupReminders: boolean;
+  aiTailorComplete: boolean;
+  atsScoreAlerts: boolean;
+  weeklyDigest: boolean;
+  securityAlerts: boolean;
+}
+
+export interface AppearanceSettings {
+  theme: "light" | "dark" | "system";
+  density: "comfortable" | "compact";
+  highContrast: boolean;
+}
+
+export interface PrivacySettings {
+  analyticsOptIn: boolean;
+  aiImprovementOptIn: boolean;
+  profileVisibility: "private" | "recruiter_only";
+}
+
 export interface UserSettings {
   account: AccountSettings;
   ai: AISettings;
   resume: ResumeSettings;
   applications: ApplicationSettings;
+  notifications: NotificationSettings;
+  appearance: AppearanceSettings;
+  privacy: PrivacySettings;
 }
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
@@ -79,5 +103,23 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
     defaultStatus: "WISHLIST",
     defaultSortOrder: "applied_date_desc",
     ghostedThresholdDays: 45,
+  },
+  notifications: {
+    applicationUpdates: true,
+    followupReminders: true,
+    aiTailorComplete: true,
+    atsScoreAlerts: false,
+    weeklyDigest: true,
+    securityAlerts: true,
+  },
+  appearance: {
+    theme: "system",
+    density: "comfortable",
+    highContrast: false,
+  },
+  privacy: {
+    analyticsOptIn: false,
+    aiImprovementOptIn: true,
+    profileVisibility: "private",
   },
 };
