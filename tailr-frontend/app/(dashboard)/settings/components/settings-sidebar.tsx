@@ -13,7 +13,6 @@ import {
   FileText,
   Briefcase,
   AlertTriangle,
-  ArrowLeft,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -171,20 +170,10 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
       <aside
         aria-label="Settings navigation"
         className={cn(
-          "hidden md:block w-64 shrink-0 h-full overflow-y-auto px-4 py-5 border-r border-neutral-200 dark:border-white/[0.06] select-none",
+          "hidden md:block w-64 shrink-0 h-full overflow-y-auto px-4 py-6 border-r border-neutral-200 dark:border-white/[0.06] select-none",
           className
         )}
       >
-        <div className="mb-4">
-          <Link
-            href="/dashboard"
-            className="group flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] border border-transparent transition-colors"
-          >
-            <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-700 dark:group-hover:text-neutral-300" />
-            <span>Back to Dashboard</span>
-          </Link>
-        </div>
-
         <nav className="space-y-6">
           {SETTINGS_NAV_GROUPS.map((group) => (
             <div key={group.title} className="space-y-1.5">
