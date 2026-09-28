@@ -11,11 +11,13 @@ import { CoverLetterCard } from "./cover-letter-card";
 interface CoverLetterListProps {
   coverLetters: CoverLetter[];
   onDelete: (id: string) => void;
+  onOpenGenerator?: () => void;
 }
 
 export function CoverLetterList({
   coverLetters,
   onDelete,
+  onOpenGenerator,
 }: CoverLetterListProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
@@ -57,12 +59,23 @@ export function CoverLetterList({
             Generate tailored, zero-hallucination cover letters aligned with your master resume and target job descriptions.
           </p>
         </div>
-        <Link href="/cover-letter/new">
-          <Button variant="primary" className="gap-2 font-bold shadow-xs">
+        {onOpenGenerator ? (
+          <Button
+            variant="primary"
+            onClick={onOpenGenerator}
+            className="gap-2 font-bold shadow-xs bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+          >
             <Plus className="h-4 w-4" />
             <span>Create First Cover Letter</span>
           </Button>
-        </Link>
+        ) : (
+          <Link href="/cover-letter?tab=generator">
+            <Button variant="primary" className="gap-2 font-bold shadow-xs">
+              <Plus className="h-4 w-4" />
+              <span>Create First Cover Letter</span>
+            </Button>
+          </Link>
+        )}
       </div>
     );
   }
