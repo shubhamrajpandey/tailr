@@ -3,20 +3,18 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Save, Check, FileCheck, Layers } from "lucide-react";
+import { Layers, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { useResumeVersions } from "@/shared/hooks/use-resume-versions";
 import { useApplications } from "@/shared/hooks/use-applications";
-import { useResumeTailoring } from "@/shared/hooks/use-resume-tailoring";
+import { useTailorResumeMutation, TailoredResumeResult } from "@/shared/hooks/use-resume-api";
 import { Application } from "@/shared/types/application";
 import { ResumeData } from "@/shared/types/resume";
 import { TailoringPromptInput } from "../components/tailoring-prompt-input";
-import { ResumeComparisonPanel } from "../components/resume-comparison-panel";
-import { TailoringChangesList } from "../components/tailoring-changes-list";
+import { AtsTailoredResultStation } from "../components/ats-tailored-result-station";
 
 interface TailorWorkspaceFormProps {
   initialApp: Application | null;
@@ -29,8 +27,12 @@ function TailorWorkspaceForm({
   masterResume,
   saveVersion,
 }: TailorWorkspaceFormProps) {
-  const { statusMessage, result, error, isLoading, tailorResume } =
-    useResumeTailoring();
+  const {
+    mutateAsync: tailorResumeAsync,
+    isTailoring,
+    stageMessage,
+    error: mutationError,
+  } = useTailorResumeMutation();
 
   const [applicationId, setApplicationId] = React.useState(initialApp?.id || "");
   const [targetCompany, setTargetCompany] = React.useState(
@@ -42,41 +44,101 @@ function TailorWorkspaceForm({
   const [jobDescription, setJobDescription] = React.useState(
     initialApp?.jobDescriptionRaw || ""
   );
-  const [versionLabel, setVersionLabel] = React.useState("");
-  const [savedVersionId, setSavedVersionId] = React.useState<string | null>(null);
+  const [atsResult, setAtsResult] = React.useState<TailoredResumeResult | null>(null);
+  const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
   const handleSubmit = async () => {
-    setSavedVersionId(null);
-    const company = targetCompany.trim() || "Target Company";
-    const position = targetPosition.trim() || "Software Engineer";
+    setErrorMsg(null);
+    const company = targetCompany.trim();
+    const position = targetPosition.trim();
+    const jd = jobDescription.trim();
 
-    const res = await tailorResume(masterResume, jobDescription, {
-      company,
-      position,
-    });
+    if (!company || !position) {
+      alert("Please provide a target company name and role title.");
+      return;
+    }
+    if (!jd || jd.length < 20) {
+      alert("Please provide the target job description (at least a few sentences).");
+      return;
+    }
 
-    if (res) {
-      setVersionLabel(`${company} — ${position} Focus`);
+    try {
+      const result = await tailorResumeAsync({
+        companyName: company,
+        positionTitle: position,
+        jobDescription: jd,
+        resumeData: {
+          fullName: masterResume.basics?.name || "Applicant",
+          email: masterResume.basics?.email,
+          phone: masterResume.basics?.phone,
+          location: masterResume.basics?.location,
+          linkedinUrl: masterResume.basics?.linkedin,
+          githubUrl: masterResume.basics?.github,
+          portfolioUrl: masterResume.basics?.portfolio,
+          careerSummary: masterResume.summary,
+          technicalSkills: [
+            { category: "Languages", skills: masterResume.skills?.languages || [] },
+            { category: "Frameworks", skills: masterResume.skills?.frameworks || [] },
+            { category: "Tools", skills: masterResume.skills?.tools || [] },
+            { category: "Other", skills: masterResume.skills?.other || [] },
+          ],
+          workExperience: (masterResume.experience || []).map((exp) => ({
+            role: exp.title,
+            company: exp.company,
+            location: exp.location,
+            startDate: exp.startDate,
+            endDate: exp.current ? "Present" : exp.endDate,
+            bullets: exp.bullets || [],
+          })),
+          education: (masterResume.education || []).map((edu) => ({
+            institution: edu.institution,
+            degree: edu.degree,
+            startDate: edu.startDate,
+            endDate: edu.endDate,
+          })),
+          projects: (masterResume.projects || []).map((proj) => ({
+            title: proj.name,
+            technologies: proj.tech?.join(", "),
+            liveUrl: proj.link,
+            bullets: proj.bullets || [],
+          })),
+        },
+      });
+
+      setAtsResult(result);
+      setTimeout(() => {
+        document
+          .getElementById("ats-tailored-station")
+          ?.scrollIntoView({ behavior: "smooth" });
+      }, 150);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed to tailor resume with AI.");
     }
   };
 
-  const handleSaveVersion = () => {
-    if (!result) return;
-    const finalLabel =
-      versionLabel.trim() ||
-      `${targetCompany || "Target Company"} — ${targetPosition || "Custom"}`;
-
-    const newVersion = saveVersion({
-      label: finalLabel,
-      resumeData: result.tailoredResume,
+  const handleSaveToVersions = () => {
+    if (!atsResult) return;
+    saveVersion({
+      label: `${targetCompany || "Target"} — ${targetPosition || "Focus"} (ATS: ${atsResult.atsScore}%)`,
+      resumeData: {
+        ...masterResume,
+        summary: atsResult.tailoredData.careerSummary || masterResume.summary,
+      },
       source: "AI_TAILORED",
-      changesSummary: result.changes,
+      changesSummary: [
+        {
+          id: "ats-01",
+          section: "summary",
+          type: "rephrase",
+          original: masterResume.summary,
+          updated: atsResult.tailoredData.careerSummary || masterResume.summary,
+          reason: `Optimized with ATS keywords for ${targetCompany}`,
+        },
+      ],
       applicationId: applicationId || null,
       applicationCompanyName: targetCompany || null,
       applicationPositionTitle: targetPosition || null,
     });
-
-    setSavedVersionId(newVersion.id);
   };
 
   return (
@@ -87,28 +149,40 @@ function TailorWorkspaceForm({
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
         {/* Fixed Top Navigation Bar */}
-        <TopBar />
+        <TopBar
+          breadcrumbs={[
+            { label: "Overview", href: "/dashboard" },
+            { label: "Resumes", href: "/resume" },
+            { label: "AI Tailoring Studio" },
+          ]}
+        />
 
         {/* Header Bar */}
-        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
+        <header className="px-8 pt-6 pb-4 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-3">
-                AI Tailoring Workspace
+                AI Resume Tailoring Studio
                 <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
-                  Zero Hallucination
+                  ATS Optimized & LaTeX
                 </span>
               </h1>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-                Target your master resume to any job description. Review every rephrased and prioritized line before saving.
+                Tailor your master resume to match target job keywords with zero hallucination. Generates 100% compliant single-column ATS LaTeX and PDF.
               </p>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <Link href="/resume">
+                <Button variant="secondary" size="sm" className="gap-1.5 font-semibold text-xs">
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  <span>Master Resume</span>
+                </Button>
+              </Link>
               <Link href="/resume/versions">
-                <Button variant="secondary" size="sm" className="gap-1.5 font-semibold">
-                  <Layers className="h-4 w-4" />
-                  Saved Versions
+                <Button variant="secondary" size="sm" className="gap-1.5 font-semibold text-xs">
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>Saved Versions</span>
                 </Button>
               </Link>
             </div>
@@ -116,15 +190,15 @@ function TailorWorkspaceForm({
         </header>
 
         {/* Content Canvas */}
-        <main className="flex-1 px-8 py-8 space-y-8 w-full">
+        <main className="flex-1 px-8 py-8 space-y-8 w-full max-w-7xl mx-auto">
           {/* Step 1: Input Job Description & Target Role */}
           <TailoringPromptInput
             jobDescription={jobDescription}
             targetCompany={targetCompany}
             targetPosition={targetPosition}
             applicationId={applicationId}
-            isLoading={isLoading}
-            statusMessage={statusMessage}
+            isLoading={isTailoring}
+            statusMessage={stageMessage}
             onJobDescriptionChange={setJobDescription}
             onTargetCompanyChange={setTargetCompany}
             onTargetPositionChange={setTargetPosition}
@@ -132,70 +206,37 @@ function TailorWorkspaceForm({
             onSubmit={handleSubmit}
           />
 
-          {/* Error Notice */}
-          {error && (
-            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-sm">
-              <strong>Error:</strong> {error}
+          {/* Progressive Stage Feedback */}
+          {isTailoring && (
+            <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 flex items-center gap-3 animate-in fade-in">
+              <Loader2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" />
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
+                  AI Tailoring Pipeline Active
+                </p>
+                <p className="text-xs text-indigo-800/90 dark:text-indigo-300/80 font-medium">
+                  {stageMessage || "Analyzing job description keywords and aligning resume bullets..."}
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Step 2 & 3: Comparison & Changes Inspector (Visible once tailored) */}
-          {result && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-              {/* Save Version Floating Bar */}
-              <div className="p-4 rounded-xl border border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/70 dark:bg-indigo-950/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-                <div className="flex-1 max-w-md">
-                  <label className="text-xs font-bold text-indigo-950 dark:text-indigo-200 block mb-1">
-                    Version Label
-                  </label>
-                  <Input
-                    value={versionLabel}
-                    onChange={(e) => setVersionLabel(e.target.value)}
-                    placeholder="e.g. Stripe — Senior Frontend Focus"
-                    className="bg-white dark:bg-neutral-900 text-xs h-9"
-                  />
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  {savedVersionId ? (
-                    <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                        <Check className="h-4 w-4" />
-                        Version Saved!
-                      </span>
-                      <Link href={`/resume/versions/${savedVersionId}`}>
-                        <Button variant="primary" size="sm" className="gap-1.5 font-bold">
-                          <FileCheck className="h-4 w-4" />
-                          View Version
-                        </Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <Button
-                      onClick={handleSaveVersion}
-                      variant="primary"
-                      className="gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-sm border-0"
-                    >
-                      <Save className="h-4 w-4" />
-                      Accept & Save Version
-                    </Button>
-                  )}
-                </div>
-              </div>
-
-              {/* Side-by-Side AST Comparison Panel */}
-              <ResumeComparisonPanel
-                originalResume={masterResume}
-                tailoredResume={result.tailoredResume}
-                changes={result.changes}
-              />
-
-              {/* Changes Inspection List */}
-              <TailoringChangesList
-                changes={result.changes}
-                matchScore={result.matchScore}
-              />
+          {/* Error Notice */}
+          {(errorMsg || mutationError) && (
+            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{errorMsg || mutationError?.message}</span>
             </div>
+          )}
+
+          {/* Step 2: ATS Tailored Result Station */}
+          {atsResult && (
+            <AtsTailoredResultStation
+              result={atsResult}
+              companyName={targetCompany}
+              positionTitle={targetPosition}
+              onSaveVersion={handleSaveToVersions}
+            />
           )}
         </main>
       </div>
@@ -203,47 +244,37 @@ function TailorWorkspaceForm({
   );
 }
 
-function TailorWorkspaceView() {
+export default function ResumeTailorPage() {
   const searchParams = useSearchParams();
-  const initialAppId = searchParams.get("applicationId") || "";
+  const appId = searchParams.get("applicationId");
 
-  const { masterResume, isLoaded: isMasterLoaded } = useMasterResume();
+  const { masterResume, isLoaded: masterLoaded } = useMasterResume();
+  const { applications, isLoaded: appsLoaded } = useApplications();
   const { saveVersion } = useResumeVersions();
-  const { applications, isLoaded: isAppsLoaded } = useApplications();
 
-  const matchedApp = React.useMemo(() => {
-    if (!initialAppId || applications.length === 0) return null;
-    return applications.find((a) => a.id === initialAppId) || null;
-  }, [initialAppId, applications]);
+  const initialApp = React.useMemo(() => {
+    if (!appId || !applications.length) return null;
+    return applications.find((a) => a.id === appId) || null;
+  }, [appId, applications]);
 
-  if (!isMasterLoaded || !isAppsLoaded) {
+  if (!masterLoaded || !appsLoaded) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
-        Loading Tailoring Workspace...
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+          <p className="text-xs font-medium text-neutral-500">
+            Initializing AI Resume Tailoring Studio...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <TailorWorkspaceForm
-      key={matchedApp?.id || "unlinked"}
-      initialApp={matchedApp}
+      initialApp={initialApp}
       masterResume={masterResume}
       saveVersion={saveVersion}
     />
-  );
-}
-
-export default function TailorWorkspacePage() {
-  return (
-    <React.Suspense
-      fallback={
-        <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
-          Loading Tailoring Workspace...
-        </div>
-      }
-    >
-      <TailorWorkspaceView />
-    </React.Suspense>
   );
 }

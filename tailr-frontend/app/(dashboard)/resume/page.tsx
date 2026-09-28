@@ -2,11 +2,12 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, Save, RotateCcw, Check, ArrowRight } from "lucide-react";
+import { Sparkles, Save, RotateCcw, Check, ArrowRight, Upload, Database, Loader2 } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
+import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
 import { BasicsSectionForm } from "./components/basics-section-form";
 import { SummarySectionForm } from "./components/summary-section-form";
@@ -15,6 +16,7 @@ import { SkillsSectionForm } from "./components/skills-section-form";
 import { ProjectsFieldArray } from "./components/projects-field-array";
 import { EducationFieldArray } from "./components/education-field-array";
 import { CertificationsFieldArray } from "./components/certifications-field-array";
+import { ResumeUploadModal } from "./components/resume-upload-modal";
 
 interface MasterResumeEditorProps {
   masterResume: MasterResume;
@@ -27,10 +29,40 @@ function MasterResumeEditor({
   updateMasterResume,
   resetToDefault,
 }: MasterResumeEditorProps) {
-  // Local draft state for editing initialized from props
   const [formData, setFormData] = React.useState<ResumeData>(masterResume);
   const [isSaved, setIsSaved] = React.useState(false);
   const [isDirty, setIsDirty] = React.useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+
+  const {
+    masterResumeData: dbData,
+    saveMasterResume,
+    isSaving: isDbSaving,
+    uploadRawResume,
+    isUploading,
+    refetch,
+  } = useMasterResumeFromDb();
+
+  // Hydrate from DB on initial load asynchronously
+  React.useEffect(() => {
+    if (!dbData || isDirty) return;
+    const timer = setTimeout(() => {
+      setFormData((prev) => ({
+        ...prev,
+        basics: {
+          name: dbData.fullName,
+          email: dbData.email || "",
+          phone: dbData.phone || "",
+          location: dbData.location || "",
+          linkedin: dbData.linkedinUrl || "",
+          github: dbData.githubUrl || "",
+          portfolio: dbData.portfolioUrl || "",
+        },
+        summary: dbData.careerSummary || prev.summary,
+      }));
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [dbData, isDirty]);
 
   const handleUpdate = (patch: Partial<ResumeData>) => {
     setFormData((prev) => ({
@@ -41,10 +73,56 @@ function MasterResumeEditor({
     setIsSaved(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     updateMasterResume(formData);
     setIsDirty(false);
     setIsSaved(true);
+
+    try {
+      // Sync to PostgreSQL DB
+      await saveMasterResume({
+        title: "Master Resume",
+        resumeData: {
+          fullName: formData.basics.name,
+          email: formData.basics.email,
+          phone: formData.basics.phone,
+          location: formData.basics.location,
+          linkedinUrl: formData.basics.linkedin,
+          githubUrl: formData.basics.github,
+          portfolioUrl: formData.basics.portfolio,
+          careerSummary: formData.summary,
+          technicalSkills: [
+            { category: "Languages", skills: formData.skills?.languages || [] },
+            { category: "Frameworks", skills: formData.skills?.frameworks || [] },
+            { category: "Tools", skills: formData.skills?.tools || [] },
+            { category: "Other", skills: formData.skills?.other || [] },
+          ],
+          workExperience: (formData.experience || []).map((exp) => ({
+            role: exp.title,
+            company: exp.company,
+            location: exp.location,
+            startDate: exp.startDate,
+            endDate: exp.current ? "Present" : exp.endDate,
+            bullets: exp.bullets || [],
+          })),
+          education: (formData.education || []).map((edu) => ({
+            institution: edu.institution,
+            degree: edu.degree,
+            startDate: edu.startDate,
+            endDate: edu.endDate,
+          })),
+          projects: (formData.projects || []).map((proj) => ({
+            title: proj.name,
+            technologies: proj.tech?.join(", "),
+            liveUrl: proj.link,
+            bullets: proj.bullets || [],
+          })),
+        },
+      });
+    } catch (err) {
+      console.warn("Could not sync to database:", err);
+    }
+
     setTimeout(() => setIsSaved(false), 3000);
   };
 
@@ -57,6 +135,14 @@ function MasterResumeEditor({
       resetToDefault();
       setIsDirty(false);
       setIsSaved(false);
+    }
+  };
+
+  const handleUploadRaw = async (rawText: string, title?: string) => {
+    const res = await uploadRawResume({ rawText, title });
+    if (res?.data) {
+      await refetch();
+      setIsUploadModalOpen(false);
     }
   };
 
@@ -79,13 +165,28 @@ function MasterResumeEditor({
                 <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">
                   Single Source of Truth
                 </span>
+                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1">
+                  <Database className="h-3 w-3" />
+                  PostgreSQL Synced
+                </span>
               </h1>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-                Your canonical career record. The AI only rephrases, reorders, or emphasizes content defined here.
+                Your canonical career record. Upload your resume or edit below to tailor for any role with zero hallucination.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-2.5 flex-wrap shrink-0">
+              <Button
+                type="button"
+                onClick={() => setIsUploadModalOpen(true)}
+                variant="secondary"
+                size="sm"
+                className="gap-1.5 font-semibold text-xs"
+              >
+                <Upload className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>Upload / Import Resume</span>
+              </Button>
+
               <Button
                 type="button"
                 onClick={handleReset}
@@ -101,18 +202,24 @@ function MasterResumeEditor({
               <Button
                 type="button"
                 onClick={handleSave}
+                disabled={isDbSaving}
                 variant={isDirty ? "primary" : "secondary"}
-                className="gap-2 font-semibold shadow-xs"
+                className="gap-2 font-semibold shadow-xs text-xs"
               >
-                {isSaved ? (
+                {isDbSaving ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <span>Saving to DB...</span>
+                  </>
+                ) : isSaved ? (
                   <>
                     <Check className="h-4 w-4 text-emerald-500" />
-                    Changes Saved
+                    <span>Saved to Database</span>
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4" />
-                    Save Master
+                    <span>Save Master</span>
                   </>
                 )}
               </Button>
@@ -120,10 +227,10 @@ function MasterResumeEditor({
               <Link href="/resume/tailor">
                 <Button
                   variant="primary"
-                  className="gap-2 font-semibold shadow-sm bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0"
+                  className="gap-2 font-semibold shadow-sm bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 text-xs"
                 >
                   <Sparkles className="h-4 w-4" />
-                  Tailor for Job
+                  <span>Tailor for Job</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
@@ -139,22 +246,22 @@ function MasterResumeEditor({
             onChange={(basics) => handleUpdate({ basics })}
           />
 
-          {/* Summary Section */}
+          {/* Professional Summary Section */}
           <SummarySectionForm
             summary={formData.summary}
             onChange={(summary) => handleUpdate({ summary })}
-          />
-
-          {/* Work Experience Section */}
-          <ExperienceFieldArray
-            experience={formData.experience}
-            onChange={(experience) => handleUpdate({ experience })}
           />
 
           {/* Technical Skills Section */}
           <SkillsSectionForm
             skills={formData.skills}
             onChange={(skills) => handleUpdate({ skills })}
+          />
+
+          {/* Work Experience Section */}
+          <ExperienceFieldArray
+            experience={formData.experience}
+            onChange={(experience) => handleUpdate({ experience })}
           />
 
           {/* Projects Section */}
@@ -171,40 +278,21 @@ function MasterResumeEditor({
 
           {/* Certifications & Achievements Section */}
           <CertificationsFieldArray
-            certifications={formData.certifications}
-            achievements={formData.achievements}
-            onCertificationsChange={(certifications) =>
-              handleUpdate({ certifications })
-            }
-            onAchievementsChange={(achievements) =>
-              handleUpdate({ achievements })
-            }
+            certifications={formData.certifications || []}
+            achievements={formData.achievements || []}
+            onCertificationsChange={(certifications) => handleUpdate({ certifications })}
+            onAchievementsChange={(achievements) => handleUpdate({ achievements })}
           />
-
-          {/* Bottom Sticky Save Floating Bar */}
-          {isDirty && (
-            <div className="fixed bottom-6 right-8 left-8 sm:left-72 z-30 flex items-center justify-between p-4 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-2xl border border-neutral-800 dark:border-white/20 animate-in fade-in slide-in-from-bottom-4 duration-200">
-              <div className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                <span className="text-sm font-semibold">
-                  You have unsaved changes in your Master Resume.
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  onClick={handleSave}
-                  variant="primary"
-                  size="sm"
-                  className="gap-2 font-bold"
-                >
-                  <Save className="h-4 w-4" />
-                  Save Master Resume
-                </Button>
-              </div>
-            </div>
-          )}
         </main>
       </div>
+
+      {/* Upload & Parse Modal */}
+      <ResumeUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUpload={handleUploadRaw}
+        isUploading={isUploading}
+      />
     </div>
   );
 }
@@ -215,15 +303,19 @@ export default function MasterResumePage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
-        Loading Master Resume...
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+          <p className="text-xs font-medium text-neutral-500">
+            Loading Master Resume from database...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <MasterResumeEditor
-      key={masterResume.updatedAt}
       masterResume={masterResume}
       updateMasterResume={updateMasterResume}
       resetToDefault={resetToDefault}

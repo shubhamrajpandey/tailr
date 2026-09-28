@@ -19,7 +19,6 @@ import {
   Mail,
   BookOpen,
   LogOut,
-  Zap,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";

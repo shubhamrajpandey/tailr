@@ -1,0 +1,499 @@
+"use client";
+
+import * as React from "react";
+import {
+  Printer,
+  Copy,
+  Check,
+  Download,
+  Code2,
+  Eye,
+  Award,
+  AlertTriangle,
+  Lightbulb,
+  CheckCircle,
+  Save,
+} from "lucide-react";
+import { Button } from "@/shared/components/ui/button";
+import { Badge } from "@/shared/components/ui/badge";
+import {
+  TailoredResumeResult,
+} from "@/shared/hooks/use-resume-api";
+import {
+  printAtsResumeDirectly,
+  downloadResumeAsTex,
+  copyLatexToClipboard,
+} from "@/shared/utils/resume-export-helpers";
+import { cn } from "@/shared/lib/utils";
+
+interface AtsTailoredResultStationProps {
+  result: TailoredResumeResult;
+  companyName: string;
+  positionTitle: string;
+  onSaveVersion?: () => void;
+  isSavingVersion?: boolean;
+}
+
+export function AtsTailoredResultStation({
+  result,
+  companyName,
+  positionTitle,
+  onSaveVersion,
+  isSavingVersion,
+}: AtsTailoredResultStationProps) {
+  const [viewMode, setViewMode] = React.useState<"preview" | "latex">("preview");
+  const [copiedLatex, setCopiedLatex] = React.useState(false);
+  const [savedSuccess, setSavedSuccess] = React.useState(false);
+
+  const { atsScore, atsFeedback, tailoredData, latexSource } = result;
+
+  const handleCopyLatex = async () => {
+    const ok = await copyLatexToClipboard(latexSource);
+    if (ok) {
+      setCopiedLatex(true);
+      setTimeout(() => setCopiedLatex(false), 2000);
+    }
+  };
+
+  const handleDownloadTex = () => {
+    const filename = `Resume_${companyName}_${positionTitle}.tex`.replace(/[^a-zA-Z0-9_-]/g, "_");
+    downloadResumeAsTex(latexSource, filename);
+  };
+
+  const handleDownloadPdf = () => {
+    printAtsResumeDirectly(tailoredData);
+  };
+
+  const handleSave = () => {
+    onSaveVersion?.();
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
+
+  const scoreColor =
+    atsScore >= 90
+      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
+      : atsScore >= 75
+      ? "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20"
+      : "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20";
+
+  return (
+    <div id="ats-tailored-station" className="space-y-6 pt-2 animate-in fade-in duration-300">
+      {/* 1. ATS Score & Diagnostic Card */}
+      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 shadow-sm space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-neutral-200/80 dark:border-white/5">
+          <div className="flex items-center gap-4">
+            {/* Visual ATS Score Gauge */}
+            <div
+              className={cn(
+                "h-20 w-20 rounded-2xl flex flex-col items-center justify-center border font-sans shrink-0 shadow-xs",
+                scoreColor
+              )}
+            >
+              <span className="text-3xl font-extrabold tracking-tight leading-none">
+                {atsScore}
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider mt-1">
+                ATS Score
+              </span>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-xl font-extrabold text-neutral-950 dark:text-white">
+                  ATS Match Assessment
+                </h3>
+                <Badge
+                  variant={atsScore >= 90 ? "offer" : "applied"}
+                  dot={true}
+                  className="font-bold text-xs"
+                >
+                  {atsScore >= 90 ? "High Callback Probability" : "Good Keyword Coverage"}
+                </Badge>
+              </div>
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+                Tailored for <strong className="text-neutral-900 dark:text-white">{positionTitle}</strong> at{" "}
+                <strong className="text-neutral-900 dark:text-white">{companyName}</strong>. Zero hallucination guarantee.
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Actions Header */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleDownloadPdf}
+              className="gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs cursor-pointer"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Download PDF</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleDownloadTex}
+              className="gap-1.5 cursor-pointer text-xs"
+              title="Download LaTeX .tex source file"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Download .tex</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleCopyLatex}
+              className="gap-1.5 cursor-pointer text-xs"
+            >
+              {copiedLatex ? (
+                <Check className="h-3.5 w-3.5 text-emerald-600" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
+              <span>{copiedLatex ? "Copied!" : "Copy LaTeX"}</span>
+            </Button>
+
+            {onSaveVersion && (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleSave}
+                disabled={isSavingVersion}
+                className="gap-1.5 cursor-pointer text-xs"
+              >
+                {savedSuccess ? (
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                ) : (
+                  <Save className="h-3.5 w-3.5" />
+                )}
+                <span>{savedSuccess ? "Saved!" : "Save Version"}</span>
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Keyword Analysis & Strengths Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Matched Keywords */}
+          <div className="p-4 rounded-xl bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200/80 dark:border-white/5 space-y-2.5">
+            <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 dark:text-emerald-400">
+              <CheckCircle className="h-4 w-4" />
+              <span>Matched Role Keywords ({atsFeedback.matchedKeywords.length})</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {atsFeedback.matchedKeywords.map((kw, i) => (
+                <span
+                  key={i}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/60 dark:border-emerald-800/60"
+                >
+                  ✓ {kw}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Missing / High-Value Keywords */}
+          <div className="p-4 rounded-xl bg-neutral-50 dark:bg-white/[0.02] border border-neutral-200/80 dark:border-white/5 space-y-2.5">
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-700 dark:text-amber-400">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Recommended Keywords to Highlight</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {atsFeedback.missingKeywords.length > 0 ? (
+                atsFeedback.missingKeywords.map((kw, i) => (
+                  <span
+                    key={i}
+                    className="px-2.5 py-1 rounded-md text-[11px] font-medium bg-amber-100/70 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-300/50 dark:border-amber-800/50"
+                  >
+                    + {kw}
+                  </span>
+                ))
+              ) : (
+                <span className="text-xs text-neutral-500">All major keywords present.</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* AI Alignment Strengths */}
+        {atsFeedback.strengths.length > 0 && (
+          <div className="space-y-2">
+            <span className="text-xs font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-1.5">
+              <Award className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+              Key Alignment Strengths
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-neutral-700 dark:text-neutral-300">
+              {atsFeedback.strengths.map((str, i) => (
+                <div
+                  key={i}
+                  className="p-2.5 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 flex items-start gap-2"
+                >
+                  <span className="text-indigo-600 dark:text-indigo-400 font-bold">•</span>
+                  <span>{str}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Improvement Tips */}
+        {atsFeedback.improvementTips.length > 0 && (
+          <div className="p-3.5 rounded-xl bg-violet-50/60 dark:bg-violet-950/20 border border-violet-200/60 dark:border-violet-900/30 flex items-start gap-2.5 text-xs text-violet-950 dark:text-violet-200">
+            <Lightbulb className="h-4 w-4 text-violet-600 dark:text-violet-400 shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <span className="font-bold">Interview & ATS Advice:</span>
+              <ul className="list-disc list-inside space-y-0.5 text-violet-900 dark:text-violet-300">
+                {atsFeedback.improvementTips.map((tip, i) => (
+                  <li key={i}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 2. ATS Resume Preview / LaTeX Code Tabs */}
+      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+        {/* Tab Controls Bar */}
+        <div className="px-6 py-3.5 bg-neutral-50 dark:bg-white/[0.02] border-b border-neutral-200 dark:border-white/10 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 p-1 bg-neutral-200/60 dark:bg-white/5 rounded-xl border border-neutral-200/80 dark:border-white/10">
+            <button
+              type="button"
+              onClick={() => setViewMode("preview")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                viewMode === "preview"
+                  ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs"
+                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+              )}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span>ATS Rendered View</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setViewMode("latex")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                viewMode === "latex"
+                  ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs"
+                  : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+              )}
+            >
+              <Code2 className="h-3.5 w-3.5" />
+              <span>LaTeX Source Code (.tex)</span>
+            </button>
+          </div>
+
+          <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+            Standard Single-Column Article 11pt Layout
+          </div>
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6 sm:p-10">
+          {viewMode === "preview" ? (
+            /* Rendered Clean ATS Resume */
+            <div className="max-w-4xl mx-auto bg-white text-neutral-900 p-8 sm:p-12 rounded-xl shadow-xs border border-neutral-200 font-sans space-y-5">
+              {/* Header */}
+              <div className="text-center pb-4 border-b border-neutral-900 space-y-1">
+                <h1 className="text-2xl font-bold tracking-tight uppercase text-neutral-950">
+                  {tailoredData.fullName}
+                </h1>
+                <div className="text-xs text-neutral-700 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                  {tailoredData.email && (
+                    <a href={`mailto:${tailoredData.email}`} className="hover:underline">
+                      {tailoredData.email}
+                    </a>
+                  )}
+                  {tailoredData.linkedinUrl && (
+                    <>
+                      <span>•</span>
+                      <a href={tailoredData.linkedinUrl} className="hover:underline text-indigo-600">
+                        LinkedIn
+                      </a>
+                    </>
+                  )}
+                  {tailoredData.githubUrl && (
+                    <>
+                      <span>•</span>
+                      <a href={tailoredData.githubUrl} className="hover:underline text-indigo-600">
+                        GitHub
+                      </a>
+                    </>
+                  )}
+                  {tailoredData.portfolioUrl && (
+                    <>
+                      <span>•</span>
+                      <a href={tailoredData.portfolioUrl} className="hover:underline text-indigo-600">
+                        Portfolio
+                      </a>
+                    </>
+                  )}
+                  {tailoredData.location && (
+                    <>
+                      <span>•</span>
+                      <span>{tailoredData.location}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Career Summary */}
+              {tailoredData.careerSummary && (
+                <div className="space-y-1.5">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-900 pb-0.5">
+                    Career Summary
+                  </h2>
+                  <p className="text-xs leading-relaxed text-neutral-800 text-justify">
+                    {tailoredData.careerSummary}
+                  </p>
+                </div>
+              )}
+
+              {/* Technical Skills */}
+              {tailoredData.technicalSkills && tailoredData.technicalSkills.length > 0 && (
+                <div className="space-y-1.5">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-900 pb-0.5">
+                    Technical Skills
+                  </h2>
+                  <ul className="text-xs space-y-1 text-neutral-800 list-none pl-0">
+                    {tailoredData.technicalSkills.map((sk, i) => (
+                      <li key={i}>
+                        <strong className="font-bold text-neutral-950">{sk.category}:</strong>{" "}
+                        {Array.isArray(sk.skills) ? sk.skills.join(", ") : sk.skills}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Work Experience */}
+              {tailoredData.workExperience && tailoredData.workExperience.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-900 pb-0.5">
+                    Work Experience
+                  </h2>
+                  <div className="space-y-3">
+                    {tailoredData.workExperience.map((exp, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between items-baseline text-xs">
+                          <div>
+                            <span className="font-bold text-neutral-950">{exp.role}</span>
+                            <span className="text-neutral-500"> — </span>
+                            <span className="italic text-neutral-800">{exp.company}</span>
+                            {exp.location && (
+                              <span className="text-neutral-500 italic ml-1">({exp.location})</span>
+                            )}
+                          </div>
+                          <span className="italic text-neutral-600">
+                            {exp.startDate} – {exp.endDate}
+                          </span>
+                        </div>
+                        <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-800">
+                          {exp.bullets.map((b, bIdx) => (
+                            <li key={bIdx} className="leading-relaxed">
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Education */}
+              {tailoredData.education && tailoredData.education.length > 0 && (
+                <div className="space-y-2">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-900 pb-0.5">
+                    Education
+                  </h2>
+                  <div className="space-y-2">
+                    {tailoredData.education.map((edu, i) => (
+                      <div key={i} className="flex justify-between items-baseline text-xs">
+                        <div>
+                          <strong className="font-bold text-neutral-950">{edu.institution}</strong>
+                          {edu.location && <span className="text-neutral-500 italic ml-1">({edu.location})</span>}
+                          <div className="italic text-neutral-700">{edu.degree}</div>
+                        </div>
+                        <span className="italic text-neutral-600">
+                          {edu.startDate ? `${edu.startDate} – ` : ""}
+                          {edu.endDate}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Projects */}
+              {tailoredData.projects && tailoredData.projects.length > 0 && (
+                <div className="space-y-3">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-950 border-b border-neutral-900 pb-0.5">
+                    Projects
+                  </h2>
+                  <div className="space-y-3">
+                    {tailoredData.projects.map((proj, i) => (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between items-baseline text-xs">
+                          <div>
+                            <span className="font-bold text-neutral-950">{proj.title}</span>
+                            {proj.technologies && (
+                              <span className="text-neutral-500 font-normal ml-1">| {proj.technologies}</span>
+                            )}
+                            {proj.liveUrl && (
+                              <a
+                                href={proj.liveUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-indigo-600 hover:underline ml-1"
+                              >
+                                [Live Demo]
+                              </a>
+                            )}
+                          </div>
+                          <span className="text-neutral-500">{proj.year}</span>
+                        </div>
+                        <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-800">
+                          {proj.bullets.map((b, bIdx) => (
+                            <li key={bIdx} className="leading-relaxed">
+                              {b}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* LaTeX Code View */
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs text-neutral-500 pb-2">
+                <span>LaTeX Source Code (compatible with Overleaf and TeX Live)</span>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={handleCopyLatex}
+                  className="gap-1.5"
+                >
+                  {copiedLatex ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                  <span>{copiedLatex ? "Copied" : "Copy Code"}</span>
+                </Button>
+              </div>
+              <pre className="p-4 rounded-xl bg-neutral-950 text-neutral-200 font-mono text-xs overflow-x-auto max-h-[600px] border border-neutral-800 leading-relaxed selection:bg-indigo-500/40">
+                <code>{latexSource}</code>
+              </pre>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
