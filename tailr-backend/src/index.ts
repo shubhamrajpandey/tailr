@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/error";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { companiesRoutes } from "./modules/companies/companies.routes";
 import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
+import { resumeRoutes } from "./modules/resume/resume.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -65,6 +66,11 @@ const app = new Elysia()
               "AI-tailored cover letter generation strictly grounded in candidate master resume with zero-hallucination guarantee, customizable tone, length, and templates",
           },
           {
+            name: "Resumes",
+            description:
+              "Master Resume management, raw text parsing, AI tailoring, ATS compatibility scoring, and LaTeX export",
+          },
+          {
             name: "System",
             description: "Service health, database connection checks, and diagnostics",
           },
@@ -104,6 +110,9 @@ const app = new Elysia()
 
   // 7. Mount Cover Letter Generation Route (/cover-letter/generate)
   .use(coverLetterRoutes)
+
+  // 8. Mount Resume Module Routes (/resume/*)
+  .use(resumeRoutes)
 
   // 6. Bind to Port
   .listen({

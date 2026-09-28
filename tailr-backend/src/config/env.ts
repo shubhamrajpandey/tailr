@@ -16,6 +16,7 @@ interface EnvConfig {
   FRONTEND_URL: string;
   COOKIE_DOMAIN?: string;
   GEMINI_API_KEY?: string;
+  GEMINI_RESUME_API_KEY?: string;
 }
 
 function getEnv(): EnvConfig {
@@ -51,6 +52,7 @@ function getEnv(): EnvConfig {
     FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
     COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GEMINI_RESUME_API_KEY: process.env.GEMINI_RESUME_API_KEY,
   });
 }
 

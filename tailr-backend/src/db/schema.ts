@@ -7,6 +7,8 @@ import {
   timestamp,
   index,
   uniqueIndex,
+  jsonb,
+  integer,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -88,6 +90,8 @@ export const refreshTokens = pgTable(
 export const usersRelations = relations(users, ({ many }) => ({
   refreshTokens: many(refreshTokens),
   companies: many(companies),
+  resumes: many(resumes),
+  tailoredResumes: many(tailoredResumes),
 }));
 
 export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
@@ -153,3 +157,96 @@ export type RefreshToken = typeof refreshTokens.$inferSelect;
 export type NewRefreshToken = typeof refreshTokens.$inferInsert;
 export type Company = typeof companies.$inferSelect;
 export type NewCompany = typeof companies.$inferInsert;
+
+/**
+ * Resumes table: stores master resumes and uploaded user resumes in structured JSON.
+ */
+export const resumes = pgTable(
+  "resumes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 255 }).default("Master Resume").notNull(),
+    fullName: varchar("full_name", { length: 255 }).notNull(),
+    email: varchar("email", { length: 255 }),
+    phone: varchar("phone", { length: 50 }),
+    location: varchar("location", { length: 255 }),
+    linkedinUrl: varchar("linkedin_url", { length: 500 }),
+    githubUrl: varchar("github_url", { length: 500 }),
+    portfolioUrl: varchar("portfolio_url", { length: 500 }),
+    careerSummary: text("career_summary"),
+    technicalSkills: jsonb("technical_skills").default(sql`'[]'::jsonb`).notNull(),
+    workExperience: jsonb("work_experience").default(sql`'[]'::jsonb`).notNull(),
+    education: jsonb("education").default(sql`'[]'::jsonb`).notNull(),
+    projects: jsonb("projects").default(sql`'[]'::jsonb`).notNull(),
+    rawContent: text("raw_content"),
+    isMaster: boolean("is_master").default(true).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("resumes_user_id_idx").on(table.userId),
+    index("resumes_is_master_idx").on(table.isMaster),
+    index("resumes_created_at_idx").on(table.createdAt),
+  ]
+);
+
+/**
+ * Tailored Resumes table: stores AI-tailored resume versions for specific job applications.
+ */
+export const tailoredResumes = pgTable(
+  "tailored_resumes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+    resumeId: uuid("resume_id").references(() => resumes.id, { onDelete: "set null" }),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    positionTitle: varchar("position_title", { length: 255 }).notNull(),
+    jobDescription: text("job_description"),
+    atsScore: integer("ats_score").default(0).notNull(),
+    atsFeedback: jsonb("ats_feedback").default(sql`'{}'::jsonb`).notNull(),
+    tailoredData: jsonb("tailored_data").default(sql`'{}'::jsonb`).notNull(),
+    latexSource: text("latex_source"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("tailored_resumes_user_id_idx").on(table.userId),
+    index("tailored_resumes_resume_id_idx").on(table.resumeId),
+    index("tailored_resumes_company_idx").on(table.companyName),
+    index("tailored_resumes_ats_score_idx").on(table.atsScore),
+  ]
+);
+
+export const resumesRelations = relations(resumes, ({ one, many }) => ({
+  user: one(users, {
+    fields: [resumes.userId],
+    references: [users.id],
+  }),
+  tailoredResumes: many(tailoredResumes),
+}));
+
+export const tailoredResumesRelations = relations(tailoredResumes, ({ one }) => ({
+  user: one(users, {
+    fields: [tailoredResumes.userId],
+    references: [users.id],
+  }),
+  resume: one(resumes, {
+    fields: [tailoredResumes.resumeId],
+    references: [resumes.id],
+  }),
+}));
+
+export type Resume = typeof resumes.$inferSelect;
+export type NewResume = typeof resumes.$inferInsert;
+export type TailoredResume = typeof tailoredResumes.$inferSelect;
+export type NewTailoredResume = typeof tailoredResumes.$inferInsert;
+
