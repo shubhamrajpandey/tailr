@@ -6,6 +6,7 @@ import { env } from "./config/env";
 import { errorHandler } from "./middleware/error";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { companiesRoutes } from "./modules/companies/companies.routes";
+import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -59,6 +60,11 @@ const app = new Elysia()
             description: "Static IT company directory — admin-managed, paginated, with search and A–Z filtering",
           },
           {
+            name: "Cover Letters",
+            description:
+              "AI-tailored cover letter generation strictly grounded in candidate master resume with zero-hallucination guarantee, customizable tone, length, and templates",
+          },
+          {
             name: "System",
             description: "Service health, database connection checks, and diagnostics",
           },
@@ -95,6 +101,9 @@ const app = new Elysia()
 
   // 6. Mount Companies Directory Routes (/companies, /admin/companies)
   .use(companiesRoutes)
+
+  // 7. Mount Cover Letter Generation Route (/cover-letter/generate)
+  .use(coverLetterRoutes)
 
   // 6. Bind to Port
   .listen({

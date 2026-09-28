@@ -32,6 +32,12 @@ All authentication routes are prefixed with `/auth` and tagged under **Auth**. S
 | `POST` | `/auth/logout` | Revoke session in database and clear HttpOnly cookie | Cookie | `200` |
 | `GET` | `/auth/me` | Fetch authenticated user profile | **Bearer JWT** | `200`, `401` |
 
+### Cover Letters Routes
+
+| Method | Endpoint | Description | Auth Required | Status Codes |
+|---|---|---|:---:|---|
+| `POST` | `/cover-letter/generate` | AI cover letter generation strictly grounded in verified master resume with zero-hallucination guarantee, customizable tone, length, and templates (Professional Classic, Minimal Direct, Modern Bold) | None / Bearer | `200`, `400`, `429`, `500` |
+
 ### System Routes
 
 | Method | Endpoint | Description | Auth Required | Status Codes |

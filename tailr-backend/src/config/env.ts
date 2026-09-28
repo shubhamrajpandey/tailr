@@ -15,6 +15,7 @@ interface EnvConfig {
   OTP_RESEND_COOLDOWN_SECONDS: number;
   FRONTEND_URL: string;
   COOKIE_DOMAIN?: string;
+  GEMINI_API_KEY?: string;
 }
 
 function getEnv(): EnvConfig {
@@ -49,6 +50,7 @@ function getEnv(): EnvConfig {
     OTP_RESEND_COOLDOWN_SECONDS: parseInt(process.env.OTP_RESEND_COOLDOWN_SECONDS || "30", 10),
     FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
     COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   });
 }
 
