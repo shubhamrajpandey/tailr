@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Save, Check, FileCheck, Layers, Zap } from "lucide-react";
+import { Save, Check, FileCheck, Layers } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
@@ -105,16 +105,6 @@ function TailorWorkspaceForm({
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/n8n">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1.5 font-semibold text-orange-600 dark:text-orange-400 border-orange-500/30 hover:bg-orange-500/10"
-                >
-                  <Zap className="h-4 w-4" />
-                  n8n Webhook
-                </Button>
-              </Link>
               <Link href="/resume/versions">
                 <Button variant="secondary" size="sm" className="gap-1.5 font-semibold">
                   <Layers className="h-4 w-4" />

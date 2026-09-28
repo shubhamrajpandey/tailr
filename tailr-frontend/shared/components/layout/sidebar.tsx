@@ -207,12 +207,6 @@ function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       href: "/companies",
       icon: Building2,
     },
-    {
-      title: "n8n Automation",
-      href: "/n8n",
-      icon: Zap,
-      badge: "n8n",
-    },
   ];
 
   return (

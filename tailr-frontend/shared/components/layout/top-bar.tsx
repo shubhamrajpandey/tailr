@@ -168,12 +168,6 @@ function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
       { label: "Documentation" },
     ];
   }
-  if (pathname.startsWith("/n8n")) {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Automation" },
-    ];
-  }
 
   const segments = pathname.split("/").filter(Boolean);
   return [

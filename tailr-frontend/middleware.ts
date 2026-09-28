@@ -14,7 +14,6 @@ const PROTECTED_PREFIXES = [
   "/companies",
   "/cover-letter",
   "/docs",
-  "/n8n",
 ];
 
 /**
