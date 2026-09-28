@@ -15,12 +15,12 @@ import { TopBar } from "@/shared/components/layout/top-bar";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
-import { useCoverLetterGeneration } from "@/shared/hooks/use-cover-letter-generation";
 import { Button } from "@/shared/components/ui/button";
 import { ApplicationSelector } from "../components/application-selector";
 import { CandidateVerificationCard } from "../components/candidate-verification-card";
 import { GenerationPreferencesCard } from "../components/generation-preferences-card";
 import { CoverLetterEditor } from "../components/cover-letter-editor";
+import { useGenerateCoverLetterMutation } from "../hooks/use-cover-letter-mutation";
 import {
   CoverLetterJobDetails,
   CoverLetterPreferences,
@@ -35,11 +35,11 @@ export default function NewCoverLetterWorkspace() {
   const { masterResume } = useMasterResume();
   const { saveCoverLetter } = useCoverLetters();
   const {
-    statusMessage,
-    error,
-    isLoading,
-    generateCoverLetter,
-  } = useCoverLetterGeneration();
+    mutate: generateCoverLetter,
+    isGenerating,
+    stageMessage,
+    error: mutationError,
+  } = useGenerateCoverLetterMutation();
 
   // Find preselected app if query param present
   const preselectedApp = React.useMemo(() => {
@@ -106,45 +106,30 @@ export default function NewCoverLetterWorkspace() {
     jobDetails.companyName.trim().length > 0 &&
     jobDetails.positionTitle.trim().length > 0;
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!isFormValid) {
       alert("Please specify a company name and position title.");
       return;
     }
 
-    // Map to the existing hook payload structure
-    // Note: in the upcoming backend step, this connects directly to Elysia backend
-    const genResult = await generateCoverLetter(masterResume, {
-      applicationId:
-        !isManualMode && selectedApplicationId ? selectedApplicationId : null,
-      companyName: jobDetails.companyName.trim(),
-      positionTitle: jobDetails.positionTitle.trim(),
-      recipientName: jobDetails.hiringManager.trim() || null,
-      recipientTitle: jobDetails.hiringManagerTitle.trim() || null,
-      jobDescription: jobDetails.jobDescription.trim(),
-      tone:
-        preferences.tone === "natural" ||
-        preferences.tone === "confident" ||
-        preferences.tone === "enthusiastic"
-          ? "conversational"
-          : preferences.tone === "technical" || preferences.length === "short"
-          ? "concise"
-          : "formal",
-      customInstructions: [
-        preferences.additionalInformation,
-        `Template layout: ${preferences.template}`,
-        `Length preference: ${preferences.length}`,
-        `Specific tone: ${preferences.tone}`,
-        jobDetails.location ? `Role location: ${jobDetails.location}` : "",
-      ]
-        .filter(Boolean)
-        .join("; "),
-    });
-
-    if (genResult) {
-      setDraftContent(genResult.content);
-      setKeyHighlights(genResult.keyHighlights);
-    }
+    generateCoverLetter(
+      {
+        masterResume,
+        jobDetails,
+        preferences,
+      },
+      {
+        onSuccess: (data) => {
+          setDraftContent(data.content);
+          setKeyHighlights(data.keyHighlights);
+          setTimeout(() => {
+            document
+              .getElementById("generated-letter-workspace")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }, 150);
+        },
+      }
+    );
   };
 
   const handleSave = (letterStatus: "DRAFT" | "FINAL") => {
@@ -264,12 +249,12 @@ export default function NewCoverLetterWorkspace() {
               <Button
                 type="button"
                 onClick={handleGenerate}
-                disabled={isLoading || !isFormValid}
+                disabled={isGenerating || !isFormValid}
                 variant="primary"
                 size="lg"
                 className="gap-2.5 font-bold shadow-md bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 px-6 py-2.5 cursor-pointer disabled:opacity-50"
               >
-                {isLoading ? (
+                {isGenerating ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Synthesizing Authentic Letter...</span>
@@ -284,7 +269,7 @@ export default function NewCoverLetterWorkspace() {
             </div>
 
             {/* Progressive Loading State */}
-            {isLoading && (
+            {isGenerating && (
               <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 flex items-center gap-3 animate-in fade-in">
                 <Loader2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" />
                 <div className="space-y-0.5 min-w-0">
@@ -292,7 +277,7 @@ export default function NewCoverLetterWorkspace() {
                     AI Pipeline Running with Zero-Hallucination Guardrails
                   </p>
                   <p className="text-xs text-indigo-800/90 dark:text-indigo-300/80 font-medium">
-                    {statusMessage ||
+                    {stageMessage ||
                       "Evaluating verified credentials against role requirements..."}
                   </p>
                 </div>
@@ -300,7 +285,7 @@ export default function NewCoverLetterWorkspace() {
             )}
 
             {/* Error State */}
-            {error && (
+            {mutationError && (
               <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200/80 dark:border-rose-500/20 flex items-center gap-3">
                 <AlertCircle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0" />
                 <div className="space-y-0.5 min-w-0">
@@ -308,7 +293,7 @@ export default function NewCoverLetterWorkspace() {
                     Generation Failed
                   </p>
                   <p className="text-xs text-rose-800/90 dark:text-rose-300/80">
-                    {error}
+                    {mutationError.message || "Failed to generate cover letter"}
                   </p>
                 </div>
               </div>
