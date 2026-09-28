@@ -15,13 +15,20 @@ import {
   Calendar,
   Building2,
   User,
+  FileText,
 } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
+import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { CoverLetterPreview } from "../components/cover-letter-preview";
+import {
+  downloadCoverLetterAsDocx,
+  downloadCoverLetterAsPdf,
+  downloadCoverLetterAsTxt,
+} from "../utils/export-helpers";
 
 export default function CoverLetterDetailPage() {
   const router = useRouter();
@@ -30,6 +37,7 @@ export default function CoverLetterDetailPage() {
 
   const { coverLetters, isLoaded, updateCoverLetter, deleteCoverLetter } =
     useCoverLetters();
+  const { masterResume } = useMasterResume();
 
   const coverLetter = React.useMemo(() => {
     return coverLetters.find((cl) => cl.id === letterId);
@@ -64,27 +72,38 @@ export default function CoverLetterDetailPage() {
     );
   }
 
+  const exportMeta = {
+    companyName: coverLetter.companyName,
+    positionTitle: coverLetter.positionTitle,
+    candidateName: masterResume.basics?.name || "Applicant",
+    candidateEmail: masterResume.basics?.email,
+    candidatePhone: masterResume.basics?.phone,
+    candidateLocation: masterResume.basics?.location,
+    recipientName: coverLetter.recipientName || undefined,
+    recipientTitle: coverLetter.recipientTitle || undefined,
+    date: new Date(coverLetter.createdAt).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }),
+  };
+
   const handleCopy = () => {
     navigator.clipboard.writeText(coverLetter.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDownloadTxt = () => {
-    const filename = `Cover_Letter_${coverLetter.companyName}_${coverLetter.positionTitle}`
-      .replace(/[^a-zA-Z0-9_-]/g, "_")
-      .concat(".txt");
-    const element = document.createElement("a");
-    const file = new Blob([coverLetter.content], { type: "text/plain" });
-    element.href = URL.createObjectURL(file);
-    element.download = filename;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+  const handleDownloadDocx = () => {
+    downloadCoverLetterAsDocx(coverLetter.content, exportMeta);
   };
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPdf = () => {
+    downloadCoverLetterAsPdf();
+  };
+
+  const handleDownloadTxt = () => {
+    downloadCoverLetterAsTxt(coverLetter.content, exportMeta);
   };
 
   const handleToggleStatus = () => {
@@ -140,7 +159,7 @@ export default function CoverLetterDetailPage() {
         </div>
 
         {/* Header Bar (hidden when printing) */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3 print:hidden">
+        <header className="px-6 lg:px-10 pt-7 pb-6 flex flex-col gap-3 print:hidden border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2.5 flex-wrap">
@@ -198,17 +217,17 @@ export default function CoverLetterDetailPage() {
                 <span>{copied ? "Copied!" : "Copy"}</span>
               </Button>
 
-              {/* Download TXT */}
+              {/* Download Word / Docs (.doc) */}
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={handleDownloadTxt}
-                className="gap-1.5"
-                title="Download plain text file"
+                onClick={handleDownloadDocx}
+                className="gap-1.5 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/50"
+                title="Download formatted Microsoft Word / Google Docs document (.doc)"
               >
-                <Download className="h-3.5 w-3.5" />
-                <span>Text</span>
+                <FileText className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>Download Docs</span>
               </Button>
 
               {/* Print / Export PDF */}
@@ -216,12 +235,24 @@ export default function CoverLetterDetailPage() {
                 type="button"
                 variant="secondary"
                 size="sm"
-                onClick={handlePrint}
-                className="gap-1.5"
-                title="Print or Save as PDF via browser"
+                onClick={handleDownloadPdf}
+                className="gap-1.5 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50"
+                title="Print or Save as PDF"
               >
-                <Printer className="h-3.5 w-3.5" />
+                <Printer className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
                 <span>Export PDF</span>
+              </Button>
+
+              {/* Download TXT */}
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleDownloadTxt}
+                className="h-8 px-2 text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                title="Download plain text file"
+              >
+                <Download className="h-3.5 w-3.5" />
               </Button>
 
               {/* Edit-in-Place Toggle */}
@@ -278,8 +309,8 @@ export default function CoverLetterDetailPage() {
           </div>
         </header>
 
-        {/* Letter Body */}
-        <main className="px-8 pb-16 flex-1 max-w-4xl">
+        {/* Full-width Responsive Body */}
+        <main className="px-6 lg:px-10 py-8 flex-1 w-full max-w-5xl mx-auto">
           {isEditing ? (
             <div className="space-y-4">
               <div className="p-3 rounded-lg bg-indigo-50/60 dark:bg-indigo-500/10 border border-indigo-200/60 dark:border-indigo-500/20 text-xs text-indigo-900 dark:text-indigo-300">
@@ -318,7 +349,19 @@ export default function CoverLetterDetailPage() {
               </div>
             </div>
           ) : (
-            <CoverLetterPreview coverLetter={coverLetter} />
+            <CoverLetterPreview
+              content={coverLetter.content}
+              companyName={coverLetter.companyName}
+              positionTitle={coverLetter.positionTitle}
+              recipientName={coverLetter.recipientName}
+              recipientTitle={coverLetter.recipientTitle}
+              candidateName={masterResume.basics?.name || "Applicant"}
+              candidateEmail={masterResume.basics?.email}
+              candidatePhone={masterResume.basics?.phone}
+              candidateLocation={masterResume.basics?.location}
+              createdAt={coverLetter.createdAt}
+              keyHighlights={coverLetter.keyHighlights}
+            />
           )}
         </main>
       </div>
