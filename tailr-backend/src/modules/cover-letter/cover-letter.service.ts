@@ -168,17 +168,36 @@ Return strict JSON with two keys:
 }
 `;
 
-    // Free tier reliable model choice: gemini-flash-latest
-    const response = await this.genAI.models.generateContent({
-      model: "gemini-flash-latest",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        temperature: 0.3,
-      },
-    });
+    // Resilient candidate models chain to survive 503 high-demand spikes
+    const candidateModels = [
+      "gemini-3-flash-preview",
+      "gemini-3.1-flash-lite",
+      "gemini-2.5-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-flash-latest",
+    ];
 
-    const responseText = response.text?.trim();
+    let responseText: string | undefined;
+
+    for (const model of candidateModels) {
+      try {
+        const response = await this.genAI.models.generateContent({
+          model,
+          contents: prompt,
+          config: {
+            responseMimeType: "application/json",
+            temperature: 0.3,
+          },
+        });
+        if (response.text?.trim()) {
+          responseText = response.text.trim();
+          break;
+        }
+      } catch (err: any) {
+        console.warn(`[CoverLetterService] Model '${model}' unavailable (${err?.message?.slice(0, 100)}). Falling back...`);
+      }
+    }
+
     if (!responseText) return null;
 
     try {

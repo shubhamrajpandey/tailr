@@ -312,12 +312,45 @@ ${projectLines}
 /**
  * Resume Service: Orchestrates Master Resume storage, AI-powered tailoring, and ATS score computation.
  */
+const CANDIDATE_GEMINI_MODELS = [
+  "gemini-flash-lite-latest",
+  "gemini-3-flash-preview",
+  "gemini-3.1-flash-lite-preview",
+  "gemini-3.1-flash-lite",
+  "gemini-flash-latest",
+];
+
 export class ResumeService {
   private getClient(): GoogleGenAI | null {
     // Prefer dedicated resume key if configured, otherwise fallback to GEMINI_API_KEY
     const apiKey = env.GEMINI_RESUME_API_KEY || env.GEMINI_API_KEY;
     if (!apiKey) return null;
     return new GoogleGenAI({ apiKey });
+  }
+
+  /**
+   * Tries candidate models in order to seamlessly tolerate 503 high-demand spikes on free tier.
+   */
+  private async executeWithModelFallback<T>(
+    client: GoogleGenAI,
+    call: (model: string) => Promise<T>
+  ): Promise<{ result: T; modelUsed: string }> {
+    let lastError: any = null;
+    for (const model of CANDIDATE_GEMINI_MODELS) {
+      try {
+        const result = await call(model);
+        return { result, modelUsed: model };
+      } catch (err: any) {
+        lastError = err;
+        const msg = err?.message || String(err);
+        console.warn(
+          `[ResumeService] Model '${model}' returned unavailable (${msg.slice(0, 100)}). Trying next candidate model...`
+        );
+        // Brief sleep to avoid hitting immediate concurrency bursts
+        await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+    }
+    throw lastError;
   }
 
   /**
@@ -576,14 +609,18 @@ Respond ONLY with valid JSON.`;
           contents = `${schemaInstructions}\n\nRESUME TEXT:\n${rawText || ""}`;
         }
 
-        const response = await client.models.generateContent({
-          model: "gemini-flash-latest",
-          contents,
-          config: {
-            responseMimeType: "application/json",
-            temperature: 0.1,
-          },
-        });
+        const { result: response } = await this.executeWithModelFallback(
+          client,
+          (model) =>
+            client.models.generateContent({
+              model,
+              contents,
+              config: {
+                responseMimeType: "application/json",
+                temperature: 0.1,
+              },
+            })
+        );
 
         if (response.text) {
           const parsed = JSON.parse(response.text.trim());
@@ -672,23 +709,30 @@ ${request.jobDescription}
 CANDIDATE VERIFIED RESUME:
 ${JSON.stringify(resumeData, null, 2)}`;
 
-        const response = await client.models.generateContent({
-          model: "gemini-flash-latest",
-          contents: [
-            { role: "user", parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] },
-          ],
-          config: {
-            responseMimeType: "application/json",
-            temperature: 0.2,
-          },
-        });
+        let usedModelName = "gemini-3-flash-preview";
+        const { result: response, modelUsed } = await this.executeWithModelFallback(
+          client,
+          (model) => {
+            usedModelName = model;
+            return client.models.generateContent({
+              model,
+              contents: [
+                { role: "user", parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] },
+              ],
+              config: {
+                responseMimeType: "application/json",
+                temperature: 0.2,
+              },
+            });
+          }
+        );
 
         if (response.text) {
           const parsed = JSON.parse(response.text.trim());
           if (parsed.tailoredData && parsed.atsFeedback) {
             tailoredData = parsed.tailoredData;
             atsFeedback = parsed.atsFeedback;
-            provider = "gemini-flash-latest";
+            provider = modelUsed || usedModelName;
           }
         }
       } catch (err: any) {
