@@ -503,14 +503,14 @@ export class ResumeService {
   }
 
   /**
-   * Parses raw resume text/Markdown/LaTeX into canonical StructuredResumeData.
+   * Parses raw resume text/Markdown/LaTeX or PDF file base64 into canonical StructuredResumeData.
    */
-  async parseRawResumeText(rawText: string): Promise<StructuredResumeData> {
+  async parseRawResumeText(rawText?: string, pdfBase64?: string): Promise<StructuredResumeData> {
     const client = this.getClient();
 
     if (client) {
       try {
-        const prompt = `You are an expert ATS resume parser. Parse the following resume text into clean, structured JSON matching this schema:
+        const schemaInstructions = `You are an expert ATS resume parser. Parse the provided resume into clean, structured JSON matching this schema:
 {
   "basics": {
     "fullName": "Full Name",
@@ -555,14 +555,30 @@ export class ResumeService {
   ]
 }
 
-RESUME TEXT:
-${rawText}
-
 Respond ONLY with valid JSON.`;
+
+        let contents: any;
+
+        if (pdfBase64) {
+          const cleanData = pdfBase64.replace(/^data:application\/pdf;base64,/, "");
+          contents = [
+            {
+              inlineData: {
+                mimeType: "application/pdf",
+                data: cleanData,
+              },
+            },
+            {
+              text: `${schemaInstructions}\n\nParse this attached PDF resume document accurately into JSON.`,
+            },
+          ];
+        } else {
+          contents = `${schemaInstructions}\n\nRESUME TEXT:\n${rawText || ""}`;
+        }
 
         const response = await client.models.generateContent({
           model: "gemini-flash-latest",
-          contents: prompt,
+          contents,
           config: {
             responseMimeType: "application/json",
             temperature: 0.1,
@@ -571,7 +587,7 @@ Respond ONLY with valid JSON.`;
 
         if (response.text) {
           const parsed = JSON.parse(response.text.trim());
-          if (parsed.basics?.fullName && parsed.careerSummary) {
+          if (parsed.basics?.fullName && (parsed.careerSummary || parsed.workExperience)) {
             return parsed as StructuredResumeData;
           }
         }
@@ -583,7 +599,7 @@ Respond ONLY with valid JSON.`;
     // Heuristic fallback if AI is unavailable or rate limited
     return {
       ...DEFAULT_CANDIDATE_RESUME,
-      careerSummary: rawText.slice(0, 500),
+      careerSummary: (rawText || "").slice(0, 500) || DEFAULT_CANDIDATE_RESUME.careerSummary,
     };
   }
 

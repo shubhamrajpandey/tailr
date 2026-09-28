@@ -9,7 +9,7 @@ import { Input } from "@/shared/components/ui/input";
 interface ResumeUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (rawText: string, title?: string) => Promise<unknown>;
+  onUpload: (payload: { rawText?: string; pdfBase64?: string; title?: string }) => Promise<unknown>;
   isUploading: boolean;
 }
 
@@ -20,9 +20,12 @@ export function ResumeUploadModal({
   isUploading,
 }: ResumeUploadModalProps) {
   const [rawText, setRawText] = React.useState("");
+  const [pdfBase64, setPdfBase64] = React.useState<string | null>(null);
+  const [selectedFileName, setSelectedFileName] = React.useState<string | null>(null);
   const [title, setTitle] = React.useState("Uploaded Master Resume");
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
@@ -30,26 +33,62 @@ export function ResumeUploadModal({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setTitle(file.name.replace(/\.[^/.]+$/, ""));
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const content = event.target?.result as string;
-      if (content) {
-        setRawText(content);
-      }
-    };
-    reader.readAsText(file);
+    const baseName = file.name.replace(/\.[^/.]+$/, "");
+    setTitle(baseName);
+    setSelectedFileName(file.name);
+    setError(null);
+
+    const isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+
+    if (isPdf) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Data = event.target?.result as string;
+        if (base64Data) {
+          setPdfBase64(base64Data);
+        }
+      };
+      reader.onerror = () => {
+        setError("Failed to read PDF file.");
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setPdfBase64(null);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result as string;
+        if (content) {
+          setRawText(content);
+        }
+      };
+      reader.onerror = () => {
+        setError("Failed to read text file.");
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleClearFile = () => {
+    setSelectedFileName(null);
+    setPdfBase64(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = async () => {
-    if (!rawText.trim()) {
-      setError("Please paste or upload resume text.");
+    if (!rawText.trim() && !pdfBase64) {
+      setError("Please choose a resume file (.pdf, .tex, .txt, etc.) or paste your resume content.");
       return;
     }
 
     setError(null);
     try {
-      await onUpload(rawText.trim(), title.trim());
+      await onUpload({
+        rawText: rawText.trim() || undefined,
+        pdfBase64: pdfBase64 || undefined,
+        title: title.trim(),
+      });
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -59,6 +98,8 @@ export function ResumeUploadModal({
       setError(err instanceof Error ? err.message : "Failed to parse and save resume.");
     }
   };
+
+  const hasContent = Boolean(pdfBase64 || rawText.trim());
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
@@ -74,7 +115,7 @@ export function ResumeUploadModal({
                 Upload & AI Parse Master Resume
               </h3>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Paste your resume text, LaTeX source, or Markdown. The AI will extract credentials and save to the database.
+                Upload your PDF, LaTeX source, Markdown, or paste raw text. The AI extracts your credentials and saves to the database.
               </p>
             </div>
           </div>
@@ -103,18 +144,44 @@ export function ResumeUploadModal({
           </div>
 
           {/* File Picker */}
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors">
-              <FileText className="h-3.5 w-3.5 text-indigo-600" />
-              <span>Choose File (.tex, .txt, .md, .json)</span>
-              <input
-                type="file"
-                accept=".txt,.tex,.md,.json"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-            </label>
-            <span className="text-[11px] text-neutral-400">or paste content directly below</span>
+          <div className="space-y-2">
+            <div className="flex items-center gap-3 flex-wrap">
+              <label className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-300 dark:border-white/10 bg-neutral-50 dark:bg-white/5 text-xs font-medium cursor-pointer hover:bg-neutral-100 dark:hover:bg-white/10 transition-colors">
+                <FileText className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+                <span>Choose File (.pdf, .tex, .txt, .md, .json)</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.txt,.tex,.md,.json"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+              </label>
+              <span className="text-[11px] text-neutral-400">or paste content directly below</span>
+            </div>
+
+            {/* Selected File Feedback */}
+            {selectedFileName && (
+              <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/40 text-xs text-indigo-800 dark:text-indigo-300">
+                <div className="flex items-center gap-2 truncate">
+                  <CheckCircle className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  <span className="font-semibold truncate">{selectedFileName}</span>
+                  {pdfBase64 && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-200/60 dark:bg-indigo-800/60 font-mono">
+                      PDF Ready for Multimodal Extraction
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClearFile}
+                  className="p-0.5 text-neutral-400 hover:text-neutral-700 dark:hover:text-white cursor-pointer"
+                  title="Remove file"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Textarea */}
@@ -123,10 +190,14 @@ export function ResumeUploadModal({
               Resume Content (Plaintext / Markdown / LaTeX)
             </label>
             <Textarea
-              rows={10}
+              rows={pdfBase64 ? 5 : 8}
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}
-              placeholder="Paste your resume sections, work experience, LaTeX source, or skills here..."
+              placeholder={
+                pdfBase64
+                  ? "PDF file attached above! You can optionally paste additional notes or context here..."
+                  : "Paste your resume sections, work experience, LaTeX source, or skills here..."
+              }
               className="text-xs font-mono leading-relaxed"
             />
           </div>
@@ -162,7 +233,7 @@ export function ResumeUploadModal({
             variant="primary"
             size="sm"
             onClick={handleSubmit}
-            disabled={isUploading || !rawText.trim()}
+            disabled={isUploading || !hasContent}
             className="gap-2 font-bold bg-indigo-600 hover:bg-indigo-500 text-white"
           >
             {isUploading ? (

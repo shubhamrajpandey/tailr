@@ -2,10 +2,11 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, Save, RotateCcw, Check, ArrowRight, Upload, Database, Loader2 } from "lucide-react";
+import { Sparkles, Save, RotateCcw, Check, ArrowRight, Upload, Loader2 } from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
+import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
@@ -138,8 +139,8 @@ function MasterResumeEditor({
     }
   };
 
-  const handleUploadRaw = async (rawText: string, title?: string) => {
-    const res = await uploadRawResume({ rawText, title });
+  const handleUploadRaw = async (payload: { rawText?: string; pdfBase64?: string; title?: string }) => {
+    const res = await uploadRawResume(payload);
     if (res?.data) {
       await refetch();
       setIsUploadModalOpen(false);
@@ -160,15 +161,8 @@ function MasterResumeEditor({
         <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-3">
+              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 Master Resume
-                <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">
-                  Single Source of Truth
-                </span>
-                <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1">
-                  <Database className="h-3 w-3" />
-                  PostgreSQL Synced
-                </span>
               </h1>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Your canonical career record. Upload your resume or edit below to tailor for any role with zero hallucination.
@@ -293,6 +287,9 @@ function MasterResumeEditor({
         onUpload={handleUploadRaw}
         isUploading={isUploading}
       />
+
+      {/* Scroll To Top Component */}
+      <ScrollToTop threshold={200} />
     </div>
   );
 }

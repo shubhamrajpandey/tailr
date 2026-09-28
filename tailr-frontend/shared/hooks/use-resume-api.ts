@@ -88,9 +88,10 @@ export function useMasterResumeFromDb() {
   });
 
   const uploadRawMutation = useMutation({
-    mutationFn: async (payload: { rawText: string; title?: string }) => {
+    mutationFn: async (payload: { rawText?: string; pdfBase64?: string; title?: string }) => {
       const { data } = await authApiClient.post("/resume/upload", {
         rawText: payload.rawText,
+        pdfBase64: payload.pdfBase64,
         title: payload.title || "Uploaded Resume",
         isMaster: true,
       });

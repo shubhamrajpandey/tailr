@@ -83,11 +83,17 @@ export const SaveResumeRequestSchema = t.Object({
 
 export const UploadRawResumeRequestSchema = t.Object({
   title: t.Optional(t.String({ maxLength: 255, default: "Uploaded Resume" })),
-  rawText: t.String({
-    minLength: 20,
-    maxLength: 50000,
-    description: "Raw text, Markdown, or LaTeX source pasted or extracted from uploaded resume file",
-  }),
+  rawText: t.Optional(
+    t.String({
+      maxLength: 100000,
+      description: "Raw text, Markdown, or LaTeX source pasted or extracted from uploaded resume file",
+    })
+  ),
+  pdfBase64: t.Optional(
+    t.String({
+      description: "Base64 encoded PDF file content for direct multimodal AI resume parsing",
+    })
+  ),
   isMaster: t.Optional(t.Boolean({ default: true })),
 });
 

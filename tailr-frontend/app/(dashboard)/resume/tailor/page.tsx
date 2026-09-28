@@ -15,6 +15,7 @@ import { Application } from "@/shared/types/application";
 import { ResumeData } from "@/shared/types/resume";
 import { TailoringPromptInput } from "../components/tailoring-prompt-input";
 import { AtsTailoredResultStation } from "../components/ats-tailored-result-station";
+import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
 interface TailorWorkspaceFormProps {
   initialApp: Application | null;
@@ -240,6 +241,9 @@ function TailorWorkspaceForm({
           )}
         </main>
       </div>
+
+      {/* Floating Scroll To Top */}
+      <ScrollToTop threshold={200} />
     </div>
   );
 }

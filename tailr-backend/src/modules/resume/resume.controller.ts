@@ -70,13 +70,13 @@ export class ResumeController {
     set: Context["set"];
   }) {
     const userId = await getUserIdFromContext(jwtAccess, headers);
-    const parsedData = await resumeService.parseRawResumeText(body.rawText);
+    const parsedData = await resumeService.parseRawResumeText(body.rawText, body.pdfBase64);
 
     const saved = await resumeService.saveResume(
       userId,
       parsedData,
       body.title || "Uploaded Resume",
-      body.rawText,
+      body.rawText || (body.pdfBase64 ? "[Uploaded PDF Document]" : undefined),
       body.isMaster ?? true
     );
 
