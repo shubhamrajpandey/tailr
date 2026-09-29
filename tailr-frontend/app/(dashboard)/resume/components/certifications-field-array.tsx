@@ -76,7 +76,7 @@ export function CertificationsFieldArray({
                 Certifications
               </h2>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Industry credentials and verified accreditations.
+                Optional: Industry credentials & accreditations (AWS, Meta, etc.). Leave empty if none.
               </p>
             </div>
           </div>
@@ -95,9 +95,14 @@ export function CertificationsFieldArray({
 
         <div className="space-y-3">
           {certifications.length === 0 ? (
-            <p className="text-xs text-neutral-400 italic py-3 text-center">
-              No certifications listed.
-            </p>
+            <div className="rounded-lg border border-dashed border-neutral-300 dark:border-white/10 p-4 text-center">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                No certifications listed.
+              </p>
+              <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+                This section is optional and automatically omitted from your ATS resume if empty. Click &quot;+ Add&quot; to include industry certifications.
+              </p>
+            </div>
           ) : (
             certifications.map((cert, cIdx) => (
               <div
@@ -112,6 +117,7 @@ export function CertificationsFieldArray({
                     type="button"
                     onClick={() => removeCert(cIdx)}
                     className="text-neutral-400 hover:text-rose-600 cursor-pointer p-1"
+                    title="Remove certification"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -163,7 +169,7 @@ export function CertificationsFieldArray({
                 Honors & Achievements
               </h2>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Hackathon wins, publications, speaking engagements, and awards.
+                Optional: Hackathon wins, publications, speaking, or awards. Leave empty if none.
               </p>
             </div>
           </div>
@@ -182,9 +188,14 @@ export function CertificationsFieldArray({
 
         <div className="space-y-3">
           {achievements.length === 0 ? (
-            <p className="text-xs text-neutral-400 italic py-3 text-center">
-              No honors or achievements listed.
-            </p>
+            <div className="rounded-lg border border-dashed border-neutral-300 dark:border-white/10 p-4 text-center">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                No honors or achievements listed.
+              </p>
+              <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
+                This section is optional and automatically omitted from your ATS resume if empty. Click &quot;+ Add&quot; to include competitions or honors.
+              </p>
+            </div>
           ) : (
             achievements.map((ach, aIdx) => (
               <div

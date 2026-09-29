@@ -7,9 +7,15 @@ import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
-import { useMasterResume } from "@/shared/hooks/use-master-resume";
+import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
-import { ResumeData, MasterResume } from "@/shared/types/resume";
+import {
+  ResumeData,
+  MasterResume,
+  ResumeCertification,
+  ResumeAchievement,
+} from "@/shared/types/resume";
+import { ResumeExportData } from "@/shared/utils/resume-export-helpers";
 import { BasicsSectionForm } from "./components/basics-section-form";
 import { SummarySectionForm } from "./components/summary-section-form";
 import { ExperienceFieldArray } from "./components/experience-field-array";
@@ -25,6 +31,185 @@ interface MasterResumeEditorProps {
   resetToDefault: () => void;
 }
 
+/**
+ * Maps raw resume data from backend/PostgreSQL (or uploaded parse result)
+ * to the canonical frontend ResumeData format.
+ */
+function mapDbResumeToResumeData(
+  dbData: ResumeExportData | null | undefined,
+  prev: ResumeData
+): ResumeData {
+  if (!dbData) return prev;
+
+  const rawBasics = dbData.basics;
+  const fullName = rawBasics?.fullName || dbData.fullName || prev.basics.name;
+  const email = rawBasics?.email || dbData.email || prev.basics.email;
+  const phone = rawBasics?.phone || dbData.phone || prev.basics.phone;
+  const location = rawBasics?.location || dbData.location || prev.basics.location;
+  const linkedin = rawBasics?.linkedinUrl || dbData.linkedinUrl || prev.basics.linkedin;
+  const github = rawBasics?.githubUrl || dbData.githubUrl || prev.basics.github;
+  const portfolio = rawBasics?.portfolioUrl || dbData.portfolioUrl || prev.basics.portfolio;
+
+  const summary = dbData.careerSummary || prev.summary;
+
+  // Technical Skills mapping
+  let skills = prev.skills;
+  if (Array.isArray(dbData.technicalSkills) && dbData.technicalSkills.length > 0) {
+    const nextSkills = {
+      languages: [] as string[],
+      frameworks: [] as string[],
+      tools: [] as string[],
+      other: [] as string[],
+    };
+
+    for (const item of dbData.technicalSkills) {
+      const rawList = Array.isArray(item.skills)
+        ? item.skills
+        : typeof item.skills === "string"
+        ? item.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : [];
+
+      const cat = (item.category || "").toLowerCase();
+      if (cat.includes("lang") || cat.includes("prog")) {
+        nextSkills.languages.push(...rawList);
+      } else if (
+        cat.includes("frame") ||
+        cat.includes("front") ||
+        cat.includes("library") ||
+        cat.includes("lib") ||
+        cat.includes("web")
+      ) {
+        nextSkills.frameworks.push(...rawList);
+      } else if (
+        cat.includes("tool") ||
+        cat.includes("infra") ||
+        cat.includes("database") ||
+        cat.includes("data") ||
+        cat.includes("cloud") ||
+        cat.includes("devops") ||
+        cat.includes("git")
+      ) {
+        nextSkills.tools.push(...rawList);
+      } else if (cat.includes("back")) {
+        nextSkills.frameworks.push(...rawList);
+      } else {
+        nextSkills.other.push(...rawList);
+      }
+    }
+
+    skills = {
+      languages: Array.from(new Set(nextSkills.languages)),
+      frameworks: Array.from(new Set(nextSkills.frameworks)),
+      tools: Array.from(new Set(nextSkills.tools)),
+      other: Array.from(new Set(nextSkills.other)),
+    };
+  }
+
+  // Work Experience mapping
+  let experience = prev.experience;
+  if (Array.isArray(dbData.workExperience) && dbData.workExperience.length > 0) {
+    experience = dbData.workExperience.map((exp, idx) => ({
+      id: `exp-${idx + 1}-${Date.now()}`,
+      company: exp.company || "",
+      title: exp.role || "",
+      location: exp.location || "",
+      startDate: exp.startDate || "",
+      endDate: exp.endDate || "",
+      current:
+        typeof exp.endDate === "string" &&
+        (exp.endDate.toLowerCase().includes("present") || exp.endDate.toLowerCase().includes("current")),
+      bullets: Array.isArray(exp.bullets) ? exp.bullets : [],
+    }));
+  }
+
+  // Education mapping
+  let education = prev.education;
+  if (Array.isArray(dbData.education) && dbData.education.length > 0) {
+    education = dbData.education.map((edu, idx) => {
+      const degreeStr = edu.degree || "";
+      let field = degreeStr;
+      if (degreeStr.includes(" in ")) {
+        field = degreeStr.split(" in ")[1];
+      }
+      return {
+        id: `edu-${idx + 1}-${Date.now()}`,
+        institution: edu.institution || "",
+        degree: degreeStr,
+        fieldOfStudy: field,
+        startDate: edu.startDate || "",
+        endDate: edu.endDate || "",
+        gpa: "",
+        highlights: [],
+      };
+    });
+  }
+
+  // Projects mapping
+  let projects = prev.projects;
+  if (Array.isArray(dbData.projects) && dbData.projects.length > 0) {
+    projects = dbData.projects.map((proj, idx) => {
+      const tech = Array.isArray(proj.technologies)
+        ? proj.technologies
+        : typeof proj.technologies === "string"
+        ? proj.technologies.split(",").map((s: string) => s.trim()).filter(Boolean)
+        : [];
+
+      return {
+        id: `proj-${idx + 1}-${Date.now()}`,
+        name: proj.title || "",
+        description: (Array.isArray(proj.bullets) && proj.bullets[0]) || "",
+        bullets: Array.isArray(proj.bullets) ? proj.bullets : [],
+        tech,
+        link: proj.liveUrl || "",
+      };
+    });
+  }
+
+  // Certifications & Achievements mapping
+  const isCustomUserResume = Boolean(fullName && fullName !== "Shubham Raj Pandey (Sample)");
+  const certifications: ResumeCertification[] = Array.isArray(dbData.certifications)
+    ? dbData.certifications.map((c, idx) => ({
+        id: c.id || `cert-${idx + 1}`,
+        name: c.name || "",
+        issuer: c.issuer || "",
+        date: c.date || "",
+        url: c.url || "",
+      }))
+    : isCustomUserResume
+    ? []
+    : prev.certifications;
+
+  const achievements: ResumeAchievement[] = Array.isArray(dbData.achievements)
+    ? dbData.achievements.map((a, idx) => ({
+        id: a.id || `ach-${idx + 1}`,
+        title: a.title || "",
+        description: a.description || "",
+        date: a.date || "",
+      }))
+    : isCustomUserResume
+    ? []
+    : prev.achievements;
+
+  return {
+    basics: {
+      name: fullName,
+      email,
+      phone,
+      location,
+      linkedin,
+      github,
+      portfolio,
+    },
+    summary,
+    skills,
+    experience,
+    education,
+    projects,
+    certifications,
+    achievements,
+  };
+}
+
 function MasterResumeEditor({
   masterResume,
   updateMasterResume,
@@ -37,6 +222,7 @@ function MasterResumeEditor({
 
   const {
     masterResumeData: dbData,
+    resumeId,
     saveMasterResume,
     isSaving: isDbSaving,
     uploadRawResume,
@@ -44,26 +230,25 @@ function MasterResumeEditor({
     refetch,
   } = useMasterResumeFromDb();
 
-  // Hydrate from DB on initial load asynchronously
+  const hydratedResumeIdRef = React.useRef<string | null>(null);
+
+  // Hydrate full resume from DB on initial load or query update asynchronously
   React.useEffect(() => {
     if (!dbData || isDirty) return;
+    const currentId = resumeId || JSON.stringify(dbData.basics || dbData);
+    if (hydratedResumeIdRef.current === currentId) return;
+
+    hydratedResumeIdRef.current = currentId;
     const timer = setTimeout(() => {
-      setFormData((prev) => ({
-        ...prev,
-        basics: {
-          name: dbData.fullName,
-          email: dbData.email || "",
-          phone: dbData.phone || "",
-          location: dbData.location || "",
-          linkedin: dbData.linkedinUrl || "",
-          github: dbData.githubUrl || "",
-          portfolio: dbData.portfolioUrl || "",
-        },
-        summary: dbData.careerSummary || prev.summary,
-      }));
+      setFormData((prev) => {
+        const mapped = mapDbResumeToResumeData(dbData, prev);
+        updateMasterResume(mapped);
+        return mapped;
+      });
     }, 0);
+
     return () => clearTimeout(timer);
-  }, [dbData, isDirty]);
+  }, [dbData, resumeId, isDirty, updateMasterResume]);
 
   const handleUpdate = (patch: Partial<ResumeData>) => {
     setFormData((prev) => ({
@@ -80,17 +265,19 @@ function MasterResumeEditor({
     setIsSaved(true);
 
     try {
-      // Sync to PostgreSQL DB
+      // Sync to PostgreSQL DB adhering to backend StructuredResumeDataSchema
       await saveMasterResume({
         title: "Master Resume",
         resumeData: {
-          fullName: formData.basics.name,
-          email: formData.basics.email,
-          phone: formData.basics.phone,
-          location: formData.basics.location,
-          linkedinUrl: formData.basics.linkedin,
-          githubUrl: formData.basics.github,
-          portfolioUrl: formData.basics.portfolio,
+          basics: {
+            fullName: formData.basics.name,
+            email: formData.basics.email,
+            phone: formData.basics.phone,
+            location: formData.basics.location,
+            linkedinUrl: formData.basics.linkedin,
+            githubUrl: formData.basics.github,
+            portfolioUrl: formData.basics.portfolio,
+          },
           careerSummary: formData.summary,
           technicalSkills: [
             { category: "Languages", skills: formData.skills?.languages || [] },
@@ -134,6 +321,8 @@ function MasterResumeEditor({
       )
     ) {
       resetToDefault();
+      setFormData(INITIAL_MASTER_RESUME);
+      hydratedResumeIdRef.current = null;
       setIsDirty(false);
       setIsSaved(false);
     }
@@ -141,9 +330,17 @@ function MasterResumeEditor({
 
   const handleUploadRaw = async (payload: { rawText?: string; pdfBase64?: string; title?: string }) => {
     const res = await uploadRawResume(payload);
-    if (res?.data) {
+    const uploadedRecord = res?.data as ResumeExportData | undefined;
+    if (uploadedRecord) {
+      const mapped = mapDbResumeToResumeData(uploadedRecord, formData);
+      hydratedResumeIdRef.current = uploadedRecord.id || JSON.stringify(uploadedRecord);
+      setFormData(mapped);
+      updateMasterResume(mapped);
+      setIsDirty(false);
+      setIsSaved(true);
       await refetch();
       setIsUploadModalOpen(false);
+      setTimeout(() => setIsSaved(false), 3000);
     }
   };
 

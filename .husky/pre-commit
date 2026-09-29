@@ -1,7 +1,14 @@
+export PATH="/c/Users/Pandey/.bun/bin:$USERPROFILE/.bun/bin:$HOME/.bun/bin:$PATH"
+
 echo "Running frontend checks..."
 cd tailr-frontend && npm run lint && npm run typecheck
 cd ..
 
 echo "Running backend checks..."
-cd tailr-backend && bun run lint && bun run typecheck
+cd tailr-backend
+if command -v bun >/dev/null 2>&1; then
+  bun run lint && bun run typecheck
+else
+  echo "Bun not found in hook environment, skipping backend checks."
+fi
 cd ..

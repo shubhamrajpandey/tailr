@@ -5,7 +5,17 @@
  */
 
 export interface ResumeExportData {
-  fullName: string;
+  id?: string;
+  fullName?: string;
+  basics?: {
+    fullName: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    linkedinUrl?: string;
+    githubUrl?: string;
+    portfolioUrl?: string;
+  };
   email?: string;
   phone?: string;
   location?: string;
@@ -35,6 +45,19 @@ export interface ResumeExportData {
     liveUrl?: string;
     year?: string;
     bullets: string[];
+  }>;
+  certifications?: Array<{
+    id?: string;
+    name: string;
+    issuer: string;
+    date: string;
+    url?: string;
+  }>;
+  achievements?: Array<{
+    id?: string;
+    title: string;
+    description: string;
+    date?: string;
   }>;
 }
 
@@ -74,11 +97,18 @@ export async function copyLatexToClipboard(latexSource: string): Promise<boolean
 export function printAtsResumeDirectly(data: ResumeExportData) {
   if (typeof window === "undefined") return;
 
+  const email = data.email || data.basics?.email;
+  const linkedinUrl = data.linkedinUrl || data.basics?.linkedinUrl;
+  const githubUrl = data.githubUrl || data.basics?.githubUrl;
+  const portfolioUrl = data.portfolioUrl || data.basics?.portfolioUrl;
+  const fullName = data.fullName || data.basics?.fullName || "Candidate";
+  const location = data.location || data.basics?.location || "";
+
   const headerLinks: string[] = [];
-  if (data.email) headerLinks.push(`<a href="mailto:${data.email}">${data.email}</a>`);
-  if (data.linkedinUrl) headerLinks.push(`<a href="${data.linkedinUrl}">LinkedIn</a>`);
-  if (data.githubUrl) headerLinks.push(`<a href="${data.githubUrl}">GitHub</a>`);
-  if (data.portfolioUrl) headerLinks.push(`<a href="${data.portfolioUrl}">Portfolio</a>`);
+  if (email) headerLinks.push(`<a href="mailto:${email}">${email}</a>`);
+  if (linkedinUrl) headerLinks.push(`<a href="${linkedinUrl}">LinkedIn</a>`);
+  if (githubUrl) headerLinks.push(`<a href="${githubUrl}">GitHub</a>`);
+  if (portfolioUrl) headerLinks.push(`<a href="${portfolioUrl}">Portfolio</a>`);
 
   const linksHtml = headerLinks.join(" &bull; ");
 
@@ -170,7 +200,7 @@ export function printAtsResumeDirectly(data: ResumeExportData) {
 <html>
 <head>
   <meta charset="utf-8">
-  <title>${data.fullName} - ATS Resume</title>
+  <title>${fullName} - ATS Resume</title>
   <style>
     @page {
       size: letter portrait;
@@ -235,10 +265,9 @@ export function printAtsResumeDirectly(data: ResumeExportData) {
   </style>
 </head>
 <body>
-  <h1 class="name">${data.fullName}</h1>
+  <h1 class="name">${fullName}</h1>
   <div class="contact-line">
-    ${linksHtml ? `${linksHtml} &bull; ` : ""}
-    ${data.location || ""}
+    ${linksHtml}${linksHtml && location ? " &bull; " : ""}${location}
   </div>
 
   ${

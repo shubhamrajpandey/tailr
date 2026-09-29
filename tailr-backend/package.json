@@ -4,7 +4,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --env-file .env --watch src/index.ts",
-    "typecheck": "bun x tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "seed:cedar-gate": "bun run --env-file .env scripts/seed-cedar-gate.ts",
     "lint": "echo \"Backend lint check passed\""
   },
@@ -19,7 +19,8 @@
   },
   "devDependencies": {
     "bun-types": "latest",
-    "drizzle-kit": "^0.31.11"
+    "drizzle-kit": "^0.31.11",
+    "typescript": "^7.0.2"
   },
   "module": "src/index.js"
 }

@@ -14,7 +14,6 @@ import {
   Clock,
   Layers,
   FileText,
-  FileCheck2,
   Mail,
   Building2,
   Globe,
@@ -22,8 +21,6 @@ import {
   Calendar,
   Bell,
   MoreHorizontal,
-  ChevronRight,
-  TrendingUp,
 } from "lucide-react";
 
 export function HeroSection() {

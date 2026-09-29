@@ -46,6 +46,13 @@ export function AtsTailoredResultStation({
   const [savedSuccess, setSavedSuccess] = React.useState(false);
 
   const { atsScore, atsFeedback, tailoredData, latexSource } = result;
+  const rawBasics = tailoredData.basics;
+  const candidateName = rawBasics?.fullName || tailoredData.fullName || "Candidate";
+  const candidateEmail = rawBasics?.email || tailoredData.email;
+  const candidateLinkedin = rawBasics?.linkedinUrl || tailoredData.linkedinUrl;
+  const candidateGithub = rawBasics?.githubUrl || tailoredData.githubUrl;
+  const candidatePortfolio = rawBasics?.portfolioUrl || tailoredData.portfolioUrl;
+  const candidateLocation = rawBasics?.location || tailoredData.location;
 
   const handleCopyLatex = async () => {
     const ok = await copyLatexToClipboard(latexSource);
@@ -301,42 +308,42 @@ export function AtsTailoredResultStation({
               {/* Header */}
               <div className="text-center pb-4 border-b border-neutral-900 space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight uppercase text-neutral-950">
-                  {tailoredData.fullName}
+                  {candidateName}
                 </h1>
                 <div className="text-xs text-neutral-700 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
-                  {tailoredData.email && (
-                    <a href={`mailto:${tailoredData.email}`} className="hover:underline">
-                      {tailoredData.email}
+                  {candidateEmail && (
+                    <a href={`mailto:${candidateEmail}`} className="hover:underline">
+                      {candidateEmail}
                     </a>
                   )}
-                  {tailoredData.linkedinUrl && (
+                  {candidateLinkedin && (
                     <>
                       <span>•</span>
-                      <a href={tailoredData.linkedinUrl} className="hover:underline text-indigo-600">
+                      <a href={candidateLinkedin} className="hover:underline text-indigo-600">
                         LinkedIn
                       </a>
                     </>
                   )}
-                  {tailoredData.githubUrl && (
+                  {candidateGithub && (
                     <>
                       <span>•</span>
-                      <a href={tailoredData.githubUrl} className="hover:underline text-indigo-600">
+                      <a href={candidateGithub} className="hover:underline text-indigo-600">
                         GitHub
                       </a>
                     </>
                   )}
-                  {tailoredData.portfolioUrl && (
+                  {candidatePortfolio && (
                     <>
                       <span>•</span>
-                      <a href={tailoredData.portfolioUrl} className="hover:underline text-indigo-600">
+                      <a href={candidatePortfolio} className="hover:underline text-indigo-600">
                         Portfolio
                       </a>
                     </>
                   )}
-                  {tailoredData.location && (
+                  {candidateLocation && (
                     <>
                       <span>•</span>
-                      <span>{tailoredData.location}</span>
+                      <span>{candidateLocation}</span>
                     </>
                   )}
                 </div>

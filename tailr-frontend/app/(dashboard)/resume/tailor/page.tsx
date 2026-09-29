@@ -69,13 +69,15 @@ function TailorWorkspaceForm({
         positionTitle: position,
         jobDescription: jd,
         resumeData: {
-          fullName: masterResume.basics?.name || "Applicant",
-          email: masterResume.basics?.email,
-          phone: masterResume.basics?.phone,
-          location: masterResume.basics?.location,
-          linkedinUrl: masterResume.basics?.linkedin,
-          githubUrl: masterResume.basics?.github,
-          portfolioUrl: masterResume.basics?.portfolio,
+          basics: {
+            fullName: masterResume.basics?.name || "Applicant",
+            email: masterResume.basics?.email,
+            phone: masterResume.basics?.phone,
+            location: masterResume.basics?.location,
+            linkedinUrl: masterResume.basics?.linkedin,
+            githubUrl: masterResume.basics?.github,
+            portfolioUrl: masterResume.basics?.portfolio,
+          },
           careerSummary: masterResume.summary,
           technicalSkills: [
             { category: "Languages", skills: masterResume.skills?.languages || [] },

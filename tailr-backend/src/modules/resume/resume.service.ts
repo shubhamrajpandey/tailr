@@ -782,6 +782,71 @@ ${JSON.stringify(resumeData, null, 2)}`;
       }
     }
 
+    // Ensure tailoredData basics and candidate identity are preserved and normalized
+    const rawBasics = tailoredData.basics || (tailoredData as any) || resumeData.basics || {};
+    const normFullName =
+      rawBasics.fullName ||
+      (tailoredData as any).fullName ||
+      resumeData.basics?.fullName ||
+      (resumeData as any).fullName ||
+      "Candidate";
+    const normEmail =
+      rawBasics.email ||
+      (tailoredData as any).email ||
+      resumeData.basics?.email ||
+      (resumeData as any).email ||
+      "";
+    const normPhone =
+      rawBasics.phone ||
+      (tailoredData as any).phone ||
+      resumeData.basics?.phone ||
+      (resumeData as any).phone ||
+      "";
+    const normLocation =
+      rawBasics.location ||
+      (tailoredData as any).location ||
+      resumeData.basics?.location ||
+      (resumeData as any).location ||
+      "";
+    const normLinkedin =
+      rawBasics.linkedinUrl ||
+      (tailoredData as any).linkedinUrl ||
+      resumeData.basics?.linkedinUrl ||
+      (resumeData as any).linkedinUrl ||
+      "";
+    const normGithub =
+      rawBasics.githubUrl ||
+      (tailoredData as any).githubUrl ||
+      resumeData.basics?.githubUrl ||
+      (resumeData as any).githubUrl ||
+      "";
+    const normPortfolio =
+      rawBasics.portfolioUrl ||
+      (tailoredData as any).portfolioUrl ||
+      resumeData.basics?.portfolioUrl ||
+      (resumeData as any).portfolioUrl ||
+      "";
+
+    tailoredData = {
+      ...tailoredData,
+      basics: {
+        fullName: normFullName,
+        email: normEmail,
+        phone: normPhone,
+        location: normLocation,
+        linkedinUrl: normLinkedin,
+        githubUrl: normGithub,
+        portfolioUrl: normPortfolio,
+      },
+      fullName: normFullName,
+      email: normEmail,
+      phone: normPhone,
+      location: normLocation,
+      linkedinUrl: normLinkedin,
+      githubUrl: normGithub,
+      portfolioUrl: normPortfolio,
+    } as any;
+
     // Compile into beautiful LaTeX matching the user's ATS format
     const latexSource = generateLatexFromStructuredResume(tailoredData);
 
