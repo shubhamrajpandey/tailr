@@ -70,6 +70,14 @@ export function useGenerateCoverLetterMutation() {
         setTimeout(() => setStage("formatting_template"), 2000)
       );
 
+      const rawJobDesc = variables.jobDetails.jobDescription?.trim() || "";
+      const safeJobDesc =
+        rawJobDesc.length >= 10
+          ? rawJobDesc
+          : rawJobDesc.length > 0
+          ? `${rawJobDesc} responsibilities, key qualifications, and engineering requirements.`
+          : `Tailored application for ${variables.jobDetails.positionTitle || "the position"} at ${variables.jobDetails.companyName || "the target company"} matching verified master resume credentials.`;
+
       const payload = {
         jobDetails: {
           companyName: variables.jobDetails.companyName.trim(),
@@ -79,7 +87,7 @@ export function useGenerateCoverLetterMutation() {
           hiringManager: variables.jobDetails.hiringManager?.trim() || undefined,
           hiringManagerTitle:
             variables.jobDetails.hiringManagerTitle?.trim() || undefined,
-          jobDescription: variables.jobDetails.jobDescription.trim(),
+          jobDescription: safeJobDesc,
         },
         preferences: {
           length: variables.preferences.length,
@@ -149,7 +157,7 @@ export function useGenerateCoverLetterMutation() {
           location: variables.jobDetails.location,
           recipientName: variables.jobDetails.hiringManager,
           recipientTitle: variables.jobDetails.hiringManagerTitle,
-          jobDescription: variables.jobDetails.jobDescription,
+          jobDescription: safeJobDesc,
           tone: variables.preferences.tone,
           template: variables.preferences.template,
           length: variables.preferences.length,

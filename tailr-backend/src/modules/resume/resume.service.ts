@@ -12,6 +12,7 @@ import {
   ProjectItem,
   EducationItem,
 } from "./resume.model";
+import { callGroqChatCompletion } from "../../utils/groq";
 
 /**
  * Escapes reserved LaTeX characters in user-provided text.
@@ -629,7 +630,39 @@ Respond ONLY with valid JSON.`;
           }
         }
       } catch (err) {
-        console.warn("[ResumeService] AI parse fallback:", err);
+        console.warn("[ResumeService] Gemini AI parse hit error/503:", err);
+      }
+    }
+
+    // Secondary fallback: Groq AI with GROQ_RESUME_API_KEY
+    if (env.GROQ_RESUME_API_KEY && rawText) {
+      try {
+        console.log("[ResumeService] Engaging Groq AI fallback (GROQ_RESUME_API_KEY) for resume parsing...");
+        const groqResult = await callGroqChatCompletion({
+          apiKey: env.GROQ_RESUME_API_KEY,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are an expert ATS resume parser. Parse the provided resume into clean, structured JSON conforming to the schema.",
+            },
+            {
+              role: "user",
+              content: `Parse this resume text into JSON strictly matching the requested format:\n\n${rawText}`,
+            },
+          ],
+          jsonMode: true,
+          temperature: 0.1,
+        });
+
+        if (groqResult?.content) {
+          const parsed = JSON.parse(groqResult.content);
+          if (parsed.basics?.fullName && (parsed.careerSummary || parsed.workExperience)) {
+            return parsed as StructuredResumeData;
+          }
+        }
+      } catch (groqErr) {
+        console.warn("[ResumeService] Groq AI parse fallback also failed:", groqErr);
       }
     }
 
@@ -660,9 +693,7 @@ Respond ONLY with valid JSON.`;
     };
     let provider = "tailr-verified-engine";
 
-    if (client) {
-      try {
-        const systemPrompt = `You are an elite technical recruiter and certified ATS optimization expert.
+    const systemPrompt = `You are an elite technical recruiter and certified ATS optimization expert.
 Your job is to tailor the candidate's verified resume for the specific job opening at "${request.companyName}" for the position "${request.positionTitle}".
 
 CRITICAL ZERO-HALLUCINATION RULES:
@@ -700,7 +731,7 @@ Respond with pure JSON conforming to:
   }
 }`;
 
-        const userPrompt = `TARGET COMPANY: ${request.companyName}
+    const userPrompt = `TARGET COMPANY: ${request.companyName}
 TARGET ROLE: ${request.positionTitle}
 
 JOB DESCRIPTION:
@@ -709,6 +740,9 @@ ${request.jobDescription}
 CANDIDATE VERIFIED RESUME:
 ${JSON.stringify(resumeData, null, 2)}`;
 
+    // 1. Primary: Gemini AI (with candidate models cascade for 503 resilience)
+    if (client) {
+      try {
         let usedModelName = "gemini-3-flash-preview";
         const { result: response, modelUsed } = await this.executeWithModelFallback(
           client,
@@ -736,50 +770,81 @@ ${JSON.stringify(resumeData, null, 2)}`;
           }
         }
       } catch (err: any) {
-        console.warn("[ResumeService] AI Tailoring failed or rate limited, engaging deterministic fallback:", err?.message || err);
-        // Deterministic fallback
-        const jdLower = request.jobDescription.toLowerCase();
-        const detectedKeywords = [
-          "React",
-          "Next.js",
-          "TypeScript",
-          "Node.js",
-          "JavaScript",
-          "Python",
-          "SQL",
-          "PostgreSQL",
-          "MongoDB",
-          "REST",
-          "Webhooks",
-          "Docker",
-          "Git",
-          "Tailwind CSS",
-          "Socket.io",
-        ].filter((k) => jdLower.includes(k.toLowerCase()));
-
-        atsFeedback = {
-          atsScore: Math.min(95, Math.max(78, 70 + detectedKeywords.length * 3)),
-          matchedKeywords: detectedKeywords,
-          missingKeywords: ["Cloud Architecture", "Unit Testing", "Microservices"].filter(
-            (k) => !jdLower.includes(k.toLowerCase())
-          ),
-          formattingScore: 98,
-          strengths: [
-            `Direct alignment with ${detectedKeywords.slice(0, 4).join(", ")} requirements`,
-            `Hands-on production full-stack development experience`,
-            `Clean, single-column ATS-compliant LaTeX layout`,
-          ],
-          improvementTips: [
-            `Discuss quantifiable scalability metrics achieved in your Next.js and Node.js projects`,
-            `Emphasize end-to-end system design and webhook error handling during interview rounds`,
-          ],
-        };
-
-        tailoredData = {
-          ...resumeData,
-          careerSummary: `Results-driven software engineer specialized in building scalable, resilient applications tailored for ${request.companyName}'s ${request.positionTitle} opening. Proven track record developing high-throughput web applications with ${detectedKeywords.slice(0, 3).join(", ")}, event-driven webhook architectures, and clean database integrations.`,
-        };
+        console.warn("[ResumeService] Gemini AI Tailoring failed or hit 503/quota:", err?.message || err);
       }
+    }
+
+    // 2. Secondary: Groq AI Fallback when Gemini encounters 503 or quota limits
+    if (provider === "tailr-verified-engine" && env.GROQ_RESUME_API_KEY) {
+      try {
+        console.log("[ResumeService] Engaging Groq AI fallback (GROQ_RESUME_API_KEY) for resume tailoring...");
+        const groqResult = await callGroqChatCompletion({
+          apiKey: env.GROQ_RESUME_API_KEY,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          jsonMode: true,
+          temperature: 0.2,
+        });
+
+        if (groqResult?.content) {
+          const parsed = JSON.parse(groqResult.content);
+          if (parsed.tailoredData && parsed.atsFeedback) {
+            tailoredData = parsed.tailoredData;
+            atsFeedback = parsed.atsFeedback;
+            provider = `groq-${groqResult.model}`;
+            console.log(`[ResumeService] Resume tailored successfully with Groq model: ${groqResult.model}`);
+          }
+        }
+      } catch (groqErr: any) {
+        console.warn("[ResumeService] Groq AI tailoring fallback also failed:", groqErr?.message || groqErr);
+      }
+    }
+
+    // 3. Tertiary: High-fidelity deterministic fallback if both Gemini and Groq were unavailable
+    if (provider === "tailr-verified-engine") {
+      const jdLower = request.jobDescription.toLowerCase();
+      const detectedKeywords = [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Node.js",
+        "JavaScript",
+        "Python",
+        "SQL",
+        "PostgreSQL",
+        "MongoDB",
+        "REST",
+        "Webhooks",
+        "Docker",
+        "Git",
+        "Tailwind CSS",
+        "Socket.io",
+      ].filter((k) => jdLower.includes(k.toLowerCase()));
+
+      atsFeedback = {
+        atsScore: Math.min(95, Math.max(78, 70 + detectedKeywords.length * 3)),
+        matchedKeywords: detectedKeywords,
+        missingKeywords: ["Cloud Architecture", "Unit Testing", "Microservices"].filter(
+          (k) => !jdLower.includes(k.toLowerCase())
+        ),
+        formattingScore: 98,
+        strengths: [
+          `Direct alignment with ${detectedKeywords.slice(0, 4).join(", ")} requirements`,
+          `Hands-on production full-stack development experience`,
+          `Clean, single-column ATS-compliant LaTeX layout`,
+        ],
+        improvementTips: [
+          `Discuss quantifiable scalability metrics achieved in your Next.js and Node.js projects`,
+          `Emphasize end-to-end system design and webhook error handling during interview rounds`,
+        ],
+      };
+
+      tailoredData = {
+        ...resumeData,
+        careerSummary: `Results-driven software engineer specialized in building scalable, resilient applications tailored for ${request.companyName}'s ${request.positionTitle} opening. Proven track record developing high-throughput web applications with ${detectedKeywords.slice(0, 3).join(", ")}, event-driven webhook architectures, and clean database integrations.`,
+      };
     }
 
     // Ensure tailoredData basics and candidate identity are preserved and normalized

@@ -36,7 +36,13 @@ export default function CoverLettersPage() {
   // View state: "letters" | "generator"
   const [activeTab, setActiveTab] = React.useState<"letters" | "generator">(initialTab);
 
-  const { coverLetters, isLoaded, deleteCoverLetter, saveCoverLetter } = useCoverLetters();
+  const {
+    coverLetters,
+    isLoaded,
+    deleteCoverLetter,
+    saveCoverLetter,
+    updateCoverLetter,
+  } = useCoverLetters();
   const { applications } = useApplications();
   const { masterResume } = useMasterResume();
 
@@ -77,10 +83,13 @@ export default function CoverLettersPage() {
     additionalInformation: "",
   });
 
-  // Draft Result State
+  // Draft Result State & Feedback
   const [draftContent, setDraftContent] = React.useState<string>("");
   const [keyHighlights, setKeyHighlights] = React.useState<string[]>([]);
+  const [savedCoverLetterId, setSavedCoverLetterId] = React.useState<string | null>(null);
   const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  const [activeSaveTarget, setActiveSaveTarget] = React.useState<"DRAFT" | "FINAL" | null>(null);
+  const [savedStatus, setSavedStatus] = React.useState<"DRAFT" | "FINAL" | null>(null);
   const [saveSuccessMessage, setSaveSuccessMessage] = React.useState<string | null>(null);
 
   // Sync when preselectedApp changes or is selected
@@ -107,6 +116,14 @@ export default function CoverLettersPage() {
     setPreferences((prev) => ({ ...prev, ...updated }));
   };
 
+  const handleContentChange = (newContent: string) => {
+    setDraftContent(newContent);
+    if (savedStatus) {
+      setSavedStatus(null);
+      setSaveSuccessMessage(null);
+    }
+  };
+
   const isFormValid =
     jobDetails.companyName.trim().length > 0 &&
     jobDetails.positionTitle.trim().length > 0;
@@ -118,6 +135,7 @@ export default function CoverLettersPage() {
     }
 
     setSaveSuccessMessage(null);
+    setSavedStatus(null);
     generateCoverLetter(
       {
         masterResume,
@@ -128,6 +146,7 @@ export default function CoverLettersPage() {
         onSuccess: (data) => {
           setDraftContent(data.content);
           setKeyHighlights(data.keyHighlights);
+          setSavedCoverLetterId(null);
           setTimeout(() => {
             document
               .getElementById("generated-letter-workspace")
@@ -138,12 +157,18 @@ export default function CoverLettersPage() {
     );
   };
 
-  const handleSave = (letterStatus: "DRAFT" | "FINAL") => {
+  const handleSave = async (letterStatus: "DRAFT" | "FINAL") => {
     if (!draftContent.trim()) return;
 
+    setActiveSaveTarget(letterStatus);
     setIsSaving(true);
+    setSaveSuccessMessage(null);
+
+    // Provide responsive feedback with smooth buffer
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
     try {
-      saveCoverLetter({
+      const payloadData = {
         applicationId:
           !isManualMode && selectedApplicationId ? selectedApplicationId : null,
         companyName: jobDetails.companyName.trim() || "Target Company",
@@ -154,22 +179,33 @@ export default function CoverLettersPage() {
           preferences.tone === "natural" ||
           preferences.tone === "confident" ||
           preferences.tone === "enthusiastic"
-            ? "conversational"
+            ? ("conversational" as const)
             : preferences.tone === "technical" || preferences.length === "short"
-            ? "concise"
-            : "formal",
+            ? ("concise" as const)
+            : ("formal" as const),
         content: draftContent,
         status: letterStatus,
         keyHighlights,
-      });
+      };
 
+      if (savedCoverLetterId && coverLetters.some((c) => c.id === savedCoverLetterId)) {
+        updateCoverLetter(savedCoverLetterId, payloadData);
+      } else {
+        const created = saveCoverLetter(payloadData);
+        if (created?.id) {
+          setSavedCoverLetterId(created.id);
+        }
+      }
+
+      setSavedStatus(letterStatus);
       setSaveSuccessMessage(
-        `Cover letter for ${jobDetails.positionTitle} at ${jobDetails.companyName} saved as ${letterStatus === "FINAL" ? "Final" : "Draft"}!`
+        `Cover letter for ${jobDetails.positionTitle.trim() || "Target Role"} at ${jobDetails.companyName.trim() || "Company"} saved as ${letterStatus === "FINAL" ? "Final" : "Draft"}!`
       );
-      setIsSaving(false);
     } catch (err) {
       console.error("Failed to save cover letter", err);
+    } finally {
       setIsSaving(false);
+      setActiveSaveTarget(null);
     }
   };
 
@@ -494,7 +530,7 @@ export default function CoverLettersPage() {
 
                   <CoverLetterEditor
                     content={draftContent}
-                    onChange={setDraftContent}
+                    onChange={handleContentChange}
                     tone={preferences.tone}
                     length={preferences.length}
                     template={preferences.template}
@@ -510,6 +546,13 @@ export default function CoverLettersPage() {
                     onSave={handleSave}
                     onRegenerate={handleGenerate}
                     isSaving={isSaving}
+                    activeSaveTarget={activeSaveTarget}
+                    isGenerating={isGenerating}
+                    savedStatus={savedStatus}
+                    saveSuccessMessage={saveSuccessMessage}
+                    onDismissSaveMessage={() => setSaveSuccessMessage(null)}
+                    onViewSaved={() => setActiveTab("letters")}
+                    error={mutationError?.message || null}
                   />
                 </div>
               )}

@@ -17,6 +17,9 @@ interface EnvConfig {
   COOKIE_DOMAIN?: string;
   GEMINI_API_KEY?: string;
   GEMINI_RESUME_API_KEY?: string;
+  GROQ_API_KEY?: string;
+  GROQ_COVER_LETTER_API_KEY?: string;
+  GROQ_RESUME_API_KEY?: string;
 }
 
 function getEnv(): EnvConfig {
@@ -53,6 +56,9 @@ function getEnv(): EnvConfig {
     COOKIE_DOMAIN: process.env.COOKIE_DOMAIN,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     GEMINI_RESUME_API_KEY: process.env.GEMINI_RESUME_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
+    GROQ_COVER_LETTER_API_KEY: process.env.GROQ_COVER_LETTER_API_KEY || process.env.GROQ_API_KEY,
+    GROQ_RESUME_API_KEY: process.env.GROQ_RESUME_API_KEY,
   });
 }
 

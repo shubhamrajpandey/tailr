@@ -1,11 +1,12 @@
 import { GoogleGenAI } from "@google/genai";
 import { env } from "../../config/env";
 import { GenerateCoverLetterInput } from "./cover-letter.model";
+import { callGroqChatCompletion } from "../../utils/groq";
 
 /**
  * Service handling Cover Letter generation with Gemini AI.
  * Designed for Google Gemini Free-Tier compatibility (gemini-2.5-flash)
- * with robust 429 quota handling and resilient zero-hallucination fallback.
+ * with automatic failover to Groq AI when Gemini encounters 503 / 429 errors.
  */
 class CoverLetterService {
   private genAI: GoogleGenAI | null = null;
@@ -33,7 +34,7 @@ class CoverLetterService {
       additionalInformation: input.preferences?.additionalInformation || "",
     };
 
-    // If Gemini client is ready and API key configured, attempt AI generation
+    // 1. Primary: If Gemini client is ready and API key configured, attempt AI generation
     if (this.genAI && env.GEMINI_API_KEY) {
       try {
         const aiResult = await this.generateWithGemini(jobDetails, candidate, preferences);
@@ -49,13 +50,37 @@ class CoverLetterService {
         }
       } catch (err: any) {
         console.warn(
-          "[CoverLetterService] Gemini AI generation encountered an error (e.g. Free Tier Rate Limit/Quota). Engaging authentic fallback engine:",
+          "[CoverLetterService] Gemini AI generation encountered an error (e.g. Free Tier 503 / Rate Limit / Quota). Switching to Groq AI fallback:",
           err?.message || err
         );
       }
     }
 
-    // High-fidelity fallback engine strictly adhering to the requested template format
+    // 2. Secondary Fallback: If Gemini hits 503, quota, or errors, switch to Groq AI
+    const groqApiKey = env.GROQ_COVER_LETTER_API_KEY || env.GROQ_API_KEY;
+    if (groqApiKey) {
+      try {
+        console.log("[CoverLetterService] Engaging Groq AI fallback with GROQ_COVER_LETTER_API_KEY...");
+        const groqResult = await this.generateWithGroq(jobDetails, candidate, preferences, groqApiKey);
+        if (groqResult) {
+          return {
+            content: groqResult.content,
+            tone: preferences.tone,
+            length: preferences.length,
+            template: preferences.template,
+            keyHighlights: groqResult.keyHighlights,
+            provider: `groq-${groqResult.model}`,
+          };
+        }
+      } catch (groqErr: any) {
+        console.warn(
+          "[CoverLetterService] Groq AI fallback also encountered an error. Engaging verified deterministic engine:",
+          groqErr?.message || groqErr
+        );
+      }
+    }
+
+    // 3. Tertiary: High-fidelity fallback engine strictly adhering to the requested template format
     const fallbackResult = this.generateAuthenticFallback(jobDetails, candidate, preferences);
     return {
       ...fallbackResult,
@@ -67,9 +92,9 @@ class CoverLetterService {
   }
 
   /**
-   * Generates tailored cover letter via @google/genai SDK using gemini-2.5-flash.
+   * Constructs the structured prompt strictly enforcing zero-hallucination guardrails.
    */
-  private async generateWithGemini(
+  private buildPrompt(
     jobDetails: GenerateCoverLetterInput["jobDetails"],
     candidate: GenerateCoverLetterInput["candidate"],
     preferences: {
@@ -78,9 +103,7 @@ class CoverLetterService {
       template: string;
       additionalInformation: string;
     }
-  ): Promise<{ content: string; keyHighlights: string[] } | null> {
-    if (!this.genAI) return null;
-
+  ): string {
     const salutationTarget = jobDetails.hiringManager
       ? jobDetails.hiringManager.trim()
       : `${jobDetails.companyName} Hiring Team`;
@@ -92,7 +115,7 @@ class CoverLetterService {
         ? "400 to 500 words"
         : "250 to 350 words";
 
-    const prompt = `
+    return `
 You are a distinguished executive career writer and technical recruiter.
 Draft an authentic, high-impact cover letter for ${candidate.name} applying for "${jobDetails.positionTitle}" at "${jobDetails.companyName}".
 
@@ -108,7 +131,7 @@ ${
     ? `- For the "professional" template, strictly structure the letter as:
   [Top Recipient Block]
   ${jobDetails.companyName}
-  ${jobDetails.companyEmail || (jobDetails.hiringManager ? `${jobDetails.hiringManager.toLowerCase().replace(/\\s+/g, ".")}@${jobDetails.companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com` : "")}
+  ${jobDetails.companyEmail || (jobDetails.hiringManager ? `${jobDetails.hiringManager.toLowerCase().replace(/\s+/g, ".")}@${jobDetails.companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com` : "")}
   ${jobDetails.location || ""}
 
   Dear ${salutationTarget},
@@ -167,6 +190,24 @@ Return strict JSON with two keys:
   "keyHighlights": ["Highlight 1", "Highlight 2", "Highlight 3"]
 }
 `;
+  }
+
+  /**
+   * Generates tailored cover letter via @google/genai SDK using gemini candidate models.
+   */
+  private async generateWithGemini(
+    jobDetails: GenerateCoverLetterInput["jobDetails"],
+    candidate: GenerateCoverLetterInput["candidate"],
+    preferences: {
+      length: string;
+      tone: string;
+      template: string;
+      additionalInformation: string;
+    }
+  ): Promise<{ content: string; keyHighlights: string[] } | null> {
+    if (!this.genAI) return null;
+
+    const prompt = this.buildPrompt(jobDetails, candidate, preferences);
 
     // Resilient candidate models chain to survive 503 high-demand spikes
     const candidateModels = [
@@ -194,7 +235,7 @@ Return strict JSON with two keys:
           break;
         }
       } catch (err: any) {
-        console.warn(`[CoverLetterService] Model '${model}' unavailable (${err?.message?.slice(0, 100)}). Falling back...`);
+        console.warn(`[CoverLetterService] Gemini model '${model}' unavailable (${err?.message?.slice(0, 100)}).`);
       }
     }
 
@@ -209,13 +250,71 @@ Return strict JSON with two keys:
         };
       }
     } catch {
-      // In case of non-JSON response string
       return {
         content: responseText,
         keyHighlights: [
           `Aligned verified experience to ${jobDetails.positionTitle}`,
           `Anchored on authentic metrics at ${candidate.experience?.[0]?.company || "previous company"}`,
         ],
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Generates tailored cover letter via Groq AI using high-throughput open models.
+   * Engaged automatically when Gemini encounters 503 / 429 quota exhaustion.
+   */
+  private async generateWithGroq(
+    jobDetails: GenerateCoverLetterInput["jobDetails"],
+    candidate: GenerateCoverLetterInput["candidate"],
+    preferences: {
+      length: string;
+      tone: string;
+      template: string;
+      additionalInformation: string;
+    },
+    apiKey: string
+  ): Promise<{ content: string; keyHighlights: string[]; model: string } | null> {
+    const prompt = this.buildPrompt(jobDetails, candidate, preferences);
+
+    const result = await callGroqChatCompletion({
+      apiKey,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an executive career advisor and cover letter specialist. Output strictly valid JSON conforming to the requested schema.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      jsonMode: true,
+      temperature: 0.2,
+    });
+
+    if (!result?.content) return null;
+
+    try {
+      const parsed = JSON.parse(result.content);
+      if (parsed.content) {
+        return {
+          content: parsed.content,
+          keyHighlights: Array.isArray(parsed.keyHighlights) ? parsed.keyHighlights : [],
+          model: result.model,
+        };
+      }
+    } catch {
+      return {
+        content: result.content,
+        keyHighlights: [
+          `Aligned verified experience to ${jobDetails.positionTitle}`,
+          `Anchored on authentic achievements via Groq AI fallback`,
+        ],
+        model: result.model,
       };
     }
 

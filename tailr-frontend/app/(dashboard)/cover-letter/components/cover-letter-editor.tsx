@@ -12,6 +12,10 @@ import {
   Eye,
   Edit3,
   RotateCcw,
+  Loader2,
+  AlertCircle,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import {
   CoverLetterTone,
@@ -42,9 +46,16 @@ interface CoverLetterEditorProps {
   candidateEmail?: string;
   candidatePhone?: string;
   candidateLocation?: string;
-  onSave: (status: "DRAFT" | "FINAL") => void;
+  onSave: (status: "DRAFT" | "FINAL") => void | Promise<void>;
   onRegenerate?: () => void;
   isSaving?: boolean;
+  activeSaveTarget?: "DRAFT" | "FINAL" | null;
+  isGenerating?: boolean;
+  savedStatus?: "DRAFT" | "FINAL" | null;
+  saveSuccessMessage?: string | null;
+  onDismissSaveMessage?: () => void;
+  onViewSaved?: () => void;
+  error?: string | null;
 }
 
 export function CoverLetterEditor({
@@ -65,6 +76,13 @@ export function CoverLetterEditor({
   onSave,
   onRegenerate,
   isSaving = false,
+  activeSaveTarget = null,
+  isGenerating = false,
+  savedStatus = null,
+  saveSuccessMessage = null,
+  onDismissSaveMessage,
+  onViewSaved,
+  error = null,
 }: CoverLetterEditorProps) {
   const [copied, setCopied] = React.useState(false);
   const [viewMode, setViewMode] = React.useState<"preview" | "edit">("preview");
@@ -281,6 +299,54 @@ export function CoverLetterEditor({
         )}
       </div>
 
+      {/* Save Success Feedback Banner */}
+      {saveSuccessMessage && (
+        <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-1">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 shrink-0">
+              <Check className="h-4 w-4" />
+            </div>
+            <p className="text-xs font-semibold text-emerald-950 dark:text-emerald-200 truncate">
+              {saveSuccessMessage}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {onViewSaved && (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={onViewSaved}
+                className="h-7 text-xs gap-1.5 font-semibold text-emerald-900 dark:text-emerald-200 border-emerald-300/80 dark:border-emerald-500/30 hover:bg-emerald-100 dark:hover:bg-emerald-950/40 cursor-pointer"
+              >
+                <span>View in Saved Letters</span>
+                <ArrowRight className="h-3 w-3" />
+              </Button>
+            )}
+            {onDismissSaveMessage && (
+              <button
+                type="button"
+                onClick={onDismissSaveMessage}
+                className="p-1 rounded-md text-emerald-700/70 hover:text-emerald-950 dark:text-emerald-300 dark:hover:text-white cursor-pointer"
+                title="Dismiss notification"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Generation or Operation Error Alert */}
+      {error && (
+        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 flex items-center gap-2.5">
+          <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
+          <p className="text-xs font-medium text-rose-900 dark:text-rose-200">
+            {error}
+          </p>
+        </div>
+      )}
+
       {/* Bottom Save & Regenerate Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-neutral-100 dark:border-white/5">
         <div>
@@ -290,10 +356,20 @@ export function CoverLetterEditor({
               variant="ghost"
               size="sm"
               onClick={onRegenerate}
-              className="gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+              disabled={isGenerating || isSaving}
+              className="gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer disabled:opacity-60"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span>Regenerate with Current Settings</span>
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-600 dark:text-indigo-400" />
+                  <span>Regenerating with Current Settings...</span>
+                </>
+              ) : (
+                <>
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Regenerate with Current Settings</span>
+                </>
+              )}
             </Button>
           )}
         </div>
@@ -304,11 +380,29 @@ export function CoverLetterEditor({
             variant="secondary"
             size="sm"
             onClick={() => onSave("DRAFT")}
-            disabled={isSaving}
-            className="gap-1.5 text-xs font-semibold"
+            disabled={isSaving || isGenerating}
+            className={`gap-1.5 text-xs font-semibold cursor-pointer transition-all ${
+              savedStatus === "DRAFT"
+                ? "border-emerald-500/50 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300"
+                : ""
+            }`}
           >
-            <Save className="h-3.5 w-3.5" />
-            <span>Save as Draft</span>
+            {isSaving && activeSaveTarget === "DRAFT" ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-neutral-500" />
+                <span>Saving Draft...</span>
+              </>
+            ) : savedStatus === "DRAFT" ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Saved as Draft!</span>
+              </>
+            ) : (
+              <>
+                <Save className="h-3.5 w-3.5" />
+                <span>Save as Draft</span>
+              </>
+            )}
           </Button>
 
           <Button
@@ -316,11 +410,29 @@ export function CoverLetterEditor({
             variant="primary"
             size="sm"
             onClick={() => onSave("FINAL")}
-            disabled={isSaving}
-            className="gap-1.5 text-xs font-bold shadow-xs bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border-0"
+            disabled={isSaving || isGenerating}
+            className={`gap-1.5 text-xs font-bold shadow-xs border-0 text-white cursor-pointer transition-all ${
+              savedStatus === "FINAL"
+                ? "bg-emerald-700 hover:bg-emerald-600"
+                : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"
+            }`}
           >
-            <Check className="h-3.5 w-3.5" />
-            <span>Finalize & Save</span>
+            {isSaving && activeSaveTarget === "FINAL" ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-white" />
+                <span>Finalizing...</span>
+              </>
+            ) : savedStatus === "FINAL" ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-white" />
+                <span>Finalized & Saved!</span>
+              </>
+            ) : (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                <span>Finalize & Save</span>
+              </>
+            )}
           </Button>
         </div>
       </div>
