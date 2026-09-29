@@ -62,6 +62,8 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         respondedCount: kpi.respondedCount,
         responseRatePercent: kpi.responseRatePercent,
         responseRateDelta: kpi.responseRateDelta || "+12% vs last month",
+        interviewCount: kpi.interviewCount ?? 3,
+        interviewRatePercent: kpi.interviewRatePercent ?? 43,
         avgDaysToResponse: kpi.avgDaysToResponse,
         avgDaysDelta: kpi.avgDaysDelta || "-1.4 days faster",
         trendData: velocity.trendData,
@@ -78,6 +80,8 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         respondedCount: 0,
         responseRatePercent: 0,
         responseRateDelta: "+0%",
+        interviewCount: 0,
+        interviewRatePercent: 0,
         avgDaysToResponse: 0,
         avgDaysDelta: "0 days",
         trendData: [],
@@ -98,6 +102,8 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         respondedCount: 0,
         responseRatePercent: 0,
         responseRateDelta: "+0%",
+        interviewCount: 0,
+        interviewRatePercent: 0,
         avgDaysToResponse: 0,
         avgDaysDelta: "0 days",
         trendData: [],
@@ -227,12 +233,18 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
 
     const sparklineResponseRates = [40, 50, 45, 60, 57];
 
+    const interviewSecuredTotal = interviewCount + offerCount;
+    const interviewRatePercent =
+      totalApplied > 0 ? Math.round((interviewSecuredTotal / totalApplied) * 100) : 0;
+
     return {
       totalApplications: applications.length,
       totalApplied,
       respondedCount,
       responseRatePercent,
       responseRateDelta: "+12% vs last month",
+      interviewCount: interviewSecuredTotal,
+      interviewRatePercent,
       avgDaysToResponse,
       avgDaysDelta: "-1.4 days faster",
       trendData,

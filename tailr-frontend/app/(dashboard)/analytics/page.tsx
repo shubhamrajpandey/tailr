@@ -29,8 +29,10 @@ function AnalyticsDashboard() {
   const interviewStage = funnelAnalytics.stages.find(
     (s) => s.id === "interview"
   );
-  const interviewCount = interviewStage?.count ?? 0;
-  const interviewRate = interviewStage?.percentOfPrevious ?? 0;
+  const interviewCount =
+    responseAnalytics.interviewCount ?? (interviewStage?.count ?? 0);
+  const interviewRate =
+    responseAnalytics.interviewRatePercent ?? (interviewStage?.percentOfPrevious ?? 0);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">

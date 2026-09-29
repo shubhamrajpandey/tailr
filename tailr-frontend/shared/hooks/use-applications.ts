@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationFormValues } from "@/shared/lib/validations/application";
+import { authApiClient } from "@/shared/lib/auth-api-client";
 
 const STORAGE_KEY = "tailr_applications_v1";
 
@@ -280,6 +281,51 @@ export function useApplications() {
     }
   }, []);
 
+  // Synchronize applications with PostgreSQL backend
+  React.useEffect(() => {
+    let isMounted = true;
+    async function syncApplications() {
+      try {
+        const res = await authApiClient.get("/applications");
+        if (
+          isMounted &&
+          res.data?.success &&
+          Array.isArray(res.data?.data?.applications) &&
+          res.data.data.applications.length > 0
+        ) {
+          const serverApps: Application[] = res.data.data.applications.map(
+            (app: any) => ({
+              id: app.id,
+              companyName: app.companyName,
+              companyWebsite: app.companyWebsite,
+              positionTitle: app.positionTitle,
+              jobDescriptionRaw: app.jobDescriptionRaw,
+              positionOpenDate: app.positionOpenDate,
+              appliedDate: app.appliedDate,
+              deadline: app.deadline,
+              applied: app.applied,
+              status: app.status as ApplicationStatus,
+              hrName: app.hrName,
+              hrLinkedinUrl: app.hrLinkedinUrl,
+              hrAvatarUrl: app.hrAvatarUrl,
+              resumeVersionId: app.resumeVersionId,
+              resumeVersion: app.resumeVersion,
+              createdAt: app.createdAt,
+              updatedAt: app.updatedAt,
+            })
+          );
+          persist(serverApps);
+        }
+      } catch {
+        // Silently use cached local snapshot
+      }
+    }
+    syncApplications();
+    return () => {
+      isMounted = false;
+    };
+  }, [persist]);
+
   const getApplication = React.useCallback(
     (id: string): Application | undefined => {
       return applications.find((app) => app.id === id);
@@ -290,8 +336,9 @@ export function useApplications() {
   const createApplication = React.useCallback(
     (values: ApplicationFormValues): Application => {
       const now = new Date().toISOString();
+      const tempId = `app-${Date.now()}`;
       const newApp: Application = {
-        id: `app-${Date.now()}`,
+        id: tempId,
         companyName: values.companyName,
         companyWebsite: values.companyWebsite || null,
         positionTitle: values.positionTitle,
@@ -313,6 +360,33 @@ export function useApplications() {
 
       const next = [newApp, ...applications];
       persist(next);
+
+      // Async backend sync
+      authApiClient
+        .post("/applications", {
+          companyName: values.companyName,
+          companyWebsite: values.companyWebsite,
+          positionTitle: values.positionTitle,
+          jobDescriptionRaw: values.jobDescriptionRaw,
+          positionOpenDate: values.positionOpenDate,
+          appliedDate: newApp.appliedDate,
+          deadline: (values as any).deadline || null,
+          applied: values.applied,
+          status: values.status,
+          hrName: values.hrName,
+          hrLinkedinUrl: values.hrLinkedinUrl,
+        })
+        .then((res) => {
+          if (res.data?.success && res.data?.data?.application?.id) {
+            const serverId = res.data.data.application.id;
+            const updatedList = next.map((a) =>
+              a.id === tempId ? { ...a, id: serverId } : a
+            );
+            persist(updatedList);
+          }
+        })
+        .catch(() => {});
+
       return newApp;
     },
     [applications, persist]
@@ -336,6 +410,11 @@ export function useApplications() {
 
       if (updated) {
         persist(next);
+
+        // Async backend sync if valid ID
+        authApiClient
+          .patch(`/applications/${id}`, values)
+          .catch(() => {});
       }
       return updated;
     },
@@ -360,6 +439,8 @@ export function useApplications() {
     (id: string) => {
       const next = applications.filter((app) => app.id !== id);
       persist(next);
+
+      authApiClient.delete(`/applications/${id}`).catch(() => {});
     },
     [applications, persist]
   );

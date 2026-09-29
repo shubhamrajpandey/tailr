@@ -8,14 +8,52 @@ import {
   DropOffAnalysis,
 } from "@/shared/types/analytics";
 
+import { authApiClient } from "@/shared/lib/auth-api-client";
+
 /**
  * Hook to compute real recruitment pipeline conversion funnel analytics.
  * Analyzes progression across Wishlist → Applied → Interview → Offer.
  */
 export function useConversionFunnel(): ConversionFunnelAnalytics {
   const { applications, isLoaded } = useApplications();
+  const [backendFunnel, setBackendFunnel] = React.useState<any | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    async function fetchFunnel() {
+      try {
+        const res = await authApiClient.get("/analytics/funnel");
+        if (isMounted && res.data?.success && res.data?.data) {
+          setBackendFunnel(res.data.data);
+        }
+      } catch {
+        // Fallback silently
+      }
+    }
+    fetchFunnel();
+
+    const handleUpdate = () => {
+      fetchFunnel();
+    };
+
+    window.addEventListener("tailr_applications_updated", handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("tailr_applications_updated", handleUpdate);
+    };
+  }, []);
 
   return React.useMemo(() => {
+    if (backendFunnel?.hasData && Array.isArray(backendFunnel.stages)) {
+      return {
+        stages: backendFunnel.stages,
+        totalPipeline: backendFunnel.totalPipeline,
+        overallConversionRate: backendFunnel.overallConversionRate,
+        biggestDropOff: null,
+        hasData: true,
+      };
+    }
+
     if (!isLoaded || applications.length === 0) {
       return {
         stages: [],

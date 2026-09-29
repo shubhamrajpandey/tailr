@@ -22,6 +22,8 @@ export interface ResponseRateAnalytics {
   respondedCount: number;
   responseRatePercent: number;
   responseRateDelta: string;
+  interviewCount: number;
+  interviewRatePercent: number;
   avgDaysToResponse: number;
   avgDaysDelta: string;
   trendData: ResponseTrendPoint[];
