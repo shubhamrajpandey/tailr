@@ -92,6 +92,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   companies: many(companies),
   resumes: many(resumes),
   tailoredResumes: many(tailoredResumes),
+  jobApplications: many(jobApplications),
 }));
 
 export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
@@ -249,4 +250,54 @@ export type Resume = typeof resumes.$inferSelect;
 export type NewResume = typeof resumes.$inferInsert;
 export type TailoredResume = typeof tailoredResumes.$inferSelect;
 export type NewTailoredResume = typeof tailoredResumes.$inferInsert;
+
+/**
+ * Job Applications table: tracks full lifecycle of user applications, recruiter contacts,
+ * submission dates, interview status, outcomes, and tailored resume associations.
+ */
+export const jobApplications = pgTable(
+  "job_applications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    companyWebsite: varchar("company_website", { length: 500 }),
+    positionTitle: varchar("position_title", { length: 255 }).notNull(),
+    jobDescriptionRaw: text("job_description_raw"),
+    positionOpenDate: varchar("position_open_date", { length: 50 }),
+    appliedDate: varchar("applied_date", { length: 50 }),
+    deadline: varchar("deadline", { length: 50 }),
+    applied: boolean("applied").default(false).notNull(),
+    status: varchar("status", { length: 50 }).default("APPLIED").notNull(),
+    hrName: varchar("hr_name", { length: 255 }),
+    hrLinkedinUrl: varchar("hr_linkedin_url", { length: 500 }),
+    hrAvatarUrl: varchar("hr_avatar_url", { length: 500 }),
+    resumeVersionId: varchar("resume_version_id", { length: 255 }),
+    resumeVersion: jsonb("resume_version").default(sql`'{}'::jsonb`),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("job_applications_user_id_idx").on(table.userId),
+    index("job_applications_status_idx").on(table.status),
+    index("job_applications_applied_date_idx").on(table.appliedDate),
+    index("job_applications_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const jobApplicationsRelations = relations(jobApplications, ({ one }) => ({
+  user: one(users, {
+    fields: [jobApplications.userId],
+    references: [users.id],
+  }),
+}));
+
+export type JobApplication = typeof jobApplications.$inferSelect;
+export type NewJobApplication = typeof jobApplications.$inferInsert;
 

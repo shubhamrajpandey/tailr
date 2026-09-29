@@ -8,6 +8,8 @@ import { authRoutes } from "./modules/auth/auth.routes";
 import { companiesRoutes } from "./modules/companies/companies.routes";
 import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
 import { resumeRoutes } from "./modules/resume/resume.routes";
+import { applicationsRoutes } from "./modules/applications/applications.routes";
+import { analyticsRoutes } from "./modules/analytics/analytics.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -55,6 +57,14 @@ const app = new Elysia()
           {
             name: "Auth",
             description: "User registration, OTP verification, credential login, and session rotation",
+          },
+          {
+            name: "Applications",
+            description: "Tracked job applications lifecycle, statuses, and HR contacts",
+          },
+          {
+            name: "Analytics",
+            description: "Recruiter response velocity, conversion funnel stages, and AI tailoring performance metrics",
           },
           {
             name: "Companies",
@@ -105,13 +115,19 @@ const app = new Elysia()
   // 5. Mount Authentication Module Routes (/auth/*)
   .use(authRoutes)
 
-  // 6. Mount Companies Directory Routes (/companies, /admin/companies)
+  // 6. Mount Applications Module Routes (/applications/*)
+  .use(applicationsRoutes)
+
+  // 7. Mount Analytics Module Routes (/analytics/*)
+  .use(analyticsRoutes)
+
+  // 8. Mount Companies Directory Routes (/companies, /admin/companies)
   .use(companiesRoutes)
 
-  // 7. Mount Cover Letter Generation Route (/cover-letter/generate)
+  // 9. Mount Cover Letter Generation Route (/cover-letter/generate)
   .use(coverLetterRoutes)
 
-  // 8. Mount Resume Module Routes (/resume/*)
+  // 10. Mount Resume Module Routes (/resume/*)
   .use(resumeRoutes)
 
   // 6. Bind to Port
