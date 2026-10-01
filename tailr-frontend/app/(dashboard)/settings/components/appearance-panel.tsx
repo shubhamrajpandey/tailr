@@ -28,12 +28,20 @@ export function AppearancePanel() {
     );
   }, [density, highContrast, settings.appearance]);
 
-  const handleSave = () => {
-    updateAppearance({
+  const handleSelectTheme = (selectedTheme: string) => {
+    setTheme(selectedTheme);
+    updateAppearance({ theme: selectedTheme as any });
+    setSuccessFeedback(`Theme set to ${selectedTheme}.`);
+    setTimeout(() => setSuccessFeedback(null), 3000);
+  };
+
+  const handleSave = async () => {
+    await updateAppearance({
+      theme: (theme || settings.appearance.theme) as any,
       density,
       highContrast,
     });
-    setSuccessFeedback("Appearance preferences updated.");
+    setSuccessFeedback("Appearance preferences updated and saved.");
     setTimeout(() => setSuccessFeedback(null), 3500);
   };
 
@@ -122,7 +130,7 @@ export function AppearancePanel() {
               <button
                 key={opt.id}
                 type="button"
-                onClick={() => setTheme(opt.id)}
+                onClick={() => handleSelectTheme(opt.id)}
                 className={cn(
                   "flex flex-col text-left p-4 rounded-xl border transition-all cursor-pointer group relative",
                   isSelected

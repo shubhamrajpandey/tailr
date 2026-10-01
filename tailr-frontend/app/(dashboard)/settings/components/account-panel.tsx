@@ -10,6 +10,7 @@ import {
   Upload,
   Trash2,
   CheckCircle2,
+  AlertCircle,
   KeyRound,
   ShieldCheck,
   ArrowRight,
@@ -56,6 +57,7 @@ export function AccountPanel() {
   });
 
   const [successFeedback, setSuccessFeedback] = React.useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   // Email Change OTP Modal State
   const [isEmailModalOpen, setIsEmailModalOpen] = React.useState(false);
@@ -80,6 +82,18 @@ export function AccountPanel() {
       email: initialEmail,
     },
   });
+
+  // Keep form synchronized when authUser or settings load from backend
+  React.useEffect(() => {
+    const currentName = authUser?.fullName || settings.account.name;
+    const currentEmail = authUser?.email || settings.account.email;
+    if (currentName || currentEmail) {
+      reset({
+        fullName: currentName,
+        email: currentEmail,
+      });
+    }
+  }, [authUser?.fullName, authUser?.email, settings.account.name, settings.account.email, reset]);
 
   // Handle avatar upload
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -111,13 +125,22 @@ export function AccountPanel() {
   };
 
   const onSave = async (data: AccountFormData) => {
-    updateAccount({
-      name: data.fullName,
-      email: data.email,
-    });
-    reset(data);
-    setSuccessFeedback("Profile settings saved successfully.");
-    setTimeout(() => setSuccessFeedback(null), 3500);
+    setErrorMessage(null);
+    try {
+      await updateAccount({
+        name: data.fullName,
+        email: data.email,
+      });
+      reset(data);
+      setSuccessFeedback("Profile settings saved successfully.");
+      setTimeout(() => setSuccessFeedback(null), 3500);
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update profile settings.";
+      setErrorMessage(msg);
+    }
   };
 
   // Email change flow
@@ -198,6 +221,13 @@ export function AccountPanel() {
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
           <span>{successFeedback}</span>
+        </div>
+      )}
+
+      {errorMessage && (
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-800 dark:text-rose-300 text-xs font-medium animate-in fade-in duration-200">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+          <span>{errorMessage}</span>
         </div>
       )}
 
