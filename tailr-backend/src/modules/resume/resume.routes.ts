@@ -1,4 +1,5 @@
 import { Elysia, t } from "elysia";
+import { jwt } from "@elysiajs/jwt";
 import { resumeController } from "./resume.controller";
 import {
   SaveResumeRequestSchema,
@@ -6,12 +7,20 @@ import {
   TailorResumeRequestSchema,
   TailorResumeResponseSchema,
 } from "./resume.model";
+import { env } from "../../config/env";
 
 /**
  * Resume Routes:
  * Full CRUD for Master Resumes and AI-driven ATS Resume Tailoring with LaTeX export.
  */
 export const resumeRoutes = new Elysia({ prefix: "/resume" })
+  .use(
+    jwt({
+      name: "jwtAccess",
+      secret: env.JWT_ACCESS_SECRET,
+      exp: env.JWT_ACCESS_EXPIRY,
+    })
+  )
   // 1. Get current active Master Resume
   .get(
     "/master",
@@ -21,10 +30,14 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Get active Master Resume",
         description:
-          "Retrieves the active master resume for the current user or returns the default candidate profile.",
+          "Retrieves the active master resume for the authenticated user, or returns the default candidate profile if unauthenticated.",
+        security: [{ bearerAuth: [] }],
         responses: {
           200: {
-            description: "Master resume retrieved successfully",
+            description: "Master resume retrieved successfully.",
+          },
+          401: {
+            description: "Unauthorized (invalid or expired token).",
           },
         },
       },
@@ -41,13 +54,17 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Save Master Resume",
         description:
-          "Stores a verified structured master resume in the database with career summary, technical skills, experience, education, and projects.",
+          "Stores a verified structured master resume in PostgreSQL with career summary, technical skills, experience, education, and projects.",
+        security: [{ bearerAuth: [] }],
         responses: {
           201: {
-            description: "Master resume created/saved successfully in database",
+            description: "Master resume created/saved successfully in database.",
           },
           400: {
-            description: "Validation error",
+            description: "Validation error: Invalid structured resume fields.",
+          },
+          401: {
+            description: "Unauthorized (invalid or expired token).",
           },
         },
       },
@@ -64,10 +81,20 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Upload raw resume text / LaTeX / Markdown",
         description:
-          "Extracts and parses raw resume text into the canonical ATS schema using Gemini AI and saves it to the database.",
+          "Extracts and parses raw resume text or base64 PDF into canonical ATS schema using Gemini AI and saves it to the database.",
+        security: [{ bearerAuth: [] }],
         responses: {
           201: {
-            description: "Raw resume parsed and saved to database",
+            description: "Raw resume parsed and saved to database successfully.",
+          },
+          400: {
+            description: "Validation error: Missing rawText or pdfBase64.",
+          },
+          401: {
+            description: "Unauthorized (invalid or expired token).",
+          },
+          429: {
+            description: "AI rate limit exceeded during parsing.",
           },
         },
       },
@@ -82,10 +109,14 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
       detail: {
         tags: ["Resumes"],
         summary: "List all resumes",
-        description: "Retrieves list of all master and uploaded resumes for user.",
+        description: "Retrieves list of all master and uploaded resumes for the user.",
+        security: [{ bearerAuth: [] }],
         responses: {
           200: {
-            description: "List of resumes retrieved successfully",
+            description: "List of resumes retrieved successfully.",
+          },
+          401: {
+            description: "Unauthorized (invalid or expired token).",
           },
         },
       },
@@ -104,9 +135,11 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Get resume by ID",
         description: "Retrieves a single resume record by its primary UUID.",
+        security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: "Resume found" },
-          404: { description: "Resume not found" },
+          200: { description: "Resume found." },
+          401: { description: "Unauthorized." },
+          404: { description: "Resume not found." },
         },
       },
     }
@@ -125,9 +158,12 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Update resume",
         description: "Updates an existing resume in the database.",
+        security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: "Resume updated successfully" },
-          404: { description: "Resume not found" },
+          200: { description: "Resume updated successfully." },
+          400: { description: "Validation error." },
+          401: { description: "Unauthorized." },
+          404: { description: "Resume not found." },
         },
       },
     }
@@ -145,9 +181,11 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "Delete resume",
         description: "Deletes a resume record from the database.",
+        security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: "Resume deleted successfully" },
-          404: { description: "Resume not found" },
+          200: { description: "Resume deleted successfully." },
+          401: { description: "Unauthorized." },
+          404: { description: "Resume not found." },
         },
       },
     }
@@ -167,12 +205,22 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         summary: "Tailor resume for job with Gemini AI",
         description:
           "Analyzes target job description against candidate master resume, tailors career summary, bullet points, and skills, calculates 0-100 ATS score with keyword gap feedback, formats into standard ATS LaTeX source code, and persists tailored version in PostgreSQL.",
+        security: [{ bearerAuth: [] }],
         responses: {
           200: {
-            description: "Tailored resume generated, ATS score calculated, and saved to database",
+            description: "Tailored resume generated, ATS score calculated, and saved to database.",
           },
           400: {
-            description: "Invalid input or missing required fields",
+            description: "Invalid input or missing required fields.",
+          },
+          401: {
+            description: "Unauthorized (invalid or expired token).",
+          },
+          429: {
+            description: "Gemini API rate limit exceeded.",
+          },
+          500: {
+            description: "AI generation error during tailoring.",
           },
         },
       },
@@ -188,8 +236,10 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         tags: ["Resumes"],
         summary: "List tailored resumes",
         description: "Retrieves history of AI-tailored resume versions saved in the database.",
+        security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: "List of tailored resumes" },
+          200: { description: "List of tailored resumes." },
+          401: { description: "Unauthorized." },
         },
       },
     }
@@ -208,9 +258,11 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
         summary: "Get tailored resume by ID",
         description:
           "Retrieves complete details of a tailored resume version including ATS score, feedback, tailored data, and LaTeX source.",
+        security: [{ bearerAuth: [] }],
         responses: {
-          200: { description: "Tailored resume found" },
-          404: { description: "Tailored resume not found" },
+          200: { description: "Tailored resume found." },
+          401: { description: "Unauthorized." },
+          404: { description: "Tailored resume not found." },
         },
       },
     }

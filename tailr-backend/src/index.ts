@@ -44,31 +44,45 @@ const app = new Elysia()
       path: "/swagger",
       documentation: {
         info: {
-          title: "Tailr Authentication & Identity API",
+          title: "Tailr Platform API — AI Career & Job Application Suite",
           version: "1.0.0",
           description:
-            "Production-ready authentication system featuring Bun-native argon2id password hashing, 6-digit OTP email verification, and secure HttpOnly refresh token rotation.",
+            "Production-grade backend powering the Tailr intelligent career acceleration platform. Features Bun-native argon2id authentication, session rotation with HttpOnly cookies, AI-driven ATS resume tailoring and LaTeX export (Gemini 2.5 Flash with Groq fallback), verified zero-hallucination cover letter generation, full Kanban job application lifecycle tracking, recruitment analytics & funnel insights, and an IT company intelligence directory.",
           contact: {
-            name: "Shubham Raj Pandey",
+            name: "Tailr Engineering Team",
             email: "support@tailr.io",
+            url: "https://tailr.io",
+          },
+          license: {
+            name: "Proprietary / Closed Source",
           },
         },
+        servers: [
+          {
+            url: `http://localhost:${env.PORT}`,
+            description: "Local Development Server",
+          },
+        ],
         tags: [
           {
             name: "Auth",
-            description: "User registration, OTP verification, credential login, and session rotation",
+            description:
+              "User registration, OTP verification via email, credential login, HttpOnly refresh token rotation, and profile management",
           },
           {
             name: "Applications",
-            description: "Tracked job applications lifecycle, statuses, and HR contacts",
+            description:
+              "Job application tracking, Kanban status lifecycles (wishlist, applied, interview, offer, rejected), interview scheduling, salary tracking, and recruiter contacts",
           },
           {
             name: "Analytics",
-            description: "Recruiter response velocity, conversion funnel stages, and AI tailoring performance metrics",
+            description:
+              "Recruiter response velocity, conversion funnel stages, application timeline velocity, and outcome breakdown metrics",
           },
           {
             name: "Companies",
-            description: "Static IT company directory — admin-managed, paginated, with search and A–Z filtering",
+            description:
+              "Curated IT company intelligence directory with cursor-based pagination, A–Z letter filtering, search, and admin management",
           },
           {
             name: "Cover Letters",
@@ -78,11 +92,12 @@ const app = new Elysia()
           {
             name: "Resumes",
             description:
-              "Master Resume management, raw text parsing, AI tailoring, ATS compatibility scoring, and LaTeX export",
+              "Master Resume management, raw document/PDF parsing, AI job tailoring, 0–100 ATS compatibility scoring, and compilable LaTeX export",
           },
           {
             name: "System",
-            description: "Service health, database connection checks, and diagnostics",
+            description:
+              "Service health probes, PostgreSQL connection status, and runtime diagnostics",
           },
         ],
         components: {
@@ -91,7 +106,8 @@ const app = new Elysia()
               type: "http",
               scheme: "bearer",
               bearerFormat: "JWT",
-              description: "Enter your Bearer JWT access token to authenticate",
+              description:
+                "Enter your Bearer JWT access token to authenticate. Example: 'Bearer eyJhbGci...'",
             },
           },
         },
@@ -112,32 +128,38 @@ const app = new Elysia()
     };
   })
 
-  // 5. Mount Authentication Module Routes (/auth/*)
+  // 6. Mount Authentication Module Routes (/auth/*)
   .use(authRoutes)
 
-  // 6. Mount Applications Module Routes (/applications/*)
+  // 7. Mount Applications Module Routes (/applications/*)
   .use(applicationsRoutes)
 
-  // 7. Mount Analytics Module Routes (/analytics/*)
+  // 8. Mount Analytics Module Routes (/analytics/*)
   .use(analyticsRoutes)
 
-  // 8. Mount Companies Directory Routes (/companies, /admin/companies)
+  // 9. Mount Companies Directory Routes (/companies, /admin/companies)
   .use(companiesRoutes)
 
-  // 9. Mount Cover Letter Generation Route (/cover-letter/generate)
+  // 10. Mount Cover Letter Generation Route (/cover-letter/generate)
   .use(coverLetterRoutes)
 
-  // 10. Mount Resume Module Routes (/resume/*)
+  // 11. Mount Resume Module Routes (/resume/*)
   .use(resumeRoutes)
 
-  // 6. Bind to Port
+  // 12. Bind to Port
   .listen({
     port: env.PORT,
     hostname: "0.0.0.0",
   });
 
 console.log(
-  `🚀 Tailr Auth Backend is active on http://${app.server?.hostname}:${app.server?.port} (${env.NODE_ENV})`
+  `🚀 Tailr Platform API Backend is active on http://${app.server?.hostname || "localhost"}:${app.server?.port || env.PORT} (${env.NODE_ENV})`
+);
+console.log(
+  `📖 Interactive Swagger 3.0 Documentation: http://localhost:${app.server?.port || env.PORT}/swagger`
+);
+console.log(
+  `🩺 Health & Database Status Probe: http://localhost:${app.server?.port || env.PORT}/health`
 );
 
 export type App = typeof app;

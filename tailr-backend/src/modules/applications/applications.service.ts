@@ -40,6 +40,11 @@ export class ApplicationsService {
    * Get a single application by ID ensuring ownership.
    */
   async getById(userId: string, id: string): Promise<JobApplication> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Job application '${id}' not found.`);
+    }
+
     const [app] = await db
       .select()
       .from(jobApplications)

@@ -21,7 +21,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
         tags: ["Cover Letters"],
         summary: "Generate AI-tailored cover letter",
         description:
-          "Generates an authentic, high-impact cover letter strictly grounded in the candidate's verified master resume. Fully compatible with Google Gemini Free Tier (gemini-2.5-flash) and includes multi-template layout formatting (Professional Classic with recipient header, Minimal Direct, and Modern Bold).",
+          "Generates an authentic, high-impact cover letter strictly grounded in the candidate's verified master resume. Fully compatible with Google Gemini Free Tier (gemini-2.5-flash) with automated fallback to Groq, and includes multi-template layout formatting (Professional Classic with recipient header, Minimal Direct, and Modern Bold).",
+        security: [{ bearerAuth: [] }],
         responses: {
           200: {
             description: "Cover letter generated successfully.",

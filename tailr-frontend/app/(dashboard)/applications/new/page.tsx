@@ -18,7 +18,7 @@ export default function NewApplicationPage() {
   const handleSubmit = async (values: ApplicationFormValues) => {
     setIsSubmitting(true);
     try {
-      const created = createApplication(values);
+      const created = await createApplication(values);
       router.push(`/applications/${created.id}`);
     } catch {
       setIsSubmitting(false);
