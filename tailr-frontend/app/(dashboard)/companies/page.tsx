@@ -171,8 +171,8 @@ export default function CompaniesPage() {
               })}
             </div>
 
-            {/* Alphabet quick-jump horizontal bar */}
-            <div className="flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
+            {/* Mobile Alphabet quick-jump horizontal bar */}
+            <div className="md:hidden flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
               <button
                 type="button"
                 onClick={() => setSelectedLetter("")}
@@ -206,36 +206,83 @@ export default function CompaniesPage() {
             </div>
           </div>
 
-          {/* Tabular Form */}
-          <CompanyTable
-            companies={companiesList}
-            isLoading={isLoading}
-            selectedCompanyId={selectedCompany?.id}
-            onSelectCompany={handleSelectCompany}
-            onResetFilters={handleResetFilters}
-          />
+          {/* Table Container with Sticky Alphabet Rail on Right Side */}
+          <div className="relative flex items-start gap-3 w-full">
+            {/* Main Table Column */}
+            <div className="flex-1 min-w-0 space-y-4">
+              <CompanyTable
+                companies={companiesList}
+                isLoading={isLoading}
+                selectedCompanyId={selectedCompany?.id}
+                onSelectCompany={handleSelectCompany}
+                onResetFilters={handleResetFilters}
+              />
 
-          {/* Load More Button */}
-          {hasNextPage && (
-            <div className="flex justify-center pt-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-                className="gap-2 text-xs"
-              >
-                {isFetchingNextPage ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Loading more companies…</span>
-                  </>
-                ) : (
-                  <span>Load More Companies</span>
-                )}
-              </Button>
+              {/* Load More Button */}
+              {hasNextPage && (
+                <div className="flex justify-center pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="gap-2 text-xs"
+                  >
+                    {isFetchingNextPage ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <span>Loading more companies…</span>
+                      </>
+                    ) : (
+                      <span>Load More Companies</span>
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Sticky Vertical Alphabet Index Rail (Desktop) */}
+            <aside
+              aria-label="Alphabetical quick jump"
+              className="sticky top-20 shrink-0 hidden md:flex flex-col items-center py-2 px-1 rounded-xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border border-neutral-200/80 dark:border-white/10 shadow-xs z-10 select-none max-h-[calc(100vh-6rem)] overflow-y-auto scrollbar-none"
+            >
+              <button
+                type="button"
+                onClick={() => setSelectedLetter("")}
+                className={cn(
+                  "w-7 py-1 rounded text-[10px] font-bold uppercase transition-all tracking-wider mb-1",
+                  !selectedLetter
+                    ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-xs"
+                    : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5"
+                )}
+                title="All Companies"
+              >
+                ALL
+              </button>
+              <div className="w-4 h-px bg-neutral-200 dark:bg-neutral-800 my-1 shrink-0" />
+              <div className="flex flex-col items-center gap-[2px]">
+                {ALPHABET.map((letter) => {
+                  const isActive = selectedLetter === letter;
+                  return (
+                    <button
+                      key={letter}
+                      type="button"
+                      onClick={() => handleLetterSelect(letter)}
+                      className={cn(
+                        "w-6 h-5 rounded text-[11px] font-semibold transition-all flex items-center justify-center leading-none",
+                        isActive
+                          ? "bg-indigo-600 text-white font-bold shadow-xs scale-110"
+                          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5"
+                      )}
+                      title={`Filter by ${letter}`}
+                    >
+                      {letter}
+                    </button>
+                  );
+                })}
+              </div>
+            </aside>
+          </div>
         </main>
 
         {/* Detail dialog */}
