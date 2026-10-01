@@ -1,6 +1,15 @@
 import { GoogleGenAI } from "@google/genai";
+import { eq, and, desc, ilike, or } from "drizzle-orm";
+import { db } from "../../db/client";
+import { coverLetters, type CoverLetter } from "../../db/schema";
+import { NotFoundError } from "../../middleware/error";
 import { env } from "../../config/env";
-import { GenerateCoverLetterInput } from "./cover-letter.model";
+import {
+  GenerateCoverLetterInput,
+  CreateCoverLetterInput,
+  UpdateCoverLetterInput,
+  CoverLetterQueryInput,
+} from "./cover-letter.model";
 import { callGroqChatCompletion } from "../../utils/groq";
 
 /**
@@ -451,6 +460,140 @@ ${candidate.name}`;
       keyHighlights,
     };
   }
+
+  /**
+   * List all cover letters belonging to an authenticated user with optional search / filter.
+   */
+  async list(userId: string, query?: CoverLetterQueryInput): Promise<CoverLetter[]> {
+    const conditions = [eq(coverLetters.userId, userId)];
+
+    if (query?.status) {
+      conditions.push(eq(coverLetters.status, query.status));
+    }
+
+    if (query?.applicationId) {
+      conditions.push(eq(coverLetters.applicationId, query.applicationId));
+    }
+
+    if (query?.search?.trim()) {
+      const searchPattern = `%${query.search.trim()}%`;
+      conditions.push(
+        or(
+          ilike(coverLetters.companyName, searchPattern),
+          ilike(coverLetters.positionTitle, searchPattern)
+        )!
+      );
+    }
+
+    return await db
+      .select()
+      .from(coverLetters)
+      .where(and(...conditions))
+      .orderBy(desc(coverLetters.createdAt));
+  }
+
+  /**
+   * Get a single cover letter by ID.
+   */
+  async getById(userId: string, id: string): Promise<CoverLetter> {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Cover letter '${id}' not found.`);
+    }
+
+    const [letter] = await db
+      .select()
+      .from(coverLetters)
+      .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)));
+
+    if (!letter) {
+      throw new NotFoundError(`Cover letter '${id}' not found.`);
+    }
+
+    return letter;
+  }
+
+  /**
+   * Create and persist a new cover letter.
+   */
+  async create(userId: string, input: CreateCoverLetterInput): Promise<CoverLetter> {
+    let appId: string | null = null;
+    if (input.applicationId) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.applicationId);
+      if (isUuid) {
+        appId = input.applicationId;
+      }
+    }
+
+    const [created] = await db
+      .insert(coverLetters)
+      .values({
+        userId,
+        applicationId: appId,
+        companyName: input.companyName,
+        positionTitle: input.positionTitle,
+        recipientName: input.recipientName || null,
+        recipientTitle: input.recipientTitle || null,
+        tone: input.tone || "formal",
+        status: input.status || "DRAFT",
+        content: input.content,
+        keyHighlights: input.keyHighlights || [],
+      })
+      .returning();
+
+    return created;
+  }
+
+  /**
+   * Update an existing cover letter.
+   */
+  async update(userId: string, id: string, input: UpdateCoverLetterInput): Promise<CoverLetter> {
+    await this.getById(userId, id);
+
+    let appId: string | null | undefined = undefined;
+    if (input.applicationId !== undefined) {
+      if (input.applicationId === null) {
+        appId = null;
+      } else {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input.applicationId);
+        appId = isUuid ? input.applicationId : null;
+      }
+    }
+
+    const updateData: Record<string, any> = {
+      updatedAt: new Date(),
+    };
+
+    if (input.companyName !== undefined) updateData.companyName = input.companyName;
+    if (input.positionTitle !== undefined) updateData.positionTitle = input.positionTitle;
+    if (input.recipientName !== undefined) updateData.recipientName = input.recipientName;
+    if (input.recipientTitle !== undefined) updateData.recipientTitle = input.recipientTitle;
+    if (input.tone !== undefined) updateData.tone = input.tone;
+    if (input.status !== undefined) updateData.status = input.status;
+    if (input.content !== undefined) updateData.content = input.content;
+    if (input.keyHighlights !== undefined) updateData.keyHighlights = input.keyHighlights;
+    if (appId !== undefined) updateData.applicationId = appId;
+
+    const [updated] = await db
+      .update(coverLetters)
+      .set(updateData)
+      .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)))
+      .returning();
+
+    return updated;
+  }
+
+  /**
+   * Delete a cover letter.
+   */
+  async delete(userId: string, id: string): Promise<void> {
+    await this.getById(userId, id);
+
+    await db
+      .delete(coverLetters)
+      .where(and(eq(coverLetters.id, id), eq(coverLetters.userId, userId)));
+  }
 }
 
 export const coverLetterService = new CoverLetterService();
+

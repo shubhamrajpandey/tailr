@@ -118,6 +118,12 @@ The Tailr backend implements senior-tier defensive security and resilient patter
 | Method | Endpoint | Description | Auth Required | Status Codes |
 |---|---|---|:---:|---|
 | `POST` | `/cover-letter/generate` | Generate AI-tailored cover letter strictly grounded in master resume with zero-hallucination guarantee | Optional **Bearer** | `200`, `400`, `429`, `500` |
+| `GET` | `/cover-letters` | List all persistent cover letters saved by authenticated user | **Bearer JWT** | `200`, `401` |
+| `POST` | `/cover-letters` | Save/create a new persistent cover letter in PostgreSQL | **Bearer JWT** | `201`, `400`, `401` |
+| `GET` | `/cover-letters/:id` | Get cover letter details and full content by ID | **Bearer JWT** | `200`, `401`, `404` |
+| `PUT` | `/cover-letters/:id` | Update cover letter content, status (DRAFT/FINAL), tone, or details | **Bearer JWT** | `200`, `400`, `401`, `404` |
+| `DELETE` | `/cover-letters/:id` | Permanently delete a saved cover letter | **Bearer JWT** | `200`, `401`, `404` |
+
 
 ### Tag 7: Resumes, ATS Scoring & LaTeX (`Resumes`)
 | Method | Endpoint | Description | Auth Required | Status Codes |

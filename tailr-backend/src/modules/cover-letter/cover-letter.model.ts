@@ -188,3 +188,41 @@ export const GenerateCoverLetterResponse = t.Object({
     }),
   }),
 });
+
+/**
+ * TypeBox schemas for Cover Letter persistent CRUD operations.
+ */
+export const CreateCoverLetterBody = t.Object({
+  applicationId: t.Optional(t.Nullable(t.String())),
+  companyName: t.String({ minLength: 1, maxLength: 255 }),
+  positionTitle: t.String({ minLength: 1, maxLength: 255 }),
+  recipientName: t.Optional(t.Nullable(t.String({ maxLength: 255 }))),
+  recipientTitle: t.Optional(t.Nullable(t.String({ maxLength: 255 }))),
+  tone: t.Optional(t.String({ default: "formal" })),
+  status: t.Optional(t.String({ default: "DRAFT" })),
+  content: t.String({ minLength: 1 }),
+  keyHighlights: t.Optional(t.Array(t.String())),
+});
+
+export const UpdateCoverLetterBody = t.Partial(CreateCoverLetterBody);
+
+export const CoverLetterQuery = t.Optional(
+  t.Object({
+    status: t.Optional(t.String()),
+    search: t.Optional(t.String()),
+    applicationId: t.Optional(t.String()),
+  })
+);
+
+export const CoverLetterIdParam = t.Object({
+  id: t.String(),
+});
+
+export type CreateCoverLetterInput = typeof CreateCoverLetterBody.static;
+export type UpdateCoverLetterInput = typeof UpdateCoverLetterBody.static;
+export type CoverLetterQueryInput = {
+  status?: string;
+  search?: string;
+  applicationId?: string;
+};
+

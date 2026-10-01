@@ -106,25 +106,25 @@ export default function CoverLetterDetailPage() {
     downloadCoverLetterAsTxt(coverLetter.content, exportMeta);
   };
 
-  const handleToggleStatus = () => {
+  const handleToggleStatus = async () => {
     const nextStatus = coverLetter.status === "FINAL" ? "DRAFT" : "FINAL";
-    updateCoverLetter(coverLetter.id, { status: nextStatus });
+    await updateCoverLetter(coverLetter.id, { status: nextStatus });
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (draftContent.trim()) {
-      updateCoverLetter(coverLetter.id, { content: draftContent.trim() });
+      await updateCoverLetter(coverLetter.id, { content: draftContent.trim() });
       setIsEditing(false);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (
       window.confirm(
         `Are you sure you want to delete the cover letter for ${coverLetter.positionTitle} at ${coverLetter.companyName}?`
       )
     ) {
-      deleteCoverLetter(coverLetter.id);
+      await deleteCoverLetter(coverLetter.id);
       router.push("/cover-letter");
     }
   };

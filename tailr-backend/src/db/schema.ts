@@ -93,6 +93,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   resumes: many(resumes),
   tailoredResumes: many(tailoredResumes),
   jobApplications: many(jobApplications),
+  coverLetters: many(coverLetters),
 }));
 
 export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
@@ -291,13 +292,69 @@ export const jobApplications = pgTable(
   ]
 );
 
-export const jobApplicationsRelations = relations(jobApplications, ({ one }) => ({
+export const jobApplicationsRelations = relations(jobApplications, ({ one, many }) => ({
   user: one(users, {
     fields: [jobApplications.userId],
     references: [users.id],
   }),
+  coverLetters: many(coverLetters),
 }));
 
 export type JobApplication = typeof jobApplications.$inferSelect;
 export type NewJobApplication = typeof jobApplications.$inferInsert;
+
+/**
+ * Cover Letters table: stores generated & edited cover letters for job applications.
+ */
+export const coverLetters = pgTable(
+  "cover_letters",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    applicationId: uuid("application_id").references(
+      () => jobApplications.id,
+      { onDelete: "set null" }
+    ),
+    companyName: varchar("company_name", { length: 255 }).notNull(),
+    positionTitle: varchar("position_title", { length: 255 }).notNull(),
+    recipientName: varchar("recipient_name", { length: 255 }),
+    recipientTitle: varchar("recipient_title", { length: 255 }),
+    tone: varchar("tone", { length: 50 }).default("formal").notNull(),
+    status: varchar("status", { length: 50 }).default("DRAFT").notNull(),
+    content: text("content").notNull(),
+    keyHighlights: text("key_highlights")
+      .array()
+      .default(sql`'{}'::text[]`)
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("cover_letters_user_id_idx").on(table.userId),
+    index("cover_letters_application_id_idx").on(table.applicationId),
+    index("cover_letters_company_name_idx").on(table.companyName),
+    index("cover_letters_status_idx").on(table.status),
+    index("cover_letters_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const coverLettersRelations = relations(coverLetters, ({ one }) => ({
+  user: one(users, {
+    fields: [coverLetters.userId],
+    references: [users.id],
+  }),
+  application: one(jobApplications, {
+    fields: [coverLetters.applicationId],
+    references: [jobApplications.id],
+  }),
+}));
+
+export type CoverLetter = typeof coverLetters.$inferSelect;
+export type NewCoverLetter = typeof coverLetters.$inferInsert;
 

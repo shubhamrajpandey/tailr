@@ -189,9 +189,9 @@ export default function CoverLettersPage() {
       };
 
       if (savedCoverLetterId && coverLetters.some((c) => c.id === savedCoverLetterId)) {
-        updateCoverLetter(savedCoverLetterId, payloadData);
+        await updateCoverLetter(savedCoverLetterId, payloadData);
       } else {
-        const created = saveCoverLetter(payloadData);
+        const created = await saveCoverLetter(payloadData);
         if (created?.id) {
           setSavedCoverLetterId(created.id);
         }
