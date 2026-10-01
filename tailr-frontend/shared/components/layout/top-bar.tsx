@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Calendar,
-  Bell,
   ChevronDown,
   MoreHorizontal,
   LogOut,
@@ -21,7 +20,6 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
-import { LanguageSelector } from "@/shared/components/ui/language-selector";
 import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -264,9 +262,6 @@ export function TopBar({
 
       {/* Right: Actions, Theme, Date Selector & User Profile */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-        {/* Language Selector Dropdown */}
-        <LanguageSelector variant="outline" />
-
         {/* Theme Toggle Button */}
         <ThemeToggle />
 
@@ -297,16 +292,6 @@ export function TopBar({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-
-        {/* Notifications Button */}
-        <button
-          type="button"
-          className="relative h-8 w-8 inline-flex items-center justify-center rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
-          title="Notifications"
-        >
-          <Bell className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-neutral-950" />
-        </button>
 
         {/* Quick Options More */}
         <button

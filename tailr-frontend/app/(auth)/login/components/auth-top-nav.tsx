@@ -4,7 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
-import { LanguageSelector } from "@/shared/components/ui/language-selector";
 
 export function AuthTopNav() {
   return (
@@ -27,10 +26,9 @@ export function AuthTopNav() {
         </div>
       </Link>
 
-      {/* Header Actions: Theme Toggle + Language Selector */}
+      {/* Header Actions: Theme Toggle */}
       <div className="flex items-center gap-2">
         <ThemeToggle />
-        <LanguageSelector variant="ghost" />
       </div>
     </header>
   );
