@@ -106,7 +106,7 @@ export function CompanyTable({
             </TableHead>
 
             {/* 2. Sector */}
-            <TableHead className="w-[170px]">
+            <TableHead className="min-w-[190px]">
               <button
                 type="button"
                 onClick={() => handleSort("sector")}

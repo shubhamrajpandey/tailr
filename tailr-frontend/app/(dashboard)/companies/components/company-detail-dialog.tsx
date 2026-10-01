@@ -98,7 +98,8 @@ export function CompanyDetailDialog({
               <div className="flex items-center gap-2.5 flex-wrap text-xs text-neutral-500 dark:text-neutral-400">
                 <Badge
                   variant="outline"
-                  className="border-neutral-200 dark:border-white/10 bg-neutral-100/70 dark:bg-white/[0.04] text-neutral-700 dark:text-neutral-300 font-medium"
+                  dot={false}
+                  className="rounded-md border-neutral-200 dark:border-white/10 bg-neutral-100/70 dark:bg-white/[0.04] text-neutral-700 dark:text-neutral-300 font-medium whitespace-nowrap"
                 >
                   {displaySector}
                 </Badge>

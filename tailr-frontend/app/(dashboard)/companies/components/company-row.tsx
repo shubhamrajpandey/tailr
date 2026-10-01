@@ -107,10 +107,11 @@ export function CompanyRow({
       </TableCell>
 
       {/* 2. Sector / Industry */}
-      <TableCell className="py-3.5 px-3 min-w-[150px]">
+      <TableCell className="py-3.5 px-3 whitespace-nowrap min-w-[190px]">
         <Badge
           variant="outline"
-          className="text-xs font-medium border-neutral-200 dark:border-white/10 bg-neutral-100/60 dark:bg-white/[0.04] text-neutral-700 dark:text-neutral-300"
+          dot={false}
+          className="rounded-md px-2.5 py-1 text-xs font-medium border-neutral-200/90 dark:border-white/10 bg-neutral-100/80 dark:bg-white/[0.05] text-neutral-700 dark:text-neutral-300 whitespace-nowrap inline-flex items-center"
         >
           {displaySector}
         </Badge>
