@@ -1,5 +1,5 @@
-import { NotificationsPanel } from "../components/notifications-panel";
+import { redirect } from "next/navigation";
 
 export default function NotificationsSettingsPage() {
-  return <NotificationsPanel />;
+  redirect("/settings/account");
 }

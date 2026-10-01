@@ -139,6 +139,16 @@ The Tailr backend implements senior-tier defensive security and resilient patter
 | `GET` | `/resume/tailored` | List all saved tailored resume versions | Optional **Bearer** | `200`, `401` |
 | `GET` | `/resume/tailored/:id` | Get tailored resume version details, ATS score, and LaTeX source | Optional **Bearer** | `200`, `401`, `404` |
 
+### Tag 8: User Settings & Workspace Defaults (`Settings`)
+| Method | Endpoint | Description | Auth Required | Status Codes |
+|---|---|---|:---:|---|
+| `GET` | `/settings` | Retrieve user workspace settings, AI configurations, UI appearance, and CRM defaults | **Bearer JWT** | `200`, `401` |
+| `PUT` | `/settings` | Update workspace preferences, AI defaults, resume templates, and UI appearance | **Bearer JWT** | `200`, `400`, `401` |
+| `PUT` | `/settings/profile` | Update account profile full name and email | **Bearer JWT** | `200`, `400`, `401` |
+| `PUT` | `/settings/password` | Change account password (requires current password verification, hashes with Argon2id) | **Bearer JWT** | `200`, `400`, `401` |
+| `GET` | `/settings/export-data` | Export all account data (profile, settings, applications, resumes, tailored versions, cover letters) | **Bearer JWT** | `200`, `401` |
+| `DELETE` | `/settings/account` | Permanently delete account and all associated user data | **Bearer JWT** | `200`, `400`, `401` |
+
 ---
 
 ## 4. Step-by-Step Swagger UI Interactive Guide

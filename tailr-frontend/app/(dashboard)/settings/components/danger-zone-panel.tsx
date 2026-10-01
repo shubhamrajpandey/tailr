@@ -21,12 +21,15 @@ import {
   DialogFooter,
 } from "@/shared/components/ui/dialog";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
+import { useSettings } from "@/shared/hooks/use-settings";
 
 const CONFIRMATION_PHRASE = "DELETE MY ACCOUNT";
 
 export function DangerZonePanel() {
   const router = useRouter();
   const logoutMutation = useLogoutMutation();
+
+  const { deleteAccount } = useSettings();
 
   // Deactivate modal state
   const [isDeactivateOpen, setIsDeactivateOpen] = React.useState(false);
@@ -36,9 +39,11 @@ export function DangerZonePanel() {
   // Delete modal state
   const [isDeleteOpen, setIsDeleteOpen] = React.useState(false);
   const [typedPhrase, setTypedPhrase] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [deleteError, setDeleteError] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
-  const isDeleteConfirmed = typedPhrase.trim() === CONFIRMATION_PHRASE;
+  const isDeleteConfirmed = typedPhrase.trim() === CONFIRMATION_PHRASE && password.trim().length > 0;
 
   const handleDeactivate = async () => {
     setIsDeactivating(true);
@@ -57,20 +62,18 @@ export function DangerZonePanel() {
     if (!isDeleteConfirmed) return;
 
     setIsDeleting(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setDeleteError(null);
 
-    // Clear client-side stored data
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.clear();
-      } catch {
-        // ignore
-      }
+    try {
+      await deleteAccount(password);
+    } catch (err: any) {
+      setDeleteError(
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to delete account. Please verify your password."
+      );
+      setIsDeleting(false);
     }
-
-    // Server-side logout and redirect
-    logoutMutation.mutate();
-    router.replace("/login");
   };
 
   return (
@@ -223,17 +226,40 @@ export function DangerZonePanel() {
                 onChange={(e) => setTypedPhrase(e.target.value)}
                 placeholder={CONFIRMATION_PHRASE}
                 className={
-                  typedPhrase && !isDeleteConfirmed
+                  typedPhrase && typedPhrase.trim() !== CONFIRMATION_PHRASE
                     ? "border-rose-500 font-mono text-xs"
                     : "font-mono text-xs"
                 }
               />
-              {typedPhrase && !isDeleteConfirmed && (
+              {typedPhrase && typedPhrase.trim() !== CONFIRMATION_PHRASE && (
                 <p className="text-[11px] text-rose-500 font-medium">
                   Phrase does not match. Please type &quot;{CONFIRMATION_PHRASE}&quot; exactly.
                 </p>
               )}
             </div>
+
+            <div className="space-y-1.5">
+              <label
+                htmlFor="confirmDeletePassword"
+                className="text-xs font-semibold text-neutral-700 dark:text-neutral-300"
+              >
+                Account Password
+              </label>
+              <Input
+                id="confirmDeletePassword"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your account password"
+                className="text-xs"
+              />
+            </div>
+
+            {deleteError && (
+              <div className="p-3 rounded-lg bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-xs text-rose-700 dark:text-rose-300 font-medium">
+                {deleteError}
+              </div>
+            )}
           </div>
 
           <DialogFooter>

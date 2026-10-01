@@ -18,7 +18,7 @@ import { useApplications } from "@/shared/hooks/use-applications";
 import { useAppSelector } from "@/shared/store/hooks";
 
 export function PrivacyPanel() {
-  const { settings, updatePrivacy } = useSettings();
+  const { settings, updatePrivacy, exportData } = useSettings();
   const { applications } = useApplications();
   const authUser = useAppSelector((s) => s.auth.user);
 
@@ -59,40 +59,45 @@ export function PrivacyPanel() {
     setProfileVisibility(settings.privacy.profileVisibility);
   };
 
-  // Functional Data Export: generates and downloads JSON file
+  // Functional Data Export: generates and downloads JSON file from backend
   const handleExportData = async () => {
     setIsExporting(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      await exportData();
+      setSuccessFeedback("Personal data archive downloaded successfully.");
+      setTimeout(() => setSuccessFeedback(null), 3500);
+    } catch (err) {
+      console.warn("Export failed, falling back to client-side data export:", err);
+      const exportPayload = {
+        version: "1.0.0",
+        exportedAt: new Date().toISOString(),
+        user: {
+          id: authUser?.id || "local-user",
+          fullName: authUser?.fullName || settings.account.name,
+          email: authUser?.email || settings.account.email,
+          isVerified: authUser?.isVerified ?? true,
+        },
+        settings,
+        applicationsCRM: applications,
+      };
 
-    const exportPayload = {
-      version: "1.0.0",
-      exportedAt: new Date().toISOString(),
-      user: {
-        id: authUser?.id || "local-user",
-        fullName: authUser?.fullName || settings.account.name,
-        email: authUser?.email || settings.account.email,
-        isVerified: authUser?.isVerified ?? true,
-      },
-      settings,
-      applicationsCRM: applications,
-    };
-
-    const dataStr =
-      "data:text/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(exportPayload, null, 2));
-    const downloadAnchor = document.createElement("a");
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute(
-      "download",
-      `tailr-data-export-${new Date().toISOString().split("T")[0]}.json`
-    );
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-
-    setIsExporting(false);
-    setSuccessFeedback("Personal data archive downloaded successfully.");
-    setTimeout(() => setSuccessFeedback(null), 3500);
+      const dataStr =
+        "data:text/json;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(exportPayload, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute(
+        "download",
+        `tailr-data-export-${new Date().toISOString().split("T")[0]}.json`
+      );
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      setSuccessFeedback("Personal data archive downloaded successfully.");
+      setTimeout(() => setSuccessFeedback(null), 3500);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (

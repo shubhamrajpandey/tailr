@@ -87,13 +87,14 @@ export const refreshTokens = pgTable(
 /**
  * Relations between users and refresh tokens.
  */
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   refreshTokens: many(refreshTokens),
   companies: many(companies),
   resumes: many(resumes),
   tailoredResumes: many(tailoredResumes),
   jobApplications: many(jobApplications),
   coverLetters: many(coverLetters),
+  settings: one(userSettings),
 }));
 
 export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
@@ -357,4 +358,60 @@ export const coverLettersRelations = relations(coverLetters, ({ one }) => ({
 
 export type CoverLetter = typeof coverLetters.$inferSelect;
 export type NewCoverLetter = typeof coverLetters.$inferInsert;
+
+/**
+ * User Settings table: stores user workspace preferences, AI configurations, UI appearance, and CRM defaults.
+ */
+export const userSettings = pgTable(
+  "user_settings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // AI Workspace Settings
+    aiModel: varchar("ai_model", { length: 50 }).default("gemini-1.5-flash").notNull(),
+    tailoringAggressiveness: varchar("tailoring_aggressiveness", { length: 50 }).default("balanced").notNull(),
+    defaultCoverLetterTone: varchar("default_cover_letter_tone", { length: 50 }).default("formal").notNull(),
+    strictTruthConstraint: boolean("strict_truth_constraint").default(true).notNull(),
+    // Resume & Export Settings
+    defaultResumeTemplate: varchar("default_resume_template", { length: 50 }).default("modern_minimalist").notNull(),
+    includeContactHeader: boolean("include_contact_header").default(true).notNull(),
+    includeLinkedIn: boolean("include_linkedin").default(true).notNull(),
+    defaultPageMargin: varchar("default_page_margin", { length: 50 }).default("normal").notNull(),
+    paperSize: varchar("paper_size", { length: 50 }).default("letter").notNull(),
+    // Applications CRM Settings
+    defaultApplicationStatus: varchar("default_application_status", { length: 50 }).default("WISHLIST").notNull(),
+    defaultApplicationSortOrder: varchar("default_application_sort_order", { length: 50 }).default("applied_date_desc").notNull(),
+    ghostedThresholdDays: integer("ghosted_threshold_days").default(45),
+    // Appearance & Privacy Settings
+    theme: varchar("theme", { length: 50 }).default("system").notNull(),
+    density: varchar("density", { length: 50 }).default("comfortable").notNull(),
+    highContrast: boolean("high_contrast").default(false).notNull(),
+    analyticsOptIn: boolean("analytics_opt_in").default(false).notNull(),
+    aiImprovementOptIn: boolean("ai_improvement_opt_in").default(true).notNull(),
+    profileVisibility: varchar("profile_visibility", { length: 50 }).default("private").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("user_settings_user_id_idx").on(table.userId),
+  ]
+);
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+export type UserSettingsRow = typeof userSettings.$inferSelect;
+export type NewUserSettingsRow = typeof userSettings.$inferInsert;
+
 

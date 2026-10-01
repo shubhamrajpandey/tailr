@@ -10,6 +10,7 @@ import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
 import { resumeRoutes } from "./modules/resume/resume.routes";
 import { applicationsRoutes } from "./modules/applications/applications.routes";
 import { analyticsRoutes } from "./modules/analytics/analytics.routes";
+import { settingsRoutes } from "./modules/settings/settings.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -145,6 +146,9 @@ const app = new Elysia()
 
   // 11. Mount Resume Module Routes (/resume/*)
   .use(resumeRoutes)
+
+  // 12. Mount User Workspace Settings Routes (/settings/*)
+  .use(settingsRoutes)
 
   // 12. Bind to Port
   .listen({
