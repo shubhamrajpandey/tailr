@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Urbanist, Geist_Mono } from "next/font/google";
+import { Urbanist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/providers/theme-provider";
 import { ReduxProvider } from "@/shared/components/providers/redux-provider";
 import { QueryProvider } from "@/shared/components/providers/query-provider";
 import { AuthProvider } from "@/shared/components/providers/auth-provider";
+import { I18nProvider } from "@/shared/i18n/i18n-provider";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -15,6 +16,13 @@ const urbanist = Urbanist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-noto-nepali",
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -43,20 +51,22 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${urbanist.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${urbanist.variable} ${geistMono.variable} ${notoSansDevanagari.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col font-sans">
         <ReduxProvider>
           <QueryProvider>
             <AuthProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="dark"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
+              <I18nProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="dark"
+                  enableSystem
+                  disableTransitionOnChange
+                >
+                  {children}
+                </ThemeProvider>
+              </I18nProvider>
             </AuthProvider>
           </QueryProvider>
         </ReduxProvider>

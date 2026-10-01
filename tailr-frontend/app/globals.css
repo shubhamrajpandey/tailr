@@ -42,7 +42,13 @@
   --font-sans: var(--font-urbanist), system-ui, -apple-system, sans-serif;
   --font-urbanist: var(--font-urbanist), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
+  --font-nepali: var(--font-noto-nepali), sans-serif;
 }
+
+body.lang-nepali {
+  font-family: var(--font-noto-nepali), var(--font-urbanist), system-ui, sans-serif;
+}
+
 
 body {
   background-color: var(--background);
