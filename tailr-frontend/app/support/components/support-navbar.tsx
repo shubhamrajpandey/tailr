@@ -13,16 +13,14 @@ export function SupportNavbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Logo */}
         <Link href="/login" className="flex items-center gap-3 group">
-          <div className="h-9 w-9 rounded-xl bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1.5 shadow-sm group-hover:scale-105 transition-transform">
-            <Image
-              src="/tailr_bg_remove_logo.png"
+          <Image
+              src="/tailr.png"
               alt="Tailr Logo"
-              width={22}
-              height={22}
-              className="object-contain"
+              width={32}
+              height={32}
+              className="object-contain group-hover:scale-105 transition-transform"
               priority
             />
-          </div>
           <div className="flex items-center gap-2">
             <span className="font-extrabold text-base tracking-tight text-neutral-950 dark:text-white font-sans">
               Tailr

@@ -10,15 +10,13 @@ export function SupportFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
         {/* Brand & Copyright */}
         <div className="flex items-center gap-3">
-          <div className="h-7 w-7 rounded-lg bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1 shadow-2xs">
-            <Image
-              src="/tailr_bg_remove_logo.png"
+          <Image
+              src="/tailr.png"
               alt="Tailr Logo"
-              width={18}
-              height={18}
+              width={24}
+              height={24}
               className="object-contain"
             />
-          </div>
           <span className="text-xs text-neutral-500 dark:text-neutral-400">
             © 2025 Tailr. All rights reserved. Zero-hallucination career acceleration.
           </span>

@@ -33,12 +33,12 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/tailr_bg_remove_logo.png",
+        url: "/tailr.png",
         type: "image/png",
       },
     ],
-    shortcut: "/tailr_bg_remove_logo.png",
-    apple: "/tailr_bg_remove_logo.png",
+    shortcut: "/tailr.png",
+    apple: "/tailr.png",
   },
 };
 

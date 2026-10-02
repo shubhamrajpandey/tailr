@@ -40,18 +40,16 @@ export function LandingNav() {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
-        {/* Brand Logo with public/tailr_bg_remove_logo.png */}
+        {/* Brand Logo with public/tailr.png */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="h-9 w-9 rounded-xl bg-neutral-950 dark:bg-neutral-900 border border-neutral-800 dark:border-white/10 flex items-center justify-center p-1.5 shadow-xs group-hover:scale-105 transition-transform">
-            <Image
-              src="/tailr_bg_remove_logo.png"
-              alt="Tailr Logo"
-              width={28}
-              height={28}
-              className="object-contain"
-              priority
-            />
-          </div>
+          <Image
+            src="/tailr.png"
+            alt="Tailr Logo"
+            width={36}
+            height={36}
+            className="object-contain group-hover:scale-105 transition-transform"
+            priority
+          />
           <span className="font-extrabold text-2xl tracking-tight text-neutral-950 dark:text-white font-sans">
             Tailr
           </span>

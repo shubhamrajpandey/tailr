@@ -158,15 +158,13 @@ export function HeroSection() {
                   {/* Logo Brand Header */}
                   <div className="flex items-center justify-between pb-1">
                     <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-lg bg-neutral-950 flex items-center justify-center p-1 shadow-xs">
-                        <Image
-                          src="/tailr_bg_remove_logo.png"
+                      <Image
+                          src="/tailr.png"
                           alt="Tailr"
-                          width={24}
-                          height={24}
+                          width={28}
+                          height={28}
                           className="object-contain"
                         />
-                      </div>
                       <span className="font-extrabold text-base tracking-tight text-neutral-950 dark:text-white">
                         Tailr
                       </span>
