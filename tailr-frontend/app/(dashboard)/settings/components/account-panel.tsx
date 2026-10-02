@@ -7,8 +7,6 @@ import { z } from "zod";
 import {
   User,
   Mail,
-  Upload,
-  Trash2,
   CheckCircle2,
   AlertCircle,
   KeyRound,
@@ -18,7 +16,6 @@ import {
 } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { Avatar } from "@/shared/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -49,12 +46,6 @@ export function AccountPanel() {
   const initialName = authUser?.fullName || settings.account.name;
   const initialEmail = authUser?.email || settings.account.email;
 
-  const [avatarUrl, setAvatarUrl] = React.useState<string | null>(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("tailr_avatar_preview") || null;
-    }
-    return null;
-  });
 
   const [successFeedback, setSuccessFeedback] = React.useState<string | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
@@ -95,34 +86,6 @@ export function AccountPanel() {
     }
   }, [authUser?.fullName, authUser?.email, settings.account.name, settings.account.email, reset]);
 
-  // Handle avatar upload
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Image must be smaller than 2MB");
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      setAvatarUrl(dataUrl);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("tailr_avatar_preview", dataUrl);
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRemovePhoto = () => {
-    setAvatarUrl(null);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("tailr_avatar_preview");
-    }
-  };
 
   const onSave = async (data: AccountFormData) => {
     setErrorMessage(null);
@@ -206,15 +169,6 @@ export function AccountPanel() {
     setTimeout(() => setSuccessFeedback(null), 4000);
   };
 
-  const initials =
-    initialName
-      .split(" ")
-      .filter(Boolean)
-      .map((n) => n[0])
-      .slice(0, 2)
-      .join("")
-      .toUpperCase() || "U";
-
   return (
     <div className="space-y-6">
       {successFeedback && (
@@ -230,67 +184,6 @@ export function AccountPanel() {
           <span>{errorMessage}</span>
         </div>
       )}
-
-      {/* Profile Photo Section */}
-      <SettingsSection
-        title="Profile Photo"
-        description="This photo will be displayed on your dashboard top bar and public resume exports."
-      >
-        <div className="flex flex-col sm:flex-row sm:items-center gap-5">
-          <div className="relative group">
-            {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={avatarUrl}
-                alt="Profile preview"
-                className="h-20 w-20 rounded-full object-cover border-2 border-indigo-500/40 shadow-md"
-              />
-            ) : (
-              <Avatar
-                fallback={initials}
-                className="h-20 w-20 text-xl font-bold bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 border-2 border-neutral-200 dark:border-white/10"
-              />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handlePhotoUpload}
-              accept="image/png,image/jpeg,image/webp"
-              className="hidden"
-            />
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-2 text-xs font-semibold"
-              >
-                <Upload className="h-3.5 w-3.5" />
-                Upload New Photo
-              </Button>
-              {avatarUrl && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRemovePhoto}
-                  className="gap-2 text-xs text-rose-600 dark:text-rose-400 hover:text-rose-700"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                  Remove
-                </Button>
-              )}
-            </div>
-            <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-              Recommended: JPG, PNG or WebP under 2MB. Square 1:1 aspect ratio.
-            </p>
-          </div>
-        </div>
-      </SettingsSection>
 
       {/* Personal Information Form */}
       <SettingsSection
