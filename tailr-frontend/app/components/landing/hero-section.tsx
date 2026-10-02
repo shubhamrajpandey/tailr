@@ -159,7 +159,7 @@ export function HeroSection() {
                   <div className="flex items-center justify-between pb-1">
                     <div className="flex items-center gap-2">
                       <Image
-                          src="/tailr.png"
+                          src="/main_logo.png"
                           alt="Tailr"
                           width={28}
                           height={28}

@@ -14,7 +14,7 @@ export function SupportNavbar() {
         {/* Brand Logo */}
         <Link href="/login" className="flex items-center gap-3 group">
           <Image
-              src="/tailr.png"
+              src="/main_logo.png"
               alt="Tailr Logo"
               width={32}
               height={32}

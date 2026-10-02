@@ -22,7 +22,7 @@ export function AuthDashboardMockup() {
             {/* Brand Header */}
             <div className="flex items-center gap-2 px-1">
               <Image
-                  src="/tailr.png"
+                  src="/main_logo.png"
                   alt="Tailr Logo"
                   width={20}
                   height={20}

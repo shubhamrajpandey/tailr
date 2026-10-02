@@ -11,7 +11,7 @@ export function SupportFooter() {
         {/* Brand & Copyright */}
         <div className="flex items-center gap-3">
           <Image
-              src="/tailr.png"
+              src="/main_logo.png"
               alt="Tailr Logo"
               width={24}
               height={24}

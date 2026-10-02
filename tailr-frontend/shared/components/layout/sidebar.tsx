@@ -549,7 +549,7 @@ export function Sidebar() {
           <>
             <Link href="/dashboard" className="flex items-center gap-2.5 group min-w-0">
               <Image
-                  src="/tailr.png"
+                  src="/main_logo.png"
                   alt="Tailr Logo"
                   width={36}
                   height={36}

@@ -40,10 +40,10 @@ export function LandingNav() {
       )}
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 h-20 flex items-center justify-between">
-        {/* Brand Logo with public/tailr.png */}
+        {/* Brand Logo with public/main_logo.png */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <Image
-            src="/tailr.png"
+            src="/main_logo.png"
             alt="Tailr Logo"
             width={36}
             height={36}

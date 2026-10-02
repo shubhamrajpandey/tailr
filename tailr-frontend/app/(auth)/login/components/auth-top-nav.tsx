@@ -15,7 +15,7 @@ export function AuthTopNav() {
         title="Tailr Dashboard"
       >
         <Image
-            src="/tailr.png"
+            src="/main_logo.png"
             alt="Tailr Logo"
             width={40}
             height={40}
