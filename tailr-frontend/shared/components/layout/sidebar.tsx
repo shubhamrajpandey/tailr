@@ -551,9 +551,9 @@ export function Sidebar() {
               <Image
                   src="/main_logo.png"
                   alt="Tailr Logo"
-                  width={36}
-                  height={36}
-                  className="object-contain shrink-0 group-hover:scale-105 transition-transform"
+                  width={54}
+                  height={54}
+                  className="w-14 h-14 object-contain shrink-0 group-hover:scale-105 transition-transform"
                   priority
                 />
               <div className="flex flex-col truncate">
