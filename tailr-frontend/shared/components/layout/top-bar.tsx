@@ -4,9 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Calendar,
   ChevronDown,
-  MoreHorizontal,
   LogOut,
   Loader2,
   Settings,
@@ -264,43 +262,6 @@ export function TopBar({
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
         {/* Theme Toggle Button */}
         <ThemeToggle />
-
-        {/* Date Range Selector Dropdown (Dashboard & Analytics) */}
-        {shouldShowDateRange && (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="h-8 inline-flex items-center gap-1.5 px-3 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-white dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-colors shadow-xs cursor-pointer">
-              <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-              <span>{selectedRange}</span>
-              <ChevronDown className="h-3 w-3 text-neutral-400 ml-0.5" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36">
-              {["Today", "Last 7 days", "Last week", "Last 30 days", "All time"].map(
-                (range) => (
-                  <DropdownMenuItem
-                    key={range}
-                    onClick={() => handleSelect(range)}
-                    className={
-                      selectedRange === range
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                        : ""
-                    }
-                  >
-                    {range}
-                  </DropdownMenuItem>
-                )
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-
-        {/* Quick Options More */}
-        <button
-          type="button"
-          className="h-8 w-8 inline-flex items-center justify-center rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
-          title="More options"
-        >
-          <MoreHorizontal className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-        </button>
 
         {/* User Profile & Logout Dropdown */}
         <DropdownMenu>

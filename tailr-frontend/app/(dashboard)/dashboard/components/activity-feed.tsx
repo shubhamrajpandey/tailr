@@ -14,6 +14,7 @@ import { ActivityEvent } from "@/shared/types/activity";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import { Input } from "@/shared/components/ui/input";
 import { formatRelativeTime } from "@/shared/lib/utils";
+import { useDebounce } from "@/shared/hooks/use-debounce";
 
 interface ActivityFeedProps {
   activities: ActivityEvent[];
@@ -22,17 +23,25 @@ interface ActivityFeedProps {
 export function ActivityFeed({ activities }: ActivityFeedProps) {
   const [activeTab, setActiveTab] = React.useState<string>("today");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
 
   const filteredActivities = React.useMemo(() => {
     return activities.filter((act) => {
-      const matchesTab = act.period === activeTab;
+      const matchesTab =
+        activeTab === "this_week"
+          ? act.period === "today" || act.period === "yesterday" || act.period === "this_week"
+          : act.period === activeTab;
+
+      const query = debouncedSearchQuery.trim().toLowerCase();
       const matchesSearch =
-        act.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        act.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        act.description.toLowerCase().includes(searchQuery.toLowerCase());
+        !query ||
+        act.title.toLowerCase().includes(query) ||
+        act.companyName.toLowerCase().includes(query) ||
+        act.description.toLowerCase().includes(query);
+
       return matchesTab && matchesSearch;
     });
-  }, [activities, activeTab, searchQuery]);
+  }, [activities, activeTab, debouncedSearchQuery]);
 
   // Consistent icon styling across all activity types
   const getEventIcon = (type: ActivityEvent["type"]) => {

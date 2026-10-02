@@ -22,6 +22,8 @@ export default function DashboardPage() {
     deleteApplication,
   } = useDashboardData();
 
+  const weeklyDelta = applications.length > 0 ? "+14% vs last week" : "0% vs last week";
+
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
       {/* Left Sidebar Navigation */}
@@ -35,22 +37,13 @@ export default function DashboardPage() {
         {/* Dashboard Canvas */}
         <main className="flex-1 px-8 pb-10 space-y-6">
           {/* Greeting Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pt-6 pb-1">
-            <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                Hello, {user?.fullName || "Shubham Raj Pandey"}
-              </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-                Here are the latest insights from your job applications and tailoring pipeline.
-              </p>
-            </div>
-
-            <div className="hidden md:flex items-center gap-2 text-sm shrink-0">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
-                <span className="font-mono text-xs font-semibold">Gemini 1.5 Pro Connected</span>
-              </div>
-            </div>
+          <div className="pt-6 pb-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              Hello, {user?.fullName || "Shubham Raj Pandey"}
+            </h1>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              Here are the latest insights from your job applications and tailoring pipeline.
+            </p>
           </div>
           {/* Top Section: Left (~65%) with Stats + Bar Chart, Right (~35%) with Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
@@ -64,7 +57,7 @@ export default function DashboardPage() {
                   delta={stats.totalApplicationsDelta}
                   direction="up"
                   icon={Briefcase}
-                  sparklineColor="indigo"
+                  sparklineColor="purple"
                   sparklineData={[3, 5, 8, 12, 10, 16, 20]}
                 />
                 <StatCard
@@ -73,7 +66,7 @@ export default function DashboardPage() {
                   delta={stats.responseRateDelta}
                   direction="up"
                   icon={MessageSquareText}
-                  sparklineColor="indigo"
+                  sparklineColor="purple"
                   sparklineData={[15, 20, 18, 25, 22, 28, 30]}
                 />
                 <StatCard
@@ -82,7 +75,7 @@ export default function DashboardPage() {
                   delta={stats.interviewConversionDelta}
                   direction="up"
                   icon={Sparkles}
-                  sparklineColor="indigo"
+                  sparklineColor="purple"
                   sparklineData={[8, 10, 9, 14, 12, 18, 22]}
                 />
               </div>
@@ -92,7 +85,7 @@ export default function DashboardPage() {
                 <ApplicationVolumeChart
                   data={trendData}
                   totalWeekly={applications.length}
-                  weeklyDelta="+14% vs last week"
+                  weeklyDelta={weeklyDelta}
                 />
               </div>
             </div>

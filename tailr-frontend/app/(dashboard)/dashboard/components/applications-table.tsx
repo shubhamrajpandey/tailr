@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   ExternalLink,
   MoreHorizontal,
@@ -12,6 +13,14 @@ import {
   Trash2,
   CheckCircle2,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Clock,
+  Send,
+  XCircle,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { Application, ApplicationStatus } from "@/shared/types/application";
 import { Badge, BadgeVariant } from "@/shared/components/ui/badge";
@@ -24,8 +33,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from "@/shared/components/ui/dropdown-menu";
 import { formatDate } from "@/shared/lib/utils";
+import { useDebounce } from "@/shared/hooks/use-debounce";
 
 interface ApplicationsTableProps {
   applications: Application[];
@@ -44,25 +55,44 @@ const statusVariantMap: Record<ApplicationStatus, BadgeVariant> = {
   GHOSTED: "ghosted",
 };
 
+const ALL_STATUSES: Array<{ label: string; value: ApplicationStatus; icon: React.ElementType }> = [
+  { label: "Wishlist", value: "WISHLIST", icon: Clock },
+  { label: "Applied", value: "APPLIED", icon: Send },
+  { label: "Interview", value: "INTERVIEW", icon: CheckCircle2 },
+  { label: "Offer", value: "OFFER", icon: Sparkles },
+  { label: "Rejected", value: "REJECTED", icon: XCircle },
+  { label: "Ghosted", value: "GHOSTED", icon: HelpCircle },
+];
+
+const PAGE_SIZE = 6;
+
 export function ApplicationsTable({
   applications,
   onStatusChange,
   onDelete,
 }: ApplicationsTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 250);
   const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
   const [sortField, setSortField] = React.useState<SortField>("appliedDate");
   const [sortAsc, setSortAsc] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+  const [currentPage, setCurrentPage] = React.useState(1);
 
-  // Filter & Search logic
+  // Reset page when search or status filter changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchQuery, statusFilter]);
+
+  // Filter & Search logic with debounced search query
   const filteredApplications = React.useMemo(() => {
     return applications
       .filter((app) => {
         const matchesStatus =
           statusFilter === "ALL" || app.status === statusFilter;
-        const query = searchQuery.toLowerCase();
+        const query = debouncedSearchQuery.trim().toLowerCase();
         const matchesSearch =
+          !query ||
           app.companyName.toLowerCase().includes(query) ||
           app.positionTitle.toLowerCase().includes(query) ||
           (app.hrName && app.hrName.toLowerCase().includes(query));
@@ -81,7 +111,14 @@ export function ApplicationsTable({
         }
         return sortAsc ? cmp : -cmp;
       });
-  }, [applications, searchQuery, statusFilter, sortField, sortAsc]);
+  }, [applications, debouncedSearchQuery, statusFilter, sortField, sortAsc]);
+
+  // Hard limit to 6 companies per view
+  const totalPages = Math.max(1, Math.ceil(filteredApplications.length / PAGE_SIZE));
+  const paginatedApplications = React.useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredApplications.slice(start, start + PAGE_SIZE);
+  }, [filteredApplications, currentPage]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -94,7 +131,7 @@ export function ApplicationsTable({
 
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(new Set(filteredApplications.map((app) => app.id)));
+      setSelectedIds(new Set(paginatedApplications.map((app) => app.id)));
     } else {
       setSelectedIds(new Set());
     }
@@ -111,8 +148,8 @@ export function ApplicationsTable({
   };
 
   const allSelected =
-    filteredApplications.length > 0 &&
-    filteredApplications.every((app) => selectedIds.has(app.id));
+    paginatedApplications.length > 0 &&
+    paginatedApplications.every((app) => selectedIds.has(app.id));
 
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs">
@@ -127,29 +164,30 @@ export function ApplicationsTable({
               Applications Pipeline
             </h2>
             <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              Showing {filteredApplications.length} of {applications.length} applications
+              Showing {paginatedApplications.length} of {applications.length} applications (max {PAGE_SIZE} per page)
             </span>
           </div>
         </div>
 
         <div className="flex items-center gap-2.5">
-          {/* Table Search Input */}
-          <div className="w-60">
+          {/* Table Search Input with smooth debouncing */}
+          <div className="w-56 sm:w-64">
             <Input
               type="text"
               placeholder="Search company, role, HR..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               icon={<Search className="h-4 w-4 text-neutral-400" />}
-              className="h-9 text-sm bg-neutral-50 dark:bg-white/[0.03]"
+              className="h-9 text-xs bg-neutral-50 dark:bg-white/[0.03]"
             />
           </div>
 
           {/* Status Filter Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
-              <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-              <span>{statusFilter === "ALL" ? "All Statuses" : statusFilter}</span>
+            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs cursor-pointer">
+              <Filter className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+              <span>{statusFilter === "ALL" ? "All Stages" : statusFilter}</span>
+              <ChevronDown className="h-3 w-3 text-neutral-400" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               {["ALL", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].map(
@@ -159,12 +197,23 @@ export function ApplicationsTable({
                     onClick={() => setStatusFilter(status)}
                     className={statusFilter === status ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
                   >
-                    {status === "ALL" ? "All Statuses" : status}
+                    {status === "ALL" ? "All Stages" : status}
                   </DropdownMenuItem>
                 )
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Quick Add Button */}
+          <Link href="/applications/new">
+            <button
+              type="button"
+              className="h-9 px-3 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Add</span>
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -188,7 +237,7 @@ export function ApplicationsTable({
               <th className="py-3.5 px-3.5">HR Recruiter</th>
               <th className="py-3.5 px-3.5 cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors" onClick={() => toggleSort("status")}>
                 <div className="flex items-center gap-1.5">
-                  <span>Status</span>
+                  <span>Status (Click to Change)</span>
                   <ArrowUpDown className="h-3.5 w-3.5" />
                 </div>
               </th>
@@ -203,14 +252,30 @@ export function ApplicationsTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-100 dark:divide-white/[0.04]">
-            {filteredApplications.length === 0 ? (
+            {paginatedApplications.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-14 text-center text-sm text-neutral-500 dark:text-neutral-400">
-                  No applications match the current filter criteria.
+                <td colSpan={7} className="py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                  <div className="max-w-xs mx-auto space-y-2">
+                    <p className="font-semibold text-neutral-800 dark:text-neutral-200">
+                      No applications found
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      {searchQuery
+                        ? "Try adjusting your search or filter keywords."
+                        : "Start tracking your first target company and tailoring resumes."}
+                    </p>
+                    <div className="pt-2">
+                      <Link href="/applications/new">
+                        <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                          + Track New Application
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
                 </td>
               </tr>
             ) : (
-              filteredApplications.map((app) => {
+              paginatedApplications.map((app) => {
                 const isSelected = selectedIds.has(app.id);
 
                 return (
@@ -221,7 +286,7 @@ export function ApplicationsTable({
                     }`}
                   >
                     {/* Checkbox */}
-                    <td className="py-3.5 px-3.5">
+                    <td className="py-3 px-3.5">
                       <Checkbox
                         checked={isSelected}
                         onCheckedChange={(checked) => toggleSelectOne(app.id, checked)}
@@ -229,7 +294,7 @@ export function ApplicationsTable({
                     </td>
 
                     {/* Position & Company */}
-                    <td className="py-3.5 px-3.5">
+                    <td className="py-3 px-3.5">
                       <div className="flex items-center gap-3">
                         <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-xs text-neutral-800 dark:text-white shrink-0 shadow-xs">
                           {app.companyName.slice(0, 2).toUpperCase()}
@@ -256,7 +321,7 @@ export function ApplicationsTable({
                     </td>
 
                     {/* HR Recruiter Contact */}
-                    <td className="py-3.5 px-3.5">
+                    <td className="py-3 px-3.5">
                       {app.hrName ? (
                         <div className="flex items-center gap-2.5">
                           <Avatar
@@ -265,7 +330,7 @@ export function ApplicationsTable({
                             className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-semibold"
                           />
                           <div className="flex flex-col">
-                            <span className="text-sm text-neutral-800 dark:text-neutral-200 font-medium">
+                            <span className="text-xs font-medium text-neutral-800 dark:text-neutral-200">
                               {app.hrName}
                             </span>
                             {app.hrLinkedinUrl && (
@@ -273,7 +338,7 @@ export function ApplicationsTable({
                                 href={app.hrLinkedinUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                                className="text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                               >
                                 LinkedIn Profile
                               </a>
@@ -285,30 +350,56 @@ export function ApplicationsTable({
                       )}
                     </td>
 
-                    {/* Status Badge using shadcn variant */}
-                    <td className="py-3.5 px-3.5">
-                      <Badge variant={statusVariantMap[app.status]}>
-                        {app.status}
-                      </Badge>
+                    {/* Interactive Status Badge dropdown */}
+                    <td className="py-3 px-3.5">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="focus:outline-none cursor-pointer group/badge">
+                          <div className="inline-flex items-center gap-1 group-hover/badge:opacity-80 transition-opacity">
+                            <Badge variant={statusVariantMap[app.status]}>
+                              {app.status}
+                            </Badge>
+                            <ChevronDown className="h-3 w-3 text-neutral-400 opacity-60 group-hover/badge:opacity-100" />
+                          </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-40">
+                          <DropdownMenuLabel className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                            Change Pipeline Stage
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {ALL_STATUSES.map((st) => {
+                            const Icon = st.icon;
+                            return (
+                              <DropdownMenuItem
+                                key={st.value}
+                                onClick={() => onStatusChange?.(app.id, st.value)}
+                                className={app.status === st.value ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-950/30" : ""}
+                              >
+                                <Icon className="h-3.5 w-3.5 text-neutral-400" />
+                                <span>{st.label}</span>
+                              </DropdownMenuItem>
+                            );
+                          })}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
 
                     {/* Applied Date */}
-                    <td className="py-3.5 px-3.5 font-mono text-xs text-neutral-600 dark:text-neutral-300 font-medium">
+                    <td className="py-3 px-3.5 font-mono text-xs text-neutral-600 dark:text-neutral-300 font-medium">
                       {formatDate(app.appliedDate)}
                     </td>
 
-                    {/* Tailored Resume & Match Score */}
-                    <td className="py-3.5 px-3.5">
+                    {/* Tailored Resume & Match Score (Purple / Indigo theme) */}
+                    <td className="py-3 px-3.5">
                       {app.resumeVersion ? (
                         <div className="flex items-center gap-2">
                           <div className="p-1 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                             <FileText className="h-3.5 w-3.5" />
                           </div>
-                          <span className="text-xs text-neutral-700 dark:text-neutral-200 font-medium truncate max-w-[140px]">
+                          <span className="text-xs text-neutral-700 dark:text-neutral-200 font-medium truncate max-w-[130px]">
                             {app.resumeVersion.label}
                           </span>
                           {app.resumeVersion.matchScore && (
-                            <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                            <span className="text-xs font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-semibold">
                               {app.resumeVersion.matchScore}%
                             </span>
                           )}
@@ -319,26 +410,33 @@ export function ApplicationsTable({
                     </td>
 
                     {/* Row Actions Menu */}
-                    <td className="py-3.5 px-3.5 text-right">
+                    <td className="py-3 px-3.5 text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="p-1.5 rounded-md text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors">
+                        <DropdownMenuTrigger className="p-1.5 rounded-md text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer">
                           <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "INTERVIEW")}>
-                            <CheckCircle2 className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                            <span>Move to Interview</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "OFFER")}>
-                            <Sparkles className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                            <span>Mark as Offer</span>
-                          </DropdownMenuItem>
+                          <DropdownMenuLabel className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                            Move Stage
+                          </DropdownMenuLabel>
+                          {ALL_STATUSES.filter(s => s.value !== app.status).map(st => {
+                            const Icon = st.icon;
+                            return (
+                              <DropdownMenuItem
+                                key={st.value}
+                                onClick={() => onStatusChange?.(app.id, st.value)}
+                              >
+                                <Icon className="h-3.5 w-3.5 text-neutral-400" />
+                                <span>Move to {st.label}</span>
+                              </DropdownMenuItem>
+                            );
+                          })}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             destructive
                             onClick={() => onDelete?.(app.id)}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                             <span>Delete Application</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -350,6 +448,44 @@ export function ApplicationsTable({
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Footer (Guarantees max 6 companies visible per view) */}
+      <div className="pt-4 mt-3 border-t border-neutral-200 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+        <div>
+          <span>Page {currentPage} of {totalPages} ({filteredApplications.length} total)</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Link
+            href="/applications"
+            className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:text-indigo-600 dark:hover:text-indigo-400 mr-2 transition-colors"
+          >
+            View All in Applications →
+          </Link>
+
+          <button
+            type="button"
+            disabled={currentPage <= 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            className="p-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+            title="Previous Page"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+          <span className="font-mono text-xs font-bold text-neutral-800 dark:text-neutral-200 px-1">
+            {currentPage}
+          </span>
+          <button
+            type="button"
+            disabled={currentPage >= totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            className="p-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors cursor-pointer"
+            title="Next Page"
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </div>
   );

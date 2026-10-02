@@ -99,7 +99,7 @@ export function ApplicationVolumeChart({
         <div className="text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
           {totalWeekly}
         </div>
-        <div className="flex items-center gap-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+        <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono">
           <TrendingUp className="h-4 w-4 stroke-[2.5]" />
           <span>{weeklyDelta}</span>
         </div>

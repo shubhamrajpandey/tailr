@@ -11,7 +11,12 @@ import { ActivityEvent } from "@/shared/types/activity";
 import { useApplications } from "./use-applications";
 
 export function useDashboardData() {
-  const { applications, updateStatus, deleteApplication } = useApplications();
+  const {
+    applications,
+    updateStatus,
+    deleteApplication,
+    loadSampleApplications,
+  } = useApplications();
   const [localActivities, setLocalActivities] = React.useState<ActivityEvent[]>([]);
 
   // Dynamically compute real stats from applications array
@@ -72,31 +77,55 @@ export function useDashboardData() {
     return result;
   }, [applications]);
 
+function determinePeriod(dateString?: string | null): "today" | "yesterday" | "this_week" {
+  if (!dateString) return "today";
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "today";
+  const now = new Date();
+
+  const isSameDay = (d1: Date, d2: Date) =>
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate();
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (isSameDay(date, now)) return "today";
+  if (isSameDay(date, yesterday)) return "yesterday";
+  return "this_week";
+}
+
   // Generate activities dynamically from applications list
   const activities = React.useMemo<ActivityEvent[]>(() => {
-    const dynamicActivities: ActivityEvent[] = applications.slice(0, 10).map((app) => ({
-      id: `act-${app.id}`,
-      type: (app.status === "OFFER"
-        ? "OFFER_RECEIVED"
-        : app.status === "INTERVIEW"
-        ? "INTERVIEW_SCHEDULED"
-        : app.resumeVersion
-        ? "RESUME_TAILORED"
-        : "APPLICATION_CREATED") as ActivityEvent["type"],
-      title:
-        app.status === "OFFER"
-          ? `Offer Extended by ${app.companyName}`
+    const dynamicActivities: ActivityEvent[] = applications.slice(0, 15).map((app) => {
+      const rawDate = app.updatedAt || app.createdAt;
+      const period = determinePeriod(rawDate);
+
+      return {
+        id: `act-${app.id}`,
+        type: (app.status === "OFFER"
+          ? "OFFER_RECEIVED"
           : app.status === "INTERVIEW"
-          ? `Interview Stage at ${app.companyName}`
+          ? "INTERVIEW_SCHEDULED"
           : app.resumeVersion
-          ? `Tailored Resume for ${app.companyName}`
-          : `Tracked Application at ${app.companyName}`,
-      description: `${app.positionTitle} • Status: ${app.status}`,
-      timestamp: app.updatedAt || app.createdAt,
-      companyName: app.companyName,
-      positionTitle: app.positionTitle,
-      period: "today",
-    }));
+          ? "RESUME_TAILORED"
+          : "APPLICATION_CREATED") as ActivityEvent["type"],
+        title:
+          app.status === "OFFER"
+            ? `Offer Extended by ${app.companyName}`
+            : app.status === "INTERVIEW"
+            ? `Interview Stage at ${app.companyName}`
+            : app.resumeVersion
+            ? `Tailored Resume for ${app.companyName}`
+            : `Tracked Application at ${app.companyName}`,
+        description: `${app.positionTitle} • Status: ${app.status}`,
+        timestamp: rawDate || new Date().toISOString(),
+        companyName: app.companyName,
+        positionTitle: app.positionTitle,
+        period,
+      };
+    });
 
     return [...localActivities, ...dynamicActivities];
   }, [applications, localActivities]);
@@ -132,5 +161,6 @@ export function useDashboardData() {
     trendData,
     updateApplicationStatus,
     deleteApplication,
+    loadSampleApplications,
   };
 }

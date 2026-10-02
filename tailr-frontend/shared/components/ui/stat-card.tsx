@@ -72,7 +72,7 @@ export function StatCard({
             <span
               className={cn(
                 "inline-flex items-center gap-1 text-xs font-semibold font-mono",
-                isUp ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"
+                isUp ? "text-indigo-600 dark:text-indigo-400" : "text-rose-600 dark:text-rose-400"
               )}
             >
               {isUp ? (
