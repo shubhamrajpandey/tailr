@@ -27,18 +27,21 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "Tailr — AI Resume Tailoring & Job Application Tracker",
+  title: "Tailr",
   description:
     "Zero-hallucination AI resume tailoring and precision job application tracker.",
   icons: {
     icon: [
       {
-        url: "/main_logo.png",
+        url: "/icon.png",
         type: "image/png",
       },
+      {
+        url: "/favicon.ico",
+      },
     ],
-    shortcut: "/main_logo.png",
-    apple: "/main_logo.png",
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
   },
 };
 
