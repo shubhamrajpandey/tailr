@@ -52,20 +52,20 @@ export function ApplicationDetailHeader({
   return (
     <div className="space-y-4">
       {/* Main Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-6 rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 shadow-xs">
         {/* Company Avatar & Position Info */}
-        <div className="flex items-center gap-4">
-          <div className="h-14 w-14 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-lg text-neutral-800 dark:text-white shrink-0 shadow-xs">
+        <div className="flex items-start sm:items-center gap-3.5">
+          <div className="h-11 w-11 sm:h-14 sm:w-14 rounded-xl bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-base sm:text-lg text-neutral-800 dark:text-white shrink-0 shadow-xs mt-0.5 sm:mt-0">
             {application.companyName.slice(0, 2).toUpperCase()}
           </div>
-          <div>
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2.5">
-              <h1 className="text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans break-words">
                 {application.positionTitle}
               </h1>
             </div>
-            <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
-              <span className="text-neutral-800 dark:text-neutral-200 font-semibold">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-1 font-medium">
+              <span className="text-neutral-800 dark:text-neutral-200 font-semibold truncate">
                 {application.companyName}
               </span>
               {application.companyWebsite && (
@@ -87,10 +87,10 @@ export function ApplicationDetailHeader({
         </div>
 
         {/* Status Dropdown & Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-neutral-100 dark:border-white/[0.06] w-full sm:w-auto">
           {/* Inline Status Changer */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
+            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.03] hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs h-9">
               <ApplicationStatusBadge status={application.status} />
               <ChevronDown className="h-3.5 w-3.5 text-neutral-400 ml-1" />
             </DropdownMenuTrigger>
@@ -108,8 +108,8 @@ export function ApplicationDetailHeader({
           </DropdownMenu>
 
           {/* Tailor Resume Action Button */}
-          <Link href={`/resume/tailor?appId=${application.id}`}>
-            <Button variant="primary" size="sm" className="gap-1.5 font-semibold">
+          <Link href={`/resume/tailor?appId=${application.id}`} className="flex-1 sm:flex-initial">
+            <Button variant="primary" size="sm" className="w-full sm:w-auto gap-1.5 font-semibold h-9 justify-center">
               <Sparkles className="h-4 w-4" />
               Tailor Resume
             </Button>
@@ -117,9 +117,9 @@ export function ApplicationDetailHeader({
 
           {/* Edit Button */}
           <Link href={`/applications/${application.id}/edit`}>
-            <Button variant="outline" size="sm" className="gap-1.5">
+            <Button variant="outline" size="sm" className="gap-1.5 h-9">
               <Edit className="h-4 w-4 text-neutral-400" />
-              Edit
+              <span className="hidden sm:inline">Edit</span>
             </Button>
           </Link>
 
@@ -128,10 +128,10 @@ export function ApplicationDetailHeader({
             variant="destructive"
             size="sm"
             onClick={() => setDeleteOpen(true)}
-            className="gap-1.5"
+            className="gap-1.5 h-9"
           >
             <Trash2 className="h-4 w-4" />
-            Delete
+            <span className="hidden sm:inline">Delete</span>
           </Button>
         </div>
       </div>

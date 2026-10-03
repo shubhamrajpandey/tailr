@@ -102,20 +102,20 @@ function ApplicationsView() {
         <TopBar />
 
         {/* Page Top Header Bar */}
-        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 {statusMeta.title}
               </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-medium">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 sm:mt-1.5 font-medium">
                 {statusMeta.desc}
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              <Link href="/applications/new">
-                <Button variant="primary" className="gap-2 font-semibold shadow-sm">
+              <Link href="/applications/new" className="w-full sm:w-auto">
+                <Button variant="primary" className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10">
                   <Plus className="h-4 w-4" />
                   New Application
                 </Button>
@@ -125,7 +125,7 @@ function ApplicationsView() {
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 px-8 pb-10 space-y-6">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-10 space-y-6">
           {isLoaded ? (
             <ApplicationsListTable
               applications={applications}
@@ -135,7 +135,7 @@ function ApplicationsView() {
               onDelete={deleteApplication}
             />
           ) : (
-            <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-12 text-center text-sm text-neutral-400 shadow-xs">
+            <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-8 sm:p-12 text-center text-sm text-neutral-400 shadow-xs">
               Loading applications...
             </div>
           )}

@@ -19,7 +19,7 @@ export function ApplicationFormJdField({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-1">
         <label
           htmlFor="jobDescriptionRaw"
           className="text-xs font-semibold text-neutral-700 dark:text-neutral-300"

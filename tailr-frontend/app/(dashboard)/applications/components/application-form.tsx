@@ -128,13 +128,13 @@ export function ApplicationForm({
       </Card>
 
       {/* Form Action Buttons */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-neutral-200 dark:border-white/[0.08]">
         {onCancel ? (
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
-            className="gap-2"
+            className="w-full sm:w-auto gap-2 justify-center h-10"
           >
             <ArrowLeft className="h-4 w-4" />
             Cancel
@@ -143,12 +143,12 @@ export function ApplicationForm({
           <div />
         )}
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
           <Button
             type="submit"
             variant="primary"
             disabled={isSubmitting}
-            className="gap-2 min-w-[140px]"
+            className="w-full sm:w-auto gap-2 min-w-[140px] justify-center h-10 shadow-sm font-semibold"
           >
             <Save className="h-4 w-4" />
             {isSubmitting

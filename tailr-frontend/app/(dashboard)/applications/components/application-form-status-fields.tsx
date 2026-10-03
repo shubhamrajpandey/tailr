@@ -68,7 +68,7 @@ export function ApplicationFormStatusFields({
           <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 block">
             Already Applied?
           </label>
-          <div className="flex items-center justify-between p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/60 h-9">
+          <div className="flex items-center justify-between p-2.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/60 min-h-[38px] h-auto gap-2">
             <span className="text-xs text-neutral-600 dark:text-neutral-300 font-medium">
               {applied ? "Yes, application submitted" : "No, still in wishlist"}
             </span>

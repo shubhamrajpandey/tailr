@@ -67,7 +67,7 @@ export default function EditApplicationPage() {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
         {/* Fixed Top Navigation Bar */}
         <TopBar
           breadcrumbs={[
@@ -79,20 +79,20 @@ export default function EditApplicationPage() {
         />
 
         {/* Page Top Header Bar */}
-        <header className="px-8 pt-7 pb-6 flex flex-col gap-3">
-          <div className="flex items-center gap-3">
+        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3 max-w-4xl mx-auto w-full">
+          <div className="flex items-start sm:items-center gap-3">
             <Link
               href={`/applications/${application.id}`}
-              className="p-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs"
+              className="p-2 mt-0.5 sm:mt-0 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors shadow-xs shrink-0"
               title="Back to Details"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
-            <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 Edit Application: {application.companyName}
               </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Update position details, job description, or status tracking.
               </p>
             </div>
@@ -100,7 +100,7 @@ export default function EditApplicationPage() {
         </header>
 
         {/* Content Area with Pre-Filled Form */}
-        <main className="flex-1 px-8 pb-12 w-full">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-12 w-full max-w-4xl mx-auto">
           <ApplicationForm
             mode="edit"
             initialValues={{

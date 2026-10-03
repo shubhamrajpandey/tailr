@@ -15,6 +15,8 @@ import {
   Sparkles,
   Plus,
   X,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
@@ -37,7 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/shared/components/ui/dropdown-menu";
-import { formatDate } from "@/shared/lib/utils";
+import { formatDate, cn } from "@/shared/lib/utils";
 
 interface ApplicationsListTableProps {
   applications: Application[];
@@ -73,6 +75,7 @@ export function ApplicationsListTable({
   const [sortField, setSortField] = React.useState<SortField>("appliedDate");
   const [sortAsc, setSortAsc] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+  const [viewMode, setViewMode] = React.useState<"cards" | "table">("cards");
 
   const handleFilterSelect = (newFilter: string) => {
     setInternalStatusFilter(newFilter);
@@ -148,12 +151,12 @@ export function ApplicationsListTable({
     FILTER_OPTIONS.find((opt) => opt.key === statusFilter) || FILTER_OPTIONS[0];
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs transition-all duration-200">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs transition-all duration-200">
       {/* Controls Bar: Search & Status Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-white/[0.06]">
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
           {/* Search Input */}
-          <div className="w-64 sm:w-72">
+          <div className="w-full sm:w-72">
             <Input
               type="text"
               placeholder="Search company, role, HR..."
@@ -164,44 +167,46 @@ export function ApplicationsListTable({
             />
           </div>
 
-          {/* Status Filter Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
-              <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-              <span>{activeOption.label}</span>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-44">
-              {FILTER_OPTIONS.map((opt) => (
-                <DropdownMenuItem
-                  key={opt.key}
-                  onClick={() => handleFilterSelect(opt.key)}
-                  className={statusFilter === opt.key ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
-                >
-                  {opt.label}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Status Filter Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
+                <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                <span>{activeOption.label}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-44">
+                {FILTER_OPTIONS.map((opt) => (
+                  <DropdownMenuItem
+                    key={opt.key}
+                    onClick={() => handleFilterSelect(opt.key)}
+                    className={statusFilter === opt.key ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                  >
+                    {opt.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Clear Filter Chip (Visible when filtering) */}
-          {statusFilter !== "ALL" && (
-            <button
-              type="button"
-              onClick={() => handleFilterSelect("ALL")}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
-            >
-              <span>{activeOption.label}</span>
-              <X className="h-3 w-3" />
-            </button>
-          )}
+            {/* Clear Filter Chip (Visible when filtering) */}
+            {statusFilter !== "ALL" && (
+              <button
+                type="button"
+                onClick={() => handleFilterSelect("ALL")}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors"
+              >
+                <span>{activeOption.label}</span>
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Counter & New Button */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
           <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
             Showing {filteredApplications.length} of {applications.length} applications
           </span>
-          <Link href="/applications/new">
+          <Link href="/applications/new" className="hidden sm:inline-flex">
             <Button variant="primary" size="sm" className="gap-1.5 font-semibold">
               <Plus className="h-4 w-4" />
               New Application
@@ -210,8 +215,190 @@ export function ApplicationsListTable({
         </div>
       </div>
 
-      {/* Table Component */}
-      <Table>
+      {/* Mobile Controls: View Switcher (Cards vs Table) */}
+      <div className="sm:hidden flex items-center justify-between pt-3 pb-1 border-b border-neutral-100 dark:border-white/[0.06]">
+        <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+          Display View
+        </span>
+        <div className="inline-flex items-center rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/[0.04] p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setViewMode("cards")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs transition-all",
+              viewMode === "cards"
+                ? "bg-white dark:bg-[#1a1b22] text-neutral-900 dark:text-white shadow-2xs font-semibold"
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
+            )}
+          >
+            <LayoutGrid className="h-3.5 w-3.5" />
+            <span>Cards</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode("table")}
+            className={cn(
+              "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs transition-all",
+              viewMode === "table"
+                ? "bg-white dark:bg-[#1a1b22] text-neutral-900 dark:text-white shadow-2xs font-semibold"
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200"
+            )}
+          >
+            <List className="h-3.5 w-3.5" />
+            <span>Table</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Card List (Visible on < sm screens when viewMode is cards) */}
+      <div className={cn("space-y-3 pt-3", viewMode === "cards" ? "block sm:hidden" : "hidden")}>
+        {filteredApplications.length === 0 ? (
+          <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+            <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+              No applications found
+            </p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">
+              {searchQuery || statusFilter !== "ALL"
+                ? "Try adjusting your search query or status filter to see results."
+                : "Start tracking your job search by adding your first job application."}
+            </p>
+            {statusFilter !== "ALL" ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleFilterSelect("ALL")}
+                className="mt-2"
+              >
+                Clear Status Filter
+              </Button>
+            ) : (
+              <Link href="/applications/new" className="mt-2">
+                <Button variant="primary" size="sm" className="gap-1.5">
+                  <Plus className="h-4 w-4" />
+                  Add Application
+                </Button>
+              </Link>
+            )}
+          </div>
+        ) : (
+          filteredApplications.map((app) => (
+            <div
+              key={app.id}
+              className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50/60 dark:bg-white/[0.02] p-3.5 space-y-2.5 shadow-2xs"
+            >
+              {/* Header: Avatar + Title/Company + Status Badge */}
+              <div className="flex items-start justify-between gap-2.5">
+                <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                  <div className="h-9 w-9 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-xs text-neutral-800 dark:text-white shrink-0 shadow-2xs mt-0.5">
+                    {app.companyName.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <Link
+                      href={`/applications/${app.id}`}
+                      className="font-bold text-sm text-neutral-900 dark:text-neutral-100 hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-1 transition-colors"
+                    >
+                      {app.positionTitle}
+                    </Link>
+                    <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 font-medium mt-0.5">
+                      <span className="truncate">{app.companyName}</span>
+                      {app.companyWebsite && (
+                        <a
+                          href={app.companyWebsite}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-neutral-400 hover:text-indigo-600 shrink-0"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="shrink-0 pt-0.5">
+                  <ApplicationStatusBadge status={app.status} />
+                </div>
+              </div>
+
+              {/* Metadata chips: Applied date & Tailored resume & HR */}
+              <div className="flex flex-wrap items-center gap-1.5 text-xs pt-0.5">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white dark:bg-white/[0.05] border border-neutral-200/80 dark:border-white/10 text-neutral-600 dark:text-neutral-300 font-mono text-[11px]">
+                  {formatDate(app.appliedDate)}
+                </span>
+
+                {app.hrName && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white dark:bg-white/[0.05] border border-neutral-200/80 dark:border-white/10 text-neutral-600 dark:text-neutral-300 text-[11px] truncate max-w-[150px]">
+                    <span className="text-neutral-400 mr-1">HR:</span> {app.hrName}
+                  </span>
+                )}
+
+                {app.resumeVersion ? (
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 text-[11px]">
+                    <FileText className="h-3 w-3" />
+                    <span className="truncate max-w-[90px]">{app.resumeVersion.label}</span>
+                    {app.resumeVersion.matchScore && (
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono ml-0.5">
+                        {app.resumeVersion.matchScore}%
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href={`/resume/tailor?appId=${app.id}`}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline text-[11px]"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Tailor
+                  </Link>
+                )}
+              </div>
+
+              {/* Card Actions Footer */}
+              <div className="flex items-center gap-2 pt-2 border-t border-neutral-200/60 dark:border-white/[0.06]">
+                <Link href={`/applications/${app.id}`} className="flex-1">
+                  <Button variant="outline" size="sm" className="w-full gap-1.5 h-8 text-xs font-semibold justify-center">
+                    <Eye className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+                    View Details
+                  </Button>
+                </Link>
+                <Link href={`/applications/${app.id}/edit`}>
+                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" title="Edit Application">
+                    <Edit className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+                  </Button>
+                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="p-1.5 rounded-lg border border-neutral-200 dark:border-white/10 hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors h-8 w-8 flex items-center justify-center shrink-0">
+                    <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "INTERVIEW")}>
+                      <span className="h-2 w-2 rounded-full bg-amber-400 mr-1" />
+                      <span>Move to Interview</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "OFFER")}>
+                      <span className="h-2 w-2 rounded-full bg-emerald-400 mr-1" />
+                      <span>Mark as Offer</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem destructive onClick={() => onDelete?.(app.id)}>
+                      <Trash2 className="h-4 w-4" />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Table Component (Always on >= sm screens, or on mobile when viewMode is table) */}
+      <div className={cn("overflow-x-auto", viewMode === "table" ? "block" : "hidden sm:block")}>
+        {viewMode === "table" && (
+          <p className="sm:hidden text-[11px] text-neutral-500 dark:text-neutral-400 pt-2 pb-1.5 px-0.5">
+            👉 Swipe horizontally to view all columns
+          </p>
+        )}
+        <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-10">
@@ -444,6 +631,7 @@ export function ApplicationsListTable({
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   );
 }

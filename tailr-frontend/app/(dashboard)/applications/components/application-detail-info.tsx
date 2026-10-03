@@ -35,7 +35,7 @@ export function ApplicationDetailInfo({
         {/* Raw Job Description */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center justify-between">
+            <CardTitle className="flex flex-wrap items-center justify-between gap-1">
               <span>Job Description</span>
               <span className="text-xs font-mono text-neutral-400 font-normal">
                 {application.jobDescriptionRaw?.length || 0} characters
@@ -47,7 +47,7 @@ export function ApplicationDetailInfo({
           </CardHeader>
           <CardContent>
             {application.jobDescriptionRaw ? (
-              <div className="rounded-lg p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-white/5 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap max-h-[500px] overflow-y-auto">
+              <div className="rounded-lg p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-white/5 font-mono text-xs leading-relaxed text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap break-words max-h-[500px] overflow-y-auto">
                 {application.jobDescriptionRaw}
               </div>
             ) : (
