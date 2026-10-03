@@ -27,6 +27,9 @@ import { CoverLetterEditor } from "./components/cover-letter-editor";
 import { useGenerateCoverLetterMutation } from "./hooks/use-cover-letter-mutation";
 import { CoverLetterJobDetails, CoverLetterPreferences } from "./types";
 import { cn } from "@/shared/lib/utils";
+import { useAiQuota } from "@/shared/hooks/use-ai-quota";
+import { AiQuotaBadge } from "@/shared/components/ai/ai-quota-badge";
+import { AiRateLimitDialog } from "@/shared/components/ai/ai-rate-limit-dialog";
 
 export default function CoverLettersPage() {
   const searchParams = useSearchParams();
@@ -92,6 +95,23 @@ export default function CoverLettersPage() {
   const [savedStatus, setSavedStatus] = React.useState<"DRAFT" | "FINAL" | null>(null);
   const [saveSuccessMessage, setSaveSuccessMessage] = React.useState<string | null>(null);
 
+  // AI Quota & Rate Limiting state
+  const {
+    coverLetterLimit,
+    coverLetterRemaining,
+    coverLetterUsed,
+    isCoverLetterLimitReached,
+    coverLetterResetFormatted,
+    coverLetterCooldownSeconds,
+    isCoverLetterInCooldown,
+    startCooldown,
+  } = useAiQuota();
+
+  const [quotaDialogOpen, setQuotaDialogOpen] = React.useState(false);
+  const [quotaDialogType, setQuotaDialogType] = React.useState<"limit" | "cooldown">("limit");
+  const [quotaDialogMsg, setQuotaDialogMsg] = React.useState<string | null>(null);
+  const [quotaDialogRetryAfter, setQuotaDialogRetryAfter] = React.useState<number>(20);
+
   // Sync when preselectedApp changes or is selected
   const handleSelectApplication = (id: string) => {
     setSelectedApplicationId(id);
@@ -134,6 +154,27 @@ export default function CoverLettersPage() {
       return;
     }
 
+    // 1. Guard against client-side cooldown
+    if (isCoverLetterInCooldown) {
+      setQuotaDialogType("cooldown");
+      setQuotaDialogRetryAfter(coverLetterCooldownSeconds);
+      setQuotaDialogMsg(`Please wait ${coverLetterCooldownSeconds}s before generating another cover letter.`);
+      setQuotaDialogOpen(true);
+      return;
+    }
+
+    // 2. Guard against client-side daily limit exhaustion
+    if (isCoverLetterLimitReached) {
+      setQuotaDialogType("limit");
+      setQuotaDialogMsg(
+        `You have used your ${coverLetterLimit} free cover letters for today. Quota ${
+          coverLetterResetFormatted || "resets in 24 hours"
+        }.`
+      );
+      setQuotaDialogOpen(true);
+      return;
+    }
+
     setSaveSuccessMessage(null);
     setSavedStatus(null);
     generateCoverLetter(
@@ -152,6 +193,24 @@ export default function CoverLettersPage() {
               .getElementById("generated-letter-workspace")
               ?.scrollIntoView({ behavior: "smooth" });
           }, 150);
+        },
+        onError: (err: any) => {
+          if (err?.code === "COOLDOWN_ACTIVE" || err?.status === 429) {
+            const isCooldown =
+              err?.code === "COOLDOWN_ACTIVE" || err?.details?.code === "COOLDOWN_ACTIVE";
+            const retryAfter = err?.details?.retryAfter || 20;
+
+            if (isCooldown) {
+              startCooldown("cover-letter", retryAfter);
+              setQuotaDialogType("cooldown");
+              setQuotaDialogRetryAfter(retryAfter);
+            } else {
+              setQuotaDialogType("limit");
+            }
+
+            setQuotaDialogMsg(err.message || "Daily quota limit reached.");
+            setQuotaDialogOpen(true);
+          }
         },
       }
     );
@@ -250,6 +309,16 @@ export default function CoverLettersPage() {
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Targeted, zero-hallucination cover letters tailored from your master resume with instant PDF and Word export.
               </p>
+              <div className="mt-3">
+                <AiQuotaBadge
+                  label="cover letters"
+                  limit={coverLetterLimit}
+                  remaining={coverLetterRemaining}
+                  used={coverLetterUsed}
+                  resetFormatted={coverLetterResetFormatted}
+                  cooldownSeconds={coverLetterCooldownSeconds}
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -462,6 +531,16 @@ export default function CoverLettersPage() {
                       Synthesize your verified master resume achievements, apply your
                       chosen tone and template, and match with the job description.
                     </p>
+                    <div className="pt-1.5">
+                      <AiQuotaBadge
+                        label="cover letters"
+                        limit={coverLetterLimit}
+                        remaining={coverLetterRemaining}
+                        used={coverLetterUsed}
+                        resetFormatted={coverLetterResetFormatted}
+                        cooldownSeconds={coverLetterCooldownSeconds}
+                      />
+                    </div>
                   </div>
 
                   <Button
@@ -560,6 +639,17 @@ export default function CoverLettersPage() {
           )}
         </main>
       </div>
+
+      {/* AI Rate Limit & Daily Quota Modal */}
+      <AiRateLimitDialog
+        open={quotaDialogOpen}
+        onOpenChange={setQuotaDialogOpen}
+        type={quotaDialogType}
+        actionName="Cover Letter Generation"
+        retryAfterSeconds={quotaDialogRetryAfter}
+        resetFormatted={coverLetterResetFormatted}
+        customMessage={quotaDialogMsg}
+      />
     </div>
   );
 }

@@ -147,29 +147,44 @@ export function useTailorResumeMutation() {
         setTimeout(() => setStage("scoring"), 2500)
       );
 
-      const { data } = await authApiClient.post<{
-        success: boolean;
-        data: TailoredResumeResult;
-      }>("/resume/tailor", {
-        companyName: variables.companyName.trim(),
-        positionTitle: variables.positionTitle.trim(),
-        jobDescription: variables.jobDescription.trim(),
-        resumeId: variables.resumeId,
-        resumeData: variables.resumeData,
-      }, {
-        timeout: 45000,
-      });
+      try {
+        const { data } = await authApiClient.post<{
+          success: boolean;
+          data: TailoredResumeResult;
+        }>("/resume/tailor", {
+          companyName: variables.companyName.trim(),
+          positionTitle: variables.positionTitle.trim(),
+          jobDescription: variables.jobDescription.trim(),
+          resumeId: variables.resumeId,
+          resumeData: variables.resumeData,
+        }, {
+          timeout: 45000,
+        });
 
-      if (!data?.data) {
-        throw new Error("Invalid response format from resume tailoring service.");
+        if (!data?.data) {
+          throw new Error("Invalid response format from resume tailoring service.");
+        }
+
+        return data.data;
+      } catch (err: any) {
+        if (err.response?.status === 429) {
+          const quotaErr = err.response?.data?.error;
+          const customError: any = new Error(
+            quotaErr?.message || "Rate limit or daily generation quota reached."
+          );
+          customError.code = quotaErr?.code || "TOO_MANY_REQUESTS";
+          customError.details = quotaErr?.details || {};
+          customError.status = 429;
+          throw customError;
+        }
+        throw err;
       }
-
-      return data.data;
     },
     onSuccess: () => {
       clearTimers();
       setStage("ready");
       queryClient.invalidateQueries({ queryKey: ["resume", "tailored"] });
+      queryClient.invalidateQueries({ queryKey: ["ai-quota"] });
     },
     onError: () => {
       clearTimers();

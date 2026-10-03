@@ -16,6 +16,9 @@ import { ResumeData } from "@/shared/types/resume";
 import { TailoringPromptInput } from "../components/tailoring-prompt-input";
 import { AtsTailoredResultStation } from "../components/ats-tailored-result-station";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
+import { useAiQuota } from "@/shared/hooks/use-ai-quota";
+import { AiQuotaBadge } from "@/shared/components/ai/ai-quota-badge";
+import { AiRateLimitDialog } from "@/shared/components/ai/ai-rate-limit-dialog";
 
 interface TailorWorkspaceFormProps {
   initialApp: Application | null;
@@ -48,6 +51,23 @@ function TailorWorkspaceForm({
   const [atsResult, setAtsResult] = React.useState<TailoredResumeResult | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
+  // AI Quota & Rate Limiting state
+  const {
+    resumeLimit,
+    resumeRemaining,
+    resumeUsed,
+    isResumeLimitReached,
+    resumeResetFormatted,
+    resumeCooldownSeconds,
+    isResumeInCooldown,
+    startCooldown,
+  } = useAiQuota();
+
+  const [quotaDialogOpen, setQuotaDialogOpen] = React.useState(false);
+  const [quotaDialogType, setQuotaDialogType] = React.useState<"limit" | "cooldown">("limit");
+  const [quotaDialogMsg, setQuotaDialogMsg] = React.useState<string | null>(null);
+  const [quotaDialogRetryAfter, setQuotaDialogRetryAfter] = React.useState<number>(20);
+
   const handleSubmit = async () => {
     setErrorMsg(null);
     const company = targetCompany.trim();
@@ -60,6 +80,27 @@ function TailorWorkspaceForm({
     }
     if (!jd || jd.length < 20) {
       alert("Please provide the target job description (at least a few sentences).");
+      return;
+    }
+
+    // 1. Guard against client-side cooldown
+    if (isResumeInCooldown) {
+      setQuotaDialogType("cooldown");
+      setQuotaDialogRetryAfter(resumeCooldownSeconds);
+      setQuotaDialogMsg(`Please wait ${resumeCooldownSeconds}s before tailoring another resume.`);
+      setQuotaDialogOpen(true);
+      return;
+    }
+
+    // 2. Guard against client-side daily limit exhaustion
+    if (isResumeLimitReached) {
+      setQuotaDialogType("limit");
+      setQuotaDialogMsg(
+        `You have used your ${resumeLimit} free tailored resumes for today. Quota ${
+          resumeResetFormatted || "resets in 24 hours"
+        }.`
+      );
+      setQuotaDialogOpen(true);
       return;
     }
 
@@ -114,8 +155,25 @@ function TailorWorkspaceForm({
           .getElementById("ats-tailored-station")
           ?.scrollIntoView({ behavior: "smooth" });
       }, 150);
-    } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to tailor resume with AI.");
+    } catch (err: any) {
+      if (err?.code === "COOLDOWN_ACTIVE" || err?.status === 429) {
+        const isCooldown =
+          err?.code === "COOLDOWN_ACTIVE" || err?.details?.code === "COOLDOWN_ACTIVE";
+        const retryAfter = err?.details?.retryAfter || 20;
+
+        if (isCooldown) {
+          startCooldown("resume", retryAfter);
+          setQuotaDialogType("cooldown");
+          setQuotaDialogRetryAfter(retryAfter);
+        } else {
+          setQuotaDialogType("limit");
+        }
+
+        setQuotaDialogMsg(err.message || "Daily quota limit reached.");
+        setQuotaDialogOpen(true);
+      } else {
+        setErrorMsg(err instanceof Error ? err.message : "Failed to tailor resume with AI.");
+      }
     }
   };
 
@@ -173,6 +231,16 @@ function TailorWorkspaceForm({
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Tailor your master resume to match target job keywords with zero hallucination. Generates 100% compliant single-column ATS LaTeX and PDF.
               </p>
+              <div className="mt-3">
+                <AiQuotaBadge
+                  label="tailors"
+                  limit={resumeLimit}
+                  remaining={resumeRemaining}
+                  used={resumeUsed}
+                  resetFormatted={resumeResetFormatted}
+                  cooldownSeconds={resumeCooldownSeconds}
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
@@ -246,6 +314,17 @@ function TailorWorkspaceForm({
 
       {/* Floating Scroll To Top */}
       <ScrollToTop threshold={200} />
+
+      {/* AI Rate Limit & Daily Quota Modal */}
+      <AiRateLimitDialog
+        open={quotaDialogOpen}
+        onOpenChange={setQuotaDialogOpen}
+        type={quotaDialogType}
+        actionName="Resume Tailoring"
+        retryAfterSeconds={quotaDialogRetryAfter}
+        resetFormatted={resumeResetFormatted}
+        customMessage={quotaDialogMsg}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import {
   CoverLetterJobDetails,
@@ -41,6 +41,7 @@ const STAGE_MESSAGES: Record<GenerationStage, string> = {
  * transparent fallback to local API route if the server is starting up.
  */
 export function useGenerateCoverLetterMutation() {
+  const queryClient = useQueryClient();
   const [stage, setStage] = React.useState<GenerationStage>("idle");
   const stageTimerRef = React.useRef<NodeJS.Timeout[]>([]);
 
@@ -139,7 +140,17 @@ export function useGenerateCoverLetterMutation() {
         if (data?.data?.content) {
           return data.data;
         }
-      } catch (err: unknown) {
+      } catch (err: any) {
+        if (err.response?.status === 429) {
+          const quotaErr = err.response?.data?.error;
+          const customError: any = new Error(
+            quotaErr?.message || "Rate limit or daily generation quota reached."
+          );
+          customError.code = quotaErr?.code || "TOO_MANY_REQUESTS";
+          customError.details = quotaErr?.details || {};
+          customError.status = 429;
+          throw customError;
+        }
         console.warn(
           "[useGenerateCoverLetterMutation] Direct backend call failed or unavailable, trying Next.js fallback proxy:",
           err instanceof Error ? err.message : String(err)
@@ -178,6 +189,7 @@ export function useGenerateCoverLetterMutation() {
     onSuccess: () => {
       clearTimers();
       setStage("ready");
+      queryClient.invalidateQueries({ queryKey: ["ai-quota"] });
     },
     onError: () => {
       clearTimers();
