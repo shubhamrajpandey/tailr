@@ -30,6 +30,7 @@ import { cn } from "@/shared/lib/utils";
 import { useAiQuota } from "@/shared/hooks/use-ai-quota";
 import { AiQuotaBadge } from "@/shared/components/ai/ai-quota-badge";
 import { AiRateLimitDialog } from "@/shared/components/ai/ai-rate-limit-dialog";
+import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
 export default function CoverLettersPage() {
   const searchParams = useSearchParams();
@@ -280,7 +281,7 @@ export default function CoverLettersPage() {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
         {/* Fixed Top Navigation Bar */}
         <TopBar
           breadcrumbs={[
@@ -290,11 +291,11 @@ export default function CoverLettersPage() {
         />
 
         {/* Page Top Header Bar */}
-        <header className="px-6 lg:px-10 pt-6 pb-5 flex flex-col gap-4 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-4 sm:pb-5 flex flex-col gap-3 sm:gap-4 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                   Cover Letters
                 </h1>
                 {isLoaded && (
@@ -306,10 +307,10 @@ export default function CoverLettersPage() {
                   Gemini Flash AI Engine
                 </span>
               </div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Targeted, zero-hallucination cover letters tailored from your master resume with instant PDF and Word export.
               </p>
-              <div className="mt-3">
+              <div className="mt-2.5">
                 <AiQuotaBadge
                   label="cover letters"
                   limit={coverLetterLimit}
@@ -321,12 +322,12 @@ export default function CoverLettersPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               {activeTab === "letters" ? (
                 <Button
                   variant="primary"
                   onClick={() => setActiveTab("generator")}
-                  className="gap-2 font-bold shadow-xs bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 cursor-pointer"
+                  className="w-full sm:w-auto justify-center gap-2 font-bold shadow-xs bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 cursor-pointer h-10"
                 >
                   <Sparkles className="h-4 w-4" />
                   <span>Generate New Letter</span>
@@ -335,7 +336,7 @@ export default function CoverLettersPage() {
                 <Button
                   variant="secondary"
                   onClick={() => setActiveTab("letters")}
-                  className="gap-1.5 cursor-pointer font-semibold"
+                  className="w-full sm:w-auto justify-center gap-1.5 cursor-pointer font-semibold h-10"
                 >
                   <FolderOpen className="h-4 w-4" />
                   <span>View Saved Letters ({coverLetters.length})</span>
@@ -345,12 +346,12 @@ export default function CoverLettersPage() {
           </div>
 
           {/* Integrated View Switcher Tabs */}
-          <div className="flex items-center gap-2 p-1 bg-neutral-200/60 dark:bg-white/5 rounded-xl border border-neutral-200/80 dark:border-white/10 w-fit">
+          <div className="w-full sm:w-fit grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-neutral-200/60 dark:bg-white/5 rounded-xl border border-neutral-200/80 dark:border-white/10">
             <button
               type="button"
               onClick={() => setActiveTab("letters")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                "flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
                 activeTab === "letters"
                   ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs"
                   : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
@@ -367,14 +368,14 @@ export default function CoverLettersPage() {
               type="button"
               onClick={() => setActiveTab("generator")}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                "flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer",
                 activeTab === "generator"
                   ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-xs"
                   : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white"
               )}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>AI Generator Studio</span>
+              <span>AI Generator</span>
               <span className={cn(
                 "px-1.5 py-0.2 rounded-md text-[10px] font-extrabold",
                 activeTab === "generator" ? "bg-white/20 text-white" : "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300"
@@ -386,7 +387,7 @@ export default function CoverLettersPage() {
         </header>
 
         {/* Content Area */}
-        <main className="px-6 lg:px-10 py-6 flex-1 space-y-6">
+        <main className="px-4 sm:px-6 lg:px-10 py-4 sm:py-6 pb-32 sm:pb-12 flex-1 space-y-6">
           {activeTab === "letters" ? (
             /* Tab 1: Saved Cover Letters List & Metrics */
             <div className="space-y-6 animate-in fade-in duration-200">
@@ -410,7 +411,7 @@ export default function CoverLettersPage() {
                   type="button"
                   variant="primary"
                   onClick={() => setActiveTab("generator")}
-                  className="gap-2 font-bold shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer"
+                  className="w-full sm:w-auto justify-center gap-2 font-bold shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer h-10"
                 >
                   <Sparkles className="h-4 w-4" />
                   <span>Open Generator Studio</span>
@@ -418,7 +419,7 @@ export default function CoverLettersPage() {
               </div>
 
               {/* Quick Metrics Bar */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div className="p-4 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 flex items-center justify-between">
                   <div>
                     <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 block">
@@ -477,10 +478,10 @@ export default function CoverLettersPage() {
             </div>
           ) : (
             /* Tab 2: Integrated Full-Width AI Generator Studio */
-            <div className="w-full space-y-8 animate-in fade-in duration-200">
+            <div className="w-full space-y-6 sm:space-y-8 animate-in fade-in duration-200">
               {/* Notification Banner when user saves */}
               {saveSuccessMessage && (
-                <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/80 dark:border-emerald-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-3.5 sm:p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200/80 dark:border-emerald-500/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                     <p className="text-xs font-semibold text-emerald-950 dark:text-emerald-200">
@@ -492,7 +493,7 @@ export default function CoverLettersPage() {
                     variant="secondary"
                     size="sm"
                     onClick={() => setActiveTab("letters")}
-                    className="gap-1.5 text-xs text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
+                    className="w-full sm:w-auto justify-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800"
                   >
                     <span>View All Letters</span>
                   </Button>
@@ -520,7 +521,7 @@ export default function CoverLettersPage() {
               />
 
               {/* Section 3: Generate Trigger Bar */}
-              <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 space-y-4 shadow-2xs">
+              <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 space-y-4 shadow-2xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <h3 className="text-sm font-bold text-neutral-950 dark:text-white flex items-center gap-2">
@@ -549,7 +550,7 @@ export default function CoverLettersPage() {
                     disabled={isGenerating || !isFormValid}
                     variant="primary"
                     size="lg"
-                    className="gap-2.5 font-bold shadow-md bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 px-6 py-2.5 cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto justify-center gap-2.5 font-bold shadow-md bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 px-6 py-2.5 cursor-pointer disabled:opacity-50 h-11 sm:h-10"
                   >
                     {isGenerating ? (
                       <>
@@ -650,6 +651,9 @@ export default function CoverLettersPage() {
         resetFormatted={coverLetterResetFormatted}
         customMessage={quotaDialogMsg}
       />
+
+      {/* Scroll to Top floating action button */}
+      <ScrollToTop threshold={200} />
     </div>
   );
 }

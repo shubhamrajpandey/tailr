@@ -124,7 +124,7 @@ export function CoverLetterEditor({
   };
 
   return (
-    <div className="w-full rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 space-y-6 shadow-2xs">
+    <div className="w-full rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xs">
       {/* Review Before Saving Banner */}
       <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-amber-500/10 border border-amber-200/80 dark:border-amber-500/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-start gap-3">
@@ -169,26 +169,26 @@ export function CoverLetterEditor({
       </div>
 
       {/* Editor & Actions Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100 dark:border-white/5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-neutral-100 dark:border-white/5">
         {/* Left: Mode Toggle & Stats */}
-        <div className="flex items-center gap-3">
-          <div className="inline-flex rounded-lg p-0.5 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex rounded-lg p-0.5 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs">
             <button
               type="button"
               onClick={() => setViewMode("preview")}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 viewMode === "preview"
                   ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >
               <Eye className="h-3.5 w-3.5" />
-              <span>Formatted Preview</span>
+              <span>Preview</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode("edit")}
-              className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 ${
                 viewMode === "edit"
                   ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
@@ -374,14 +374,14 @@ export function CoverLetterEditor({
           )}
         </div>
 
-        <div className="flex items-center gap-3 self-end sm:self-center">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
           <Button
             type="button"
             variant="secondary"
             size="sm"
             onClick={() => onSave("DRAFT")}
             disabled={isSaving || isGenerating}
-            className={`gap-1.5 text-xs font-semibold cursor-pointer transition-all ${
+            className={`w-full sm:w-auto justify-center gap-1.5 text-xs font-semibold cursor-pointer transition-all h-10 sm:h-9 ${
               savedStatus === "DRAFT"
                 ? "border-emerald-500/50 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300"
                 : ""
@@ -411,7 +411,7 @@ export function CoverLetterEditor({
             size="sm"
             onClick={() => onSave("FINAL")}
             disabled={isSaving || isGenerating}
-            className={`gap-1.5 text-xs font-bold shadow-xs border-0 text-white cursor-pointer transition-all ${
+            className={`w-full sm:w-auto justify-center gap-1.5 text-xs font-bold shadow-xs border-0 text-white cursor-pointer transition-all h-10 sm:h-9 ${
               savedStatus === "FINAL"
                 ? "bg-emerald-700 hover:bg-emerald-600"
                 : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500"

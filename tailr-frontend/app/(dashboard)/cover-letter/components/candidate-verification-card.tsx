@@ -47,7 +47,7 @@ export function CandidateVerificationCard({
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/90 shadow-2xs overflow-hidden transition-all duration-200">
       {/* Top Banner with Verification Status */}
-      <div className="p-5 border-b border-neutral-100 dark:border-white/5 bg-gradient-to-r from-indigo-50/70 via-purple-50/30 to-transparent dark:from-indigo-950/20 dark:via-purple-950/10 dark:to-transparent">
+      <div className="p-4 sm:p-5 border-b border-neutral-100 dark:border-white/5 bg-gradient-to-r from-indigo-50/70 via-purple-50/30 to-transparent dark:from-indigo-950/20 dark:via-purple-950/10 dark:to-transparent">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
             <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center font-bold text-base shadow-xs shrink-0">

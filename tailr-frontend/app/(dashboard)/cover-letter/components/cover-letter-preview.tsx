@@ -54,7 +54,7 @@ export function CoverLetterPreview({
     return (
       <div
         id="cover-letter-document"
-        className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-8 sm:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
+        className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-8 lg:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
       >
         <div className="max-w-3xl mx-auto space-y-6 font-sans text-neutral-900 dark:text-neutral-100 print:text-black">
           {/* Minimal Header */}
@@ -91,7 +91,7 @@ export function CoverLetterPreview({
     return (
       <div
         id="cover-letter-document"
-        className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-8 sm:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
+        className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-8 lg:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
       >
         <div className="max-w-3xl mx-auto space-y-6 font-sans text-neutral-900 dark:text-neutral-100 print:text-black">
           {/* Modern Accent Header */}
@@ -162,7 +162,7 @@ export function CoverLetterPreview({
   return (
     <div
       id="cover-letter-document"
-      className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-8 sm:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
+      className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-8 lg:p-14 shadow-xs print:shadow-none print:border-none print:p-0 transition-colors"
     >
       <div className="max-w-3xl mx-auto space-y-6 font-sans text-neutral-900 dark:text-neutral-100 print:text-black">
         {/* Classic Executive Letterhead */}

@@ -23,6 +23,7 @@ import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
+import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { CoverLetterPreview } from "../components/cover-letter-preview";
 import {
   downloadCoverLetterAsDocx,
@@ -146,7 +147,7 @@ export default function CoverLetterDetailPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
         {/* Fixed Top Navigation Bar */}
         <div className="print:hidden">
           <TopBar
@@ -159,11 +160,11 @@ export default function CoverLetterDetailPage() {
         </div>
 
         {/* Header Bar (hidden when printing) */}
-        <header className="px-6 lg:px-10 pt-7 pb-6 flex flex-col gap-3 print:hidden border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-4 sm:pb-6 flex flex-col gap-3 print:hidden border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <div className="flex items-center gap-2.5 flex-wrap">
-                <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans break-words">
                   {coverLetter.positionTitle}
                 </h1>
                 <Badge
@@ -177,7 +178,7 @@ export default function CoverLetterDetailPage() {
                 </Badge>
               </div>
 
-              <div className="flex items-center gap-3 text-xs text-neutral-500 dark:text-neutral-400 mt-1.5 font-medium">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-500 dark:text-neutral-400 mt-1.5 font-medium">
                 <span className="flex items-center gap-1">
                   <Building2 className="h-3.5 w-3.5 text-neutral-400" />
                   {coverLetter.companyName}
@@ -200,14 +201,14 @@ export default function CoverLetterDetailPage() {
             </div>
 
             {/* Action Bar */}
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap pt-2 sm:pt-0 border-t sm:border-t-0 border-neutral-100 dark:border-white/5">
               {/* Copy Action */}
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 onClick={handleCopy}
-                className="gap-1.5"
+                className="gap-1.5 h-8 text-xs"
               >
                 {copied ? (
                   <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
@@ -223,11 +224,12 @@ export default function CoverLetterDetailPage() {
                 variant="secondary"
                 size="sm"
                 onClick={handleDownloadDocx}
-                className="gap-1.5 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/50"
+                className="gap-1.5 h-8 text-xs text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 border-indigo-200 dark:border-indigo-900/50"
                 title="Download formatted Microsoft Word / Google Docs document (.doc)"
               >
                 <FileText className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>Download Docs</span>
+                <span className="hidden sm:inline">Download Docs</span>
+                <span className="sm:hidden">Docs</span>
               </Button>
 
               {/* Print / Export PDF */}
@@ -236,11 +238,12 @@ export default function CoverLetterDetailPage() {
                 variant="secondary"
                 size="sm"
                 onClick={handleDownloadPdf}
-                className="gap-1.5 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50"
+                className="gap-1.5 h-8 text-xs text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50"
                 title="Print or Save as PDF"
               >
                 <Printer className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
-                <span>Export PDF</span>
+                <span className="hidden sm:inline">Export PDF</span>
+                <span className="sm:hidden">PDF</span>
               </Button>
 
               {/* Download TXT */}
@@ -265,7 +268,7 @@ export default function CoverLetterDetailPage() {
                     setDraftContent(coverLetter.content);
                     setIsEditing(true);
                   }}
-                  className="gap-1.5"
+                  className="gap-1.5 h-8 text-xs"
                 >
                   <FileEdit className="h-3.5 w-3.5" />
                   <span>Edit</span>
@@ -276,7 +279,7 @@ export default function CoverLetterDetailPage() {
                   variant="primary"
                   size="sm"
                   onClick={handleSaveEdit}
-                  className="gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white"
+                  className="gap-1.5 h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white"
                 >
                   <Save className="h-3.5 w-3.5" />
                   <span>Save</span>
@@ -289,7 +292,7 @@ export default function CoverLetterDetailPage() {
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleStatus}
-                className="text-xs text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                className="text-xs h-8 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
               >
                 Mark as {coverLetter.status === "FINAL" ? "Draft" : "Final"}
               </Button>
@@ -310,7 +313,7 @@ export default function CoverLetterDetailPage() {
         </header>
 
         {/* Full-width Responsive Body */}
-        <main className="px-6 lg:px-10 py-8 flex-1 w-full max-w-5xl mx-auto">
+        <main className="px-4 sm:px-6 lg:px-10 py-6 sm:py-8 pb-32 sm:pb-12 flex-1 w-full max-w-5xl mx-auto">
           {isEditing ? (
             <div className="space-y-4">
               <div className="p-3 rounded-lg bg-indigo-50/60 dark:bg-indigo-500/10 border border-indigo-200/60 dark:border-indigo-500/20 text-xs text-indigo-900 dark:text-indigo-300">
@@ -365,6 +368,9 @@ export default function CoverLetterDetailPage() {
           )}
         </main>
       </div>
+
+      {/* Scroll to Top floating action button */}
+      <ScrollToTop threshold={200} />
     </div>
   );
 }

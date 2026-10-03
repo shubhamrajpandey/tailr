@@ -36,7 +36,7 @@ export function ApplicationSelector({
   onChangeJobDetails,
 }: JobDetailsFormProps) {
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 space-y-6 shadow-2xs">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xs">
       {/* Selector Header & Mode Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-100 dark:border-white/5">
         <div className="flex items-center gap-2">
@@ -47,28 +47,28 @@ export function ApplicationSelector({
         </div>
 
         {/* Toggle between existing application and direct input */}
-        <div className="inline-flex rounded-lg p-0.5 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs">
+        <div className="w-full sm:w-auto grid grid-cols-2 sm:flex rounded-lg p-0.5 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs">
           <button
             type="button"
             onClick={() => onToggleManualMode(false)}
-            className={`px-3 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer text-center justify-center flex items-center ${
               !isManualMode
                 ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                 : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
             }`}
           >
-            From Tracked Application
+            Tracked Application
           </button>
           <button
             type="button"
             onClick={() => onToggleManualMode(true)}
-            className={`px-3 py-1 rounded-md font-semibold transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-md font-semibold transition-colors cursor-pointer text-center justify-center flex items-center ${
               isManualMode
                 ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                 : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
             }`}
           >
-            Direct / Manual Input
+            Direct / Manual
           </button>
         </div>
       </div>

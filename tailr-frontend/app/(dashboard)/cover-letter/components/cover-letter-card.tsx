@@ -96,7 +96,7 @@ export function CoverLetterCard({
       : coverLetter.content.replace(/\n+/g, " ");
 
   return (
-    <div className="group rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-5 transition-all duration-200 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 hover:shadow-md flex flex-col justify-between space-y-4">
+    <div className="group rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-5 transition-all duration-200 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 hover:shadow-md flex flex-col justify-between space-y-4">
       {/* Top Header */}
       <div className="space-y-2">
         <div className="flex items-start justify-between gap-3">
@@ -138,7 +138,7 @@ export function CoverLetterCard({
           <span>{formattedDate}</span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {/* Quick Download Word / Docs (.doc) */}
           <button
             type="button"
@@ -184,8 +184,8 @@ export function CoverLetterCard({
             </button>
           )}
 
-          <Link href={`/cover-letter/${coverLetter.id}`}>
-            <Button variant="secondary" size="sm" className="gap-1 text-xs h-8 ml-1">
+          <Link href={`/cover-letter/${coverLetter.id}`} className="ml-auto sm:ml-1">
+            <Button variant="secondary" size="sm" className="gap-1 text-xs h-8">
               <span>View & Edit</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Button>

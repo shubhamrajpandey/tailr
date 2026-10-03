@@ -84,48 +84,50 @@ export function CoverLetterList({
     <div className="space-y-5">
       {/* Search and Status Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-white/10">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="w-64 sm:w-72">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
+          <div className="w-full sm:w-72">
             <Input
               type="text"
               placeholder="Search company, position, keyword..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               icon={<Search className="h-4 w-4 text-neutral-400" />}
-              className="h-9 text-xs bg-neutral-50 dark:bg-white/[0.03]"
+              className="h-9 text-xs bg-neutral-50 dark:bg-white/[0.03] w-full"
             />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="h-9 px-3 text-xs rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 font-medium focus:outline-none focus:border-indigo-500 shadow-2xs"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="FINAL">Final Only</option>
-            <option value="DRAFT">Drafts Only</option>
-          </select>
-
-          {isFiltered && (
-            <button
-              type="button"
-              onClick={handleReset}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-white/[0.06] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+          <div className="flex items-center gap-2">
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="h-9 px-3 text-xs rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-200 font-medium focus:outline-none focus:border-indigo-500 shadow-2xs flex-1 sm:flex-initial"
             >
-              <span>Reset</span>
-              <X className="h-3 w-3" />
-            </button>
-          )}
+              <option value="ALL">All Statuses</option>
+              <option value="FINAL">Final Only</option>
+              <option value="DRAFT">Drafts Only</option>
+            </select>
+
+            {isFiltered && (
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium bg-neutral-100 dark:bg-white/[0.06] text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer"
+              >
+                <span>Reset</span>
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         </div>
 
-        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium self-end sm:self-center">
           Showing {filtered.length} of {coverLetters.length} letters
         </span>
       </div>
 
       {/* Grid or Filter Empty State */}
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-10 text-center space-y-3">
+        <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-8 sm:p-10 text-center space-y-3">
           <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
             No cover letters match your filters
           </p>
@@ -144,7 +146,7 @@ export function CoverLetterList({
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
           {filtered.map((letter) => (
             <CoverLetterCard
               key={letter.id}

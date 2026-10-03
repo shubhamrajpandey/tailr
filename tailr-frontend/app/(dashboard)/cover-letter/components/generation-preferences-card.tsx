@@ -117,7 +117,7 @@ export function GenerationPreferencesCard({
   onChange,
 }: GenerationPreferencesCardProps) {
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 space-y-6 shadow-2xs">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 space-y-4 sm:space-y-6 shadow-2xs">
       {/* Section Header */}
       <div className="flex items-center gap-2 pb-3 border-b border-neutral-100 dark:border-white/5">
         <Sliders className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
@@ -139,7 +139,7 @@ export function GenerationPreferencesCard({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
             {LENGTH_OPTIONS.map((opt) => {
               const isSelected = preferences.length === opt.id;
               return (
@@ -147,25 +147,27 @@ export function GenerationPreferencesCard({
                   key={opt.id}
                   type="button"
                   onClick={() => onChange({ length: opt.id })}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer relative ${
+                  className={`flex-none w-[240px] sm:w-[260px] snap-start p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between relative ${
                     isSelected
-                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs"
+                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs ring-1 ring-indigo-500/20"
                       : "border-neutral-200 dark:border-white/10 hover:border-neutral-300 dark:hover:border-white/20 bg-neutral-50/50 dark:bg-white/2"
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-neutral-900 dark:text-white">
-                      {opt.label}
-                    </span>
-                    {isSelected && (
-                      <span className="h-4 w-4 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                        <Check className="h-2.5 w-2.5" />
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-neutral-900 dark:text-white">
+                        {opt.label}
                       </span>
-                    )}
+                      {isSelected && (
+                        <span className="h-4 w-4 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                          <Check className="h-2.5 w-2.5" />
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-block text-[11px] font-mono text-indigo-600 dark:text-indigo-400 mb-1.5 font-medium">
+                      {opt.words}
+                    </span>
                   </div>
-                  <span className="inline-block text-[11px] font-mono text-indigo-600 dark:text-indigo-400 mb-1">
-                    {opt.words}
-                  </span>
                   <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">
                     {opt.desc}
                   </p>
@@ -187,7 +189,7 @@ export function GenerationPreferencesCard({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+          <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
             {TONE_OPTIONS.map((opt) => {
               const isSelected = preferences.tone === opt.id;
               return (
@@ -195,26 +197,28 @@ export function GenerationPreferencesCard({
                   key={opt.id}
                   type="button"
                   onClick={() => onChange({ tone: opt.id })}
-                  className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`flex-none w-[200px] sm:w-[220px] snap-start p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs"
+                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs ring-1 ring-indigo-500/20"
                       : "border-neutral-200 dark:border-white/10 hover:border-neutral-300 dark:hover:border-white/20 bg-neutral-50/50 dark:bg-white/2"
                   }`}
                 >
-                  <div>
+                  <div className="mb-2">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-bold text-neutral-900 dark:text-white capitalize">
                         {opt.label}
                       </span>
                       {isSelected && (
-                        <Check className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                        <span className="h-4 w-4 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                          <Check className="h-2.5 w-2.5" />
+                        </span>
                       )}
                     </div>
-                    <span className="text-[10px] uppercase font-semibold tracking-wider text-neutral-500 dark:text-neutral-400 block mb-1">
+                    <span className="text-[10px] uppercase font-semibold tracking-wider text-indigo-600 dark:text-indigo-400 block">
                       {opt.badge}
                     </span>
                   </div>
-                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-tight">
+                  <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">
                     {opt.desc}
                   </p>
                 </button>
@@ -235,7 +239,7 @@ export function GenerationPreferencesCard({
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
             {TEMPLATE_OPTIONS.map((opt) => {
               const isSelected = preferences.template === opt.id;
               return (
@@ -243,25 +247,27 @@ export function GenerationPreferencesCard({
                   key={opt.id}
                   type="button"
                   onClick={() => onChange({ template: opt.id })}
-                  className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`flex-none w-[240px] sm:w-[260px] snap-start p-3.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs"
+                      ? "border-indigo-600 dark:border-indigo-500 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-2xs ring-1 ring-indigo-500/20"
                       : "border-neutral-200 dark:border-white/10 hover:border-neutral-300 dark:hover:border-white/20 bg-neutral-50/50 dark:bg-white/2"
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-neutral-900 dark:text-white">
-                      {opt.label}
-                    </span>
-                    {isSelected && (
-                      <span className="h-4 w-4 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                        <Check className="h-2.5 w-2.5" />
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-neutral-900 dark:text-white">
+                        {opt.label}
                       </span>
-                    )}
+                      {isSelected && (
+                        <span className="h-4 w-4 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                          <Check className="h-2.5 w-2.5" />
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-block text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 mb-1.5">
+                      {opt.preview}
+                    </span>
                   </div>
-                  <span className="inline-block text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 mb-1">
-                    {opt.preview}
-                  </span>
                   <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">
                     {opt.desc}
                   </p>
