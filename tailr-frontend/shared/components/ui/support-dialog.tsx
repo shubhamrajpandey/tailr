@@ -171,7 +171,7 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
             <div className="pt-1">
               <a
                 href={mailtoUrl}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 <span>Open Mail Client</span>

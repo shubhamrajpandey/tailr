@@ -279,7 +279,7 @@ export default function CoverLetterDetailPage() {
                   variant="primary"
                   size="sm"
                   onClick={handleSaveEdit}
-                  className="gap-1.5 h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white"
+                  className="gap-1.5 h-8 text-xs bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white shadow-sm shadow-indigo-500/20 border border-indigo-400/30"
                 >
                   <Save className="h-3.5 w-3.5" />
                   <span>Save</span>
@@ -344,7 +344,7 @@ export default function CoverLetterDetailPage() {
                   variant="primary"
                   size="sm"
                   onClick={handleSaveEdit}
-                  className="gap-1.5 font-bold shadow-xs bg-indigo-600 hover:bg-indigo-500 text-white"
+                  className="gap-1.5 font-bold shadow-md shadow-indigo-500/20 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30"
                 >
                   <Save className="h-3.5 w-3.5" />
                   <span>Save Changes</span>

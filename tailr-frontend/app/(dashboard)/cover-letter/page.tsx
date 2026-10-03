@@ -411,7 +411,7 @@ export default function CoverLettersPage() {
                   type="button"
                   variant="primary"
                   onClick={() => setActiveTab("generator")}
-                  className="w-full sm:w-auto justify-center gap-2 font-bold shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer h-10"
+                  className="w-full sm:w-auto justify-center gap-2 font-bold shrink-0 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/20 border border-indigo-400/30 cursor-pointer h-10"
                 >
                   <Sparkles className="h-4 w-4" />
                   <span>Open Generator Studio</span>

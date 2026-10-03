@@ -63,7 +63,7 @@ export function CoverLetterList({
           <Button
             variant="primary"
             onClick={onOpenGenerator}
-            className="gap-2 font-bold shadow-xs bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+            className="gap-2 font-bold shadow-md shadow-indigo-500/20 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Create First Cover Letter</span>

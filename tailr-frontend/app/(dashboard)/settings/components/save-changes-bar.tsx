@@ -69,7 +69,7 @@ export function SaveChangesBar({
               size="sm"
               onClick={onSave}
               disabled={isSubmitting}
-              className="text-xs h-8 px-3.5 gap-1.5 font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs"
+              className="text-xs h-8 px-3.5 gap-1.5 font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 shadow-md shadow-indigo-500/20"
             >
               {isSubmitting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -84,7 +84,7 @@ export function SaveChangesBar({
               variant="primary"
               size="sm"
               disabled={isSubmitting}
-              className="text-xs h-8 px-3.5 gap-1.5 font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs"
+              className="text-xs h-8 px-3.5 gap-1.5 font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 shadow-md shadow-indigo-500/20"
             >
               {isSubmitting ? (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />

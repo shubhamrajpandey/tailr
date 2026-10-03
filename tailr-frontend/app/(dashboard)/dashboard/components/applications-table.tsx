@@ -174,7 +174,7 @@ export function ApplicationsTable({
           <Link href="/applications/new" className="hidden sm:inline-flex">
             <button
               type="button"
-              className="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              className="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 border border-indigo-400/30 transition-all cursor-pointer active:scale-[0.98]"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Application</span>
@@ -223,7 +223,7 @@ export function ApplicationsTable({
             <Link href="/applications/new" className="sm:hidden flex-1">
               <button
                 type="button"
-                className="w-full h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                className="w-full h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 border border-indigo-400/30 transition-all cursor-pointer active:scale-[0.98]"
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add App</span>

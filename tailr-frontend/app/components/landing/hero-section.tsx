@@ -118,7 +118,7 @@ export function HeroSection() {
           <Link href="/register">
             <button
               type="button"
-              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-bold bg-neutral-950 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white shadow-md shadow-indigo-500/25 border border-indigo-400/30 transition-all active:scale-[0.98] cursor-pointer"
             >
              
               <span>Try It Free</span>

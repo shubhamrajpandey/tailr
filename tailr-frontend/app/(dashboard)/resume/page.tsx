@@ -492,7 +492,7 @@ function MasterResumeEditor({
               onClick={handleSave}
               disabled={isDbSaving}
               size="sm"
-              className="h-7 text-xs px-2.5 font-bold bg-indigo-600 hover:bg-indigo-500 text-white shrink-0 shadow-xs cursor-pointer"
+              className="h-7 text-xs px-2.5 font-bold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 shrink-0 shadow-sm shadow-indigo-500/20 cursor-pointer"
             >
               {isDbSaving ? "Saving..." : "Save"}
             </Button>

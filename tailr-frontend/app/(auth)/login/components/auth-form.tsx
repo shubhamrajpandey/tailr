@@ -191,7 +191,7 @@ export function AuthForm() {
           id="login-submit"
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/25 border border-indigo-500/30 transition-all duration-150 cursor-pointer active:scale-[0.99] mt-2"
+          className="w-full h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 !text-white dark:!text-white shadow-md shadow-indigo-500/25 border border-indigo-500/30 transition-all duration-150 cursor-pointer active:scale-[0.99] mt-2"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
