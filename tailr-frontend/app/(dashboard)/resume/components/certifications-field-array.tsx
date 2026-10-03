@@ -65,7 +65,7 @@ export function CertificationsFieldArray({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {/* Certifications Card */}
-      <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
@@ -158,7 +158,7 @@ export function CertificationsFieldArray({
       </div>
 
       {/* Achievements Card */}
-      <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+      <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
           <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">

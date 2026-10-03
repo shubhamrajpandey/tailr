@@ -94,10 +94,10 @@ export function ExperienceFieldArray({
   };
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <Briefcase className="h-4 w-4" />
           </div>
           <div>
@@ -115,7 +115,7 @@ export function ExperienceFieldArray({
           onClick={addExperience}
           variant="secondary"
           size="sm"
-          className="gap-1.5 font-semibold shrink-0"
+          className="gap-1.5 font-semibold shrink-0 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Add Position
@@ -123,7 +123,7 @@ export function ExperienceFieldArray({
       </div>
 
       {experience.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-neutral-200 dark:border-white/10 rounded-xl">
+        <div className="p-6 sm:p-8 text-center border border-dashed border-neutral-200 dark:border-white/10 rounded-xl">
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
             No work experience entries yet. Add your employment history.
           </p>
@@ -137,17 +137,19 @@ export function ExperienceFieldArray({
           {experience.map((exp, expIdx) => (
             <AccordionItem key={exp.id} value={exp.id}>
               <AccordionTrigger>
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
-                    {exp.title || "Untitled Position"}
-                  </span>
-                  <span className="text-neutral-400 dark:text-neutral-500">at</span>
-                  <span className="font-semibold text-neutral-700 dark:text-neutral-300 truncate">
-                    {exp.company || "Company"}
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2.5 min-w-0 text-left">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                      {exp.title || "Untitled Position"}
+                    </span>
+                    <span className="text-neutral-400 dark:text-neutral-500 text-xs sm:text-sm">at</span>
+                    <span className="font-semibold text-neutral-700 dark:text-neutral-300 truncate">
+                      {exp.company || "Company"}
+                    </span>
+                  </div>
                   {exp.startDate && (
-                    <span className="text-xs text-neutral-400 hidden sm:inline-block">
+                    <span className="text-xs text-neutral-400 ml-4 sm:ml-0 font-normal">
                       ({exp.startDate} – {exp.current ? "Present" : exp.endDate || "Ongoing"})
                     </span>
                   )}
@@ -282,15 +284,15 @@ export function ExperienceFieldArray({
                   </div>
 
                   {/* Actions Row: Reorder & Delete */}
-                  <div className="flex items-center justify-between pt-3 border-t border-neutral-200/80 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-3 border-t border-neutral-200/80 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-1.5">
                       <Button
                         type="button"
                         disabled={expIdx === 0}
                         onClick={() => moveItem(expIdx, "up")}
                         variant="ghost"
                         size="sm"
-                        className="h-8 text-xs gap-1"
+                        className="h-8 text-xs gap-1 flex-1 sm:flex-initial"
                       >
                         <ArrowUp className="h-3.5 w-3.5" />
                         Move Up
@@ -301,7 +303,7 @@ export function ExperienceFieldArray({
                         onClick={() => moveItem(expIdx, "down")}
                         variant="ghost"
                         size="sm"
-                        className="h-8 text-xs gap-1"
+                        className="h-8 text-xs gap-1 flex-1 sm:flex-initial"
                       >
                         <ArrowDown className="h-3.5 w-3.5" />
                         Move Down
@@ -313,7 +315,7 @@ export function ExperienceFieldArray({
                       onClick={() => removeItem(expIdx)}
                       variant="ghost"
                       size="sm"
-                      className="h-8 text-xs gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+                      className="h-8 text-xs gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 justify-center sm:justify-start"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Delete Position

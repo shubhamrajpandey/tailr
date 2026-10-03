@@ -47,10 +47,10 @@ export function EducationFieldArray({
   };
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <GraduationCap className="h-4 w-4" />
           </div>
           <div>
@@ -68,7 +68,7 @@ export function EducationFieldArray({
           onClick={addEducation}
           variant="secondary"
           size="sm"
-          className="gap-1.5 font-semibold shrink-0"
+          className="gap-1.5 font-semibold shrink-0 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Add Education
@@ -90,15 +90,18 @@ export function EducationFieldArray({
           {education.map((edu, eIdx) => (
             <AccordionItem key={edu.id} value={edu.id}>
               <AccordionTrigger>
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
-                    {edu.degree ? `${edu.degree} in ${edu.fieldOfStudy}` : "Degree"}
-                  </span>
-                  <span className="text-neutral-400 dark:text-neutral-500">at</span>
-                  <span className="font-semibold text-neutral-700 dark:text-neutral-300 truncate">
-                    {edu.institution || "Institution"}
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2.5 min-w-0 text-left">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                      {edu.degree ? `${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}` : "Degree"}
+                    </span>
+                  </div>
+                  {edu.institution && (
+                    <span className="text-xs text-neutral-400 ml-4 sm:ml-0 truncate font-normal">
+                      at {edu.institution}
+                    </span>
+                  )}
                 </div>
               </AccordionTrigger>
 

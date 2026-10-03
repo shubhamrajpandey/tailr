@@ -64,10 +64,10 @@ export function ScrollToTop({
       onClick={scrollToTop}
       aria-label={ariaLabel}
       title={ariaLabel}
-      className={`fixed bottom-6 right-6 z-40 flex items-center justify-center p-3 rounded-full 
-        bg-white/90 dark:bg-neutral-800/90 text-neutral-700 dark:text-neutral-200 
+      className={`fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-30 flex items-center justify-center p-2.5 sm:p-3 rounded-full 
+        bg-white/95 dark:bg-[#181920]/95 text-neutral-700 dark:text-neutral-200 
         hover:text-indigo-600 dark:hover:text-indigo-400
-        border border-neutral-200/80 dark:border-neutral-700/80
+        border border-neutral-200/90 dark:border-white/10
         shadow-lg hover:shadow-xl backdrop-blur-md
         transition-all duration-300 ease-out cursor-pointer
         hover:-translate-y-1 active:scale-90
@@ -78,7 +78,7 @@ export function ScrollToTop({
         }
         ${className}`}
     >
-      <ArrowUp className="h-5 w-5 transition-transform group-hover:-translate-y-0.5" />
+      <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:-translate-y-0.5" />
     </button>
   );
 }

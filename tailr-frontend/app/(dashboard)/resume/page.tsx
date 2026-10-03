@@ -2,12 +2,36 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, Save, RotateCcw, Check, ArrowRight, Upload, Loader2 } from "lucide-react";
+import {
+  Sparkles,
+  Save,
+  RotateCcw,
+  Check,
+  ArrowRight,
+  Upload,
+  Loader2,
+  User,
+  Code2,
+  Briefcase,
+  FolderGit2,
+  GraduationCap,
+  Award,
+} from "lucide-react";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
+
+const RESUME_SECTIONS = [
+  { id: "section-basics", label: "Basics", icon: User },
+  { id: "section-summary", label: "Summary", icon: Sparkles },
+  { id: "section-skills", label: "Skills", icon: Code2 },
+  { id: "section-experience", label: "Experience", icon: Briefcase },
+  { id: "section-projects", label: "Projects", icon: FolderGit2 },
+  { id: "section-education", label: "Education", icon: GraduationCap },
+  { id: "section-certifications", label: "Certs", icon: Award },
+];
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import {
   ResumeData,
@@ -355,125 +379,185 @@ function MasterResumeEditor({
         <TopBar />
 
         {/* Header Bar */}
-        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
+        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 Master Resume
               </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Your canonical career record. Upload your resume or edit below to tailor for any role with zero hallucination.
               </p>
             </div>
 
-            <div className="flex items-center gap-2.5 flex-wrap shrink-0">
-              <Button
-                type="button"
-                onClick={() => setIsUploadModalOpen(true)}
-                variant="secondary"
-                size="sm"
-                className="gap-1.5 font-semibold text-xs"
-              >
-                <Upload className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>Upload / Import Resume</span>
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleReset}
-                variant="ghost"
-                size="sm"
-                className="gap-1.5 text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                title="Reset to default template"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                Reset
-              </Button>
-
-              <Button
-                type="button"
-                onClick={handleSave}
-                disabled={isDbSaving}
-                variant={isDirty ? "primary" : "secondary"}
-                className="gap-2 font-semibold shadow-xs text-xs"
-              >
-                {isDbSaving ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    <span>Saving to DB...</span>
-                  </>
-                ) : isSaved ? (
-                  <>
-                    <Check className="h-4 w-4 text-emerald-500" />
-                    <span>Saved to Database</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    <span>Save Master</span>
-                  </>
-                )}
-              </Button>
-
-              <Link href="/resume/tailor">
+            {/* Action Buttons: Clean 2-Row Stack on Mobile, Inline on Desktop */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 shrink-0 w-full sm:w-auto">
+              {/* Utility Actions */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
-                  variant="primary"
-                  className="gap-2 font-semibold shadow-sm bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 text-xs"
+                  type="button"
+                  onClick={() => setIsUploadModalOpen(true)}
+                  variant="secondary"
+                  size="sm"
+                  className="flex-1 sm:flex-initial gap-1.5 font-semibold text-xs h-9 justify-center cursor-pointer"
                 >
-                  <Sparkles className="h-4 w-4" />
-                  <span>Tailor for Job</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                  <Upload className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                  <span>Import / Upload</span>
                 </Button>
-              </Link>
+
+                <Button
+                  type="button"
+                  onClick={handleReset}
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white h-9 px-2.5 cursor-pointer"
+                  title="Reset to default template"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span className="hidden xs:inline">Reset</span>
+                </Button>
+              </div>
+
+              {/* Primary Actions */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isDbSaving}
+                  variant={isDirty ? "primary" : "secondary"}
+                  className="flex-1 sm:flex-initial gap-1.5 font-semibold shadow-xs text-xs h-9 justify-center cursor-pointer"
+                >
+                  {isDbSaving ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : isSaved ? (
+                    <>
+                      <Check className="h-4 w-4 text-emerald-500" />
+                      <span>Saved</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      <span>Save Master</span>
+                    </>
+                  )}
+                </Button>
+
+                <Link href="/resume/tailor" className="flex-1 sm:flex-initial">
+                  <Button
+                    variant="primary"
+                    className="w-full gap-1.5 font-semibold shadow-sm bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0 text-xs h-9 justify-center cursor-pointer"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                    <span>Tailor for Job</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </header>
 
+        {/* Mobile Quick Jump Navigation Bar (< lg) */}
+        <div className="sticky top-14 z-20 px-4 sm:px-6 py-2 bg-slate-50/95 dark:bg-[#090a0c]/95 backdrop-blur-md border-b border-neutral-200/60 dark:border-white/[0.05] flex items-center justify-between gap-2 lg:hidden select-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 min-w-0">
+            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider shrink-0 mr-0.5">
+              Jump:
+            </span>
+            {RESUME_SECTIONS.map((sec) => (
+              <button
+                key={sec.id}
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById(sec.id);
+                  if (el) {
+                    const yOffset = -110;
+                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                  }
+                }}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-white dark:bg-white/[0.04] text-neutral-700 dark:text-neutral-300 border border-neutral-200/80 dark:border-white/10 hover:border-indigo-400 dark:hover:border-indigo-500/50 hover:text-indigo-600 dark:hover:text-indigo-300 shrink-0 shadow-2xs active:scale-95 transition-all cursor-pointer"
+              >
+                <sec.icon className="h-3 w-3 text-indigo-500 shrink-0" />
+                <span>{sec.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {isDirty && (
+            <Button
+              type="button"
+              onClick={handleSave}
+              disabled={isDbSaving}
+              size="sm"
+              className="h-7 text-xs px-2.5 font-bold bg-indigo-600 hover:bg-indigo-500 text-white shrink-0 shadow-xs cursor-pointer"
+            >
+              {isDbSaving ? "Saving..." : "Save"}
+            </Button>
+          )}
+        </div>
+
         {/* Content Canvas */}
-        <main className="flex-1 px-8 py-8 space-y-6 w-full">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-32 sm:pb-12 space-y-5 sm:space-y-6 w-full">
           {/* Basics Section */}
-          <BasicsSectionForm
-            basics={formData.basics}
-            onChange={(basics) => handleUpdate({ basics })}
-          />
+          <section id="section-basics" className="scroll-mt-28">
+            <BasicsSectionForm
+              basics={formData.basics}
+              onChange={(basics) => handleUpdate({ basics })}
+            />
+          </section>
 
           {/* Professional Summary Section */}
-          <SummarySectionForm
-            summary={formData.summary}
-            onChange={(summary) => handleUpdate({ summary })}
-          />
+          <section id="section-summary" className="scroll-mt-28">
+            <SummarySectionForm
+              summary={formData.summary}
+              onChange={(summary) => handleUpdate({ summary })}
+            />
+          </section>
 
           {/* Technical Skills Section */}
-          <SkillsSectionForm
-            skills={formData.skills}
-            onChange={(skills) => handleUpdate({ skills })}
-          />
+          <section id="section-skills" className="scroll-mt-28">
+            <SkillsSectionForm
+              skills={formData.skills}
+              onChange={(skills) => handleUpdate({ skills })}
+            />
+          </section>
 
           {/* Work Experience Section */}
-          <ExperienceFieldArray
-            experience={formData.experience}
-            onChange={(experience) => handleUpdate({ experience })}
-          />
+          <section id="section-experience" className="scroll-mt-28">
+            <ExperienceFieldArray
+              experience={formData.experience}
+              onChange={(experience) => handleUpdate({ experience })}
+            />
+          </section>
 
           {/* Projects Section */}
-          <ProjectsFieldArray
-            projects={formData.projects}
-            onChange={(projects) => handleUpdate({ projects })}
-          />
+          <section id="section-projects" className="scroll-mt-28">
+            <ProjectsFieldArray
+              projects={formData.projects}
+              onChange={(projects) => handleUpdate({ projects })}
+            />
+          </section>
 
           {/* Education Section */}
-          <EducationFieldArray
-            education={formData.education}
-            onChange={(education) => handleUpdate({ education })}
-          />
+          <section id="section-education" className="scroll-mt-28">
+            <EducationFieldArray
+              education={formData.education}
+              onChange={(education) => handleUpdate({ education })}
+            />
+          </section>
 
           {/* Certifications & Achievements Section */}
-          <CertificationsFieldArray
-            certifications={formData.certifications || []}
-            achievements={formData.achievements || []}
-            onCertificationsChange={(certifications) => handleUpdate({ certifications })}
-            onAchievementsChange={(achievements) => handleUpdate({ achievements })}
-          />
+          <section id="section-certifications" className="scroll-mt-28">
+            <CertificationsFieldArray
+              certifications={formData.certifications || []}
+              achievements={formData.achievements || []}
+              onCertificationsChange={(certifications) => handleUpdate({ certifications })}
+              onAchievementsChange={(achievements) => handleUpdate({ achievements })}
+            />
+          </section>
         </main>
       </div>
 

@@ -102,10 +102,10 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
   };
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <FolderGit2 className="h-4 w-4" />
           </div>
           <div>
@@ -123,7 +123,7 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
           onClick={addProject}
           variant="secondary"
           size="sm"
-          className="gap-1.5 font-semibold shrink-0"
+          className="gap-1.5 font-semibold shrink-0 self-start sm:self-auto"
         >
           <Plus className="h-4 w-4" />
           Add Project
@@ -131,7 +131,7 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
       </div>
 
       {projects.length === 0 ? (
-        <div className="p-8 text-center border border-dashed border-neutral-200 dark:border-white/10 rounded-xl">
+        <div className="p-6 sm:p-8 text-center border border-dashed border-neutral-200 dark:border-white/10 rounded-xl">
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-3">
             No projects added yet. Showcase your technical depth with 2-3 key projects.
           </p>
@@ -145,13 +145,15 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
           {projects.map((proj, pIdx) => (
             <AccordionItem key={proj.id} value={proj.id}>
               <AccordionTrigger>
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
-                  <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
-                    {proj.name || "Untitled Project"}
-                  </span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2.5 min-w-0 text-left">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
+                    <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                      {proj.name || "Untitled Project"}
+                    </span>
+                  </div>
                   {proj.tech.length > 0 && (
-                    <span className="text-xs text-neutral-400 hidden sm:inline-block truncate">
+                    <span className="text-xs text-neutral-400 ml-4 sm:ml-0 truncate font-normal">
                       ({proj.tech.slice(0, 3).join(", ")})
                     </span>
                   )}
@@ -292,15 +294,15 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
                   </div>
 
                   {/* Move / Delete */}
-                  <div className="flex items-center justify-between pt-3 border-t border-neutral-200/80 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-3 border-t border-neutral-200/80 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-1.5">
                       <Button
                         type="button"
                         disabled={pIdx === 0}
                         onClick={() => moveProject(pIdx, "up")}
                         variant="ghost"
                         size="sm"
-                        className="h-8 text-xs gap-1"
+                        className="h-8 text-xs gap-1 flex-1 sm:flex-initial"
                       >
                         <ArrowUp className="h-3.5 w-3.5" />
                         Move Up
@@ -311,7 +313,7 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
                         onClick={() => moveProject(pIdx, "down")}
                         variant="ghost"
                         size="sm"
-                        className="h-8 text-xs gap-1"
+                        className="h-8 text-xs gap-1 flex-1 sm:flex-initial"
                       >
                         <ArrowDown className="h-3.5 w-3.5" />
                         Move Down
@@ -323,7 +325,7 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
                       onClick={() => removeProject(pIdx)}
                       variant="ghost"
                       size="sm"
-                      className="h-8 text-xs gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
+                      className="h-8 text-xs gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 justify-center sm:justify-start"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Delete Project

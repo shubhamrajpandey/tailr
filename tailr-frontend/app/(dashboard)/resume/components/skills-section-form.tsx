@@ -74,9 +74,9 @@ export function SkillsSectionForm({ skills, onChange }: SkillsSectionFormProps) 
   ];
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-5">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-5">
       <div className="flex items-center gap-2.5 pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
-        <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+        <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
           <Code className="h-4 w-4" />
         </div>
         <div>
@@ -89,11 +89,11 @@ export function SkillsSectionForm({ skills, onChange }: SkillsSectionFormProps) 
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
         {categories.map((cat) => (
           <div
             key={cat.key}
-            className="p-4 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] bg-neutral-50/50 dark:bg-white/[0.01] space-y-3"
+            className="p-3.5 sm:p-4 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] bg-neutral-50/50 dark:bg-white/[0.01] space-y-3"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-bold text-neutral-900 dark:text-neutral-200 uppercase tracking-wider">
