@@ -35,7 +35,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/shared/components/ui/dropdown-menu";
-import { formatDate } from "@/shared/lib/utils";
+import { formatDate, cn } from "@/shared/lib/utils";
 import { useDebounce } from "@/shared/hooks/use-debounce";
 
 interface ApplicationsTableProps {
@@ -154,71 +154,289 @@ export function ApplicationsTable({
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs">
       {/* Table Header Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-white/[0.06]">
-        <div className="flex items-center gap-3">
-          <div className="p-1.5 rounded-md text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.06]">
-            <Building2 className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+      <div className="flex flex-col gap-3 pb-4 border-b border-neutral-200 dark:border-white/[0.06]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-1.5 rounded-md text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.06]">
+              <Building2 className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 tracking-wide">
+                Applications Pipeline
+              </h2>
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                {paginatedApplications.length} of {applications.length} applications (max {PAGE_SIZE} per page)
+              </span>
+            </div>
           </div>
-          <div>
-            <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 tracking-wide">
-              Applications Pipeline
-            </h2>
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-              Showing {paginatedApplications.length} of {applications.length} applications (max {PAGE_SIZE} per page)
-            </span>
-          </div>
+
+          {/* Quick Add Button (Desktop only here, mobile in control strip) */}
+          <Link href="/applications/new" className="hidden sm:inline-flex">
+            <button
+              type="button"
+              className="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Application</span>
+            </button>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {/* Search, Filter & Mobile Action Strip */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
           {/* Table Search Input with smooth debouncing */}
-          <div className="w-56 sm:w-64">
+          <div className="flex-1 sm:max-w-xs">
             <Input
               type="text"
               placeholder="Search company, role, HR..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               icon={<Search className="h-4 w-4 text-neutral-400" />}
-              className="h-9 text-xs bg-neutral-50 dark:bg-white/[0.03]"
+              className="h-9 text-xs bg-neutral-50 dark:bg-white/[0.03] w-full"
             />
           </div>
 
-          {/* Status Filter Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs cursor-pointer">
-              <Filter className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-              <span>{statusFilter === "ALL" ? "All Stages" : statusFilter}</span>
-              <ChevronDown className="h-3 w-3 text-neutral-400" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              {["ALL", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].map(
-                (status) => (
-                  <DropdownMenuItem
-                    key={status}
-                    onClick={() => setStatusFilter(status)}
-                    className={statusFilter === status ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
-                  >
-                    {status === "ALL" ? "All Stages" : status}
-                  </DropdownMenuItem>
-                )
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            {/* Status Filter Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs cursor-pointer min-h-[36px]">
+                <Filter className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+                <span>{statusFilter === "ALL" ? "All Stages" : statusFilter}</span>
+                <ChevronDown className="h-3 w-3 text-neutral-400" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                {["ALL", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].map(
+                  (status) => (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={statusFilter === status ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                    >
+                      {status === "ALL" ? "All Stages" : status}
+                    </DropdownMenuItem>
+                  )
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {/* Quick Add Button */}
-          <Link href="/applications/new">
-            <button
-              type="button"
-              className="h-9 px-3 inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Add</span>
-            </button>
-          </Link>
+            {/* Quick Add Button (Mobile visible) */}
+            <Link href="/applications/new" className="sm:hidden flex-1">
+              <button
+                type="button"
+                className="w-full h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add App</span>
+              </button>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* Responsive Table */}
-      <div className="overflow-x-auto">
+      {/* MOBILE VIEW (< md): Touch-Friendly Application Cards */}
+      <div className="block md:hidden pt-3 space-y-3">
+        {paginatedApplications.length > 0 && (
+          <div className="flex items-center justify-between px-1 text-xs text-neutral-500 dark:text-neutral-400">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <Checkbox
+                checked={allSelected}
+                onCheckedChange={toggleSelectAll}
+              />
+              <span className="font-medium">
+                {selectedIds.size > 0
+                  ? `${selectedIds.size} selected`
+                  : "Select all on page"}
+              </span>
+            </label>
+            <span className="font-mono text-[11px] text-neutral-400">
+              Tap status to change
+            </span>
+          </div>
+        )}
+
+        {paginatedApplications.length === 0 ? (
+          <div className="py-10 text-center text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="max-w-xs mx-auto space-y-2">
+              <p className="font-semibold text-neutral-800 dark:text-neutral-200">
+                No applications found
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                {searchQuery
+                  ? "Try adjusting your search or filter keywords."
+                  : "Start tracking your first target company and tailoring resumes."}
+              </p>
+              <div className="pt-2">
+                <Link href="/applications/new">
+                  <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                    + Track New Application
+                  </span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        ) : (
+          paginatedApplications.map((app) => {
+            const isSelected = selectedIds.has(app.id);
+
+            return (
+              <div
+                key={app.id}
+                className={cn(
+                  "rounded-xl border p-3.5 space-y-3 transition-colors",
+                  isSelected
+                    ? "border-indigo-500/50 bg-indigo-50/40 dark:bg-indigo-950/20"
+                    : "border-neutral-200 dark:border-white/[0.08] bg-white/70 dark:bg-white/[0.02]"
+                )}
+              >
+                {/* Card Top Row: Checkbox, Company Avatar, Title & Status Dropdown */}
+                <div className="flex items-start justify-between gap-2.5">
+                  <div className="flex items-start gap-2.5 min-w-0">
+                    <div className="pt-1">
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={(checked) => toggleSelectOne(app.id, checked)}
+                      />
+                    </div>
+                    <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-xs text-neutral-800 dark:text-white shrink-0 shadow-xs">
+                      {app.companyName.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="font-semibold text-sm text-neutral-900 dark:text-neutral-100 truncate font-sans">
+                        {app.positionTitle}
+                      </span>
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 font-medium mt-0.5 truncate">
+                        {app.companyName}
+                        {app.companyWebsite && (
+                          <a
+                            href={app.companyWebsite}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-neutral-400 dark:text-neutral-500 hover:text-indigo-600 dark:hover:text-indigo-400 shrink-0"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        )}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Status Dropdown Pill */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="focus:outline-none cursor-pointer shrink-0">
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-neutral-200/80 dark:border-white/10 bg-neutral-100/80 dark:bg-white/5 active:scale-95 transition-transform">
+                        <Badge variant={statusVariantMap[app.status]} className="text-[11px] px-1.5 py-0">
+                          {app.status}
+                        </Badge>
+                        <ChevronDown className="h-3 w-3 text-neutral-400" />
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuLabel className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                        Move Stage
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {ALL_STATUSES.map((st) => {
+                        const Icon = st.icon;
+                        return (
+                          <DropdownMenuItem
+                            key={st.value}
+                            onClick={() => onStatusChange?.(app.id, st.value)}
+                            className={app.status === st.value ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-indigo-50 dark:bg-indigo-950/30" : ""}
+                          >
+                            <Icon className="h-3.5 w-3.5 text-neutral-400" />
+                            <span>{st.label}</span>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* Card Middle: Recruiter & Date */}
+                <div className="flex items-center justify-between pt-1 text-xs text-neutral-600 dark:text-neutral-400 border-t border-neutral-100 dark:border-white/[0.04]">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    {app.hrName ? (
+                      <>
+                        <Avatar
+                          fallback={app.hrName}
+                          size="sm"
+                          className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-semibold h-4.5 w-4.5 text-[9px]"
+                        />
+                        <span className="truncate max-w-[120px] text-neutral-800 dark:text-neutral-200 font-medium">
+                          {app.hrName}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-neutral-400 font-medium text-[11px]">Unassigned HR</span>
+                    )}
+                  </div>
+
+                  <span className="font-mono text-[11px] text-neutral-500 shrink-0">
+                    {formatDate(app.appliedDate)}
+                  </span>
+                </div>
+
+                {/* Card Bottom: Resume status & Actions */}
+                <div className="flex items-center justify-between pt-1 border-t border-neutral-100 dark:border-white/[0.04]">
+                  {app.resumeVersion ? (
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <div className="p-1 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                        <FileText className="h-3 w-3" />
+                      </div>
+                      <span className="text-xs text-neutral-700 dark:text-neutral-300 font-medium truncate max-w-[130px]">
+                        {app.resumeVersion.label}
+                      </span>
+                      {app.resumeVersion.matchScore && (
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 font-bold">
+                          {app.resumeVersion.matchScore}%
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/resume/tailor`}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      <span>Tailor resume</span>
+                    </Link>
+                  )}
+
+                  {/* Options Menu */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="p-1 rounded-md text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors cursor-pointer">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuLabel className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                        Quick Actions
+                      </DropdownMenuLabel>
+                      <Link href={`/resume/tailor`}>
+                        <DropdownMenuItem className="cursor-pointer gap-2">
+                          <Sparkles className="h-3.5 w-3.5 text-indigo-500" />
+                          <span>Tailor for this job</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        destructive
+                        onClick={() => onDelete?.(app.id)}
+                        className="cursor-pointer"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        <span>Delete Application</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* DESKTOP VIEW (>= md): Full Responsive Table */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left text-sm text-neutral-700 dark:text-neutral-200">
           <thead>
             <tr className="border-b border-neutral-200 dark:border-white/[0.06] text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">

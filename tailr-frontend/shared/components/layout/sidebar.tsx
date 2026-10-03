@@ -35,6 +35,7 @@ import {
   DropdownMenuSeparator,
 } from "@/shared/components/ui/dropdown-menu";
 import { useApplications } from "@/shared/hooks/use-applications";
+import { MobileBottomBar } from "./mobile-bottom-bar";
 
 const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
 
@@ -546,12 +547,13 @@ export function Sidebar() {
   } = useAiQuota();
 
   return (
-    <aside
-      className={cn(
-        "shrink-0 bg-white dark:bg-[#0c0d10] border-r border-neutral-200 dark:border-white/[0.06] flex flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out",
-        isCollapsed ? "w-16" : "w-64"
-      )}
-    >
+    <>
+      <aside
+        className={cn(
+          "hidden lg:flex shrink-0 bg-white dark:bg-[#0c0d10] border-r border-neutral-200 dark:border-white/[0.06] flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out",
+          isCollapsed ? "w-16" : "w-64"
+        )}
+      >
       {/* Brand Header */}
       <div className="h-14 px-3 flex items-center justify-between border-b border-neutral-200 dark:border-white/[0.05]">
         {!isCollapsed ? (
@@ -770,5 +772,7 @@ export function Sidebar() {
         )}
       </div>
     </aside>
-  );
+    <MobileBottomBar />
+  </>
+);
 }

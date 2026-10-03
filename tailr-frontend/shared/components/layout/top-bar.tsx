@@ -22,6 +22,7 @@ import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
+import { MobileNav } from "@/shared/components/layout/mobile-nav";
 
 export interface BreadcrumbItem {
   label: string;
@@ -216,47 +217,51 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full h-14 px-8 flex items-center justify-between bg-slate-50/90 dark:bg-[#090a0c]/90 backdrop-blur-md transition-colors select-none",
+        "sticky top-0 z-30 w-full h-14 px-3 sm:px-6 lg:px-8 flex items-center justify-between bg-slate-50/90 dark:bg-[#090a0c]/90 backdrop-blur-md transition-colors select-none border-b border-neutral-200/60 dark:border-white/[0.05]",
         className
       )}
     >
-      {/* Left: Dynamic Interactive Breadcrumbs */}
-      <nav aria-label="Breadcrumbs" className="flex items-center gap-2 text-sm">
-        <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50 inline-block shrink-0 animate-pulse" />
-        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
-          {resolvedBreadcrumbs.map((crumb, idx) => {
-            const isLast = idx === resolvedBreadcrumbs.length - 1;
-            return (
-              <React.Fragment key={`${crumb.label}-${idx}`}>
-                {crumb.href && !isLast ? (
-                  <Link
-                    href={crumb.href}
-                    className="text-neutral-500 dark:text-neutral-400 font-medium hover:text-neutral-950 dark:hover:text-white transition-colors"
-                  >
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span
-                    className={cn(
-                      "font-semibold",
-                      isLast
-                        ? "text-neutral-900 dark:text-neutral-100 font-bold"
-                        : "text-neutral-500 dark:text-neutral-400 font-medium"
-                    )}
-                  >
-                    {crumb.label}
-                  </span>
-                )}
-                {!isLast && (
-                  <span className="text-neutral-300 dark:text-neutral-600 font-normal">
-                    /
-                  </span>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </nav>
+      {/* Left: Mobile Navigation Trigger (< lg) & Desktop Breadcrumbs (>= lg) */}
+      <div className="flex items-center gap-2">
+        <MobileNav />
+
+        <nav aria-label="Breadcrumbs" className="hidden lg:flex items-center gap-2 text-sm">
+          <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50 inline-block shrink-0 animate-pulse" />
+          <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+            {resolvedBreadcrumbs.map((crumb, idx) => {
+              const isLast = idx === resolvedBreadcrumbs.length - 1;
+              return (
+                <React.Fragment key={`${crumb.label}-${idx}`}>
+                  {crumb.href && !isLast ? (
+                    <Link
+                      href={crumb.href}
+                      className="text-neutral-500 dark:text-neutral-400 font-medium hover:text-neutral-950 dark:hover:text-white transition-colors"
+                    >
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span
+                      className={cn(
+                        "font-semibold",
+                        isLast
+                          ? "text-neutral-900 dark:text-neutral-100 font-bold"
+                          : "text-neutral-500 dark:text-neutral-400 font-medium"
+                      )}
+                    >
+                      {crumb.label}
+                    </span>
+                  )}
+                  {!isLast && (
+                    <span className="text-neutral-300 dark:text-neutral-600 font-normal">
+                      /
+                    </span>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
 
       {/* Right: Actions, Theme, Date Selector & User Profile */}
       <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
