@@ -24,7 +24,7 @@ const app = new Elysia()
   // 2. Cross-Origin Resource Sharing (CORS) with Cookie Credentials
   .use(
     cors({
-      origin: [env.FRONTEND_URL, "http://localhost:3000"],
+      origin: [env.FRONTEND_URL, "http://localhost:3000", "https://tailr-swart.vercel.app"],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
