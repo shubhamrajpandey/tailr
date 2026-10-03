@@ -66,11 +66,19 @@ export function CompanyDetailDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto p-0 gap-0 my-8 border border-neutral-200 dark:border-white/10 shadow-xl">
+      <DialogContent
+        position="responsive"
+        className="w-full sm:max-w-xl max-h-[85vh] sm:max-h-[88vh] overflow-y-auto p-0 gap-0 border-t sm:border border-neutral-200 dark:border-white/10 shadow-2xl"
+      >
+        {/* Mobile Pull Handle Indicator */}
+        <div className="sm:hidden flex justify-center pt-2.5 pb-0.5 bg-neutral-50/70 dark:bg-white/[0.03]">
+          <div className="w-10 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+        </div>
+
         {/* Header */}
-        <div className="p-6 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-white/[0.03]">
-          <div className="flex items-start gap-4">
-            <div className="shrink-0 h-14 w-14 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 flex items-center justify-center overflow-hidden shadow-xs">
+        <div className="p-4 sm:p-6 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-white/[0.03]">
+          <div className="flex items-start gap-3 sm:gap-4 pr-6 sm:pr-0">
+            <div className="shrink-0 h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 flex items-center justify-center overflow-hidden shadow-xs">
               {company.logoUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
@@ -146,7 +154,7 @@ export function CompanyDetailDialog({
         </div>
 
         {/* Body Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Tech Stack Section */}
           <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-neutral-900 dark:text-neutral-200 uppercase tracking-wider flex items-center gap-2">
@@ -235,12 +243,13 @@ export function CompanyDetailDialog({
           </div>
 
           {/* Actions */}
-          <div className="pt-4 border-t border-neutral-200 dark:border-white/10 flex items-center justify-between">
+          <div className="pt-4 border-t border-neutral-200 dark:border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <Button
               type="button"
               onClick={onClose}
               variant="secondary"
               size="sm"
+              className="w-full sm:w-auto"
             >
               Close
             </Button>
@@ -248,11 +257,12 @@ export function CompanyDetailDialog({
             <Link
               href={`/resume?company=${encodeURIComponent(company.name)}`}
               onClick={onClose}
+              className="w-full sm:w-auto"
             >
               <Button
                 variant="primary"
                 size="sm"
-                className="gap-2 shadow-sm shadow-indigo-500/20"
+                className="w-full sm:w-auto gap-2 shadow-sm shadow-indigo-500/20"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 <span>Tailor Resume for this Company</span>

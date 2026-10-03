@@ -12,6 +12,7 @@ import { CompanyTable } from "./components/company-table";
 import { CompanyDetailDialog } from "./components/company-detail-dialog";
 import { RotateCcw, Loader2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
 const SECTORS = [
   "All",
@@ -98,11 +99,11 @@ export default function CompaniesPage() {
         <TopBar />
 
         {/* Page Header */}
-        <header className="px-8 pt-6 pb-4 flex flex-col gap-3">
+        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-2.5">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-2.5">
                   <span>Companies & HR Directory</span>
                 </h1>
                 {!isLoading && (
@@ -116,23 +117,23 @@ export default function CompaniesPage() {
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1.5 font-normal max-w-2xl">
-                Curated IT companies in Nepal with verified tech stacks, HR contacts, and location data. Click any row for deep details or AI resume tailoring.
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-normal max-w-2xl">
+                Curated IT companies in Nepal with verified tech stacks, HR contacts, and location data. Click any row or card for deep details and AI resume tailoring.
               </p>
             </div>
           </div>
         </header>
 
         {/* Content */}
-        <main className="px-8 pb-12 flex-1 space-y-4">
+        <main className="px-4 sm:px-6 lg:px-8 pb-24 sm:pb-12 flex-1 space-y-4">
           {/* Controls: Search + Sector Filters */}
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
               <CompanySearch
                 value={searchQuery}
                 onChange={handleSearchChange}
                 disabled={isLoading}
-                className="max-w-md w-full"
+                className="w-full sm:max-w-md"
               />
 
               {hasActiveFilters && (
@@ -150,7 +151,7 @@ export default function CompaniesPage() {
             </div>
 
             {/* Sector filter pills */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
               {SECTORS.map((sector) => {
                 const isActive = selectedSector === sector;
                 return (
@@ -159,7 +160,7 @@ export default function CompaniesPage() {
                     type="button"
                     onClick={() => handleSectorSelect(sector)}
                     className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors border select-none",
+                      "px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors border select-none shrink-0",
                       isActive
                         ? "bg-indigo-600 text-white border-indigo-600 shadow-2xs"
                         : "bg-white dark:bg-white/5 text-neutral-600 dark:text-neutral-300 border-neutral-200/80 dark:border-white/10 hover:border-neutral-300 dark:hover:border-neutral-700"
@@ -172,15 +173,15 @@ export default function CompaniesPage() {
             </div>
 
             {/* Mobile Alphabet quick-jump horizontal bar */}
-            <div className="md:hidden flex items-center gap-1 overflow-x-auto py-1 scrollbar-none">
+            <div className="md:hidden flex items-center gap-1 overflow-x-auto py-1.5 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
               <button
                 type="button"
                 onClick={() => setSelectedLetter("")}
                 className={cn(
-                  "px-2 h-6 rounded text-xs font-semibold select-none transition-colors",
+                  "px-2.5 h-7 rounded-lg text-xs font-bold select-none transition-all shrink-0",
                   !selectedLetter
-                    ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900"
-                    : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
+                    ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 shadow-2xs"
+                    : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5"
                 )}
               >
                 ALL
@@ -193,9 +194,9 @@ export default function CompaniesPage() {
                     type="button"
                     onClick={() => handleLetterSelect(letter)}
                     className={cn(
-                      "w-6 h-6 rounded text-xs font-semibold select-none transition-colors flex items-center justify-center",
+                      "w-7 h-7 rounded-lg text-xs font-semibold select-none transition-all flex items-center justify-center shrink-0",
                       isActive
-                        ? "bg-indigo-600 text-white font-bold"
+                        ? "bg-indigo-600 text-white font-bold shadow-2xs scale-105"
                         : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5"
                     )}
                   >
@@ -292,6 +293,9 @@ export default function CompaniesPage() {
           onClose={handleCloseModal}
         />
       </div>
+
+      {/* Floating Scroll to Top button */}
+      <ScrollToTop threshold={200} />
     </div>
   );
 }
