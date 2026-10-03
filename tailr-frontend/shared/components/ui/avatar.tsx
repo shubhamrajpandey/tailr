@@ -25,7 +25,7 @@ export function Avatar({
   return (
     <div
       className={cn(
-        "relative flex shrink-0 overflow-hidden rounded-full border border-white/10 bg-neutral-800 font-medium text-neutral-300 items-center justify-center select-none",
+        "relative flex shrink-0 overflow-hidden rounded-full border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-neutral-800 font-semibold text-neutral-800 dark:text-neutral-200 items-center justify-center select-none",
         sizeClasses,
         className
       )}
@@ -39,7 +39,7 @@ export function Avatar({
           className="aspect-square h-full w-full object-cover"
         />
       ) : (
-        <span className="uppercase tracking-wider font-semibold text-neutral-300">
+        <span className="uppercase tracking-wider font-bold text-inherit leading-none flex items-center justify-center">
           {fallback.slice(0, 2)}
         </span>
       )}

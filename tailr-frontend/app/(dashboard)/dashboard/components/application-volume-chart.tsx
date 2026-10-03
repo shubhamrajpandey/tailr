@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import {
   BarChart,
   Bar,
@@ -11,7 +12,7 @@ import {
   Cell,
   ReferenceLine,
 } from "recharts";
-import { BarChart2, Calendar, ChevronDown, TrendingUp } from "lucide-react";
+import { BarChart2, Calendar, ChevronDown, TrendingUp, ArrowRight } from "lucide-react";
 import { VolumeTrendPoint } from "@/shared/types/application";
 import {
   DropdownMenu,
@@ -73,25 +74,37 @@ export function ApplicationVolumeChart({
           </h2>
         </div>
 
-        {/* Range Selector */}
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white transition-colors">
-            <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-            <span>{range}</span>
-            <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-36">
-            {["Last 7 days", "Last week", "Last month"].map((r) => (
-              <DropdownMenuItem
-                key={r}
-                onClick={() => setRange(r)}
-                className={range === r ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
-              >
-                {r}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          {/* Direct shortcut to deep analytics */}
+          <Link
+            href="/analytics"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors shadow-2xs"
+            title="Open Full Analytics Dashboard"
+          >
+            <span>View Analytics</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+
+          {/* Range Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white transition-colors">
+              <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+              <span>{range}</span>
+              <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+              {["Last 7 days", "Last week", "Last month"].map((r) => (
+                <DropdownMenuItem
+                  key={r}
+                  onClick={() => setRange(r)}
+                  className={range === r ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                >
+                  {r}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Headline Metric Above the Chart */}

@@ -7,8 +7,6 @@ import {
   MessageSquareText,
   Sparkles,
   Plus,
-  Mail,
-  FileText,
   BarChart2,
   History,
 } from "lucide-react";
@@ -48,7 +46,7 @@ export default function DashboardPage() {
         <TopBar />
 
         {/* Dashboard Canvas with Mobile-Friendly Responsive Padding & Bottom Bar Clearance */}
-        <main className="flex-1 px-3.5 sm:px-6 lg:px-8 pb-28 sm:pb-12 space-y-5 sm:space-y-6">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-28 sm:pb-12 space-y-5 sm:space-y-6">
           {/* Greeting Header & Quick Actions */}
           <div className="pt-4 sm:pt-6 pb-1 space-y-3 sm:space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -83,39 +81,11 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </div>
-
-            {/* Mobile Quick Action Pill Strip */}
-            <div className="flex sm:hidden items-center gap-2 overflow-x-auto no-scrollbar pb-1 -mx-3.5 px-3.5">
-              <Link href="/applications/new" className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold shadow-xs active:scale-95 transition-transform">
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Track App</span>
-                </span>
-              </Link>
-              <Link href="/resume/tailor" className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold active:scale-95 transition-transform">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>AI Tailor</span>
-                </span>
-              </Link>
-              <Link href="/cover-letter" className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-200 text-xs font-medium active:scale-95 transition-transform">
-                  <Mail className="h-3.5 w-3.5 text-neutral-400" />
-                  <span>Letters</span>
-                </span>
-              </Link>
-              <Link href="/resume" className="shrink-0">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 text-neutral-700 dark:text-neutral-200 text-xs font-medium active:scale-95 transition-transform">
-                  <FileText className="h-3.5 w-3.5 text-neutral-400" />
-                  <span>Master CV</span>
-                </span>
-              </Link>
-            </div>
           </div>
 
-          {/* Stat Cards: Touch-Friendly Snap Carousel on Mobile, 3-Col Grid on Desktop */}
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 pb-2 -mx-3.5 px-3.5 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible no-scrollbar">
-            <div className="min-w-[78vw] max-w-[280px] shrink-0 snap-start sm:min-w-0 sm:max-w-none sm:shrink flex flex-col">
+          {/* Stat Cards: Touch-Friendly Snap Carousel on Mobile with Clean Left Margin, 3-Col Grid on Desktop */}
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-2 pt-0.5 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible no-scrollbar">
+            <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
               <StatCard
                 label="Total Applications"
                 value={stats.totalApplications}
@@ -126,7 +96,7 @@ export default function DashboardPage() {
                 sparklineData={[3, 5, 8, 12, 10, 16, 20]}
               />
             </div>
-            <div className="min-w-[78vw] max-w-[280px] shrink-0 snap-start sm:min-w-0 sm:max-w-none sm:shrink flex flex-col">
+            <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
               <StatCard
                 label="Response Rate"
                 value={`${stats.responseRate}%`}
@@ -137,7 +107,7 @@ export default function DashboardPage() {
                 sparklineData={[15, 20, 18, 25, 22, 28, 30]}
               />
             </div>
-            <div className="min-w-[78vw] max-w-[280px] shrink-0 snap-start sm:min-w-0 sm:max-w-none sm:shrink flex flex-col">
+            <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
               <StatCard
                 label="Interview Conversion"
                 value={`${stats.interviewConversion}%`}
