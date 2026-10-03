@@ -3,6 +3,7 @@
   "version": "1.0.50",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "bun run src/index.ts",
     "dev": "bun run --env-file .env --watch src/index.ts",
     "typecheck": "tsc --noEmit",
     "seed:cedar-gate": "bun run --env-file .env scripts/seed-cedar-gate.ts",
