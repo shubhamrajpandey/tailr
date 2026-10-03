@@ -5,6 +5,8 @@ import {
   UploadRawResumeRequest,
   TailorResumeRequest,
 } from "./resume.model";
+import { assertAiQuota } from "../quota/quota.middleware";
+import { quotaService } from "../quota/quota.service";
 
 /**
  * Extracts optional authenticated user ID from JWT access token if present.
@@ -217,6 +219,9 @@ export class ResumeController {
   }) {
     const userId = await getUserIdFromContext(jwtAccess, headers);
 
+    // 1. Enforce authenticated user, anti-spam cooldown, and rolling 24h quota
+    const quotaCheck = await assertAiQuota(userId, "RESUME_TAILOR", set as any);
+
     // Determine baseline resume to tailor from:
     // 1. Provided directly in payload body.resumeData
     // 2. OR provided by body.resumeId
@@ -253,10 +258,27 @@ export class ResumeController {
 
     const result = await resumeService.tailorResume(body, baseResume, userId);
 
+    // 2. Record successful AI usage event in database
+    await quotaService.recordUsage(userId!, "RESUME_TAILOR", {
+      tailoredResumeId: result.id,
+      companyName: body.companyName,
+      positionTitle: body.positionTitle,
+    });
+
+    const remaining = Math.max(0, quotaCheck.remaining - 1);
+    set.headers["X-RateLimit-Remaining"] = String(remaining);
+
     set.status = 200;
     return {
       success: true,
-      data: result,
+      data: {
+        ...result,
+        quota: {
+          limit: quotaCheck.limit,
+          used: quotaCheck.used + 1,
+          remaining,
+        },
+      },
     };
   }
 

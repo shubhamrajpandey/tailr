@@ -11,6 +11,7 @@ import { resumeRoutes } from "./modules/resume/resume.routes";
 import { applicationsRoutes } from "./modules/applications/applications.routes";
 import { analyticsRoutes } from "./modules/analytics/analytics.routes";
 import { settingsRoutes } from "./modules/settings/settings.routes";
+import { quotaRoutes } from "./modules/quota/quota.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -150,7 +151,10 @@ const app = new Elysia()
   // 12. Mount User Workspace Settings Routes (/settings/*)
   .use(settingsRoutes)
 
-  // 12. Bind to Port
+  // 13. Mount AI Quota & Rate Limiting Routes (/quota/*)
+  .use(quotaRoutes)
+
+  // 14. Bind to Port
   .listen({
     port: env.PORT,
     hostname: "0.0.0.0",

@@ -94,6 +94,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   tailoredResumes: many(tailoredResumes),
   jobApplications: many(jobApplications),
   coverLetters: many(coverLetters),
+  aiUsageLogs: many(aiUsageLogs),
   settings: one(userSettings),
 }));
 
@@ -413,5 +414,38 @@ export const userSettingsRelations = relations(userSettings, ({ one }) => ({
 
 export type UserSettingsRow = typeof userSettings.$inferSelect;
 export type NewUserSettingsRow = typeof userSettings.$inferInsert;
+
+/**
+ * AI Usage Logs table: tracks AI generation events (Resume Tailor, Cover Letter)
+ * per user to enforce fair usage limits, cost control, and rate limiting.
+ */
+export const aiUsageLogs = pgTable(
+  "ai_usage_logs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    action: varchar("action", { length: 50 }).notNull(), // 'RESUME_TAILOR' | 'COVER_LETTER_GENERATE'
+    metadata: jsonb("metadata").default(sql`'{}'::jsonb`).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("ai_usage_logs_user_action_idx").on(table.userId, table.action),
+    index("ai_usage_logs_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const aiUsageLogsRelations = relations(aiUsageLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [aiUsageLogs.userId],
+    references: [users.id],
+  }),
+}));
+
+export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+export type NewAiUsageLog = typeof aiUsageLogs.$inferInsert;
 
 

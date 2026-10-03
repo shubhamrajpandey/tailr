@@ -20,6 +20,9 @@ interface EnvConfig {
   GROQ_API_KEY?: string;
   GROQ_COVER_LETTER_API_KEY?: string;
   GROQ_RESUME_API_KEY?: string;
+  DAILY_RESUME_TAILOR_LIMIT: number;
+  DAILY_COVER_LETTER_LIMIT: number;
+  AI_COOLDOWN_SECONDS: number;
 }
 
 function getEnv(): EnvConfig {
@@ -59,6 +62,9 @@ function getEnv(): EnvConfig {
     GROQ_API_KEY: process.env.GROQ_API_KEY,
     GROQ_COVER_LETTER_API_KEY: process.env.GROQ_COVER_LETTER_API_KEY || process.env.GROQ_API_KEY,
     GROQ_RESUME_API_KEY: process.env.GROQ_RESUME_API_KEY,
+    DAILY_RESUME_TAILOR_LIMIT: parseInt(process.env.DAILY_RESUME_TAILOR_LIMIT || "2", 10),
+    DAILY_COVER_LETTER_LIMIT: parseInt(process.env.DAILY_COVER_LETTER_LIMIT || "2", 10),
+    AI_COOLDOWN_SECONDS: parseInt(process.env.AI_COOLDOWN_SECONDS || "20", 10),
   });
 }
 

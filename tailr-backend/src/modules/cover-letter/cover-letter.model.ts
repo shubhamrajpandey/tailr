@@ -186,6 +186,13 @@ export const GenerateCoverLetterResponse = t.Object({
     provider: t.String({
       description: "AI generation engine (e.g. gemini-2.5-flash or verified-engine)",
     }),
+    quota: t.Optional(
+      t.Object({
+        limit: t.Number(),
+        used: t.Number(),
+        remaining: t.Number(),
+      })
+    ),
   }),
 });
 

@@ -127,6 +127,13 @@ export const TailorResumeResponseSchema = t.Object({
     tailoredData: StructuredResumeDataSchema,
     latexSource: t.String({ description: "Ready-to-compile ATS-friendly LaTeX source code" }),
     provider: t.String({ description: "AI engine used (e.g. gemini-resume-engine)" }),
+    quota: t.Optional(
+      t.Object({
+        limit: t.Number(),
+        used: t.Number(),
+        remaining: t.Number(),
+      })
+    ),
   }),
 });
 
