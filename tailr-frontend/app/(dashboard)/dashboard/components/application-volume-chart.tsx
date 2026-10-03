@@ -20,6 +20,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/shared/components/ui/dropdown-menu";
+import { cn } from "@/shared/lib/utils";
 
 interface ApplicationVolumeChartProps {
   data: VolumeTrendPoint[];
@@ -62,23 +63,23 @@ export function ApplicationVolumeChart({
   const peakVal = Math.max(...data.map((d) => d.applications));
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs flex flex-col justify-between">
+    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs flex flex-col justify-between">
       {/* Chart Card Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="p-1.5 rounded-md text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.06]">
+          <div className="p-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.06] shrink-0">
             <BarChart2 className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
           </div>
-          <h2 className="text-sm font-semibold text-neutral-900 dark:text-neutral-200 tracking-wide">
+          <h2 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 tracking-tight whitespace-nowrap">
             Application Volume Trend
           </h2>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {/* Direct shortcut to deep analytics */}
           <Link
             href="/analytics"
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors shadow-2xs"
+            className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors shadow-2xs cursor-pointer"
             title="Open Full Analytics Dashboard"
           >
             <span>View Analytics</span>
@@ -87,17 +88,20 @@ export function ApplicationVolumeChart({
 
           {/* Range Selector */}
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-md border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white transition-colors">
-              <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+            <DropdownMenuTrigger className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white transition-colors cursor-pointer">
+              <Calendar className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400 shrink-0" />
               <span>{range}</span>
-              <ChevronDown className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
+              <ChevronDown className="h-3 w-3 text-neutral-500 dark:text-neutral-400 shrink-0" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
               {["Last 7 days", "Last week", "Last month"].map((r) => (
                 <DropdownMenuItem
                   key={r}
                   onClick={() => setRange(r)}
-                  className={range === r ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                  className={cn(
+                    "cursor-pointer text-xs",
+                    range === r ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""
+                  )}
                 >
                   {r}
                 </DropdownMenuItem>
@@ -108,23 +112,25 @@ export function ApplicationVolumeChart({
       </div>
 
       {/* Headline Metric Above the Chart */}
-      <div className="mt-5 flex items-baseline gap-3">
-        <div className="text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+      <div className="mt-4 sm:mt-5 flex flex-wrap items-baseline gap-2.5 sm:gap-3">
+        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans leading-none">
           {totalWeekly}
         </div>
-        <div className="flex items-center gap-1.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 font-mono">
-          <TrendingUp className="h-4 w-4 stroke-[2.5]" />
+        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-xs sm:text-sm font-bold text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/20 font-mono">
+          <TrendingUp className="h-3.5 w-3.5 stroke-[2.5]" />
           <span>{weeklyDelta}</span>
         </div>
-        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">applications submitted</span>
+        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium whitespace-nowrap">
+          applications submitted
+        </span>
       </div>
 
       {/* Main Bar Chart */}
-      <div className="mt-4 h-52 w-full">
+      <div className="mt-4 h-48 sm:h-52 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 20, right: 10, left: -25, bottom: 0 }}
+            margin={{ top: 20, right: 8, left: -24, bottom: 0 }}
             onMouseMove={(state) => {
               if (state && state.activeTooltipIndex !== undefined) {
                 const idx = Number(state.activeTooltipIndex);

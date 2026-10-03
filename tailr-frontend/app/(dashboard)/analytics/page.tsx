@@ -40,7 +40,7 @@ function AnalyticsDashboard() {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
         {/* Fixed Top Navigation Bar */}
         <TopBar />
 

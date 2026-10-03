@@ -94,7 +94,7 @@ export default function CompaniesPage() {
       <Sidebar />
 
       {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
         <TopBar />
 
         {/* Page Header */}
