@@ -39,18 +39,18 @@ export default function SettingsLayout({
         <TopBar />
 
         {/* Settings Header Bar */}
-        <header className="shrink-0 px-6 sm:px-8 py-5 border-b border-neutral-200 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="shrink-0 px-4 sm:px-6 lg:px-8 py-4 sm:py-5 border-b border-neutral-200 dark:border-white/[0.06] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 Settings & Preferences
               </h1>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 sm:mt-1 font-medium">
                 Manage your personal profile, security credentials, appearance, and AI workspace defaults.
               </p>
             </div>
 
-            <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center gap-3 shrink-0 self-start sm:self-auto">
               {resetFeedback && (
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
                   Defaults restored
@@ -74,7 +74,7 @@ export default function SettingsLayout({
         <SettingsSidebar />
 
         {/* Content Area - Full width, smoothly scrollable */}
-        <main className="flex-1 h-full overflow-y-auto px-6 sm:px-8 py-7 pb-28">
+        <main className="flex-1 h-full overflow-y-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-7 pb-32 sm:pb-28">
           <div className="w-full">{children}</div>
         </main>
       </div>

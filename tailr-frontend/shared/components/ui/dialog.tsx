@@ -107,12 +107,12 @@ function DialogContent({
       {/* Modal Card */}
       <div
         className={cn(
-          "relative z-50 w-full max-w-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#111216] shadow-2xl",
+          "relative z-50 w-full border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#111216] shadow-2xl",
           isBottom
-            ? "rounded-t-3xl rounded-b-none border-b-0 animate-in slide-in-from-bottom duration-200"
+            ? "max-w-full rounded-t-3xl rounded-b-none border-b-0 animate-in slide-in-from-bottom duration-200"
             : isResponsive
-            ? "rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl border-b-0 sm:border-b animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 sm:zoom-in-95 fade-in duration-200"
-            : "rounded-xl p-6 animate-in zoom-in-95 fade-in duration-150",
+            ? "max-w-full sm:max-w-lg rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl border-b-0 sm:border-b animate-in slide-in-from-bottom-8 sm:slide-in-from-bottom-0 sm:zoom-in-95 fade-in duration-200"
+            : "max-w-lg rounded-xl p-6 animate-in zoom-in-95 fade-in duration-150",
           className
         )}
       >

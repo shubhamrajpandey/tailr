@@ -29,7 +29,7 @@ export function SaveChangesBar({
       role="region"
       aria-label="Unsaved changes bar"
       className={cn(
-        "fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-2xl animate-in slide-in-from-bottom-5 fade-in duration-200",
+        "fixed bottom-24 lg:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[92%] max-w-2xl animate-in slide-in-from-bottom-5 fade-in duration-200",
         className
       )}
     >

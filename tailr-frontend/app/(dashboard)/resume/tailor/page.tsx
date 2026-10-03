@@ -219,19 +219,21 @@ function TailorWorkspaceForm({
         />
 
         {/* Header Bar */}
-        <header className="px-8 pt-6 pb-4 flex flex-col gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5 sm:gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans flex items-center gap-3">
-                AI Resume Tailoring Studio
-                <span className="text-xs font-mono font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+                  AI Resume Tailoring Studio
+                </h1>
+                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
                   ATS Optimized & LaTeX
                 </span>
-              </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              </div>
+              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-normal leading-relaxed">
                 Tailor your master resume to match target job keywords with zero hallucination. Generates 100% compliant single-column ATS LaTeX and PDF.
               </p>
-              <div className="mt-3">
+              <div className="mt-2.5 sm:mt-3">
                 <AiQuotaBadge
                   label="tailors"
                   limit={resumeLimit}
@@ -243,15 +245,15 @@ function TailorWorkspaceForm({
               </div>
             </div>
 
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <Link href="/resume">
-                <Button variant="secondary" size="sm" className="gap-1.5 font-semibold text-xs">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <Link href="/resume" className="flex-1 sm:flex-initial">
+                <Button variant="secondary" size="sm" className="w-full gap-1.5 font-semibold text-xs h-9 justify-center">
                   <ArrowLeft className="h-3.5 w-3.5" />
                   <span>Master Resume</span>
                 </Button>
               </Link>
-              <Link href="/resume/versions">
-                <Button variant="secondary" size="sm" className="gap-1.5 font-semibold text-xs">
+              <Link href="/resume/versions" className="flex-1 sm:flex-initial">
+                <Button variant="secondary" size="sm" className="w-full gap-1.5 font-semibold text-xs h-9 justify-center">
                   <Layers className="h-3.5 w-3.5" />
                   <span>Saved Versions</span>
                 </Button>
@@ -260,8 +262,8 @@ function TailorWorkspaceForm({
           </div>
         </header>
 
-        {/* Content Canvas */}
-        <main className="flex-1 px-8 py-8 space-y-8 w-full max-w-7xl mx-auto">
+        {/* Content Canvas with Mobile Bottom Navigation Clearance */}
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 space-y-6 sm:space-y-8 w-full max-w-7xl mx-auto">
           {/* Step 1: Input Job Description & Target Role */}
           <TailoringPromptInput
             jobDescription={jobDescription}

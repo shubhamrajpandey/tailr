@@ -87,51 +87,51 @@ export function AtsTailoredResultStation({
   return (
     <div id="ats-tailored-station" className="space-y-6 pt-2 animate-in fade-in duration-300">
       {/* 1. ATS Score & Diagnostic Card */}
-      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-6 shadow-sm space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-neutral-200/80 dark:border-white/5">
-          <div className="flex items-center gap-4">
+      <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 shadow-sm space-y-5 sm:space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 pb-5 sm:pb-6 border-b border-neutral-200/80 dark:border-white/5">
+          <div className="flex items-center gap-3.5 sm:gap-4">
             {/* Visual ATS Score Gauge */}
             <div
               className={cn(
-                "h-20 w-20 rounded-2xl flex flex-col items-center justify-center border font-sans shrink-0 shadow-xs",
+                "h-16 w-16 sm:h-20 sm:w-20 rounded-xl sm:rounded-2xl flex flex-col items-center justify-center border font-sans shrink-0 shadow-xs",
                 scoreColor
               )}
             >
-              <span className="text-3xl font-extrabold tracking-tight leading-none">
+              <span className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-none">
                 {atsScore}
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider mt-1">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider mt-0.5 sm:mt-1">
                 ATS Score
               </span>
             </div>
 
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-xl font-extrabold text-neutral-950 dark:text-white">
+                <h3 className="text-base sm:text-xl font-extrabold text-neutral-950 dark:text-white">
                   ATS Match Assessment
                 </h3>
                 <Badge
                   variant={atsScore >= 90 ? "offer" : "applied"}
                   dot={true}
-                  className="font-bold text-xs"
+                  className="font-bold text-[11px] sm:text-xs"
                 >
                   {atsScore >= 90 ? "High Callback Probability" : "Good Keyword Coverage"}
                 </Badge>
               </div>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
+              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
                 Tailored for <strong className="text-neutral-900 dark:text-white">{positionTitle}</strong> at{" "}
                 <strong className="text-neutral-900 dark:text-white">{companyName}</strong>. Zero hallucination guarantee.
               </p>
             </div>
           </div>
 
-          {/* Quick Actions Header */}
-          <div className="flex items-center gap-2 flex-wrap">
+          {/* Quick Actions Header: Responsive Grid on Mobile */}
+          <div className="w-full lg:w-auto grid grid-cols-2 sm:flex sm:items-center gap-2">
             <Button
               type="button"
               variant="primary"
               onClick={handleDownloadPdf}
-              className="gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs cursor-pointer"
+              className="col-span-2 sm:col-span-1 h-10 sm:h-9 gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs cursor-pointer justify-center"
             >
               <Printer className="h-4 w-4" />
               <span>Download PDF</span>
@@ -141,18 +141,18 @@ export function AtsTailoredResultStation({
               type="button"
               variant="secondary"
               onClick={handleDownloadTex}
-              className="gap-1.5 cursor-pointer text-xs"
+              className="h-10 sm:h-9 gap-1.5 cursor-pointer text-xs justify-center"
               title="Download LaTeX .tex source file"
             >
               <Download className="h-3.5 w-3.5" />
-              <span>Download .tex</span>
+              <span>.tex Source</span>
             </Button>
 
             <Button
               type="button"
               variant="secondary"
               onClick={handleCopyLatex}
-              className="gap-1.5 cursor-pointer text-xs"
+              className="h-10 sm:h-9 gap-1.5 cursor-pointer text-xs justify-center"
             >
               {copiedLatex ? (
                 <Check className="h-3.5 w-3.5 text-emerald-600" />
@@ -168,7 +168,7 @@ export function AtsTailoredResultStation({
                 variant="secondary"
                 onClick={handleSave}
                 disabled={isSavingVersion}
-                className="gap-1.5 cursor-pointer text-xs"
+                className="col-span-2 sm:col-span-1 h-10 sm:h-9 gap-1.5 cursor-pointer text-xs justify-center"
               >
                 {savedSuccess ? (
                   <Check className="h-3.5 w-3.5 text-emerald-600" />
@@ -264,47 +264,47 @@ export function AtsTailoredResultStation({
       {/* 2. ATS Resume Preview / LaTeX Code Tabs */}
       <div className="rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
         {/* Tab Controls Bar */}
-        <div className="px-6 py-3.5 bg-neutral-50 dark:bg-white/[0.02] border-b border-neutral-200 dark:border-white/10 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2 p-1 bg-neutral-200/60 dark:bg-white/5 rounded-xl border border-neutral-200/80 dark:border-white/10">
+        <div className="px-4 sm:px-6 py-3 sm:py-3.5 bg-neutral-50 dark:bg-white/[0.02] border-b border-neutral-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+          <div className="w-full sm:w-auto flex items-center gap-1.5 p-1 bg-neutral-200/60 dark:bg-white/5 rounded-xl border border-neutral-200/80 dark:border-white/10">
             <button
               type="button"
               onClick={() => setViewMode("preview")}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                "flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
                 viewMode === "preview"
                   ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
               )}
             >
               <Eye className="h-3.5 w-3.5" />
-              <span>ATS Rendered View</span>
+              <span>ATS Rendered</span>
             </button>
 
             <button
               type="button"
               onClick={() => setViewMode("latex")}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                "flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer",
                 viewMode === "latex"
                   ? "bg-white dark:bg-neutral-900 text-neutral-950 dark:text-white shadow-xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
               )}
             >
               <Code2 className="h-3.5 w-3.5" />
-              <span>LaTeX Source Code (.tex)</span>
+              <span>LaTeX Source</span>
             </button>
           </div>
 
-          <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-            Standard Single-Column Article 11pt Layout
+          <div className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+            Single-Column ATS 11pt Layout
           </div>
         </div>
 
         {/* Tab Content */}
-        <div className="p-6 sm:p-10">
+        <div className="p-2 sm:p-6 lg:p-10">
           {viewMode === "preview" ? (
             /* Rendered Clean ATS Resume */
-            <div className="max-w-4xl mx-auto bg-white text-neutral-900 p-8 sm:p-12 rounded-xl shadow-xs border border-neutral-200 font-sans space-y-5">
+            <div className="max-w-4xl mx-auto bg-white text-neutral-900 p-4 sm:p-8 lg:p-12 rounded-xl shadow-xs border border-neutral-200 font-sans space-y-4 sm:space-y-5 overflow-x-auto">
               {/* Header */}
               <div className="text-center pb-4 border-b border-neutral-900 space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight uppercase text-neutral-950">
@@ -387,7 +387,7 @@ export function AtsTailoredResultStation({
                   <div className="space-y-3">
                     {tailoredData.workExperience.map((exp, i) => (
                       <div key={i} className="space-y-1">
-                        <div className="flex justify-between items-baseline text-xs">
+                        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2 text-xs">
                           <div>
                             <span className="font-bold text-neutral-950">{exp.role}</span>
                             <span className="text-neutral-500"> — </span>
@@ -396,7 +396,7 @@ export function AtsTailoredResultStation({
                               <span className="text-neutral-500 italic ml-1">({exp.location})</span>
                             )}
                           </div>
-                          <span className="italic text-neutral-600">
+                          <span className="italic text-neutral-600 text-[11px] sm:text-xs shrink-0">
                             {exp.startDate} – {exp.endDate}
                           </span>
                         </div>
@@ -421,13 +421,13 @@ export function AtsTailoredResultStation({
                   </h2>
                   <div className="space-y-2">
                     {tailoredData.education.map((edu, i) => (
-                      <div key={i} className="flex justify-between items-baseline text-xs">
+                      <div key={i} className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2 text-xs">
                         <div>
                           <strong className="font-bold text-neutral-950">{edu.institution}</strong>
                           {edu.location && <span className="text-neutral-500 italic ml-1">({edu.location})</span>}
                           <div className="italic text-neutral-700">{edu.degree}</div>
                         </div>
-                        <span className="italic text-neutral-600">
+                        <span className="italic text-neutral-600 text-[11px] sm:text-xs shrink-0">
                           {edu.startDate ? `${edu.startDate} – ` : ""}
                           {edu.endDate}
                         </span>
@@ -446,7 +446,7 @@ export function AtsTailoredResultStation({
                   <div className="space-y-3">
                     {tailoredData.projects.map((proj, i) => (
                       <div key={i} className="space-y-1">
-                        <div className="flex justify-between items-baseline text-xs">
+                        <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2 text-xs">
                           <div>
                             <span className="font-bold text-neutral-950">{proj.title}</span>
                             {proj.technologies && (
@@ -463,7 +463,7 @@ export function AtsTailoredResultStation({
                               </a>
                             )}
                           </div>
-                          <span className="text-neutral-500">{proj.year}</span>
+                          <span className="text-neutral-500 text-[11px] sm:text-xs shrink-0">{proj.year}</span>
                         </div>
                         <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-800">
                           {proj.bullets.map((b, bIdx) => (

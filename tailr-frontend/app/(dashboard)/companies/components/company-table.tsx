@@ -198,7 +198,7 @@ export function CompanyTable({
       >
         {viewMode === "table" && (
           <p className="md:hidden text-[11px] text-neutral-500 dark:text-neutral-400 py-2 px-3 border-b border-neutral-100 dark:border-white/5">
-            👉 Swipe horizontally to view all columns
+             Swipe horizontally to view all columns
           </p>
         )}
 

@@ -10,18 +10,18 @@ interface DocsProseProps {
 
 export function DocsProse({ subsections, className }: DocsProseProps) {
   return (
-    <div className={cn("space-y-6 pt-2 pb-4", className)}>
+    <div className={cn("space-y-5 sm:space-y-6 pt-1 sm:pt-2 pb-2 sm:pb-4", className)}>
       {subsections.map((sub, idx) => (
-        <div key={idx} className="space-y-4">
+        <div key={idx} className="space-y-3.5 sm:space-y-4">
           {sub.title && (
-            <h4 className="text-sm font-semibold text-neutral-900 dark:text-white">
+            <h4 className="text-xs sm:text-sm font-semibold text-neutral-900 dark:text-white">
               {sub.title}
             </h4>
           )}
 
           {/* Paragraphs */}
           {sub.paragraphs && sub.paragraphs.length > 0 && (
-            <div className="space-y-2.5">
+            <div className="space-y-2 sm:space-y-2.5">
               {sub.paragraphs.map((p, pIdx) => (
                 <p
                   key={pIdx}
@@ -35,16 +35,44 @@ export function DocsProse({ subsections, className }: DocsProseProps) {
 
           {/* Bullet Points */}
           {sub.bulletPoints && sub.bulletPoints.length > 0 && (
-            <div className="space-y-2 pl-1">
-              {sub.bulletPoints.map((bp, bpIdx) => (
-                <div
-                  key={bpIdx}
-                  className="flex items-start gap-2 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-normal"
-                >
-                  <CheckCircle className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
-                  <span>{bp}</span>
-                </div>
-              ))}
+            <div className="space-y-2 pl-0.5 sm:pl-1">
+              {sub.bulletPoints.map((bp, bpIdx) => {
+                const colonIndex = bp.indexOf(":");
+                const hasLabel = colonIndex > 0 && colonIndex < 35;
+                const label = hasLabel ? bp.slice(0, colonIndex) : null;
+                const rest = hasLabel ? bp.slice(colonIndex + 1).trim() : bp;
+                const isShortcut =
+                  label?.includes("Ctrl") ||
+                  label?.includes("Tab") ||
+                  label?.includes("Escape");
+
+                return (
+                  <div
+                    key={bpIdx}
+                    className="flex items-start gap-2 text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed"
+                  >
+                    <CheckCircle className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      {label ? (
+                        <>
+                          {isShortcut ? (
+                            <kbd className="inline-block px-1.5 py-0.5 mr-1.5 rounded-md bg-neutral-200 dark:bg-white/10 text-neutral-900 dark:text-neutral-100 font-mono text-[11px] font-semibold border border-neutral-300 dark:border-white/15 shadow-2xs">
+                              {label}
+                            </kbd>
+                          ) : (
+                            <strong className="font-semibold text-neutral-900 dark:text-white mr-1">
+                              {label}:
+                            </strong>
+                          )}
+                          <span>{rest}</span>
+                        </>
+                      ) : (
+                        <span>{bp}</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -52,7 +80,7 @@ export function DocsProse({ subsections, className }: DocsProseProps) {
           {sub.callout && (
             <div
               className={cn(
-                "p-3.5 rounded-xl border flex items-start gap-3 text-xs leading-relaxed mt-3",
+                "p-3 sm:p-4 rounded-xl border flex items-start gap-2.5 sm:gap-3 text-xs leading-relaxed mt-2.5 sm:mt-3 shadow-2xs",
                 sub.callout.type === "info" &&
                   "bg-indigo-50/70 dark:bg-indigo-950/20 border-indigo-200 dark:border-indigo-500/20 text-indigo-950 dark:text-indigo-200",
                 sub.callout.type === "warning" &&
@@ -72,7 +100,7 @@ export function DocsProse({ subsections, className }: DocsProseProps) {
                   <Lightbulb className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 )}
               </div>
-              <div>{sub.callout.text}</div>
+              <div className="flex-1">{sub.callout.text}</div>
             </div>
           )}
         </div>

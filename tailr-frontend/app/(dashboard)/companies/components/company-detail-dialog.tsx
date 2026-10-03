@@ -68,16 +68,16 @@ export function CompanyDetailDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         position="responsive"
-        className="w-full sm:max-w-xl max-h-[85vh] sm:max-h-[88vh] overflow-y-auto p-0 gap-0 border-t sm:border border-neutral-200 dark:border-white/10 shadow-2xl"
+        className="w-full sm:max-w-xl h-[85vh] sm:h-auto sm:max-h-[88vh] flex flex-col p-0 gap-0 overflow-hidden rounded-t-3xl sm:rounded-2xl rounded-b-none sm:rounded-b-2xl border-t sm:border border-neutral-200 dark:border-white/10 shadow-2xl"
       >
-        {/* Mobile Pull Handle Indicator */}
-        <div className="sm:hidden flex justify-center pt-2.5 pb-0.5 bg-neutral-50/70 dark:bg-white/[0.03]">
-          <div className="w-10 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700" />
+        {/* 1. Mobile Drag / Pull Handle Indicator */}
+        <div className="sm:hidden flex justify-center pt-3 pb-1 shrink-0 bg-neutral-50/80 dark:bg-white/[0.03]">
+          <div className="w-12 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
         </div>
 
-        {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/70 dark:bg-white/[0.03]">
-          <div className="flex items-start gap-3 sm:gap-4 pr-6 sm:pr-0">
+        {/* 2. Pinned Header */}
+        <div className="p-4 sm:p-5 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/80 dark:bg-white/[0.03] shrink-0">
+          <div className="flex items-start gap-3 sm:gap-4 pr-7 sm:pr-6">
             <div className="shrink-0 h-12 w-12 sm:h-14 sm:w-14 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 flex items-center justify-center overflow-hidden shadow-xs">
               {company.logoUrl ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -98,7 +98,7 @@ export function CompanyDetailDialog({
 
             <div className="space-y-1.5 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <DialogTitle className="text-xl font-bold text-neutral-950 dark:text-white tracking-tight">
+                <DialogTitle className="text-lg sm:text-xl font-bold text-neutral-950 dark:text-white tracking-tight">
                   {company.name}
                 </DialogTitle>
               </div>
@@ -114,12 +114,12 @@ export function CompanyDetailDialog({
 
                 <div className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
                   <MapPin className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
-                  <span>{company.location || "Kathmandu, Nepal"}</span>
+                  <span className="truncate">{company.location || "Kathmandu, Nepal"}</span>
                 </div>
               </div>
 
               {/* Quick Link Buttons */}
-              <div className="flex items-center gap-2 pt-1.5 flex-wrap">
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
                 {websiteDisplay && (
                   <a
                     href={websiteDisplay.href}
@@ -153,8 +153,8 @@ export function CompanyDetailDialog({
           </div>
         </div>
 
-        {/* Body Content */}
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+        {/* 3. Scrollable Body Content */}
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1 overscroll-contain">
           {/* Tech Stack Section */}
           <div className="space-y-2.5">
             <h4 className="text-xs font-bold text-neutral-900 dark:text-neutral-200 uppercase tracking-wider flex items-center gap-2">
@@ -241,34 +241,34 @@ export function CompanyDetailDialog({
               </p>
             )}
           </div>
+        </div>
 
-          {/* Actions */}
-          <div className="pt-4 border-t border-neutral-200 dark:border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+        {/* 4. Sticky Bottom Action Footer */}
+        <div className="p-4 sm:p-5 border-t border-neutral-200 dark:border-white/10 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-md shrink-0 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <Button
+            type="button"
+            onClick={onClose}
+            variant="secondary"
+            size="sm"
+            className="w-full sm:w-auto font-medium"
+          >
+            Close
+          </Button>
+
+          <Link
+            href={`/resume?company=${encodeURIComponent(company.name)}`}
+            onClick={onClose}
+            className="w-full sm:w-auto"
+          >
             <Button
-              type="button"
-              onClick={onClose}
-              variant="secondary"
+              variant="primary"
               size="sm"
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto gap-2 shadow-sm shadow-indigo-500/20 font-semibold"
             >
-              Close
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Tailor Resume for this Company</span>
             </Button>
-
-            <Link
-              href={`/resume?company=${encodeURIComponent(company.name)}`}
-              onClick={onClose}
-              className="w-full sm:w-auto"
-            >
-              <Button
-                variant="primary"
-                size="sm"
-                className="w-full sm:w-auto gap-2 shadow-sm shadow-indigo-500/20"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Tailor Resume for this Company</span>
-              </Button>
-            </Link>
-          </div>
+          </Link>
         </div>
       </DialogContent>
     </Dialog>

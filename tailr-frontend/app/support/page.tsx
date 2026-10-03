@@ -1,53 +1,56 @@
 "use client";
 
 import * as React from "react";
-import { SupportNavbar } from "./components/support-navbar";
-import { SupportHero } from "./components/support-hero";
-import { SupportChannelsList } from "./components/support-channels-list";
-import { SupportContactForm } from "./components/support-contact-form";
-import { SupportFaqSection } from "./components/support-faq-section";
-import { SupportFooter } from "./components/support-footer";
+import Link from "next/link";
+import { Home, Headphones } from "lucide-react";
+import { SupportDialog } from "@/shared/components/ui/support-dialog";
+import { Button } from "@/shared/components/ui/button";
 
-export default function PublicSupportPage() {
-  const [selectedTopic, setSelectedTopic] = React.useState<string>("ACCOUNT_ACCESS");
-
-  const handleSelectTopic = (category: string) => {
-    setSelectedTopic(category);
-    const formElement = document.getElementById("support-form-container");
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
+export default function SupportPage() {
+  const [open, setOpen] = React.useState(true);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Top Navbar */}
-      <SupportNavbar />
+    <div className="min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 flex flex-col items-center justify-center p-4 font-sans">
+      <SupportDialog
+        open={open}
+        onOpenChange={(newOpen) => {
+          setOpen(newOpen);
+        }}
+      />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-12">
-        {/* Hero Section */}
-        <SupportHero onSelectTopic={handleSelectTopic} />
-
-        {/* Two-Column Grid: Channels on Left (~40%), Ticket Form on Right (~60%) */}
-        <div id="support-form-container" className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Left Column: Direct Channels & Status */}
-          <div className="lg:col-span-5">
-            <SupportChannelsList />
-          </div>
-
-          {/* Right Column: Interactive Support Ticket Form */}
-          <div className="lg:col-span-7">
-            <SupportContactForm key={selectedTopic} initialCategory={selectedTopic} />
-          </div>
+      <div className="text-center space-y-4 max-w-sm p-6 rounded-2xl border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-[#111216]/70 backdrop-blur-md shadow-lg">
+        <div className="mx-auto w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200/60 dark:border-indigo-500/20 flex items-center justify-center shadow-xs">
+          <Headphones className="h-6 w-6" />
         </div>
 
-        {/* FAQs Section */}
-        <SupportFaqSection />
-      </main>
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-950 dark:text-white">
+            Tailr Direct Support
+          </h1>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+            Reach out directly via WhatsApp (+977 9740858524) or email (shubhamrajpandey88@gmail.com).
+          </p>
+        </div>
 
-      {/* Public Footer */}
-      <SupportFooter />
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2">
+          {!open && (
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setOpen(true)}
+              className="w-full sm:w-auto text-xs h-9 cursor-pointer"
+            >
+              Open Support Dialog
+            </Button>
+          )}
+          <Link href="/dashboard" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs h-9 gap-1.5 cursor-pointer">
+              <Home className="h-3.5 w-3.5" />
+              <span>Back to Dashboard</span>
+            </Button>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

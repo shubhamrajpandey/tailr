@@ -395,7 +395,7 @@ export function ApplicationsListTable({
       <div className={cn("overflow-x-auto", viewMode === "table" ? "block" : "hidden sm:block")}>
         {viewMode === "table" && (
           <p className="sm:hidden text-[11px] text-neutral-500 dark:text-neutral-400 pt-2 pb-1.5 px-0.5">
-            👉 Swipe horizontally to view all columns
+           Swipe horizontally to view all columns
           </p>
         )}
         <Table>

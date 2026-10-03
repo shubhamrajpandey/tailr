@@ -303,9 +303,9 @@ export default function CoverLettersPage() {
                     {coverLetters.length} Saved
                   </Badge>
                 )}
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+                {/* <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
                   Gemini Flash AI Engine
-                </span>
+                </span> */}
               </div>
               <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                 Targeted, zero-hallucination cover letters tailored from your master resume with instant PDF and Word export.

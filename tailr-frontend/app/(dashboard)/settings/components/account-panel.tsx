@@ -13,6 +13,8 @@ import {
   ShieldCheck,
   ArrowRight,
   Loader2,
+  Calendar,
+  Lock,
 } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
@@ -46,6 +48,12 @@ export function AccountPanel() {
   const initialName = authUser?.fullName || settings.account.name;
   const initialEmail = authUser?.email || settings.account.email;
 
+  const initials = React.useMemo(() => {
+    const name = initialName || "User";
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }, [initialName]);
 
   const [successFeedback, setSuccessFeedback] = React.useState<string | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
@@ -85,7 +93,6 @@ export function AccountPanel() {
       });
     }
   }, [authUser?.fullName, authUser?.email, settings.account.name, settings.account.email, reset]);
-
 
   const onSave = async (data: AccountFormData) => {
     setErrorMessage(null);
@@ -185,7 +192,35 @@ export function AccountPanel() {
         </div>
       )}
 
-      {/* Personal Information Form */}
+      {/* 1. Identity Profile Card */}
+      <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/60 p-4 sm:p-5 shadow-2xs backdrop-blur-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5 min-w-0">
+          <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white font-bold text-lg sm:text-xl flex items-center justify-center shadow-sm shrink-0 select-none">
+            {initials}
+          </div>
+          <div className="min-w-0 flex-1 space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-base sm:text-lg font-bold text-neutral-950 dark:text-white truncate">
+                {initialName || "Tailr User"}
+              </h2>
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                <ShieldCheck className="h-3 w-3" />
+                Verified
+              </span>
+            </div>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+              {initialEmail}
+            </p>
+            <div className="flex items-center gap-2 text-[11px] text-neutral-400 dark:text-neutral-500 pt-0.5">
+              <span>Candidate Profile</span>
+              <span>•</span>
+              <span>Tailr Cloud Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Personal Information Form */}
       <SettingsSection
         title="Personal Information"
         description="Update your display name and registered email address."
@@ -228,7 +263,7 @@ export function AccountPanel() {
                   Verified
                 </span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   id="email"
                   type="email"
@@ -236,13 +271,13 @@ export function AccountPanel() {
                   placeholder="name@example.com"
                   icon={<Mail className="h-4 w-4" />}
                   {...register("email")}
-                  className="bg-neutral-50 dark:bg-white/[0.02] cursor-not-allowed opacity-80"
+                  className="bg-neutral-50 dark:bg-white/[0.02] cursor-not-allowed opacity-80 flex-1"
                 />
                 <Button
                   type="button"
                   variant="outline"
                   onClick={handleStartEmailChange}
-                  className="shrink-0 text-xs font-semibold"
+                  className="w-full sm:w-auto shrink-0 text-xs font-semibold h-10 sm:h-9 justify-center"
                 >
                   Change Email
                 </Button>
@@ -263,11 +298,32 @@ export function AccountPanel() {
         </form>
       </SettingsSection>
 
-      {/* Change Email Dialog via OTP */}
+      {/* 3. Account Security & Verification Summary Card */}
+      <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/40 p-4 sm:p-5 shadow-2xs backdrop-blur-xs space-y-3">
+        <div className="flex items-center gap-2">
+          <Lock className="h-4 w-4 text-indigo-500" />
+          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-800 dark:text-neutral-200">
+            Account Security & Credential Protection
+          </h3>
+        </div>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+          Your credentials and master resumes are encrypted in transit and at rest. To update your password, passkeys, or multi-factor options, navigate to the <a href="/settings/security" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Security Settings</a>.
+        </p>
+      </div>
+
+      {/* Change Email Dialog via OTP (Native Bottom Sheet on Mobile) */}
       <Dialog open={isEmailModalOpen} onOpenChange={setIsEmailModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          position="responsive"
+          className="w-full sm:max-w-md p-0 gap-0 overflow-hidden rounded-t-3xl sm:rounded-2xl"
+        >
+          {/* Mobile Pull Handle Indicator */}
+          <div className="sm:hidden flex justify-center pt-3 pb-1 bg-neutral-50/80 dark:bg-white/[0.03]">
+            <div className="w-12 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-600" />
+          </div>
+
           {emailStep === "enter-email" ? (
-            <form onSubmit={handleRequestOtp} className="space-y-4">
+            <form onSubmit={handleRequestOtp} className="p-4 sm:p-6 space-y-4">
               <DialogHeader>
                 <DialogTitle>Change Account Email</DialogTitle>
                 <DialogDescription>
@@ -298,11 +354,12 @@ export function AccountPanel() {
                 )}
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2.5">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setIsEmailModalOpen(false)}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
@@ -310,7 +367,7 @@ export function AccountPanel() {
                   type="submit"
                   variant="primary"
                   disabled={isSendingOtp}
-                  className="gap-2"
+                  className="w-full sm:w-auto gap-2"
                 >
                   {isSendingOtp ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -322,7 +379,7 @@ export function AccountPanel() {
               </DialogFooter>
             </form>
           ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
+            <form onSubmit={handleVerifyOtp} className="p-4 sm:p-6 space-y-4">
               <DialogHeader>
                 <DialogTitle>Verify 6-Digit OTP</DialogTitle>
                 <DialogDescription>
@@ -368,11 +425,12 @@ export function AccountPanel() {
                 </div>
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2.5">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setEmailStep("enter-email")}
+                  className="w-full sm:w-auto"
                 >
                   Back
                 </Button>
@@ -380,7 +438,7 @@ export function AccountPanel() {
                   type="submit"
                   variant="primary"
                   disabled={isVerifyingOtp || otpCode.length !== 6}
-                  className="gap-2"
+                  className="w-full sm:w-auto gap-2"
                 >
                   {isVerifyingOtp ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

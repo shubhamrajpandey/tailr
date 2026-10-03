@@ -2,6 +2,7 @@ import * as React from "react";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { AuthTopNav } from "../login/components/auth-top-nav";
+import { AuthFooter } from "../login/components/auth-footer";
 import { SignupFlowContainer } from "./components/signup-flow-container";
 import { AuthTestimonialPreview } from "../login/components/auth-testimonial-preview";
 
@@ -25,19 +26,8 @@ export default function SignupPage() {
             <SignupFlowContainer />
           </div>
 
-          {/* Bottom Footer with required branding */}
-          <footer className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400 pt-4 border-t border-transparent sm:border-neutral-100 dark:sm:border-white/[0.04]">
-            <span>© 2026 Shubham Raj Pandey. All rights reserved.</span>
-            <div className="flex items-center gap-1">
-              <span>Need help?</span>
-              <Link
-                href="/support"
-                className="font-semibold text-neutral-900 dark:text-white hover:underline transition-colors"
-              >
-                Contact Support
-              </Link>
-            </div>
-          </footer>
+          {/* Bottom Footer with Interactive Support Dialog */}
+          <AuthFooter />
         </div>
 
         {/* Right Column: Floating Mockup + Testimonial Quote */}

@@ -270,7 +270,7 @@ export function OtpVerificationScreen({
           id="otp-verify-submit"
           type="submit"
           disabled={!isComplete || isVerifying}
-          className="w-full h-11 rounded-xl font-semibold text-sm bg-neutral-950 hover:bg-neutral-900 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 shadow-sm transition-all duration-150 cursor-pointer active:scale-[0.99] disabled:opacity-50"
+          className="w-full h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/25 border border-indigo-500/30 transition-all duration-150 cursor-pointer active:scale-[0.99] disabled:opacity-50"
         >
           {isVerifying ? (
             <span className="flex items-center gap-2">

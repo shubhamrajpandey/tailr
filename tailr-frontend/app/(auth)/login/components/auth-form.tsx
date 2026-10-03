@@ -191,7 +191,7 @@ export function AuthForm() {
           id="login-submit"
           type="submit"
           disabled={isLoading}
-          className="w-full h-11 rounded-xl font-semibold text-sm bg-neutral-950 hover:bg-neutral-900 text-white dark:bg-white dark:hover:bg-neutral-100 dark:text-neutral-950 shadow-sm transition-all duration-150 cursor-pointer active:scale-[0.99] mt-2"
+          className="w-full h-11 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/25 border border-indigo-500/30 transition-all duration-150 cursor-pointer active:scale-[0.99] mt-2"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
@@ -238,9 +238,12 @@ export function AuthForm() {
         </p>
       </div>
 
-      {/* Forgot Password Dialog */}
+      {/* Forgot Password Dialog (Bottom Drawer on Mobile, Centered Modal on Desktop) */}
       <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent position="responsive" className="sm:max-w-md p-5 sm:p-6">
+          {/* Mobile Drag/Pull Indicator Handle */}
+          <div className="sm:hidden w-10 h-1 bg-neutral-300 dark:bg-neutral-700 rounded-full mx-auto mb-3.5" />
+
           <DialogHeader>
             <DialogTitle>Reset Your Password</DialogTitle>
             <DialogDescription>
@@ -261,9 +264,8 @@ export function AuthForm() {
               </p>
               <Button
                 type="button"
-                variant="secondary"
                 onClick={() => setForgotPasswordOpen(false)}
-                className="mt-2 text-xs h-9 rounded-lg"
+                className="mt-2 text-xs h-10 sm:h-9 rounded-lg w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold cursor-pointer shadow-xs shadow-indigo-500/20"
               >
                 Done
               </Button>
@@ -287,22 +289,22 @@ export function AuthForm() {
                 />
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-2 sm:pt-1">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => setForgotPasswordOpen(false)}
-                  className="text-xs"
+                  className="w-full sm:w-auto text-xs h-10 sm:h-9"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isForgotLoading || !forgotEmail}
-                  className="text-xs"
+                  className="w-full sm:w-auto text-xs h-10 sm:h-9 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs shadow-indigo-500/20 border border-indigo-500/30 font-semibold cursor-pointer"
                 >
                   {isForgotLoading ? (
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex items-center justify-center gap-1.5">
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       <span>Sending...</span>
                     </span>

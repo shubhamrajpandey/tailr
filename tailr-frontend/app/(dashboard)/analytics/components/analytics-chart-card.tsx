@@ -32,12 +32,12 @@ export function AnalyticsChartCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/15 shadow-2xs flex flex-col justify-between",
+        "rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/15 shadow-2xs flex flex-col justify-between",
         className
       )}
     >
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-100 dark:border-white/5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 border-b border-neutral-100 dark:border-white/5">
         <div className="flex items-start gap-2.5">
           {Icon && (
             <div className="p-2 rounded-lg text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 shrink-0 mt-0.5">
@@ -56,7 +56,7 @@ export function AnalyticsChartCard({
           </div>
         </div>
 
-        {action && <div className="shrink-0">{action}</div>}
+        {action && <div className="shrink-0 self-start sm:self-auto">{action}</div>}
       </div>
 
       {/* Main Content or Empty State */}

@@ -52,28 +52,28 @@ export function OutcomeBreakdownCard({
         </div>
 
         {/* Breakdown List */}
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-2 pt-1">
           {items.map((item, idx) => (
             <div
               key={item.status}
-              className="flex items-center justify-between p-2.5 rounded-xl border border-neutral-100 dark:border-white/5 bg-neutral-50/50 dark:bg-[#11131c] hover:bg-neutral-100/60 dark:hover:bg-[#151824] transition-colors"
+              className="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-neutral-100 dark:border-white/5 bg-neutral-50/50 dark:bg-[#11131c] hover:bg-neutral-100/60 dark:hover:bg-[#151824] transition-colors"
             >
-              <div className="flex items-center gap-2.5">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300">
+              <div className="flex items-center gap-2 min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border border-indigo-500/25 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 truncate">
                   <span
                     className={`h-2 w-2 rounded-full inline-block shrink-0 ${
                       segmentGradients[idx % segmentGradients.length]
                     }`}
                   />
-                  <span>{item.label}</span>
+                  <span className="truncate">{item.label}</span>
                 </span>
               </div>
 
-              <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-2.5 text-xs shrink-0">
                 <span className="font-semibold text-neutral-900 dark:text-neutral-100">
                   {item.count} {item.count === 1 ? "role" : "roles"}
                 </span>
-                <span className="font-mono font-bold text-neutral-500 dark:text-neutral-400 w-10 text-right">
+                <span className="font-mono font-bold text-neutral-500 dark:text-neutral-400 w-9 text-right">
                   {item.percentage}%
                 </span>
               </div>

@@ -66,14 +66,14 @@ export function TailoringPromptInput({
   };
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-5 shadow-xs space-y-4">
+    <div className="rounded-2xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-200 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 shrink-0">
             <Sparkles className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-base font-bold text-neutral-950 dark:text-white">
+            <h2 className="text-sm sm:text-base font-bold text-neutral-950 dark:text-white">
               Target Job & Requirements
             </h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -83,14 +83,14 @@ export function TailoringPromptInput({
         </div>
 
         {applications.length > 0 && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+            <span className="text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium shrink-0">
               Link Application:
             </span>
             <select
               value={applicationId}
               onChange={handleAppChange}
-              className="h-8 px-2.5 text-xs rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-indigo-500"
+              className="h-9 sm:h-8 px-2.5 text-xs rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 focus:outline-none focus:border-indigo-500 w-full sm:w-auto"
             >
               <option value="">-- Or enter custom job --</option>
               {applications.map((app) => (
@@ -187,18 +187,17 @@ export function TailoringPromptInput({
           type="button"
           disabled={isLoading || jobDescription.trim().length < 20}
           onClick={onSubmit}
-          variant="primary"
-          className="gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-sm border-0"
+          className="w-full sm:w-auto h-11 sm:h-10 px-5 gap-2 font-bold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md shadow-indigo-500/25 border border-indigo-500/30 cursor-pointer active:scale-[0.99] justify-center"
         >
           {isLoading ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              Tailoring Resume...
+              <span>Tailoring Resume...</span>
             </>
           ) : (
             <>
               <Sparkles className="h-4 w-4" />
-              Tailor Resume
+              <span>Tailor Resume</span>
             </>
           )}
         </Button>

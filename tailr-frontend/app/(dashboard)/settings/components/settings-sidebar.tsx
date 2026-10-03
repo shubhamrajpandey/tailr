@@ -126,11 +126,11 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
     <nav
       aria-label="Settings categories"
       className={cn(
-        "shrink-0 w-full px-6 sm:px-8 border-b border-neutral-200 dark:border-white/[0.08] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md select-none",
+        "shrink-0 w-full px-4 sm:px-6 lg:px-8 border-b border-neutral-200 dark:border-white/[0.08] bg-white/70 dark:bg-[#0c0d10]/70 backdrop-blur-md select-none",
         className
       )}
     >
-      <div className="flex items-center gap-2 overflow-x-auto py-2.5 scrollbar-none">
+      <div className="flex items-center gap-1.5 overflow-x-auto py-2.5 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
         {allItems.map((item) => {
           const Icon = item.icon;
           const isActive =
