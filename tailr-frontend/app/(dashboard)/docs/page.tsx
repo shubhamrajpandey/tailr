@@ -13,10 +13,7 @@ import {
   Keyboard,
   ChevronsUpDown,
   X,
-  Sparkles,
 } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import {
   Accordion,
   AccordionItem,
@@ -87,16 +84,8 @@ export default function DocsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Left Navigation Sidebar */}
-      <Sidebar />
-
-      {/* Main Content Viewport */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Fixed Top Navigation Bar */}
-        <TopBar />
-
-        {/* Header Bar */}
+    <>
+      {/* Header Bar */}
         <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
@@ -324,10 +313,9 @@ export default function DocsPage() {
             </div>
           </div>
         </main>
-      </div>
 
-      {/* Floating Scroll to Top button with mobile clearance */}
-      <ScrollToTop threshold={200} />
-    </div>
+        {/* Floating Scroll to Top button with mobile clearance */}
+        <ScrollToTop threshold={200} />
+    </>
   );
 }

@@ -4,8 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Layers, ArrowLeft, Loader2, AlertCircle } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { useResumeVersions } from "@/shared/hooks/use-resume-versions";
@@ -203,22 +201,8 @@ function TailorWorkspaceForm({
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar Navigation */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Fixed Top Navigation Bar */}
-        <TopBar
-          breadcrumbs={[
-            { label: "Overview", href: "/dashboard" },
-            { label: "Resumes", href: "/resume" },
-            { label: "AI Tailoring Studio" },
-          ]}
-        />
-
-        {/* Header Bar */}
+    <>
+      {/* Header Bar */}
         <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5 sm:gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
@@ -312,9 +296,8 @@ function TailorWorkspaceForm({
             />
           )}
         </main>
-      </div>
 
-      {/* Floating Scroll To Top */}
+        {/* Floating Scroll To Top */}
       <ScrollToTop threshold={200} />
 
       {/* AI Rate Limit & Daily Quota Modal */}
@@ -327,7 +310,7 @@ function TailorWorkspaceForm({
         resetFormatted={resumeResetFormatted}
         customMessage={quotaDialogMsg}
       />
-    </div>
+    </>
   );
 }
 
@@ -346,7 +329,7 @@ export default function ResumeTailorPage() {
 
   if (!masterLoaded || !appsLoaded) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center">
+      <div className="flex p-16 items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
           <p className="text-xs font-medium text-neutral-500">

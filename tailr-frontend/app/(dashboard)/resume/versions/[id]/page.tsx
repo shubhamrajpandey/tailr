@@ -14,8 +14,6 @@ import {
   GitCommit,
   FileText,
 } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Input } from "@/shared/components/ui/input";
@@ -66,7 +64,7 @@ export default function ResumeVersionDetailPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
+      <div className="flex p-12 items-center justify-center text-sm text-neutral-400">
         Loading Version...
       </div>
     );
@@ -74,44 +72,22 @@ export default function ResumeVersionDetailPage() {
 
   if (!version) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans">
-        <Sidebar />
-        <div className="flex-1 p-12 text-center space-y-4">
-          <p className="text-sm text-neutral-500">Version not found.</p>
-          <Link href="/resume/versions">
-            <Button variant="secondary" size="sm" className="gap-1.5">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Versions
-            </Button>
-          </Link>
-        </div>
+      <div className="flex-1 p-12 text-center space-y-4">
+        <p className="text-sm text-neutral-500">Version not found.</p>
+        <Link href="/resume/versions">
+          <Button variant="secondary" size="sm" className="gap-1.5">
+            <ArrowLeft className="h-4 w-4" />
+            Back to Versions
+          </Button>
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar Navigation */}
-      <div className="print:hidden">
-        <Sidebar />
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        {/* Fixed Top Navigation Bar */}
-        <div className="print:hidden">
-          <TopBar
-            breadcrumbs={[
-              { label: "Overview", href: "/dashboard" },
-              { label: "Resume", href: "/resume" },
-              { label: "Saved Versions", href: "/resume/versions" },
-              { label: version.label },
-            ]}
-          />
-        </div>
-
-        {/* Header Bar (Hidden during Print) */}
-        <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3">
+    <>
+      {/* Header Bar (Hidden during Print) */}
+      <header className="print:hidden px-8 pt-7 pb-6 flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="min-w-0">
               {isEditingLabel ? (
@@ -239,7 +215,6 @@ export default function ResumeVersionDetailPage() {
             </div>
           )}
         </main>
-      </div>
-    </div>
+    </>
   );
 }

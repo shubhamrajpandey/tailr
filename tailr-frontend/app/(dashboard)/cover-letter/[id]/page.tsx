@@ -17,8 +17,6 @@ import {
   User,
   FileText,
 } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { useCoverLetters } from "@/shared/hooks/use-cover-letters";
 import { useMasterResume } from "@/shared/hooks/use-master-resume";
 import { Button } from "@/shared/components/ui/button";
@@ -58,17 +56,14 @@ export default function CoverLetterDetailPage() {
 
   if (!coverLetter) {
     return (
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans">
-        <Sidebar />
-        <div className="flex-1 p-12 text-center space-y-4">
-          <p className="text-sm text-neutral-500">Cover letter not found.</p>
-          <Link href="/cover-letter">
-            <Button variant="secondary" size="sm" className="gap-1.5">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Cover Letters</span>
-            </Button>
-          </Link>
-        </div>
+      <div className="flex-1 p-12 text-center space-y-4">
+        <p className="text-sm text-neutral-500">Cover letter not found.</p>
+        <Link href="/cover-letter">
+          <Button variant="secondary" size="sm" className="gap-1.5">
+            <ArrowLeft className="h-4 w-4" />
+            <span>Back to Cover Letters</span>
+          </Button>
+        </Link>
       </div>
     );
   }
@@ -140,27 +135,9 @@ export default function CoverLetterDetailPage() {
   );
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar (hidden when printing) */}
-      <div className="print:hidden">
-        <Sidebar />
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
-        {/* Fixed Top Navigation Bar */}
-        <div className="print:hidden">
-          <TopBar
-            breadcrumbs={[
-              { label: "Overview", href: "/dashboard" },
-              { label: "Cover Letters", href: "/cover-letter" },
-              { label: coverLetter.companyName },
-            ]}
-          />
-        </div>
-
-        {/* Header Bar (hidden when printing) */}
-        <header className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-4 sm:pb-6 flex flex-col gap-3 print:hidden border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
+    <>
+      {/* Header Bar (hidden when printing) */}
+      <header className="px-4 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-4 sm:pb-6 flex flex-col gap-3 print:hidden border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
               <div className="flex items-center gap-2 flex-wrap">
@@ -367,10 +344,9 @@ export default function CoverLetterDetailPage() {
             />
           )}
         </main>
-      </div>
 
-      {/* Scroll to Top floating action button */}
-      <ScrollToTop threshold={200} />
-    </div>
+        {/* Scroll to Top floating action button */}
+        <ScrollToTop threshold={200} />
+    </>
   );
 }

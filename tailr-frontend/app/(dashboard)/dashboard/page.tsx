@@ -10,8 +10,6 @@ import {
   BarChart2,
   History,
 } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { StatCard } from "./components/stat-card";
 import { ApplicationVolumeChart } from "./components/application-volume-chart";
 import { ActivityFeed } from "./components/activity-feed";
@@ -36,17 +34,7 @@ export default function DashboardPage() {
   const firstName = user?.fullName?.split(" ")[0] || "there";
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Left Sidebar Navigation (hidden on mobile/tablet, shown on desktop) */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
-        {/* Fixed Top Navigation Bar */}
-        <TopBar />
-
-        {/* Dashboard Canvas with Mobile-Friendly Responsive Padding & Bottom Bar Clearance */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-28 sm:pb-12 space-y-5 sm:space-y-6">
+    <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-28 sm:pb-12 space-y-5 sm:space-y-6">
           {/* Greeting Header & Quick Actions */}
           <div className="pt-4 sm:pt-6 pb-1 space-y-3 sm:space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -188,7 +176,5 @@ export default function DashboardPage() {
             />
           </div>
         </main>
-      </div>
-    </div>
   );
 }

@@ -11,8 +11,6 @@ import {
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { StatCard } from "@/shared/components/ui/stat-card";
 import { Button } from "@/shared/components/ui/button";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
@@ -36,17 +34,9 @@ function AnalyticsDashboard() {
     responseAnalytics.interviewRatePercent ?? (interviewStage?.percentOfPrevious ?? 0);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar Navigation */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
-        {/* Fixed Top Navigation Bar */}
-        <TopBar />
-
-        {/* Page Top Header Bar */}
-        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5">
+    <>
+      {/* Page Top Header Bar */}
+      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2.5">
@@ -183,11 +173,10 @@ function AnalyticsDashboard() {
             </div>
           </section>
         </main>
-      </div>
 
-      {/* Floating Scroll to Top button */}
-      <ScrollToTop threshold={200} />
-    </div>
+        {/* Floating Scroll to Top button */}
+        <ScrollToTop threshold={200} />
+    </>
   );
 }
 
@@ -195,7 +184,7 @@ export default function AnalyticsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex h-screen items-center justify-center bg-slate-50 dark:bg-neutral-950">
+        <div className="flex p-12 items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
         </div>
       }

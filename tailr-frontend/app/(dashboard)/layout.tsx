@@ -1,13 +1,33 @@
 import { ProtectedRoute } from "@/shared/components/layout/protected-route";
+import { Sidebar } from "@/shared/components/layout/sidebar";
+import { TopBar } from "@/shared/components/layout/top-bar";
 import type { ReactNode } from "react";
 
 /**
  * Layout for all dashboard routes — protected behind authentication.
  *
- * ProtectedRoute reads isAuthenticated from Redux. On app boot it waits
- * for the silent /auth/refresh query (AuthProvider) to resolve before
- * deciding whether to render children or redirect to /login.
+ * Persists the Sidebar and TopBar navigation shell across route transitions
+ * so they mount once and don't flicker or re-initialize on page changes.
  */
 export default function DashboardLayout({ children }: { children: ReactNode }) {
-  return <ProtectedRoute>{children}</ProtectedRoute>;
+  return (
+    <ProtectedRoute>
+      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+        {/* Left Sidebar Navigation */}
+        <div className="print:hidden">
+          <Sidebar />
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
+          {/* Fixed Top Navigation Bar */}
+          <div className="print:hidden">
+            <TopBar />
+          </div>
+
+          {children}
+        </div>
+      </div>
+    </ProtectedRoute>
+  );
 }

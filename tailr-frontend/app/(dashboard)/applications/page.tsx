@@ -4,8 +4,6 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { ApplicationsListTable } from "./components/applications-list-table";
 import { useApplications } from "@/shared/hooks/use-applications";
 import { Button } from "@/shared/components/ui/button";
@@ -92,56 +90,47 @@ function ApplicationsView() {
         };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar Navigation */}
-      <Sidebar />
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
-        {/* Fixed Top Navigation Bar */}
-        <TopBar />
-
-        {/* Page Top Header Bar */}
-        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                {statusMeta.title}
-              </h1>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 sm:mt-1.5 font-medium">
-                {statusMeta.desc}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link href="/applications/new" className="w-full sm:w-auto">
-                <Button variant="primary" className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10">
-                  <Plus className="h-4 w-4" />
-                  New Application
-                </Button>
-              </Link>
-            </div>
+    <>
+      {/* Page Top Header Bar */}
+      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+              {statusMeta.title}
+            </h1>
+            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 sm:mt-1.5 font-medium">
+              {statusMeta.desc}
+            </p>
           </div>
-        </header>
 
-        {/* Content Area */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-10 space-y-6">
-          {isLoaded ? (
-            <ApplicationsListTable
-              applications={applications}
-              currentStatusFilter={currentStatusFilter}
-              onStatusFilterChange={handleStatusFilterChange}
-              onStatusChange={updateStatus}
-              onDelete={deleteApplication}
-            />
-          ) : (
-            <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-8 sm:p-12 text-center text-sm text-neutral-400 shadow-xs">
-              Loading applications...
-            </div>
-          )}
-        </main>
-      </div>
-    </div>
+          <div className="flex items-center gap-3">
+            <Link href="/applications/new" className="w-full sm:w-auto">
+              <Button variant="primary" className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10">
+                <Plus className="h-4 w-4" />
+                New Application
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Content Area */}
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-10 space-y-6">
+        {isLoaded ? (
+          <ApplicationsListTable
+            applications={applications}
+            currentStatusFilter={currentStatusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
+            onStatusChange={updateStatus}
+            onDelete={deleteApplication}
+          />
+        ) : (
+          <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-8 sm:p-12 text-center text-sm text-neutral-400 shadow-xs">
+            Loading applications...
+          </div>
+        )}
+      </main>
+    </>
   );
 }
 

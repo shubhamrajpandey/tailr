@@ -1,8 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Sidebar } from "@/shared/components/layout/sidebar";
-import { TopBar } from "@/shared/components/layout/top-bar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { useCompaniesQuery, flattenCompanyPages } from "@/shared/hooks/use-companies";
@@ -90,15 +88,8 @@ export default function CompaniesPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
-        <TopBar />
-
-        {/* Page Header */}
+    <>
+      {/* Page Header */}
         <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -292,10 +283,9 @@ export default function CompaniesPage() {
           isOpen={isDetailOpen}
           onClose={handleCloseModal}
         />
-      </div>
 
-      {/* Floating Scroll to Top button */}
-      <ScrollToTop threshold={200} />
-    </div>
+        {/* Floating Scroll to Top button */}
+        <ScrollToTop threshold={200} />
+    </>
   );
 }
