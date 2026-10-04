@@ -13,7 +13,7 @@ import {
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="py-14 sm:py-28 relative">
+    <section id="features" className="pt-2 sm:pt-16 pb-14 sm:pb-28 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">

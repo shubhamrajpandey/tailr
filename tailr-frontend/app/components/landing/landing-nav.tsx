@@ -41,16 +41,16 @@ export function LandingNav() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
         {/* Brand Logo with public/main_logo.png */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" className="flex items-center gap-2.5 group">
           <Image
             src="/main_logo.png"
             alt="Tailr Logo"
-            width={32}
-            height={32}
-            className="sm:w-9 sm:h-9 object-contain group-hover:scale-105 transition-transform"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
             priority
           />
-          <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-neutral-950 dark:text-white font-sans">
+          <span className="font-extrabold text-2xl tracking-tight text-neutral-950 dark:text-white font-sans">
             Tailr
           </span>
         </Link>
