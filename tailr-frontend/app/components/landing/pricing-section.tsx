@@ -66,28 +66,28 @@ export function PricingSection() {
   ];
 
   return (
-    <section id="pricing" className="py-20 sm:py-28 relative">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+    <section id="pricing" className="py-14 sm:py-28 relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
           <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">
             Transparent Pricing
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
             Invest in Your Career Trajectory
           </h2>
-          <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="mt-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
             One extra interview callback pays for a lifetime of Tailr. Pick the plan that matches your career ambitions.
           </p>
 
           {/* Monthly / Annual Toggle */}
-          <div className="mt-8 inline-flex items-center p-1 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs font-semibold">
+          <div className="mt-6 sm:mt-8 inline-flex items-center p-1 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs font-semibold max-w-full">
             <button
               type="button"
               onClick={() => setBillingCycle("monthly")}
               className={cn(
-                "px-4 py-1.5 rounded-lg transition-all cursor-pointer",
+                "px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer text-xs",
                 billingCycle === "monthly"
-                  ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-2xs"
+                  ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
               )}
             >
@@ -97,9 +97,9 @@ export function PricingSection() {
               type="button"
               onClick={() => setBillingCycle("annual")}
               className={cn(
-                "px-4 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5",
+                "px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 text-xs",
                 billingCycle === "annual"
-                  ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-2xs"
+                  ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                   : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
               )}
             >
@@ -112,19 +112,19 @@ export function PricingSection() {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 items-stretch">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={cn(
-                "rounded-2xl p-8 flex flex-col justify-between transition-all duration-200 relative",
+                "rounded-2xl p-5 sm:p-8 flex flex-col justify-between transition-all duration-200 relative",
                 plan.popular
-                  ? "border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#0e0f14] shadow-xl shadow-indigo-500/10 scale-[1.02] z-10"
+                  ? "border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#0e0f14] shadow-xl shadow-indigo-500/10 md:scale-[1.02] z-10"
                   : "border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0c0d10] shadow-xs hover:border-neutral-300 dark:hover:border-white/20"
               )}
             >
               {plan.popular && (
-                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[11px] font-bold tracking-wide uppercase shadow-xs flex items-center gap-1">
+                <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-[10px] sm:text-[11px] font-bold tracking-wide uppercase shadow-xs flex items-center gap-1 shrink-0 whitespace-nowrap">
                   <Sparkles className="h-3 w-3" />
                   <span>Most Popular</span>
                 </div>

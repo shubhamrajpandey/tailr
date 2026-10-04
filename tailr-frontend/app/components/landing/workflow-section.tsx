@@ -36,31 +36,31 @@ export function WorkflowSection() {
   ];
 
   return (
-    <section id="workflow" className="py-20 sm:py-28 bg-neutral-100/60 dark:bg-white/[0.01] border-y border-neutral-200/80 dark:border-white/5">
-      <div className="max-w-6xl mx-auto px-6 sm:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+    <section id="workflow" className="py-14 sm:py-28 bg-neutral-100/60 dark:bg-white/[0.01] border-y border-neutral-200/80 dark:border-white/5">
+      <div className="max-w-6xl mx-auto px-4 sm:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <div className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">
             Seamless Workflow
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
             From Job Description to Tailored PDF in 4 Steps
           </h2>
-          <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="mt-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
             A battle-tested workflow designed to eliminate hours of manual resume editing.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {steps.map((step) => {
             const Icon = step.icon;
             return (
               <div
                 key={step.num}
-                className="p-6 rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0c0d10] shadow-xs hover:border-indigo-400/50 dark:hover:border-indigo-500/30 transition-all flex flex-col justify-between group"
+                className="p-5 sm:p-6 rounded-2xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0c0d10] shadow-xs hover:border-indigo-400/50 dark:hover:border-indigo-500/30 transition-all flex flex-col justify-between group"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <span className="font-mono text-2xl font-black text-neutral-300 dark:text-neutral-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  <div className="flex items-center justify-between mb-4 sm:mb-6">
+                    <span className="font-mono text-xl sm:text-2xl font-black text-neutral-300 dark:text-neutral-700 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                       {step.num}
                     </span>
                     <div className="h-10 w-10 rounded-xl bg-neutral-100 dark:bg-white/5 flex items-center justify-center text-neutral-700 dark:text-neutral-300 group-hover:bg-indigo-600 group-hover:text-white transition-colors shadow-2xs">

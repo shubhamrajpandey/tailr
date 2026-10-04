@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { LandingNav } from "./components/landing/landing-nav";
 import { HeroSection } from "./components/landing/hero-section";
-import { InteractivePreview } from "./components/landing/interactive-preview";
+
 import { FeaturesBento } from "./components/landing/features-bento";
 import { WorkflowSection } from "./components/landing/workflow-section";
 import { PricingSection } from "./components/landing/pricing-section";
@@ -30,7 +30,7 @@ export default function LandingPage() {
       {/* ─── Top Perspective Ceiling Wireframe Grid (Extended Length & Slightly Darker) ─── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 right-0 w-full h-[310px] overflow-hidden z-0 select-none [mask-image:radial-gradient(ellipse_85%_92%_at_50%_0%,black_55%,transparent_100%)]"
+        className="pointer-events-none absolute top-0 left-0 right-0 w-full h-[180px] sm:h-[310px] overflow-hidden z-0 select-none [mask-image:radial-gradient(ellipse_85%_92%_at_50%_0%,black_55%,transparent_100%)]"
       >
         <svg
           className="w-full h-full text-slate-300/90 dark:text-neutral-700/85"
@@ -68,7 +68,7 @@ export default function LandingPage() {
       <LandingNav />
       <main className="relative z-10">
         <HeroSection />
-        <InteractivePreview />
+
         <FeaturesBento />
         <WorkflowSection />
         <PricingSection />
