@@ -5,30 +5,34 @@ import { env } from "../../config/env";
 import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
 
 /**
- * Cookie options complying strictly with production security standards:
- * HttpOnly (blocks XSS), Secure (enforced in prod), SameSite=Lax (blocks CSRF).
+ * Cookie options complying strictly with security standards:
+ * - In production: SameSite=None + Secure=true to allow cross-site credentials between Vercel and Render.
+ * - In development: SameSite=Lax + Secure=false for localhost.
  */
 function getRefreshTokenCookieOptions() {
+  const isProd = env.NODE_ENV === "production";
   return {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    secure: isProd,
+    sameSite: (isProd ? "none" : "lax") as "none" | "lax",
     path: "/",
     maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-    domain: env.COOKIE_DOMAIN,
+    domain: env.COOKIE_DOMAIN || undefined,
   };
 }
 
 function getAccessTokenCookieOptions() {
+  const isProd = env.NODE_ENV === "production";
   return {
     httpOnly: false,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    secure: isProd,
+    sameSite: (isProd ? "none" : "lax") as "none" | "lax",
     path: "/",
     maxAge: 7 * 24 * 60 * 60, // 7 days
-    domain: env.COOKIE_DOMAIN,
+    domain: env.COOKIE_DOMAIN || undefined,
   };
 }
+
 
 export class AuthController {
   async signup({ body }: { body: SignupInput }) {

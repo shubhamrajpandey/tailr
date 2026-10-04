@@ -27,6 +27,7 @@ import {
   getAuthTokenFromCookie,
   setAuthCookie,
   removeAuthCookie,
+  isTokenValid,
 } from "./cookie";
 
 // ─── Singleton flag — one refresh at a time ─────────────────────────────────────
@@ -90,8 +91,13 @@ authApiClient.interceptors.response.use(
 
     if (!is401 || alreadyRetried || isRefreshEndpoint) {
       if (is401 && isRefreshEndpoint) {
-        removeAuthCookie();
-        store.dispatch(clearCredentials());
+        // Stale refresh attempt failed: only clear credentials if user is NOT currently authenticated
+        const currentToken =
+          store.getState().auth.accessToken || getAuthTokenFromCookie();
+        if (!currentToken || !isTokenValid(currentToken)) {
+          removeAuthCookie();
+          store.dispatch(clearCredentials());
+        }
       }
       return Promise.reject(error);
     }
@@ -135,17 +141,19 @@ authApiClient.interceptors.response.use(
       }
       return authApiClient(originalRequest);
     } catch {
-      // Refresh failed — the session is truly expired.
-      removeAuthCookie();
-      store.dispatch(clearCredentials());
-      refreshSubscribers = [];
+      // Refresh failed — only wipe credentials and redirect if current token is missing or expired
+      const currentToken =
+        store.getState().auth.accessToken || getAuthTokenFromCookie();
+      if (!currentToken || !isTokenValid(currentToken)) {
+        removeAuthCookie();
+        store.dispatch(clearCredentials());
+        refreshSubscribers = [];
 
-      // Navigate to login. The axios interceptor runs outside React so we use
-      // Next.js's low-level router. This replaces rather than pushes so the
-      // broken page isn't in history.
-      if (typeof window !== "undefined") {
-        // Use replace so /login doesn't appear twice in history
-        window.location.replace("/login");
+        if (typeof window !== "undefined") {
+          window.location.replace("/login");
+        }
+      } else {
+        refreshSubscribers = [];
       }
       return Promise.reject(error);
     } finally {

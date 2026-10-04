@@ -7,6 +7,8 @@
  * - SameSite=Lax for CSRF mitigation.
  */
 
+import type { User } from "@/shared/types/auth";
+
 export const AUTH_COOKIE_NAME = "tailr_access_token";
 
 /**
@@ -68,3 +70,48 @@ export function removeAuthCookie(): void {
   document.cookie = `accessToken=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `refreshToken=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 }
+
+/**
+ * Checks if a JWT string is well-formed and unexpired (with 10s leeway).
+ */
+export function isTokenValid(token?: string | null): boolean {
+  if (!token) return false;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    const payload = JSON.parse(json);
+    if (!payload.exp) return true;
+    return Date.now() < (payload.exp - 10) * 1000;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Extracts basic user identity from JWT payload.
+ */
+export function getUserFromToken(token?: string | null): User | null {
+  if (!token) return null;
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(base64);
+    const payload = JSON.parse(json);
+    if (!payload.sub) return null;
+    return {
+      id: String(payload.sub),
+      email: String(payload.email || ""),
+      fullName: String(payload.name || payload.fullName || "User"),
+      isVerified: true,
+      createdAt: payload.iat
+        ? new Date(payload.iat * 1000).toISOString()
+        : new Date().toISOString(),
+    };
+  } catch {
+    return null;
+  }
+}
+

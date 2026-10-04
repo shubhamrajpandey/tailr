@@ -1,56 +1,83 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useRefreshQuery } from "@/shared/hooks/auth/use-auth-mutations";
-import { useAppDispatch } from "@/shared/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { setCredentials, clearCredentials } from "@/shared/store/auth-slice";
-import { setAuthCookie } from "@/shared/lib/cookie";
+import {
+  setAuthCookie,
+  getAuthTokenFromCookie,
+  isTokenValid,
+  getUserFromToken,
+} from "@/shared/lib/cookie";
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 /**
- * AuthProvider — runs the silent session bootstrap on every app boot.
+ * AuthProvider — runs session hydration and bootstrap.
  *
- * On mount: calls POST /auth/refresh once (browser sends the HttpOnly cookie
- * automatically). If the cookie is valid, the server returns the user and a
- * new access token — we dispatch setCredentials into Redux so the rest of the
- * app sees isAuthenticated: true and isBootstrapping: false.
- *
- * If there is no cookie (logged out, cookie expired), the request fails with
- * 401. We dispatch clearCredentials so isBootstrapping: false is set,
- * allowing ProtectedRoute to safely redirect to /login exactly once using
- * Next.js router.replace (no full-page reload = no infinite loop).
- *
- * Mount this as high as possible in the tree — just inside ReduxProvider and
- * QueryProvider — so auth state is resolved before any route renders.
+ * 1. Immediate client-side hydration: If an unexpired access token exists in
+ *    cookies on app boot, hydrates Redux immediately so ProtectedRoute
+ *    renders without waiting for network.
+ * 2. Silent session refresh: Calls POST /auth/refresh to rotate tokens.
+ * 3. Race condition protection: If a background refresh request fails (e.g.
+ *    initiated before login but resolved 7-8s later), it will NEVER clear
+ *    credentials if the user is already authenticated with a valid token.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+  const hydratedRef = useRef(false);
+
+  // 1. Immediate synchronous hydration from valid cookie on mount
+  useEffect(() => {
+    if (!hydratedRef.current && !isAuthenticated) {
+      hydratedRef.current = true;
+      const cookieToken = getAuthTokenFromCookie();
+      if (cookieToken && isTokenValid(cookieToken)) {
+        const tokenUser = getUserFromToken(cookieToken);
+        if (tokenUser) {
+          dispatch(
+            setCredentials({
+              user: tokenUser,
+              accessToken: cookieToken,
+            })
+          );
+        }
+      }
+    }
+  }, [isAuthenticated, dispatch]);
+
   const { data, isError, isPending } = useRefreshQuery();
 
+  // 2. On refresh success: sync new credentials
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
-      // Refresh succeeded — hydrate Redux and sync access token cookie
       setAuthCookie(data.data.accessToken);
       dispatch(
         setCredentials({
           user: data.data.user,
           accessToken: data.data.accessToken,
-        }),
+        })
       );
     }
   }, [data, dispatch]);
 
+  // 3. On refresh error: ONLY clear credentials if user is NOT currently authenticated
   useEffect(() => {
-    // Refresh failed — session is expired or no cookie exists.
-    // Dispatch clearCredentials to set isBootstrapping: false so
-    // ProtectedRoute can redirect to /login without a full-page reload.
     if (isError && !isPending) {
-      dispatch(clearCredentials());
+      const cookieToken = getAuthTokenFromCookie();
+      const hasValidToken = cookieToken && isTokenValid(cookieToken);
+
+      // Do NOT destroy an active session (e.g. user logged in while refresh was in-flight)
+      if (!isAuthenticated && !hasValidToken) {
+        dispatch(clearCredentials());
+      }
     }
-  }, [isError, isPending, dispatch]);
+  }, [isError, isPending, isAuthenticated, dispatch]);
 
   return <>{children}</>;
 }
+

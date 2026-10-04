@@ -100,6 +100,7 @@ export function useSignupMutation() {
  */
 export function useVerifyOtpMutation() {
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation<
@@ -116,6 +117,15 @@ export function useVerifyOtpMutation() {
       const { user, accessToken } = data.data;
       setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
+
+      // Cancel any pending bootstrap refresh query and prime the cache
+      queryClient.cancelQueries({ queryKey: authQueryKeys.refresh });
+      queryClient.setQueryData(authQueryKeys.refresh, {
+        success: true,
+        message: "Authenticated via OTP",
+        data: { user, accessToken },
+      });
+
       router.push("/dashboard");
     },
   });
@@ -148,10 +158,12 @@ export function useResendOtpMutation() {
  * Authenticates the user. On success:
  * - Dispatches credentials to Redux (user + in-memory accessToken).
  * - The HttpOnly refresh token cookie is set automatically by the browser.
+ * - Cancels any stale bootstrap refresh request so it cannot wipe the session.
  * - Redirects to /dashboard.
  */
 export function useLoginMutation() {
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation<LoginResponse, AxiosError<ApiErrorBody>, LoginRequest>({
@@ -164,6 +176,15 @@ export function useLoginMutation() {
       const { user, accessToken } = data.data;
       setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
+
+      // Cancel any pending bootstrap refresh query and prime the cache
+      queryClient.cancelQueries({ queryKey: authQueryKeys.refresh });
+      queryClient.setQueryData(authQueryKeys.refresh, {
+        success: true,
+        message: "Authenticated via login",
+        data: { user, accessToken },
+      });
+
       router.push("/dashboard");
     },
   });
