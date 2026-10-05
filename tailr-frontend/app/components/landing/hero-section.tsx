@@ -22,6 +22,9 @@ import {
   Bell,
   MoreHorizontal,
   Lock,
+  Rocket,
+  Target,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -57,41 +60,49 @@ export function HeroSection() {
         {/* Top-Left: Mini Bar Chart 3D Card */}
         <div
           aria-hidden="true"
-          className="hidden md:flex items-center justify-center absolute -top-3 left-[18%] lg:left-[24%] xl:left-[22%] w-13 h-13 rounded-2xl bg-white dark:bg-[#15161e] border border-slate-200/90 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/40 rotate-[-6deg] hover:rotate-0 hover:scale-105 transition-all duration-300"
+          className="hidden md:flex items-center justify-center absolute -top-3 left-[18%] lg:left-[24%] xl:left-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-[#15161e] border border-slate-200/90 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/40 rotate-[-6deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="ATS Resume Matching Analytics"
         >
-          <div className="flex items-end gap-1 h-5">
-            <span className="w-1.5 h-3 bg-emerald-500 rounded-xs" />
-            <span className="w-1.5 h-5.5 bg-rose-500 rounded-xs" />
-            <span className="w-1.5 h-4 bg-blue-500 rounded-xs" />
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/15">
+            <div className="flex items-end gap-1 h-4">
+              <span className="w-1.5 h-2.5 bg-emerald-500 rounded-xs shadow-xs shadow-emerald-500/30" />
+              <span className="w-1.5 h-4 bg-rose-500 rounded-xs shadow-xs shadow-rose-500/30" />
+              <span className="w-1.5 h-3 bg-blue-500 rounded-xs shadow-xs shadow-blue-500/30" />
+            </div>
           </div>
         </div>
 
-        {/* Top-Right: Warm Peach Rocket 3D Card */}
+        {/* Top-Right: Fast AI Tailoring Velocity */}
         <div
           aria-hidden="true"
-          className="hidden md:flex items-center justify-center absolute -top-1 right-[18%] lg:right-[24%] xl:right-[22%] w-13 h-13 rounded-2xl bg-[#fff7ed] dark:bg-[#1c1816] border border-amber-200/70 dark:border-amber-500/20 shadow-lg shadow-amber-900/5 dark:shadow-black/40 rotate-[8deg] hover:rotate-0 hover:scale-105 transition-all duration-300"
+          className="hidden md:flex items-center justify-center absolute -top-1 right-[18%] lg:right-[24%] xl:right-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-[#fff7ed] dark:bg-[#1c1816] border border-amber-200/80 dark:border-amber-500/25 shadow-lg shadow-amber-900/5 dark:shadow-black/40 rotate-[8deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="Fast AI Tailoring Velocity"
         >
-          <span className="text-xl leading-none select-none">🚀</span>
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-amber-500/10 dark:bg-amber-400/15">
+            <Rocket className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400 stroke-[2.2] -rotate-12" />
+          </div>
         </div>
 
-        {/* Middle-Left: Target Pin 3D Card */}
+        {/* Middle-Left: Target Role Alignment */}
         <div
           aria-hidden="true"
-          className="hidden lg:flex items-center justify-center absolute top-28 left-[6%] xl:left-[4%] w-12 h-12 rounded-2xl bg-[#fef2f2] dark:bg-[#201518] border border-rose-200/80 dark:border-rose-500/20 shadow-lg shadow-rose-950/5 dark:shadow-black/40 rotate-[-12deg] hover:rotate-0 hover:scale-105 transition-all duration-300"
+          className="hidden lg:flex items-center justify-center absolute top-28 left-[6%] xl:left-[4%] w-12 h-12 rounded-2xl bg-[#fef2f2] dark:bg-[#201518] border border-rose-200/80 dark:border-rose-500/25 shadow-lg shadow-rose-950/5 dark:shadow-black/40 rotate-[-12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="Target Role Alignment"
         >
-          <span className="text-xl select-none">🎯</span>
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-rose-500/10 dark:bg-rose-400/15">
+            <Target className="w-4.5 h-4.5 text-rose-600 dark:text-rose-400 stroke-[2.2]" />
+          </div>
         </div>
 
-        {/* Middle-Right: Green Checkmark 3D Card */}
+        {/* Middle-Right: 100% ATS Verified */}
         <div
           aria-hidden="true"
-          className="hidden lg:flex items-center justify-center absolute top-28 right-[6%] xl:right-[4%] w-12 h-12 rounded-2xl bg-[#f0fdf4] dark:bg-[#132018] border border-emerald-200/80 dark:border-emerald-500/20 shadow-lg shadow-emerald-950/5 dark:shadow-black/40 rotate-[12deg] hover:rotate-0 hover:scale-105 transition-all duration-300"
+          className="hidden lg:flex items-center justify-center absolute top-28 right-[6%] xl:right-[4%] w-12 h-12 rounded-2xl bg-[#f0fdf4] dark:bg-[#132018] border border-emerald-200/80 dark:border-emerald-500/25 shadow-lg shadow-emerald-950/5 dark:shadow-black/40 rotate-[12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="100% ATS Verified"
         >
-          <span className="text-xl select-none">✅</span>
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-400/15">
+            <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400 stroke-[2.3]" />
+          </div>
         </div>
 
         {/* ─── 4. Top Announcement Pill ─── */}
@@ -260,7 +271,7 @@ export function HeroSection() {
               <div className="p-3 rounded-xl bg-white dark:bg-[#13141c] border border-neutral-200/80 dark:border-white/10 shadow-2xs space-y-2 transition-colors">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-900 dark:text-white">
-                    <span>📊</span>
+                    <BarChart3 className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
                     <span>Application Volume Trend</span>
                   </div>
                   <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">↗ +14% vs last week</span>
@@ -570,7 +581,7 @@ export function HeroSection() {
                       <div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-xs font-bold text-neutral-900 dark:text-white">
-                            <span className="text-neutral-400">📊</span>
+                            <BarChart3 className="h-3.5 w-3.5 text-indigo-500 shrink-0" />
                             <span>Application Volume Trend</span>
                           </div>
                           <div className="flex items-center gap-1 px-2 py-0.5 rounded border border-neutral-200 dark:border-white/10 text-[10px] text-neutral-500 dark:text-neutral-400">
@@ -700,7 +711,7 @@ export function HeroSection() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[650px] sm:w-[850px] h-[60px] sm:h-[90px] bg-gradient-to-b from-indigo-500/25 via-purple-500/15 to-transparent blur-[30px] sm:blur-[40px] rounded-full pointer-events-none" />
 
         <svg
-          className="w-full h-full text-slate-300/85 dark:text-neutral-700/80"
+          className="w-full h-full text-slate-200/65 dark:text-white/[0.08]"
           viewBox="0 0 1440 360"
           preserveAspectRatio="none"
           fill="none"

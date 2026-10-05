@@ -27,18 +27,18 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-white dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors overflow-x-hidden">
-      {/* ─── Top Perspective Ceiling Wireframe Grid (Extended Length & Slightly Darker) ─── */}
+      {/* ─── Top Perspective Ceiling Wireframe Grid (Lighter, Softer & Ambient) ─── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 left-0 right-0 w-full h-[180px] sm:h-[310px] overflow-hidden z-0 select-none [mask-image:radial-gradient(ellipse_85%_92%_at_50%_0%,black_55%,transparent_100%)]"
+        className="pointer-events-none absolute top-0 left-0 right-0 w-full h-[180px] sm:h-[310px] overflow-hidden z-0 select-none [mask-image:radial-gradient(ellipse_85%_92%_at_50%_0%,black_40%,transparent_100%)]"
       >
         <svg
-          className="w-full h-full text-slate-300/90 dark:text-neutral-700/85"
+          className="w-full h-full text-slate-200/65 dark:text-white/[0.08]"
           viewBox="0 0 1440 310"
           preserveAspectRatio="none"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1.15"
+          strokeWidth="0.85"
         >
           <g vectorEffect="non-scaling-stroke">
             {/* Perspective Rays: Wide at top ceiling (y=0) and angling inward toward horizon */}
