@@ -4,6 +4,7 @@ import * as React from "react";
 import type { AxiosInstance } from "axios";
 import type { Application, ApplicationStatus } from "@/shared/types/application";
 import { authApiClient } from "@/shared/lib/auth-api-client";
+import { logger } from "@/shared/lib/logger";
 
 /**
  * Module-level synchronization throttle & in-flight promise tracker.
@@ -77,7 +78,9 @@ export function useApplicationsSync({
             lastSyncTimestamp = Date.now();
           }
         } catch (err) {
-          console.warn("[useApplicationsSync] Failed to sync with backend:", err);
+          logger.warn("useApplicationsSync", "Failed to sync applications with backend", {
+            error: err,
+          });
         } finally {
           setIsLoading(false);
           inFlightSyncPromise = null;

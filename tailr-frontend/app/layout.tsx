@@ -6,6 +6,8 @@ import { QueryProvider } from "@/shared/components/providers/query-provider";
 import { AuthProvider } from "@/shared/components/providers/auth-provider";
 import { I18nProvider } from "@/shared/i18n/i18n-provider";
 import { Toaster } from "@/shared/components/ui/toast";
+import { Analytics } from "@vercel/analytics/react";
+import { WebVitals } from "@/shared/components/monitoring/web-vitals";
 import "./globals.css";
 
 const urbanist = Urbanist({
@@ -65,6 +67,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 >
                   {children}
                   <Toaster />
+                  <Analytics />
+                  <WebVitals />
                 </ThemeProvider>
               </I18nProvider>
             </AuthProvider>

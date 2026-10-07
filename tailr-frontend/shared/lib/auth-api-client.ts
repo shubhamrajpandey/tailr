@@ -24,6 +24,7 @@ import { store } from "@/shared/store";
 import { clearCredentials, setCredentials } from "@/shared/store/auth-slice";
 import type { RefreshResponse } from "@/shared/types/auth";
 import { removeAuthCookie, isTokenValid } from "./cookie";
+import { logger } from "@/shared/lib/logger";
 
 // ─── Concurrent Refresh Queuing (Mutex Pattern) ────────────────────────────────
 /**
@@ -153,10 +154,23 @@ authApiClient.interceptors.response.use(
       }
       return authApiClient(originalRequest);
     } catch (refreshErr) {
-      console.warn("[authApiClient] Silent token refresh failed:", refreshErr);
-      // Refresh failed — only wipe credentials and redirect if current token is missing or expired
       const currentToken = store.getState().auth.accessToken;
-      if (!currentToken || !isTokenValid(currentToken)) {
+      const isExpired = !currentToken || !isTokenValid(currentToken);
+
+      logger.error(
+        "authApiClient",
+        "Silent token refresh failed; initiating session recovery/logout",
+        refreshErr,
+        {
+          url: originalRequest.url,
+          method: originalRequest.method,
+          isExpired,
+          status: (refreshErr as AxiosError)?.response?.status,
+        }
+      );
+
+      // Refresh failed — only wipe credentials and redirect if current token is missing or expired
+      if (isExpired) {
         removeAuthCookie();
         store.dispatch(clearCredentials());
         refreshSubscribers = [];

@@ -8,6 +8,7 @@ import { authApiClient } from "@/shared/lib/auth-api-client";
 import { generateSampleApplications } from "@/shared/lib/sample-applications";
 import { isUuidV4 } from "@/shared/lib/utils";
 import { toast } from "@/shared/lib/toast";
+import { logger } from "@/shared/lib/logger";
 
 export interface UseApplicationsCrudOptions {
   applications: Application[];
@@ -97,7 +98,12 @@ export function useApplicationsCrud({
           err?.response?.data?.message ||
           err?.message ||
           "Could not save application to the server. Local changes were rolled back.";
-        console.error("[useApplicationsCrud] Failed to save application to backend:", err);
+        logger.error(
+          "useApplicationsCrud",
+          "Failed to save application to backend; rolled back optimistic create",
+          err,
+          { tempId, companyName: values.companyName, positionTitle: values.positionTitle }
+        );
         toast.error("Failed to create application", reason);
         throw err;
       }
@@ -128,7 +134,12 @@ export function useApplicationsCrud({
         try {
           await apiClient.patch(`/applications/${id}`, values);
         } catch (err: any) {
-          console.error(`[useApplicationsCrud] Failed to patch application ${id}:`, err);
+          logger.error(
+            "useApplicationsCrud",
+            `Failed to patch application on backend; rolling back state snapshot`,
+            err,
+            { applicationId: id, fields: Object.keys(values) }
+          );
           // Roll back to previous state snapshot to prevent permanent state divergence
           persist(previousApplications);
           const reason =
@@ -169,7 +180,12 @@ export function useApplicationsCrud({
           await apiClient.delete(`/applications/${id}`);
           toast.success("Application deleted", `${targetApp.companyName} was removed`);
         } catch (err: any) {
-          console.error(`[useApplicationsCrud] Failed to delete application ${id}:`, err);
+          logger.error(
+            "useApplicationsCrud",
+            `Failed to delete application on backend; restoring previous state`,
+            err,
+            { applicationId: id, companyName: targetApp.companyName }
+          );
           // Roll back to previous snapshot to restore the deleted record
           persist(previousApplications);
           const reason =

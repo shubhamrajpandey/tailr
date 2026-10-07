@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import type { Application } from "@/shared/types/application";
+import { logger } from "@/shared/lib/logger";
 
 export const APPLICATIONS_STORAGE_KEY = "tailr_applications_v2";
 
@@ -36,9 +37,11 @@ export function getApplicationsSnapshot(): Application[] {
       return cachedApplicationsSnapshot;
     }
   } catch (err) {
-    console.error(
-      "[useApplicationsStore] Failed to parse cached applications from localStorage:",
-      err
+    logger.error(
+      "useApplicationsStore",
+      "Failed to parse cached applications from localStorage",
+      err,
+      { storageKey: APPLICATIONS_STORAGE_KEY }
     );
   }
   return [];

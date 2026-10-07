@@ -13,6 +13,9 @@ export function middleware(request: NextRequest) {
 
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {
+    console.info(
+      `[${new Date().toISOString()}] [INFO] [Middleware] Redirecting unauthenticated request: "${pathname}" -> "${ROUTES.LOGIN}"`
+    );
     const loginUrl = new URL(ROUTES.LOGIN, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
@@ -20,6 +23,9 @@ export function middleware(request: NextRequest) {
 
   // 2. Active session holder accessing /login or /signup -> redirect to /dashboard
   if (isAuthRoute(pathname) && hasValidSession) {
+    console.info(
+      `[${new Date().toISOString()}] [INFO] [Middleware] Redirecting authenticated request: "${pathname}" -> "${ROUTES.DASHBOARD}"`
+    );
     return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
   }
 
