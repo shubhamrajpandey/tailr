@@ -43,7 +43,7 @@ type AccountFormData = z.infer<typeof accountSchema>;
 
 export function AccountPanel() {
   const { settings, updateAccount } = useSettings();
-  const authUser = useAppSelector((s) => s.auth.user);
+  const authUser = useAppSelector((state) => state.auth.user);
 
   const initialName = authUser?.fullName || settings.account.name;
   const initialEmail = authUser?.email || settings.account.email;

@@ -28,7 +28,7 @@ export function TopBarMobileMenu() {
   const [mounted, setMounted] = React.useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark" || theme === "dark";
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
 
   React.useEffect(() => {

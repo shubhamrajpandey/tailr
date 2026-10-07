@@ -23,7 +23,7 @@ import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
 
 export function TopBarActions() {
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
 
   const fullName = user?.fullName || "User";

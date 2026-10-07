@@ -28,9 +28,9 @@ export function SkillsSectionForm({ skills, onChange }: SkillsSectionFormProps) 
     if (!raw) return;
 
     // Support comma-separated batch adding
-    const parts = raw.split(",").map((s) => s.trim()).filter(Boolean);
-    const existing = new Set(skills[category].map((s) => s.toLowerCase()));
-    const toAdd = parts.filter((p) => !existing.has(p.toLowerCase()));
+    const parts = raw.split(",").map((skill) => skill.trim()).filter(Boolean);
+    const existing = new Set(skills[category].map((skill) => skill.toLowerCase()));
+    const toAdd = parts.filter((part) => !existing.has(part.toLowerCase()));
 
     if (toAdd.length > 0) {
       onChange({

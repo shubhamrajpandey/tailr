@@ -5,12 +5,17 @@ import { CoverLetter } from "@/shared/types/cover-letter";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppSelector } from "@/shared/store/hooks";
 
-const STORAGE_KEY = "tailr_cover_letters_v2";
+const COVER_LETTERS_STORAGE_KEY = "tailr_cover_letters_v2";
 
-let cachedRaw: string | null = null;
-let cachedSnapshot: CoverLetter[] | null = null;
+/**
+ * Module-level memory cache for useSyncExternalStore reference stability.
+ * Scope: Client-side module lifetime.
+ * Invalidation: Invalidated on local mutations or storage events.
+ */
+let cachedRawCoverLettersJson: string | null = null;
+let cachedCoverLettersSnapshot: CoverLetter[] | null = null;
 
-function getSnapshot(): CoverLetter[] {
+function getCoverLettersSnapshot(): CoverLetter[] {
   if (typeof window === "undefined") return [];
   try {
     // Purge legacy mock storage key if present
@@ -18,17 +23,17 @@ function getSnapshot(): CoverLetter[] {
       localStorage.removeItem("tailr_cover_letters_v1");
     }
 
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(COVER_LETTERS_STORAGE_KEY);
     if (!raw) {
       return [];
     }
-    if (raw === cachedRaw && cachedSnapshot) {
-      return cachedSnapshot;
+    if (raw === cachedRawCoverLettersJson && cachedCoverLettersSnapshot) {
+      return cachedCoverLettersSnapshot;
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      cachedRaw = raw;
-      cachedSnapshot = parsed;
+      cachedRawCoverLettersJson = raw;
+      cachedCoverLettersSnapshot = parsed;
       return parsed;
     }
   } catch {
@@ -37,15 +42,15 @@ function getSnapshot(): CoverLetter[] {
   return [];
 }
 
-function getServerSnapshot(): CoverLetter[] {
+function getServerCoverLettersSnapshot(): CoverLetter[] {
   return [];
 }
 
-function subscribe(callback: () => void) {
+function subscribeCoverLetters(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleUpdate = () => {
-    cachedRaw = null;
-    cachedSnapshot = null;
+    cachedRawCoverLettersJson = null;
+    cachedCoverLettersSnapshot = null;
     callback();
   };
   window.addEventListener("tailr_cover_letters_updated", handleUpdate);
@@ -67,17 +72,17 @@ export function useCoverLetters() {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   const coverLetters = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+    subscribeCoverLetters,
+    getCoverLettersSnapshot,
+    getServerCoverLettersSnapshot
   );
 
   const persist = React.useCallback((next: CoverLetter[]) => {
     try {
       const raw = JSON.stringify(next);
-      localStorage.setItem(STORAGE_KEY, raw);
-      cachedRaw = raw;
-      cachedSnapshot = next;
+      localStorage.setItem(COVER_LETTERS_STORAGE_KEY, raw);
+      cachedRawCoverLettersJson = raw;
+      cachedCoverLettersSnapshot = next;
       window.dispatchEvent(new Event("tailr_cover_letters_updated"));
     } catch {
       // ignore

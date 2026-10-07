@@ -33,7 +33,7 @@ interface MobileNavProps {
 export function MobileNav({ className }: MobileNavProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const pathname = usePathname();
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
 
   const {

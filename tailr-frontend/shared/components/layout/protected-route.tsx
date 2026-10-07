@@ -26,8 +26,8 @@ interface ProtectedRouteProps {
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
-  const isBootstrapping = useAppSelector((s) => s.auth.isBootstrapping);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const isBootstrapping = useAppSelector((state) => state.auth.isBootstrapping);
   const redirected = useRef(false);
 
   useEffect(() => {

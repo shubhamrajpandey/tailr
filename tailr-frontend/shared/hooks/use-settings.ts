@@ -13,23 +13,28 @@ import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { setCredentials, clearCredentials } from "@/shared/store/auth-slice";
 
-const STORAGE_KEY = "tailr_user_settings_v2";
+const USER_SETTINGS_STORAGE_KEY = "tailr_user_settings_v2";
 
-let cachedRaw: string | null = null;
-let cachedSnapshot: UserSettings | null = null;
+/**
+ * Module-level memory cache for useSyncExternalStore reference stability.
+ * Scope: Client-side module lifetime.
+ * Invalidation: Invalidated on local settings mutations or storage events.
+ */
+let cachedRawUserSettingsJson: string | null = null;
+let cachedUserSettingsSnapshot: UserSettings | null = null;
 
-function getSnapshot(): UserSettings {
+function getUserSettingsSnapshot(): UserSettings {
   if (typeof window === "undefined") {
     return DEFAULT_USER_SETTINGS;
   }
 
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(USER_SETTINGS_STORAGE_KEY);
     if (!raw) {
       return DEFAULT_USER_SETTINGS;
     }
-    if (raw === cachedRaw && cachedSnapshot !== null) {
-      return cachedSnapshot;
+    if (raw === cachedRawUserSettingsJson && cachedUserSettingsSnapshot !== null) {
+      return cachedUserSettingsSnapshot;
     }
     const parsed = JSON.parse(raw);
     const merged: UserSettings = {
@@ -53,23 +58,23 @@ function getSnapshot(): UserSettings {
         ...(parsed.privacy || {}),
       },
     };
-    cachedRaw = raw;
-    cachedSnapshot = merged;
+    cachedRawUserSettingsJson = raw;
+    cachedUserSettingsSnapshot = merged;
     return merged;
   } catch {
     return DEFAULT_USER_SETTINGS;
   }
 }
 
-function getServerSnapshot(): UserSettings {
+function getServerUserSettingsSnapshot(): UserSettings {
   return DEFAULT_USER_SETTINGS;
 }
 
-function subscribe(callback: () => void) {
+function subscribeUserSettings(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleUpdate = () => {
-    cachedRaw = null;
-    cachedSnapshot = null;
+    cachedRawUserSettingsJson = null;
+    cachedUserSettingsSnapshot = null;
     callback();
   };
   window.addEventListener("tailr_settings_updated", handleUpdate);
@@ -89,17 +94,17 @@ export function useSettings() {
   const [isLoaded, setIsLoaded] = React.useState(false);
 
   const settings = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+    subscribeUserSettings,
+    getUserSettingsSnapshot,
+    getServerUserSettingsSnapshot
   );
 
   const persist = React.useCallback((next: UserSettings) => {
     try {
       const raw = JSON.stringify(next);
-      localStorage.setItem(STORAGE_KEY, raw);
-      cachedRaw = raw;
-      cachedSnapshot = next;
+      localStorage.setItem(USER_SETTINGS_STORAGE_KEY, raw);
+      cachedRawUserSettingsJson = raw;
+      cachedUserSettingsSnapshot = next;
       window.dispatchEvent(new Event("tailr_settings_updated"));
     } catch {
       // ignore
@@ -114,55 +119,55 @@ export function useSettings() {
     try {
       const res = await authApiClient.get("/settings");
       if (res.data?.success && res.data?.data?.settings) {
-        const s = res.data.data.settings;
-        const current = getSnapshot();
+        const remoteSettings = res.data.data.settings;
+        const current = getUserSettingsSnapshot();
         const merged: UserSettings = {
           account: {
-            name: s.account?.name || user?.fullName || current.account.name,
-            email: s.account?.email || user?.email || current.account.email,
+            name: remoteSettings.account?.name || user?.fullName || current.account.name,
+            email: remoteSettings.account?.email || user?.email || current.account.email,
           },
           ai: {
-            model: s.ai?.model || current.ai.model,
+            model: remoteSettings.ai?.model || current.ai.model,
             tailoringAggressiveness:
-              s.ai?.tailoringAggressiveness || current.ai.tailoringAggressiveness,
+              remoteSettings.ai?.tailoringAggressiveness || current.ai.tailoringAggressiveness,
             defaultCoverLetterTone:
-              s.ai?.defaultCoverLetterTone || current.ai.defaultCoverLetterTone,
+              remoteSettings.ai?.defaultCoverLetterTone || current.ai.defaultCoverLetterTone,
             strictTruthConstraint:
-              s.ai?.strictTruthConstraint ?? current.ai.strictTruthConstraint,
+              remoteSettings.ai?.strictTruthConstraint ?? current.ai.strictTruthConstraint,
           },
           resume: {
             defaultTemplate:
-              s.resume?.defaultTemplate || current.resume.defaultTemplate,
+              remoteSettings.resume?.defaultTemplate || current.resume.defaultTemplate,
             includeContactHeader:
-              s.resume?.includeContactHeader ?? current.resume.includeContactHeader,
+              remoteSettings.resume?.includeContactHeader ?? current.resume.includeContactHeader,
             includeLinkedIn:
-              s.resume?.includeLinkedIn ?? current.resume.includeLinkedIn,
+              remoteSettings.resume?.includeLinkedIn ?? current.resume.includeLinkedIn,
             defaultPageMargin:
-              s.resume?.defaultPageMargin || current.resume.defaultPageMargin,
-            paperSize: s.resume?.paperSize || current.resume.paperSize,
+              remoteSettings.resume?.defaultPageMargin || current.resume.defaultPageMargin,
+            paperSize: remoteSettings.resume?.paperSize || current.resume.paperSize,
           },
           applications: {
             defaultStatus:
-              s.applications?.defaultStatus || current.applications.defaultStatus,
+              remoteSettings.applications?.defaultStatus || current.applications.defaultStatus,
             defaultSortOrder:
-              s.applications?.defaultSortOrder || current.applications.defaultSortOrder,
+              remoteSettings.applications?.defaultSortOrder || current.applications.defaultSortOrder,
             ghostedThresholdDays:
-              s.applications?.ghostedThresholdDays ?? current.applications.ghostedThresholdDays,
+              remoteSettings.applications?.ghostedThresholdDays ?? current.applications.ghostedThresholdDays,
           },
           notifications: current.notifications,
           appearance: {
-            theme: s.appearance?.theme || current.appearance.theme,
-            density: s.appearance?.density || current.appearance.density,
+            theme: remoteSettings.appearance?.theme || current.appearance.theme,
+            density: remoteSettings.appearance?.density || current.appearance.density,
             highContrast:
-              s.appearance?.highContrast ?? current.appearance.highContrast,
+              remoteSettings.appearance?.highContrast ?? current.appearance.highContrast,
           },
           privacy: {
             analyticsOptIn:
-              s.privacy?.analyticsOptIn ?? current.privacy.analyticsOptIn,
+              remoteSettings.privacy?.analyticsOptIn ?? current.privacy.analyticsOptIn,
             aiImprovementOptIn:
-              s.privacy?.aiImprovementOptIn ?? current.privacy.aiImprovementOptIn,
+              remoteSettings.privacy?.aiImprovementOptIn ?? current.privacy.aiImprovementOptIn,
             profileVisibility:
-              s.privacy?.profileVisibility || current.privacy.profileVisibility,
+              remoteSettings.privacy?.profileVisibility || current.privacy.profileVisibility,
           },
         };
         persist(merged);
@@ -181,7 +186,7 @@ export function useSettings() {
 
   const updateAccount = React.useCallback(
     async (values: Partial<AccountSettings>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         account: {
@@ -218,7 +223,7 @@ export function useSettings() {
 
   const updateAI = React.useCallback(
     async (values: Partial<AISettings>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         ai: {
@@ -241,7 +246,7 @@ export function useSettings() {
 
   const updateResume = React.useCallback(
     async (values: Partial<ResumeSettings>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         resume: {
@@ -264,7 +269,7 @@ export function useSettings() {
 
   const updateApplications = React.useCallback(
     async (values: Partial<ApplicationSettings>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         applications: {
@@ -287,7 +292,7 @@ export function useSettings() {
 
   const updateAppearance = React.useCallback(
     async (values: Partial<UserSettings["appearance"]>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         appearance: {
@@ -310,7 +315,7 @@ export function useSettings() {
 
   const updateNotifications = React.useCallback(
     async (values: Partial<UserSettings["notifications"]>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         notifications: {
@@ -325,7 +330,7 @@ export function useSettings() {
 
   const updatePrivacy = React.useCallback(
     async (values: Partial<UserSettings["privacy"]>) => {
-      const current = getSnapshot();
+      const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         privacy: {

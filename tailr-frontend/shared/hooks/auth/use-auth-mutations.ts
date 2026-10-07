@@ -267,7 +267,7 @@ export function useRefreshQuery() {
  * Useful for keeping the user object fresh after profile updates.
  */
 export function useMeQuery() {
-  const isAuthenticated = useAppSelector((s) => s.auth.isAuthenticated);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
   return useQuery<MeResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.me,

@@ -57,11 +57,11 @@ export function useDashboardData() {
     const result: VolumeTrendPoint[] = [];
 
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(today.getDate() - i);
-      const dayName = days[d.getDay()];
-      const dateStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-      const isoDate = d.toISOString().split("T")[0];
+      const targetDate = new Date(today);
+      targetDate.setDate(today.getDate() - i);
+      const dayName = days[targetDate.getDay()];
+      const dateStr = targetDate.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const isoDate = targetDate.toISOString().split("T")[0];
 
       const count = applications.filter(
         (a) => a.appliedDate === isoDate || a.createdAt?.startsWith(isoDate)

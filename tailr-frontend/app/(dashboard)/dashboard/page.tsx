@@ -19,7 +19,7 @@ import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
 
 export default function DashboardPage() {
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
   const [mobileTab, setMobileTab] = React.useState<"chart" | "activity">("chart");
   const {
     applications,

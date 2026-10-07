@@ -4,7 +4,7 @@ import * as React from "react";
 import { ResumeData, ResumeVersion, ResumeChange } from "@/shared/types/resume";
 import { INITIAL_MASTER_RESUME } from "./use-master-resume";
 
-const STORAGE_KEY = "tailr_resume_versions_v1";
+const RESUME_VERSIONS_STORAGE_KEY = "tailr_resume_versions_v1";
 
 export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
   {
@@ -135,30 +135,35 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
   },
 ];
 
-let cachedSnapshot: ResumeVersion[] | null = null;
-let cachedRaw: string | null = null;
+/**
+ * Module-level memory cache for useSyncExternalStore reference stability.
+ * Scope: Client-side module lifetime.
+ * Invalidation: Invalidated on local version mutations or storage events.
+ */
+let cachedResumeVersionsSnapshot: ResumeVersion[] | null = null;
+let cachedRawResumeVersionsJson: string | null = null;
 
-function getSnapshot(): ResumeVersion[] {
+function getResumeVersionsSnapshot(): ResumeVersion[] {
   if (typeof window === "undefined") {
     return INITIAL_RESUME_VERSIONS;
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(RESUME_VERSIONS_STORAGE_KEY);
     if (!raw) {
       const initialStr = JSON.stringify(INITIAL_RESUME_VERSIONS);
-      localStorage.setItem(STORAGE_KEY, initialStr);
-      cachedRaw = initialStr;
-      cachedSnapshot = INITIAL_RESUME_VERSIONS;
-      return cachedSnapshot;
+      localStorage.setItem(RESUME_VERSIONS_STORAGE_KEY, initialStr);
+      cachedRawResumeVersionsJson = initialStr;
+      cachedResumeVersionsSnapshot = INITIAL_RESUME_VERSIONS;
+      return cachedResumeVersionsSnapshot;
     }
-    if (raw === cachedRaw && cachedSnapshot) {
-      return cachedSnapshot;
+    if (raw === cachedRawResumeVersionsJson && cachedResumeVersionsSnapshot) {
+      return cachedResumeVersionsSnapshot;
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      cachedRaw = raw;
-      cachedSnapshot = parsed;
-      return cachedSnapshot;
+      cachedRawResumeVersionsJson = raw;
+      cachedResumeVersionsSnapshot = parsed;
+      return cachedResumeVersionsSnapshot;
     }
   } catch {
     // fallback
@@ -166,15 +171,15 @@ function getSnapshot(): ResumeVersion[] {
   return INITIAL_RESUME_VERSIONS;
 }
 
-function getServerSnapshot(): ResumeVersion[] {
+function getServerResumeVersionsSnapshot(): ResumeVersion[] {
   return INITIAL_RESUME_VERSIONS;
 }
 
-function subscribe(callback: () => void) {
+function subscribeResumeVersions(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleUpdate = () => {
-    cachedRaw = null;
-    cachedSnapshot = null;
+    cachedRawResumeVersionsJson = null;
+    cachedResumeVersionsSnapshot = null;
     callback();
   };
   window.addEventListener("tailr_resume_versions_updated", handleUpdate);
@@ -187,17 +192,17 @@ function subscribe(callback: () => void) {
 
 export function useResumeVersions() {
   const versions = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+    subscribeResumeVersions,
+    getResumeVersionsSnapshot,
+    getServerResumeVersionsSnapshot
   );
 
   const persist = React.useCallback((next: ResumeVersion[]) => {
     try {
       const raw = JSON.stringify(next);
-      localStorage.setItem(STORAGE_KEY, raw);
-      cachedRaw = raw;
-      cachedSnapshot = next;
+      localStorage.setItem(RESUME_VERSIONS_STORAGE_KEY, raw);
+      cachedRawResumeVersionsJson = raw;
+      cachedResumeVersionsSnapshot = next;
       window.dispatchEvent(new Event("tailr_resume_versions_updated"));
     } catch {
       // ignore

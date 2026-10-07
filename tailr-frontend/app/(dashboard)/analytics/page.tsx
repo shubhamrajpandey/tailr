@@ -26,7 +26,7 @@ function AnalyticsDashboard() {
   const tailoringAnalytics = useTailoringAnalytics();
 
   const interviewStage = funnelAnalytics.stages.find(
-    (s) => s.id === "interview"
+    (stage) => stage.id === "interview"
   );
   const interviewCount =
     responseAnalytics.interviewCount ?? (interviewStage?.count ?? 0);

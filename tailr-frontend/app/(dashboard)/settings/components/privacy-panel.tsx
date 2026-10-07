@@ -20,7 +20,7 @@ import { useAppSelector } from "@/shared/store/hooks";
 export function PrivacyPanel() {
   const { settings, updatePrivacy, exportData } = useSettings();
   const { applications } = useApplications();
-  const authUser = useAppSelector((s) => s.auth.user);
+  const authUser = useAppSelector((state) => state.auth.user);
 
   const [analyticsOptIn, setAnalyticsOptIn] = React.useState(
     settings.privacy.analyticsOptIn

@@ -66,7 +66,7 @@ export default function DocsPage() {
     if (expandedItems.length === DOC_SECTIONS.length) {
       setExpandedItems([]);
     } else {
-      setExpandedItems(DOC_SECTIONS.map((s) => s.id));
+      setExpandedItems(DOC_SECTIONS.map((section) => section.id));
     }
   };
 

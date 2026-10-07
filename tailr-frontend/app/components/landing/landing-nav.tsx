@@ -12,7 +12,7 @@ import { cn } from "@/shared/lib/utils";
 export function LandingNav() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const authUser = useAppSelector((s) => s.auth.user);
+  const authUser = useAppSelector((state) => state.auth.user);
 
   React.useEffect(() => {
     const handleScroll = () => {

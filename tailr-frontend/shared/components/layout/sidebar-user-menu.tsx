@@ -26,7 +26,7 @@ interface SidebarUserMenuProps {
 
 export function SidebarUserMenu({ isCollapsed }: SidebarUserMenuProps) {
   const logoutMutation = useLogoutMutation();
-  const user = useAppSelector((s) => s.auth.user);
+  const user = useAppSelector((state) => state.auth.user);
 
   const fullName = user?.fullName || "User";
   const userEmail = user?.email || "Signed In";

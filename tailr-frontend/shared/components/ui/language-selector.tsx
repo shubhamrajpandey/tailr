@@ -23,7 +23,7 @@ export const LANGUAGES: LanguageOption[] = [
   { code: "JPN", label: "日本語" },
 ];
 
-const STORAGE_KEY = "tailr_language_pref";
+const LANGUAGE_PREF_STORAGE_KEY = "tailr_language_pref";
 
 export interface LanguageSelectorProps {
   variant?: "ghost" | "outline";
@@ -44,7 +44,7 @@ export function LanguageSelector({
 }: LanguageSelectorProps) {
   const [internalLang, setInternalLang] = React.useState<string>(() => {
     if (typeof window !== "undefined") {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(LANGUAGE_PREF_STORAGE_KEY);
       if (stored && LANGUAGES.some((l) => l.code === stored)) {
         return stored;
       }
@@ -60,7 +60,7 @@ export function LanguageSelector({
     }
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem(STORAGE_KEY, code);
+        localStorage.setItem(LANGUAGE_PREF_STORAGE_KEY, code);
       } catch {
         // ignore storage errors
       }

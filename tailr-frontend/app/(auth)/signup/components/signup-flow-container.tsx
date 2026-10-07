@@ -21,7 +21,7 @@ import { useAppSelector } from "@/shared/store/hooks";
  * here. The OTP screen submits to /auth/verify-otp directly.
  */
 export function SignupFlowContainer() {
-  const authStep = useAppSelector((s) => s.auth.authStep);
+  const authStep = useAppSelector((state) => state.auth.authStep);
 
   // We track the user's registration data locally to pass the email/name
   // to the OTP screen (for display only — not for verification logic).

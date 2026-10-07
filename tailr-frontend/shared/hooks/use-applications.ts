@@ -7,28 +7,37 @@ import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppSelector } from "@/shared/store/hooks";
 import { generateSampleApplications } from "@/shared/lib/sample-applications";
 
-const STORAGE_KEY = "tailr_applications_v2";
+const APPLICATIONS_STORAGE_KEY = "tailr_applications_v2";
 
-let cachedSnapshot: Application[] | null = null;
-let cachedRaw: string | null = null;
+/**
+ * Module-level memory cache for useSyncExternalStore reference stability.
+ * Scope: Client-side module lifetime.
+ * Invalidation: Invalidated whenever a storage event occurs or a local mutation is persisted.
+ */
+let cachedApplicationsSnapshot: Application[] | null = null;
+let cachedRawApplicationsJson: string | null = null;
 
-function getSnapshot(): Application[] {
+/**
+ * Snapshot getter for useSyncExternalStore subscription.
+ * Reads and parses applications JSON from localStorage with cached reference stability.
+ */
+function getApplicationsSnapshot(): Application[] {
   if (typeof window === "undefined") {
     return [];
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(APPLICATIONS_STORAGE_KEY);
     if (!raw) {
       return [];
     }
-    if (raw === cachedRaw && cachedSnapshot) {
-      return cachedSnapshot;
+    if (raw === cachedRawApplicationsJson && cachedApplicationsSnapshot) {
+      return cachedApplicationsSnapshot;
     }
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
-      cachedRaw = raw;
-      cachedSnapshot = parsed;
-      return cachedSnapshot;
+      cachedRawApplicationsJson = raw;
+      cachedApplicationsSnapshot = parsed;
+      return cachedApplicationsSnapshot;
     }
   } catch {
     // fallback
@@ -36,15 +45,22 @@ function getSnapshot(): Application[] {
   return [];
 }
 
-function getServerSnapshot(): Application[] {
+/**
+ * Server snapshot getter for useSyncExternalStore SSR hydration consistency.
+ */
+function getServerApplicationsSnapshot(): Application[] {
   return [];
 }
 
-function subscribe(callback: () => void) {
+/**
+ * Store subscriber for useSyncExternalStore.
+ * Listens to local custom events and window storage events.
+ */
+function subscribeApplications(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleUpdate = () => {
-    cachedRaw = null;
-    cachedSnapshot = null;
+    cachedRawApplicationsJson = null;
+    cachedApplicationsSnapshot = null;
     callback();
   };
   window.addEventListener("tailr_applications_updated", handleUpdate);
@@ -62,17 +78,17 @@ export function useApplications() {
   const [isLoading, setIsLoading] = React.useState(false);
 
   const applications = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+    subscribeApplications,
+    getApplicationsSnapshot,
+    getServerApplicationsSnapshot
   );
 
   const persist = React.useCallback((next: Application[]) => {
     try {
       const raw = JSON.stringify(next);
-      localStorage.setItem(STORAGE_KEY, raw);
-      cachedRaw = raw;
-      cachedSnapshot = next;
+      localStorage.setItem(APPLICATIONS_STORAGE_KEY, raw);
+      cachedRawApplicationsJson = raw;
+      cachedApplicationsSnapshot = next;
       window.dispatchEvent(new Event("tailr_applications_updated"));
     } catch {
       // ignore

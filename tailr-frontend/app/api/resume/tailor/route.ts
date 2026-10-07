@@ -30,10 +30,10 @@ function validateAgainstMaster(
 
   // Check skills
   const masterAllSkills = new Set([
-    ...master.skills.languages.map((s) => s.toLowerCase().trim()),
-    ...master.skills.frameworks.map((s) => s.toLowerCase().trim()),
-    ...master.skills.tools.map((s) => s.toLowerCase().trim()),
-    ...master.skills.other.map((s) => s.toLowerCase().trim()),
+    ...master.skills.languages.map((skill) => skill.toLowerCase().trim()),
+    ...master.skills.frameworks.map((skill) => skill.toLowerCase().trim()),
+    ...master.skills.tools.map((skill) => skill.toLowerCase().trim()),
+    ...master.skills.other.map((skill) => skill.toLowerCase().trim()),
   ]);
 
   const tailoredAllSkills = [

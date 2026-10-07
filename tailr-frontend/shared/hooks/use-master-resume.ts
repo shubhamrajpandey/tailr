@@ -3,7 +3,7 @@
 import * as React from "react";
 import { MasterResume, ResumeData } from "@/shared/types/resume";
 
-const STORAGE_KEY = "tailr_master_resume_v1";
+const MASTER_RESUME_STORAGE_KEY = "tailr_master_resume_v1";
 
 export const INITIAL_MASTER_RESUME: MasterResume = {
   id: "master-001",
@@ -163,30 +163,38 @@ export const INITIAL_MASTER_RESUME: MasterResume = {
   updatedAt: "2026-09-18T10:00:00Z",
 };
 
-let cachedSnapshot: MasterResume | null = null;
-let cachedRaw: string | null = null;
+/**
+ * Module-level memory cache for useSyncExternalStore reference stability.
+ * Scope: Client-side module lifetime.
+ * Invalidation: Invalidated whenever master resume updates or storage changes.
+ */
+let cachedMasterResumeSnapshot: MasterResume | null = null;
+let cachedRawMasterResumeJson: string | null = null;
 
-function getSnapshot(): MasterResume {
+/**
+ * Snapshot getter for useSyncExternalStore subscription.
+ */
+function getMasterResumeSnapshot(): MasterResume {
   if (typeof window === "undefined") {
     return INITIAL_MASTER_RESUME;
   }
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(MASTER_RESUME_STORAGE_KEY);
     if (!raw) {
       const initialStr = JSON.stringify(INITIAL_MASTER_RESUME);
-      localStorage.setItem(STORAGE_KEY, initialStr);
-      cachedRaw = initialStr;
-      cachedSnapshot = INITIAL_MASTER_RESUME;
-      return cachedSnapshot;
+      localStorage.setItem(MASTER_RESUME_STORAGE_KEY, initialStr);
+      cachedRawMasterResumeJson = initialStr;
+      cachedMasterResumeSnapshot = INITIAL_MASTER_RESUME;
+      return cachedMasterResumeSnapshot;
     }
-    if (raw === cachedRaw && cachedSnapshot) {
-      return cachedSnapshot;
+    if (raw === cachedRawMasterResumeJson && cachedMasterResumeSnapshot) {
+      return cachedMasterResumeSnapshot;
     }
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === "object" && parsed.basics) {
-      cachedRaw = raw;
-      cachedSnapshot = parsed as MasterResume;
-      return cachedSnapshot;
+      cachedRawMasterResumeJson = raw;
+      cachedMasterResumeSnapshot = parsed as MasterResume;
+      return cachedMasterResumeSnapshot;
     }
   } catch {
     // fallback
@@ -194,15 +202,21 @@ function getSnapshot(): MasterResume {
   return INITIAL_MASTER_RESUME;
 }
 
-function getServerSnapshot(): MasterResume {
+/**
+ * Server snapshot getter for useSyncExternalStore SSR hydration consistency.
+ */
+function getServerMasterResumeSnapshot(): MasterResume {
   return INITIAL_MASTER_RESUME;
 }
 
-function subscribe(callback: () => void) {
+/**
+ * Store subscriber for useSyncExternalStore.
+ */
+function subscribeMasterResume(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleUpdate = () => {
-    cachedRaw = null;
-    cachedSnapshot = null;
+    cachedRawMasterResumeJson = null;
+    cachedMasterResumeSnapshot = null;
     callback();
   };
   window.addEventListener("tailr_master_resume_updated", handleUpdate);
@@ -215,9 +229,9 @@ function subscribe(callback: () => void) {
 
 export function useMasterResume() {
   const masterResume = React.useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+    subscribeMasterResume,
+    getMasterResumeSnapshot,
+    getServerMasterResumeSnapshot
   );
 
   const updateMasterResume = React.useCallback(
@@ -229,9 +243,9 @@ export function useMasterResume() {
           updatedAt: new Date().toISOString(),
         };
         const raw = JSON.stringify(updated);
-        localStorage.setItem(STORAGE_KEY, raw);
-        cachedRaw = raw;
-        cachedSnapshot = updated;
+        localStorage.setItem(MASTER_RESUME_STORAGE_KEY, raw);
+        cachedRawMasterResumeJson = raw;
+        cachedMasterResumeSnapshot = updated;
         window.dispatchEvent(new Event("tailr_master_resume_updated"));
         return updated;
       } catch {
@@ -244,9 +258,9 @@ export function useMasterResume() {
   const resetToDefault = React.useCallback(() => {
     try {
       const raw = JSON.stringify(INITIAL_MASTER_RESUME);
-      localStorage.setItem(STORAGE_KEY, raw);
-      cachedRaw = raw;
-      cachedSnapshot = INITIAL_MASTER_RESUME;
+      localStorage.setItem(MASTER_RESUME_STORAGE_KEY, raw);
+      cachedRawMasterResumeJson = raw;
+      cachedMasterResumeSnapshot = INITIAL_MASTER_RESUME;
       window.dispatchEvent(new Event("tailr_master_resume_updated"));
     } catch {
       // ignore
