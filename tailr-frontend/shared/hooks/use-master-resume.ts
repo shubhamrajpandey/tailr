@@ -203,8 +203,8 @@ function getMasterResumeSnapshot(): MasterResume {
       cachedMasterResumeSnapshot = parsed as MasterResume;
       return cachedMasterResumeSnapshot;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    console.warn("[useMasterResume] Failed to parse cached master resume from storage:", err);
   }
   return INITIAL_MASTER_RESUME;
 }
@@ -234,6 +234,14 @@ function subscribeMasterResume(callback: () => void) {
   };
 }
 
+/**
+ * Hook for managing and synchronizing the user's master baseline resume.
+ *
+ * Provides reactive read access and mutations for user contact info, experiences,
+ * education, projects, skills, and certifications with multi-tab storage synchronization.
+ *
+ * @returns Master resume data, loaded status, and atomic updater/reset callbacks.
+ */
 export function useMasterResume() {
   const masterResume = React.useSyncExternalStore(
     subscribeMasterResume,
@@ -255,7 +263,8 @@ export function useMasterResume() {
         cachedMasterResumeSnapshot = updated;
         window.dispatchEvent(new Event("tailr_master_resume_updated"));
         return updated;
-      } catch {
+      } catch (err) {
+        console.warn("[useMasterResume] Failed to persist updated master resume:", err);
         return masterResume;
       }
     },
@@ -269,8 +278,8 @@ export function useMasterResume() {
       cachedRawMasterResumeJson = raw;
       cachedMasterResumeSnapshot = INITIAL_MASTER_RESUME;
       window.dispatchEvent(new Event("tailr_master_resume_updated"));
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useMasterResume] Failed to persist default master resume:", err);
     }
   }, []);
 
