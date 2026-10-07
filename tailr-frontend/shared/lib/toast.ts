@@ -65,6 +65,10 @@ class ToastStore {
     this.toasts = [];
     this.notify();
   }
+
+  public getToasts(): ToastItem[] {
+    return [...this.toasts];
+  }
 }
 
 export const toastStore = new ToastStore();
