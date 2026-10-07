@@ -6,6 +6,7 @@ import { ApplicationFormValues } from "@/shared/lib/validations/application";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppSelector } from "@/shared/store/hooks";
 import { generateSampleApplications } from "@/shared/lib/sample-applications";
+import { isUuidV4 } from "@/shared/lib/utils";
 
 const APPLICATIONS_STORAGE_KEY = "tailr_applications_v2";
 
@@ -234,8 +235,7 @@ export function useApplications() {
         persist(next);
 
         // Async backend sync if valid UUID
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-        if (isUuid) {
+        if (isUuidV4(id)) {
           authApiClient
             .patch(`/applications/${id}`, values)
             .catch((err) => {
@@ -267,8 +267,7 @@ export function useApplications() {
       const next = applications.filter((app) => app.id !== id);
       persist(next);
 
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-      if (isUuid) {
+      if (isUuidV4(id)) {
         authApiClient
           .delete(`/applications/${id}`)
           .catch((err) => {

@@ -1,5 +1,18 @@
 "use client";
 
+/**
+ * TopBar Application Header
+ *
+ * Sticky top navigation bar for the authenticated dashboard layout.
+ *
+ * Responsibilities & Subcomponents:
+ * - Left: `TopBarBreadcrumbs` displays mobile logo branding on small viewports and
+ *   hierarchical route breadcrumbs on desktop viewports.
+ * - Right: `TopBarActions` provides dark/light theme switching, language toggle, and
+ *   quick-access profile popovers.
+ * - Responsive Breakpoints: Integrates `TopBarMobileMenu` drawer on small screens.
+ */
+
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 import {

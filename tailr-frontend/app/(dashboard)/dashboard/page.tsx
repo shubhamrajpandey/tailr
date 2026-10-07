@@ -30,7 +30,40 @@ export default function DashboardPage() {
     deleteApplication,
   } = useDashboardData();
 
-  const weeklyDelta = applications.length > 0 ? "+14% vs last week" : "0% vs last week";
+  // Computed weekly volume comparison: compares past 7 days against previous 7-day window
+  const weeklyDelta = React.useMemo(() => {
+    if (applications.length === 0) return "0% vs last week";
+
+    const now = Date.now();
+    const MS_7_DAYS = 7 * 24 * 60 * 60 * 1000;
+    const MS_14_DAYS = 14 * 24 * 60 * 60 * 1000;
+
+    let currentWeekCount = 0;
+    let previousWeekCount = 0;
+
+    for (const app of applications) {
+      const dateStr = app.appliedDate || app.createdAt;
+      if (!dateStr) continue;
+      const appTime = new Date(dateStr).getTime();
+      const age = now - appTime;
+
+      if (age >= 0 && age < MS_7_DAYS) {
+        currentWeekCount++;
+      } else if (age >= MS_7_DAYS && age < MS_14_DAYS) {
+        previousWeekCount++;
+      }
+    }
+
+    if (previousWeekCount === 0) {
+      return currentWeekCount > 0 ? `+${currentWeekCount} this week` : "0% vs last week";
+    }
+
+    const percentChange = Math.round(
+      ((currentWeekCount - previousWeekCount) / previousWeekCount) * 100
+    );
+    const prefix = percentChange > 0 ? "+" : "";
+    return `${prefix}${percentChange}% vs last week`;
+  }, [applications]);
   const firstName = user?.fullName?.split(" ")[0] || "there";
 
   return (

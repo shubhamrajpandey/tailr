@@ -11,135 +11,151 @@ export interface BreadcrumbItem {
   href?: string;
 }
 
-export function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
-  if (pathname === "/dashboard" || pathname === "/") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Dashboard" },
-    ];
-  }
-  if (pathname === "/applications") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Applications" },
-    ];
-  }
-  if (pathname === "/applications/new") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Applications", href: "/applications" },
-      { label: "New Application" },
-    ];
-  }
-  if (pathname.startsWith("/applications/") && pathname.endsWith("/edit")) {
-    return [
+/**
+ * Static route-to-breadcrumb dictionary for predictable, instantaneous O(1) route lookups.
+ */
+export const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
+  "/": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Dashboard" },
+  ],
+  "/dashboard": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Dashboard" },
+  ],
+  "/applications": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Applications" },
+  ],
+  "/applications/new": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Applications", href: "/applications" },
+    { label: "New Application" },
+  ],
+  "/resume": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Master Resume" },
+  ],
+  "/resume/tailor": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Resume", href: "/resume" },
+    { label: "Tailor Resume" },
+  ],
+  "/resume/versions": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Resume", href: "/resume" },
+    { label: "Saved Versions" },
+  ],
+  "/cover-letter": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Cover Letters" },
+  ],
+  "/cover-letter/new": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Cover Letters", href: "/cover-letter" },
+    { label: "New Letter" },
+  ],
+  "/analytics": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Analytics" },
+  ],
+  "/companies": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Companies" },
+  ],
+  "/settings": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Settings" },
+  ],
+  "/docs": [
+    { label: "Overview", href: "/dashboard" },
+    { label: "Documentation" },
+  ],
+};
+
+interface DynamicBreadcrumbPattern {
+  matches: (pathname: string) => boolean;
+  resolve: (pathname: string) => BreadcrumbItem[];
+}
+
+const SETTINGS_SUB_LABELS: Record<string, string> = {
+  "danger-zone": "Danger Zone",
+  crm: "Applications CRM",
+  ai: "AI & Models",
+};
+
+const DYNAMIC_BREADCRUMB_PATTERNS: DynamicBreadcrumbPattern[] = [
+  {
+    matches: (pathname) =>
+      pathname.startsWith("/applications/") && pathname.endsWith("/edit"),
+    resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Applications", href: "/applications" },
       { label: "Edit Application" },
-    ];
-  }
-  if (pathname.startsWith("/applications/")) {
-    return [
+    ],
+  },
+  {
+    matches: (pathname) => pathname.startsWith("/applications/"),
+    resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Applications", href: "/applications" },
       { label: "Application Details" },
-    ];
-  }
-  if (pathname === "/resume") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Master Resume" },
-    ];
-  }
-  if (pathname === "/resume/tailor") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Resume", href: "/resume" },
-      { label: "Tailor Resume" },
-    ];
-  }
-  if (pathname === "/resume/versions") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Resume", href: "/resume" },
-      { label: "Saved Versions" },
-    ];
-  }
-  if (pathname.startsWith("/resume/versions/")) {
-    return [
+    ],
+  },
+  {
+    matches: (pathname) => pathname.startsWith("/resume/versions/"),
+    resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Resume", href: "/resume" },
       { label: "Saved Versions", href: "/resume/versions" },
       { label: "Version Comparison" },
-    ];
-  }
-  if (pathname.startsWith("/resumes")) {
-    return [
+    ],
+  },
+  {
+    matches: (pathname) => pathname.startsWith("/resumes"),
+    resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Resume" },
-    ];
-  }
-  if (pathname === "/cover-letter") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Cover Letters" },
-    ];
-  }
-  if (pathname === "/cover-letter/new") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Cover Letters", href: "/cover-letter" },
-      { label: "New Letter" },
-    ];
-  }
-  if (pathname.startsWith("/cover-letter/")) {
-    return [
+    ],
+  },
+  {
+    matches: (pathname) => pathname.startsWith("/cover-letter/"),
+    resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Cover Letters", href: "/cover-letter" },
       { label: "View Letter" },
-    ];
-  }
-  if (pathname.startsWith("/analytics")) {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Analytics" },
-    ];
-  }
-  if (pathname.startsWith("/companies")) {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Companies" },
-    ];
-  }
-  if (pathname.startsWith("/settings/")) {
-    const sub = pathname.replace("/settings/", "");
-    const subLabel =
-      sub === "danger-zone"
-        ? "Danger Zone"
-        : sub === "crm"
-        ? "Applications CRM"
-        : sub === "ai"
-        ? "AI & Models"
-        : sub.charAt(0).toUpperCase() + sub.slice(1);
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Settings", href: "/settings/account" },
-      { label: subLabel },
-    ];
-  }
-  if (pathname === "/settings") {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Settings" },
-    ];
-  }
-  if (pathname.startsWith("/docs")) {
-    return [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Documentation" },
-    ];
+    ],
+  },
+  {
+    matches: (pathname) => pathname.startsWith("/settings/"),
+    resolve: (pathname) => {
+      const sub = pathname.replace("/settings/", "");
+      const subLabel =
+        SETTINGS_SUB_LABELS[sub] ||
+        sub.charAt(0).toUpperCase() + sub.slice(1).replace(/-/g, " ");
+      return [
+        { label: "Overview", href: "/dashboard" },
+        { label: "Settings", href: "/settings/account" },
+        { label: subLabel },
+      ];
+    },
+  },
+];
+
+export function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
+  // 1. Direct O(1) map lookup
+  if (BREADCRUMB_MAP[pathname]) {
+    return BREADCRUMB_MAP[pathname];
   }
 
+  // 2. Dynamic route pattern matchers
+  for (const pattern of DYNAMIC_BREADCRUMB_PATTERNS) {
+    if (pattern.matches(pathname)) {
+      return pattern.resolve(pathname);
+    }
+  }
+
+  // 3. Fallback segment formatting for unmapped paths
   const segments = pathname.split("/").filter(Boolean);
   return [
     { label: "Overview", href: "/dashboard" },

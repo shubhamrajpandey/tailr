@@ -27,7 +27,11 @@ export function setAuthCookie(token: string, maxAgeDays = 7): void {
     token
   )}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
 
-  // Also set accessToken alias for compatibility
+  // Legacy edge-middleware compatibility:
+  // Early iterations of the Next.js edge runtime middleware and backend proxy specifically
+  // looked for the cookie name 'accessToken'. While the frontend now standardizes on the
+  // namespaced 'tailr_access_token' (AUTH_COOKIE_NAME), 'accessToken' is set as an alias to
+  // avoid invalidating active sessions during rolling deployments and cross-service proxying.
   document.cookie = `accessToken=${encodeURIComponent(
     token
   )}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;

@@ -12,7 +12,22 @@ import { cn } from "@/shared/lib/utils";
 import { MobileBottomBar } from "./mobile-bottom-bar";
 import { SidebarNav, SidebarNavFallback } from "./sidebar-nav";
 import { SidebarQuotaDisplay } from "./sidebar-quota-display";
-import { SidebarUserMenu } from "./sidebar-user-menu";
+/**
+ * Sidebar Navigation Layout Component
+ *
+ * Primary navigation anchor for the Tailr authenticated dashboard shell.
+ *
+ * Features & Responsibilities:
+ * - Responsive Layout: Renders fixed-left desktop sidebar (md/lg+) and mounts
+ *   `MobileBottomBar` for phone viewports (< md).
+ * - Collapse State Architecture: Backed by `useSyncExternalStore` subscribing to
+ *   `SIDEBAR_COLLAPSE_KEY` in `localStorage`. Preserves user collapse preferences across
+ *   tabs and navigation without hydration mismatch.
+ * - Subcomponent Composition:
+ *   - `SidebarNav`: Primary route links with active state indicator and live application count.
+ *   - `SidebarQuotaDisplay`: Visual meter tracking AI tailoring generation quotas.
+ *   - `SidebarUserMenu`: Profile popover, credentials display, and authenticated logout action.
+ */
 
 const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
 

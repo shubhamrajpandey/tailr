@@ -30,9 +30,34 @@ import {
   isTokenValid,
 } from "./cookie";
 
-// ─── Singleton flag — one refresh at a time ─────────────────────────────────────
+// ─── Concurrent Refresh Queuing (Mutex Pattern) ────────────────────────────────
+/**
+ * WHY A SUBSCRIBER QUEUE IS NECESSARY:
+ *
+ * When an access token expires while a user is browsing, multiple independent
+ * HTTP queries often fire simultaneously (e.g., initial dashboard mount requesting
+ * user profile, application list, AI quotas, and analytics stats all at once).
+ *
+ * Each of these requests will encounter a 401 Unauthorized response almost concurrently.
+ *
+ * Without a queue and single-in-flight lock (`isRefreshing`):
+ * 1. Every 401 handler would initiate its own separate `/auth/refresh` request.
+ * 2. Secure refresh token implementations use single-use rotation (or strict sequencing).
+ *    When refresh request A executes, the refresh token cookie rotates on the server.
+ *    Subsequent parallel refresh requests B, C, and D would submit the old rotated cookie,
+ *    triggering token reuse alerts, invalidating the session, and forcibly logging the user out.
+ * 3. Multiple redundant network round-trips degrade client performance.
+ *
+ * The solution:
+ * - `isRefreshing` acts as a mutex lock. Only the very first 401 triggers `/auth/refresh`.
+ * - Subsequent concurrent 401s suspend execution by registering a retry callback in
+ *   `refreshSubscribers`.
+ * - Once the primary refresh completes, `notifySubscribers` broadcasts the fresh access
+ *   token to all queued callbacks, simultaneously retrying all original requests.
+ * - If refresh fails, `notifySubscribers` is bypassed, the queue is purged, and the
+ *   user is safely redirected to `/login`.
+ */
 let isRefreshing = false;
-// Queued calls that arrived while a refresh was already in flight
 let refreshSubscribers: Array<(token: string) => void> = [];
 
 function subscribeToRefresh(cb: (token: string) => void) {

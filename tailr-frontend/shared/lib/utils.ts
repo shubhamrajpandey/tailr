@@ -28,3 +28,15 @@ export function formatRelativeTime(dateString: string): string {
   if (diffInDays < 7) return `${diffInDays}d ago`;
   return formatDate(dateString);
 }
+
+/**
+ * Standard RFC 4122 UUID v4 format validator.
+ * Validates 36-character hexadecimal string format with canonical hyphenation.
+ */
+const UUID_V4_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export function isUuidV4(str: string): boolean {
+  if (!str || typeof str !== "string") return false;
+  return UUID_V4_REGEX.test(str);
+}

@@ -4,6 +4,7 @@ import * as React from "react";
 import { CoverLetter } from "@/shared/types/cover-letter";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppSelector } from "@/shared/store/hooks";
+import { isUuidV4 } from "@/shared/lib/utils";
 
 const COVER_LETTERS_STORAGE_KEY = "tailr_cover_letters_v2";
 
@@ -60,9 +61,6 @@ function subscribeCoverLetters(callback: () => void) {
     window.removeEventListener("storage", handleUpdate);
   };
 }
-
-const isUuid = (id: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
 export function useCoverLetters() {
   const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector(
@@ -202,7 +200,7 @@ export function useCoverLetters() {
       if (updated) {
         persist(next);
 
-        if (isUuid(id)) {
+        if (isUuidV4(id)) {
           try {
             await authApiClient.put(`/cover-letters/${id}`, {
               companyName: updates.companyName,
@@ -230,7 +228,7 @@ export function useCoverLetters() {
       const next = coverLetters.filter((cl) => cl.id !== id);
       persist(next);
 
-      if (isUuid(id)) {
+      if (isUuidV4(id)) {
         try {
           await authApiClient.delete(`/cover-letters/${id}`);
         } catch (err) {

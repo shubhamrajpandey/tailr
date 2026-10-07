@@ -5,6 +5,13 @@ import { MasterResume, ResumeData } from "@/shared/types/resume";
 
 const MASTER_RESUME_STORAGE_KEY = "tailr_master_resume_v1";
 
+/**
+ * DEV DEFAULT / SEED DATA — replace before production or empty this before shipping.
+ *
+ * This object serves as initial fallback seed data during local development and preview mode.
+ * In a production deployment, user resume data is fetched from the authenticated
+ * backend endpoint (e.g. GET /resume/master) or initialized via user onboarding.
+ */
 export const INITIAL_MASTER_RESUME: MasterResume = {
   id: "master-001",
   basics: {
