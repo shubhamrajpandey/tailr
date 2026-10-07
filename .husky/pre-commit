@@ -1,5 +1,8 @@
 export PATH="/c/Users/Pandey/.bun/bin:$USERPROFILE/.bun/bin:$HOME/.bun/bin:$PATH"
 
+echo "Running lint-staged..."
+npx lint-staged
+
 echo "Running frontend checks..."
 cd tailr-frontend && npm run lint && npm run typecheck
 cd ..

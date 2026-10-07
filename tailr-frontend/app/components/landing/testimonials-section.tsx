@@ -46,7 +46,8 @@ export function TestimonialsSection() {
             Trusted by Builders at Top Tech Companies
           </h2>
           <p className="mt-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-            Real outcomes from engineers and product leaders who streamlined their applications with Tailr.
+            Real outcomes from engineers and product leaders who streamlined their applications with
+            Tailr.
           </p>
         </div>
 
@@ -74,12 +75,8 @@ export function TestimonialsSection() {
                   className="bg-indigo-100 dark:bg-indigo-600/30 text-indigo-700 dark:text-indigo-300 font-bold border-indigo-200 dark:border-indigo-500/20"
                 />
                 <div>
-                  <div className="text-xs font-bold text-neutral-950 dark:text-white">
-                    {t.name}
-                  </div>
-                  <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                    {t.role}
-                  </div>
+                  <div className="text-xs font-bold text-neutral-950 dark:text-white">{t.name}</div>
+                  <div className="text-[11px] text-neutral-500 dark:text-neutral-400">{t.role}</div>
                   <div className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
                     {t.company}
                   </div>

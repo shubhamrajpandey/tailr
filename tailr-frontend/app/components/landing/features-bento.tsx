@@ -100,13 +100,7 @@ function ScrollFlipCard({
   const BadgeIcon = badge.icon;
 
   return (
-    <div
-      ref={cardRef}
-      className={cn(
-        "relative [perspective:1400px] select-none",
-        className
-      )}
-    >
+    <div ref={cardRef} className={cn("relative [perspective:1400px] select-none", className)}>
       {/* Scroll-transform wrapper (smooth 3D flip animation on scroll) */}
       <div
         style={{
@@ -228,7 +222,8 @@ export function FeaturesBento() {
             Engineered for Precision & Callbacks
           </h2>
           <p className="mt-3 sm:mt-4 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            Tailr operates with strict constraints: deterministic data structures, verified achievements, and exact ATS parser compliance.
+            Tailr operates with strict constraints: deterministic data structures, verified
+            achievements, and exact ATS parser compliance.
           </p>
         </div>
 
@@ -293,18 +288,20 @@ export function FeaturesBento() {
             backDeepDive={
               <div className="space-y-2.5">
                 <p className="text-neutral-300">
-                  Rather than managing dozens of detached `.docx` copies, all achievements live in a unified data graph.
+                  Rather than managing dozens of detached `.docx` copies, all achievements live in a
+                  unified data graph.
                 </p>
                 <div className="p-2.5 rounded bg-black/40 border border-white/10 text-[11px] text-neutral-300 space-y-0.5">
                   <div>{"{"}</div>
-                  <div className="pl-3">"source": "master_resume.json",</div>
-                  <div className="pl-3">"schema_version": "2.4.0",</div>
-                  <div className="pl-3">"records": 18,</div>
-                  <div className="pl-3">"targets": ["stripe", "figma"]</div>
+                  <div className="pl-3">{'"source": "master_resume.json",'}</div>
+                  <div className="pl-3">{'"schema_version": "2.4.0",'}</div>
+                  <div className="pl-3">{'"records": 18,'}</div>
+                  <div className="pl-3">{'"targets": ["stripe", "figma"]'}</div>
                   <div>{"}"}</div>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Update once. Every application permutation stays synchronized with zero data drift.
+                  Update once. Every application permutation stays synchronized with zero data
+                  drift.
                 </p>
               </div>
             }
@@ -331,11 +328,13 @@ export function FeaturesBento() {
                 <div className="space-y-1.5 text-[10px]">
                   <div className="flex items-center gap-1.5 p-1.5 rounded bg-white dark:bg-white/[0.02] border border-neutral-200/70 dark:border-white/5 text-neutral-800 dark:text-neutral-200">
                     <Check className="h-3 w-3 shrink-0 text-neutral-500 dark:text-neutral-400" />
-                    <span className="truncate">"Scaled Next.js app to 4.2M users"</span>
+                    <span className="truncate">&ldquo;Scaled Next.js app to 4.2M users&rdquo;</span>
                   </div>
                   <div className="flex items-center gap-1.5 p-1.5 rounded bg-white dark:bg-white/[0.02] border border-neutral-200/70 dark:border-white/5 text-neutral-500 dark:text-neutral-400">
                     <X className="h-3 w-3 shrink-0 text-neutral-400" />
-                    <span className="truncate">"Invented Kubernetes cert" (Blocked)</span>
+                    <span className="truncate">
+                      &ldquo;Invented Kubernetes cert&rdquo; (Blocked)
+                    </span>
                   </div>
                 </div>
               </div>
@@ -343,7 +342,8 @@ export function FeaturesBento() {
             backDeepDive={
               <div className="space-y-2.5">
                 <p className="text-neutral-300">
-                  Standard LLMs tend to invent titles to force a high score. Tailr uses strict AST validation:
+                  Standard LLMs tend to invent titles to force a high score. Tailr uses strict AST
+                  validation:
                 </p>
                 <div className="p-2.5 rounded bg-black/40 border border-white/10 text-[10px] text-neutral-300 space-y-0.5">
                   <div>[CHECK] Title constraint: STRICT</div>
@@ -393,7 +393,8 @@ export function FeaturesBento() {
                   <div>Z: By doing [Technical Action]</div>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Every change is reversible. You maintain complete creative ownership over your voice.
+                  Every change is reversible. You maintain complete creative ownership over your
+                  voice.
                 </p>
               </div>
             }
@@ -423,15 +424,21 @@ export function FeaturesBento() {
                 <div className="grid grid-cols-3 gap-2 text-[10px]">
                   <div className="p-2 rounded-lg bg-white dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/5 text-center space-y-0.5">
                     <div className="font-semibold text-neutral-900 dark:text-white">Greenhouse</div>
-                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">100% Parsed</div>
+                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">
+                      100% Parsed
+                    </div>
                   </div>
                   <div className="p-2 rounded-lg bg-white dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/5 text-center space-y-0.5">
                     <div className="font-semibold text-neutral-900 dark:text-white">Workday</div>
-                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">Valid AST</div>
+                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">
+                      Valid AST
+                    </div>
                   </div>
                   <div className="p-2 rounded-lg bg-white dark:bg-white/[0.02] border border-neutral-200/60 dark:border-white/5 text-center space-y-0.5">
                     <div className="font-semibold text-neutral-900 dark:text-white">Lever</div>
-                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">0 Penalties</div>
+                    <div className="text-[9px] text-neutral-500 dark:text-neutral-400">
+                      0 Penalties
+                    </div>
                   </div>
                 </div>
               </div>

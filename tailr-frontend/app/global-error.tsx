@@ -26,7 +26,8 @@ export default function GlobalError({
             Critical Application Error
           </h1>
           <p className="text-sm text-neutral-400 mb-6 leading-relaxed">
-            A critical error occurred while initializing the application. You can reload the page to attempt recovery.
+            A critical error occurred while initializing the application. You can reload the page to
+            attempt recovery.
           </p>
 
           {error.message && (
@@ -36,9 +37,7 @@ export default function GlobalError({
               </div>
               <div className="truncate">{error.message}</div>
               {error.digest && (
-                <div className="text-[10px] text-neutral-500 mt-1">
-                  Digest: {error.digest}
-                </div>
+                <div className="text-[10px] text-neutral-500 mt-1">Digest: {error.digest}</div>
               )}
             </div>
           )}

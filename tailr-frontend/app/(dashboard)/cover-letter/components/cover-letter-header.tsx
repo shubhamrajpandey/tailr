@@ -45,7 +45,8 @@ export function CoverLetterHeader({
             )}
           </div>
           <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-            Targeted, zero-hallucination cover letters tailored from your master resume with instant PDF and Word export.
+            Targeted, zero-hallucination cover letters tailored from your master resume with instant
+            PDF and Word export.
           </p>
           <div className="mt-2.5">
             <AiQuotaBadge

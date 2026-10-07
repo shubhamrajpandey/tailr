@@ -8,9 +8,7 @@ interface DropdownMenuContextValue {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const DropdownMenuContext = React.createContext<DropdownMenuContextValue | undefined>(
-  undefined
-);
+const DropdownMenuContext = React.createContext<DropdownMenuContextValue | undefined>(undefined);
 
 interface DropdownMenuProps {
   children: React.ReactNode;
@@ -22,10 +20,7 @@ function DropdownMenu({ children }: DropdownMenuProps) {
 
   React.useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false);
       }
     }
@@ -120,7 +115,8 @@ function DropdownMenuItem({
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1.5 text-xs outline-none transition-colors hover:bg-neutral-100 dark:hover:bg-white/[0.08] text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white",
         disabled && "opacity-50 cursor-not-allowed pointer-events-none",
-        destructive && "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300",
+        destructive &&
+          "text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-700 dark:hover:text-rose-300",
         className
       )}
     >

@@ -1,8 +1,4 @@
-import {
-  ResumeData,
-  ResumeCertification,
-  ResumeAchievement,
-} from "@/shared/types/resume";
+import { ResumeData, ResumeCertification, ResumeAchievement } from "@/shared/types/resume";
 import { ResumeExportData } from "@/shared/utils/resume-export-helpers";
 
 /**
@@ -40,8 +36,11 @@ export function mapDbResumeToResumeData(
       const rawList = Array.isArray(item.skills)
         ? item.skills
         : typeof item.skills === "string"
-        ? item.skills.split(",").map((s: string) => s.trim()).filter(Boolean)
-        : [];
+          ? item.skills
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean)
+          : [];
 
       const cat = (item.category || "").toLowerCase();
       if (cat.includes("lang") || cat.includes("prog")) {
@@ -91,7 +90,8 @@ export function mapDbResumeToResumeData(
       endDate: exp.endDate || "",
       current:
         typeof exp.endDate === "string" &&
-        (exp.endDate.toLowerCase().includes("present") || exp.endDate.toLowerCase().includes("current")),
+        (exp.endDate.toLowerCase().includes("present") ||
+          exp.endDate.toLowerCase().includes("current")),
       bullets: Array.isArray(exp.bullets) ? exp.bullets : [],
     }));
   }
@@ -125,8 +125,11 @@ export function mapDbResumeToResumeData(
       const tech = Array.isArray(proj.technologies)
         ? proj.technologies
         : typeof proj.technologies === "string"
-        ? proj.technologies.split(",").map((s: string) => s.trim()).filter(Boolean)
-        : [];
+          ? proj.technologies
+              .split(",")
+              .map((s: string) => s.trim())
+              .filter(Boolean)
+          : [];
 
       return {
         id: `proj-${idx + 1}-${Date.now()}`,
@@ -141,9 +144,7 @@ export function mapDbResumeToResumeData(
 
   // Certifications & Achievements mapping
   const isCustomUserResume = Boolean(
-    fullName &&
-      fullName !== "Alex Morgan" &&
-      !fullName.toLowerCase().includes("sample")
+    fullName && fullName !== "Alex Morgan" && !fullName.toLowerCase().includes("sample")
   );
   const certifications: ResumeCertification[] = Array.isArray(dbData.certifications)
     ? dbData.certifications.map((c, idx) => ({
@@ -154,8 +155,8 @@ export function mapDbResumeToResumeData(
         url: c.url || "",
       }))
     : isCustomUserResume
-    ? []
-    : prev.certifications;
+      ? []
+      : prev.certifications;
 
   const achievements: ResumeAchievement[] = Array.isArray(dbData.achievements)
     ? dbData.achievements.map((a, idx) => ({
@@ -165,8 +166,8 @@ export function mapDbResumeToResumeData(
         date: a.date || "",
       }))
     : isCustomUserResume
-    ? []
-    : prev.achievements;
+      ? []
+      : prev.achievements;
 
   return {
     basics: {

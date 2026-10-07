@@ -4,11 +4,7 @@
  */
 
 export type CoverLetterTone =
-  | "professional"
-  | "natural"
-  | "confident"
-  | "enthusiastic"
-  | "technical";
+  "professional" | "natural" | "confident" | "enthusiastic" | "technical";
 
 export type CoverLetterLength = "short" | "standard" | "detailed";
 

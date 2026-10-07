@@ -28,7 +28,8 @@ export default function SupportPage() {
             Tailr Direct Support
           </h1>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-            Reach out directly via WhatsApp (+977 9740858524) or email (shubhamrajpandey88@gmail.com).
+            Reach out directly via WhatsApp (+977 9740858524) or email
+            (shubhamrajpandey88@gmail.com).
           </p>
         </div>
 
@@ -44,7 +45,11 @@ export default function SupportPage() {
             </Button>
           )}
           <Link href="/dashboard" className="w-full sm:w-auto">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs h-9 gap-1.5 cursor-pointer">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full sm:w-auto text-xs h-9 gap-1.5 cursor-pointer"
+            >
               <Home className="h-3.5 w-3.5" />
               <span>Back to Dashboard</span>
             </Button>

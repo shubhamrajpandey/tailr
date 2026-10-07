@@ -22,10 +22,7 @@ export interface CoverLetterExportMetadata {
  * Generates and triggers the download of a Microsoft Word / Google Docs compatible (.doc) file.
  * Employs standard Office XML/HTML formatting so all paragraph styles, margins, and headers are preserved.
  */
-export function downloadCoverLetterAsDocx(
-  content: string,
-  meta: CoverLetterExportMetadata
-) {
+export function downloadCoverLetterAsDocx(content: string, meta: CoverLetterExportMetadata) {
   const candidateName = meta.candidateName || "Applicant";
   const dateStr =
     meta.date ||
@@ -45,11 +42,7 @@ export function downloadCoverLetterAsDocx(
     .replace(/[^a-zA-Z0-9_-]/g, "_")
     .concat(".doc");
 
-  const contactBlock = [
-    meta.candidateLocation,
-    meta.candidateEmail,
-    meta.candidatePhone,
-  ]
+  const contactBlock = [meta.candidateLocation, meta.candidateEmail, meta.candidatePhone]
     .filter(Boolean)
     .join(" • ");
 
@@ -152,10 +145,7 @@ export function downloadCoverLetterAsDocx(
  * Prints or exports to PDF an isolated letter view.
  * If called with content & metadata, renders in a print-styled hidden iframe to avoid printing dashboard chrome.
  */
-export function printCoverLetterDirectly(
-  content: string,
-  meta: CoverLetterExportMetadata
-) {
+export function printCoverLetterDirectly(content: string, meta: CoverLetterExportMetadata) {
   if (typeof window === "undefined") return;
 
   const candidateName = meta.candidateName || "Applicant";
@@ -167,11 +157,7 @@ export function printCoverLetterDirectly(
       year: "numeric",
     });
 
-  const contactBlock = [
-    meta.candidateLocation,
-    meta.candidateEmail,
-    meta.candidatePhone,
-  ]
+  const contactBlock = [meta.candidateLocation, meta.candidateEmail, meta.candidatePhone]
     .filter(Boolean)
     .join(" • ");
 
@@ -290,10 +276,7 @@ export function printCoverLetterDirectly(
  * Triggers clean PDF print dialog.
  * If content and metadata are supplied, renders in an isolated print frame.
  */
-export function downloadCoverLetterAsPdf(
-  content?: string,
-  meta?: CoverLetterExportMetadata
-) {
+export function downloadCoverLetterAsPdf(content?: string, meta?: CoverLetterExportMetadata) {
   if (content && meta) {
     printCoverLetterDirectly(content, meta);
   } else {
@@ -304,10 +287,7 @@ export function downloadCoverLetterAsPdf(
 /**
  * Exports cover letter as a standard UTF-8 text file.
  */
-export function downloadCoverLetterAsTxt(
-  content: string,
-  meta: CoverLetterExportMetadata
-) {
+export function downloadCoverLetterAsTxt(content: string, meta: CoverLetterExportMetadata) {
   const safeFilename = `Cover_Letter_${meta.companyName}_${meta.positionTitle}`
     .replace(/[^a-zA-Z0-9_-]/g, "_")
     .concat(".txt");

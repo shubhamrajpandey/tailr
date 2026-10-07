@@ -40,9 +40,7 @@ export function SaveChangesBar({
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500" />
           </span>
           <div className="truncate">
-            <span className="text-xs sm:text-sm font-semibold tracking-tight">
-              Unsaved changes
-            </span>
+            <span className="text-xs sm:text-sm font-semibold tracking-tight">Unsaved changes</span>
             <span className="hidden sm:inline text-xs text-neutral-400 ml-2">
               Don&apos;t forget to save your edits.
             </span>

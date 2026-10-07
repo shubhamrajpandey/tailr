@@ -10,12 +10,7 @@ interface SidebarQuotaDisplayProps {
 }
 
 export function SidebarQuotaDisplay({ isCollapsed }: SidebarQuotaDisplayProps) {
-  const {
-    resumeRemaining,
-    resumeLimit,
-    coverLetterRemaining,
-    coverLetterLimit,
-  } = useAiQuota();
+  const { resumeRemaining, resumeLimit, coverLetterRemaining, coverLetterLimit } = useAiQuota();
 
   if (isCollapsed) return null;
 

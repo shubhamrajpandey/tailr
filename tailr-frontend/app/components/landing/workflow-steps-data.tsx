@@ -73,11 +73,15 @@ export const WORKFLOW_STEPS: StepItem[] = [
 
           <div className="space-y-2 text-[11px]">
             <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
-              <span className="text-neutral-600 dark:text-neutral-400 font-sans">Verified Bullets</span>
+              <span className="text-neutral-600 dark:text-neutral-400 font-sans">
+                Verified Bullets
+              </span>
               <span className="font-bold text-neutral-900 dark:text-white">16 Bullets</span>
             </div>
             <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
-              <span className="text-neutral-600 dark:text-neutral-400 font-sans">Core Tech Skills</span>
+              <span className="text-neutral-600 dark:text-neutral-400 font-sans">
+                Core Tech Skills
+              </span>
               <span className="font-bold text-neutral-900 dark:text-white">18 Proficiencies</span>
             </div>
           </div>
@@ -147,14 +151,16 @@ export const WORKFLOW_STEPS: StepItem[] = [
               <span className="text-purple-600 dark:text-purple-400 font-bold">12 Detected</span>
             </div>
             <div className="flex flex-wrap gap-1.5 pt-1">
-              {["React 19", "Design Tokens", "Web Performance", "TypeScript 5", "CI/CD"].map((kw) => (
-                <span
-                  key={kw}
-                  className="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 text-[10px] font-semibold border border-purple-200/60 dark:border-purple-500/20 font-sans"
-                >
-                  +{kw}
-                </span>
-              ))}
+              {["React 19", "Design Tokens", "Web Performance", "TypeScript 5", "CI/CD"].map(
+                (kw) => (
+                  <span
+                    key={kw}
+                    className="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 text-[10px] font-semibold border border-purple-200/60 dark:border-purple-500/20 font-sans"
+                  >
+                    +{kw}
+                  </span>
+                )
+              )}
             </div>
           </div>
 
@@ -215,10 +221,12 @@ export const WORKFLOW_STEPS: StepItem[] = [
 
           <div className="space-y-1.5 text-[10px] font-sans">
             <div className="p-2 rounded-lg bg-rose-50/70 dark:bg-rose-500/10 border border-rose-200/60 dark:border-rose-500/20 text-rose-700 dark:text-rose-300">
-              <span className="font-bold font-mono">BEFORE:</span> Built frontend dashboard with React components.
+              <span className="font-bold font-mono">BEFORE:</span> Built frontend dashboard with
+              React components.
             </div>
             <div className="p-2 rounded-lg bg-emerald-50/70 dark:bg-emerald-500/10 border border-emerald-200/60 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-              <span className="font-bold font-mono">AFTER:</span> Architected Next.js 15 enterprise dashboard with 98 Lighthouse score, reducing LCP by 44%.
+              <span className="font-bold font-mono">AFTER:</span> Architected Next.js 15 enterprise
+              dashboard with 98 Lighthouse score, reducing LCP by 44%.
             </div>
           </div>
         </div>

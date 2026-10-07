@@ -54,11 +54,7 @@ export function useGenerateCoverLetterMutation() {
     return () => clearTimers();
   }, [clearTimers]);
 
-  const mutation = useMutation<
-    CoverLetterGenerateResponse,
-    Error,
-    GenerateCoverLetterVariables
-  >({
+  const mutation = useMutation<CoverLetterGenerateResponse, Error, GenerateCoverLetterVariables>({
     mutationKey: ["cover-letter", "generate"],
     mutationFn: async (variables) => {
       clearTimers();
@@ -76,8 +72,8 @@ export function useGenerateCoverLetterMutation() {
         rawJobDesc.length >= 10
           ? rawJobDesc
           : rawJobDesc.length > 0
-          ? `${rawJobDesc} responsibilities, key qualifications, and engineering requirements.`
-          : `Tailored application for ${variables.jobDetails.positionTitle || "the position"} at ${variables.jobDetails.companyName || "the target company"} matching verified master resume credentials.`;
+            ? `${rawJobDesc} responsibilities, key qualifications, and engineering requirements.`
+            : `Tailored application for ${variables.jobDetails.positionTitle || "the position"} at ${variables.jobDetails.companyName || "the target company"} matching verified master resume credentials.`;
 
       const payload = {
         jobDetails: {
@@ -86,16 +82,14 @@ export function useGenerateCoverLetterMutation() {
           location: variables.jobDetails.location?.trim() || undefined,
           jobUrl: variables.jobDetails.jobUrl?.trim() || undefined,
           hiringManager: variables.jobDetails.hiringManager?.trim() || undefined,
-          hiringManagerTitle:
-            variables.jobDetails.hiringManagerTitle?.trim() || undefined,
+          hiringManagerTitle: variables.jobDetails.hiringManagerTitle?.trim() || undefined,
           jobDescription: safeJobDesc,
         },
         preferences: {
           length: variables.preferences.length,
           tone: variables.preferences.tone,
           template: variables.preferences.template,
-          additionalInformation:
-            variables.preferences.additionalInformation?.trim() || undefined,
+          additionalInformation: variables.preferences.additionalInformation?.trim() || undefined,
         },
         candidate: {
           name: variables.masterResume.basics?.name || "Applicant",
@@ -178,9 +172,7 @@ export function useGenerateCoverLetterMutation() {
 
       if (!fallbackRes.ok) {
         const errJson = await fallbackRes.json().catch(() => ({}));
-        throw new Error(
-          errJson.error || `Generation failed with status ${fallbackRes.status}`
-        );
+        throw new Error(errJson.error || `Generation failed with status ${fallbackRes.status}`);
       }
 
       const fallbackData = await fallbackRes.json();

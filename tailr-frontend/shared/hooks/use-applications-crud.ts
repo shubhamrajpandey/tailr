@@ -44,8 +44,7 @@ export function useApplicationsCrud({
         jobDescriptionRaw: values.jobDescriptionRaw,
         positionOpenDate: values.positionOpenDate || null,
         appliedDate:
-          values.appliedDate ||
-          (values.applied ? new Date().toISOString().split("T")[0] : null),
+          values.appliedDate || (values.applied ? new Date().toISOString().split("T")[0] : null),
         applied: values.applied,
         status: values.status,
         hrName: values.hrName || null,
@@ -84,9 +83,7 @@ export function useApplicationsCrud({
             createdAt: res.data.data.application.createdAt,
             updatedAt: res.data.data.application.updatedAt,
           };
-          const updatedList = next.map((a) =>
-            a.id === tempId ? updatedApp : a
-          );
+          const updatedList = next.map((a) => (a.id === tempId ? updatedApp : a));
           persist(updatedList);
           toast.success("Application created", `${newApp.companyName} — ${newApp.positionTitle}`);
           return updatedApp;
@@ -152,10 +149,7 @@ export function useApplicationsCrud({
       await updateApplication(id, {
         status: newStatus,
         applied: newStatus !== "WISHLIST",
-        appliedDate:
-          newStatus !== "WISHLIST"
-            ? new Date().toISOString().split("T")[0]
-            : undefined,
+        appliedDate: newStatus !== "WISHLIST" ? new Date().toISOString().split("T")[0] : undefined,
       });
     },
     [updateApplication]

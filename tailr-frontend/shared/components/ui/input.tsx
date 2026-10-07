@@ -1,8 +1,7 @@
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   icon?: React.ReactNode;
   rightElement?: React.ReactNode;
 }
@@ -28,9 +27,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...props}
         />
         {rightElement && (
-          <div className="absolute right-2.5 flex items-center justify-center">
-            {rightElement}
-          </div>
+          <div className="absolute right-2.5 flex items-center justify-center">{rightElement}</div>
         )}
       </div>
     );

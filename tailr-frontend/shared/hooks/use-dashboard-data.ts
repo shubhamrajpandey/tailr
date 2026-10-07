@@ -1,11 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  ApplicationStatus,
-  ApplicationStats,
-  VolumeTrendPoint,
-} from "@/shared/types/application";
+import { ApplicationStatus, ApplicationStats, VolumeTrendPoint } from "@/shared/types/application";
 import { ActivityEvent } from "@/shared/types/activity";
 import { useApplications } from "./use-applications";
 
@@ -18,12 +14,8 @@ import { useApplications } from "./use-applications";
  * @returns Applications list, activity timeline, computed statistics, trend points, and status modifiers.
  */
 export function useDashboardData() {
-  const {
-    applications,
-    updateStatus,
-    deleteApplication,
-    loadSampleApplications,
-  } = useApplications();
+  const { applications, updateStatus, deleteApplication, loadSampleApplications } =
+    useApplications();
   const [localActivities, setLocalActivities] = React.useState<ActivityEvent[]>([]);
 
   // Dynamically compute real stats from applications array
@@ -38,14 +30,10 @@ export function useDashboardData() {
     );
 
     const responseRate =
-      appliedApps.length > 0
-        ? Math.round((respondedApps.length / appliedApps.length) * 100)
-        : 0;
+      appliedApps.length > 0 ? Math.round((respondedApps.length / appliedApps.length) * 100) : 0;
 
     const interviewConversion =
-      appliedApps.length > 0
-        ? Math.round((interviewOffers.length / appliedApps.length) * 100)
-        : 0;
+      appliedApps.length > 0 ? Math.round((interviewOffers.length / appliedApps.length) * 100) : 0;
 
     return {
       totalApplications: total,
@@ -84,24 +72,24 @@ export function useDashboardData() {
     return result;
   }, [applications]);
 
-function determinePeriod(dateString?: string | null): "today" | "yesterday" | "this_week" {
-  if (!dateString) return "today";
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return "today";
-  const now = new Date();
+  function determinePeriod(dateString?: string | null): "today" | "yesterday" | "this_week" {
+    if (!dateString) return "today";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "today";
+    const now = new Date();
 
-  const isSameDay = (d1: Date, d2: Date) =>
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate();
+    const isSameDay = (d1: Date, d2: Date) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
 
-  const yesterday = new Date(now);
-  yesterday.setDate(now.getDate() - 1);
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
 
-  if (isSameDay(date, now)) return "today";
-  if (isSameDay(date, yesterday)) return "yesterday";
-  return "this_week";
-}
+    if (isSameDay(date, now)) return "today";
+    if (isSameDay(date, yesterday)) return "yesterday";
+    return "this_week";
+  }
 
   // Generate activities dynamically from applications list
   const activities = React.useMemo<ActivityEvent[]>(() => {
@@ -114,18 +102,18 @@ function determinePeriod(dateString?: string | null): "today" | "yesterday" | "t
         type: (app.status === "OFFER"
           ? "OFFER_RECEIVED"
           : app.status === "INTERVIEW"
-          ? "INTERVIEW_SCHEDULED"
-          : app.resumeVersion
-          ? "RESUME_TAILORED"
-          : "APPLICATION_CREATED") as ActivityEvent["type"],
+            ? "INTERVIEW_SCHEDULED"
+            : app.resumeVersion
+              ? "RESUME_TAILORED"
+              : "APPLICATION_CREATED") as ActivityEvent["type"],
         title:
           app.status === "OFFER"
             ? `Offer Extended by ${app.companyName}`
             : app.status === "INTERVIEW"
-            ? `Interview Stage at ${app.companyName}`
-            : app.resumeVersion
-            ? `Tailored Resume for ${app.companyName}`
-            : `Tracked Application at ${app.companyName}`,
+              ? `Interview Stage at ${app.companyName}`
+              : app.resumeVersion
+                ? `Tailored Resume for ${app.companyName}`
+                : `Tracked Application at ${app.companyName}`,
         description: `${app.positionTitle} • Status: ${app.status}`,
         timestamp: rawDate || new Date().toISOString(),
         companyName: app.companyName,

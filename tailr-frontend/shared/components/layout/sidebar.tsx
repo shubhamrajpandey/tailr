@@ -3,11 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Search,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { Search, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { MobileBottomBar } from "./mobile-bottom-bar";
 import { SidebarNav, SidebarNavFallback } from "./sidebar-nav";
@@ -74,7 +70,7 @@ export function Sidebar() {
     <>
       <aside
         className={cn(
-          "hidden lg:flex shrink-0 bg-white dark:bg-[#0c0d10] border-r border-neutral-200 dark:border-white/[0.06] flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out",
+          "hidden lg:flex shrink-0 bg-sidebar border-r border-sidebar-border flex-col h-screen sticky top-0 select-none z-30 transition-all duration-300 ease-in-out",
           isCollapsed ? "w-16" : "w-64"
         )}
       >

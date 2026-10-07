@@ -20,7 +20,14 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
       summary:
         "Senior Frontend Engineer specializing in high-throughput financial user interfaces, robust TypeScript architecture, and real-time ledger dashboards. Proven experience designing payment transaction modules processing $80M+/month and scaling design systems across multiple product teams.",
       skills: {
-        languages: ["TypeScript", "JavaScript (ESNext)", "SQL", "HTML5", "CSS3 / CSS Modules", "Python"],
+        languages: [
+          "TypeScript",
+          "JavaScript (ESNext)",
+          "SQL",
+          "HTML5",
+          "CSS3 / CSS Modules",
+          "Python",
+        ],
         frameworks: [
           "React 19",
           "Next.js (App Router)",
@@ -29,14 +36,7 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
           "Node.js",
           "ElysiaJS",
         ],
-        tools: [
-          "Vite",
-          "PostgreSQL",
-          "Docker",
-          "Git / GitHub Actions",
-          "Playwright",
-          "Figma",
-        ],
+        tools: ["Vite", "PostgreSQL", "Docker", "Git / GitHub Actions", "Playwright", "Figma"],
         other: [
           "Payment Ledgers & Multi-Currency Systems",
           "Web Performance & LCP Optimization",
@@ -55,7 +55,8 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
           "Product-minded Senior Frontend & Fullstack Software Engineer with 7+ years of experience...",
         updated:
           "Senior Frontend Engineer specializing in high-throughput financial user interfaces, robust TypeScript architecture, and real-time ledger dashboards...",
-        reason: "Emphasized financial dashboard and payment processing background to align with Stripe's payments platform requirements.",
+        reason:
+          "Emphasized financial dashboard and payment processing background to align with Stripe's payments platform requirements.",
       },
       {
         id: "chg-02",
@@ -63,7 +64,8 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
         type: "reorder",
         original: "Languages: TypeScript, JavaScript, HTML5, CSS3, Python, SQL",
         updated: "Languages: TypeScript, JavaScript, SQL, HTML5, CSS3, Python",
-        reason: "Prioritized SQL and transactional data competencies requested in Stripe job description.",
+        reason:
+          "Prioritized SQL and transactional data competencies requested in Stripe job description.",
       },
       {
         id: "chg-03",
@@ -104,7 +106,8 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
         section: "experience",
         type: "reorder",
         original: "Telemetry and design system bullets",
-        updated: "Placed Next.js hydration and LCP optimization achievements at the top of lead role.",
+        updated:
+          "Placed Next.js hydration and LCP optimization achievements at the top of lead role.",
         reason: "Vercel prioritizes web performance and Turbopack benchmarks.",
       },
     ],
@@ -128,7 +131,8 @@ export const INITIAL_RESUME_VERSIONS: ResumeVersion[] = [
         section: "summary",
         type: "rephrase",
         original: "Product-minded Senior Frontend & Fullstack Software Engineer...",
-        updated: "Fullstack Product Engineer passionate about sub-50ms interaction latency, keyboard-first usability...",
+        updated:
+          "Fullstack Product Engineer passionate about sub-50ms interaction latency, keyboard-first usability...",
         reason: "Mirrored Linear's product values around speed and craft.",
       },
     ],
@@ -166,7 +170,10 @@ function getResumeVersionsSnapshot(): ResumeVersion[] {
       return cachedResumeVersionsSnapshot;
     }
   } catch (err) {
-    console.warn("[useResumeVersions] Failed to parse cached resume versions from localStorage:", err);
+    console.warn(
+      "[useResumeVersions] Failed to parse cached resume versions from localStorage:",
+      err
+    );
   }
   return INITIAL_RESUME_VERSIONS;
 }

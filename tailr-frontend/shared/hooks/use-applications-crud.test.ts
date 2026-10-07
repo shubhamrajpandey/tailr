@@ -117,10 +117,13 @@ describe("useApplicationsCrud (SRP & DIP)", () => {
     });
 
     expect(mockPersist).toHaveBeenCalledTimes(2); // 1. optimistic, 2. server resolved
-    expect(mockApiClient.post).toHaveBeenCalledWith("/applications", expect.objectContaining({
-      companyName: "Stripe",
-      positionTitle: "Backend Lead",
-    }));
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      "/applications",
+      expect.objectContaining({
+        companyName: "Stripe",
+        positionTitle: "Backend Lead",
+      })
+    );
     expect(created?.id).toBe("e5bf9e57-1685-4c89-bafb-ff5af830be8b");
 
     unmount();

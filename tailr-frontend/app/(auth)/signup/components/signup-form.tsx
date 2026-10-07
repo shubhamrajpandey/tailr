@@ -159,11 +159,7 @@ export function SignupForm({
                 className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             }
             className="h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10"
@@ -192,11 +188,7 @@ export function SignupForm({
                 className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showConfirmPassword ? "Hide password" : "Show password"}
               >
-                {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             }
             className={`h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10 ${
@@ -215,9 +207,7 @@ export function SignupForm({
                 ✓ Passwords match
               </span>
             ) : (
-              <span className="text-rose-500 dark:text-rose-400">
-                Passwords do not match
-              </span>
+              <span className="text-rose-500 dark:text-rose-400">Passwords do not match</span>
             )}
           </div>
         )}
@@ -241,17 +231,12 @@ export function SignupForm({
           <div className="w-full border-t border-neutral-200 dark:border-white/10" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-neutral-400 font-medium">
-            Or sign up with
-          </span>
+          <span className="bg-background px-3 text-neutral-400 font-medium">Or sign up with</span>
         </div>
       </div>
 
       {/* Social Sign-In (Google only) */}
-      <SocialAuthButtons
-        isLoading={isLoading}
-        onSocialClick={onGoogleSignIn}
-      />
+      <SocialAuthButtons isLoading={isLoading} onSocialClick={onGoogleSignIn} />
 
       {/* Switch to Login Screen */}
       <div className="text-center pt-2">

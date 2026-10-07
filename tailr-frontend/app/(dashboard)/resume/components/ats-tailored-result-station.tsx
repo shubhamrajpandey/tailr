@@ -16,9 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  TailoredResumeResult,
-} from "@/shared/hooks/use-resume-api";
+import { TailoredResumeResult } from "@/shared/hooks/use-resume-api";
 import {
   printAtsResumeDirectly,
   downloadResumeAsTex,
@@ -82,8 +80,8 @@ export function AtsTailoredResultStation({
     atsScore >= 90
       ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20"
       : atsScore >= 75
-      ? "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20"
-      : "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20";
+        ? "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20"
+        : "text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20";
 
   return (
     <div id="ats-tailored-station" className="space-y-6 pt-2 animate-in fade-in duration-300">
@@ -120,8 +118,10 @@ export function AtsTailoredResultStation({
                 </Badge>
               </div>
               <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 font-medium leading-relaxed">
-                Tailored for <strong className="text-neutral-900 dark:text-white">{positionTitle}</strong> at{" "}
-                <strong className="text-neutral-900 dark:text-white">{companyName}</strong>. Zero hallucination guarantee.
+                Tailored for{" "}
+                <strong className="text-neutral-900 dark:text-white">{positionTitle}</strong> at{" "}
+                <strong className="text-neutral-900 dark:text-white">{companyName}</strong>. Zero
+                hallucination guarantee.
               </p>
             </div>
           </div>
@@ -346,10 +346,15 @@ export function AtsTailoredResultStation({
                   </h2>
                   <div className="space-y-2">
                     {tailoredData.education.map((edu, i) => (
-                      <div key={i} className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2 text-xs">
+                      <div
+                        key={i}
+                        className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-0.5 sm:gap-2 text-xs"
+                      >
                         <div>
                           <strong className="font-bold text-neutral-950">{edu.institution}</strong>
-                          {edu.location && <span className="text-neutral-500 italic ml-1">({edu.location})</span>}
+                          {edu.location && (
+                            <span className="text-neutral-500 italic ml-1">({edu.location})</span>
+                          )}
                           <div className="italic text-neutral-700">{edu.degree}</div>
                         </div>
                         <span className="italic text-neutral-600 text-[11px] sm:text-xs shrink-0">
@@ -375,7 +380,9 @@ export function AtsTailoredResultStation({
                           <div>
                             <span className="font-bold text-neutral-950">{proj.title}</span>
                             {proj.technologies && (
-                              <span className="text-neutral-500 font-normal ml-1">| {proj.technologies}</span>
+                              <span className="text-neutral-500 font-normal ml-1">
+                                | {proj.technologies}
+                              </span>
                             )}
                             {proj.liveUrl && (
                               <a
@@ -388,7 +395,9 @@ export function AtsTailoredResultStation({
                               </a>
                             )}
                           </div>
-                          <span className="text-neutral-500 text-[11px] sm:text-xs shrink-0">{proj.year}</span>
+                          <span className="text-neutral-500 text-[11px] sm:text-xs shrink-0">
+                            {proj.year}
+                          </span>
                         </div>
                         <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-800">
                           {proj.bullets.map((b, bIdx) => (
@@ -415,7 +424,11 @@ export function AtsTailoredResultStation({
                   onClick={handleCopyLatex}
                   className="gap-1.5"
                 >
-                  {copiedLatex ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+                  {copiedLatex ? (
+                    <Check className="h-3 w-3 text-emerald-600" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
                   <span>{copiedLatex ? "Copied" : "Copy Code"}</span>
                 </Button>
               </div>

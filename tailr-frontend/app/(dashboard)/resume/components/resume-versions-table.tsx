@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  FileText,
-  Search,
-  ExternalLink,
-  Trash2,
-  Sparkles,
-  Building,
-} from "lucide-react";
+import { FileText, Search, ExternalLink, Trash2, Sparkles, Building } from "lucide-react";
 import { ResumeVersion } from "@/shared/types/resume";
 import {
   Table,
@@ -28,22 +21,17 @@ interface ResumeVersionsTableProps {
   onDelete: (id: string) => void;
 }
 
-export function ResumeVersionsTable({
-  versions,
-  onDelete,
-}: ResumeVersionsTableProps) {
+export function ResumeVersionsTable({ versions, onDelete }: ResumeVersionsTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [sourceFilter, setSourceFilter] = React.useState<string>("ALL");
 
   const filteredVersions = React.useMemo(() => {
     return versions.filter((ver) => {
-      const matchesSource =
-        sourceFilter === "ALL" || ver.source === sourceFilter;
+      const matchesSource = sourceFilter === "ALL" || ver.source === sourceFilter;
       const query = searchQuery.toLowerCase();
       const matchesSearch =
         ver.label.toLowerCase().includes(query) ||
-        (ver.applicationCompanyName &&
-          ver.applicationCompanyName.toLowerCase().includes(query)) ||
+        (ver.applicationCompanyName && ver.applicationCompanyName.toLowerCase().includes(query)) ||
         (ver.applicationPositionTitle &&
           ver.applicationPositionTitle.toLowerCase().includes(query));
       return matchesSource && matchesSearch;
@@ -168,9 +156,7 @@ export function ResumeVersionsTable({
                     {version.applicationCompanyName ? (
                       <Link
                         href={
-                          version.applicationId
-                            ? `/applications/${version.applicationId}`
-                            : "#"
+                          version.applicationId ? `/applications/${version.applicationId}` : "#"
                         }
                         className="inline-flex items-center gap-1.5 text-xs text-neutral-700 dark:text-neutral-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium"
                       >
@@ -183,9 +169,7 @@ export function ResumeVersionsTable({
                         )}
                       </Link>
                     ) : (
-                      <span className="text-xs text-neutral-400 italic">
-                        Unlinked (General)
-                      </span>
+                      <span className="text-xs text-neutral-400 italic">Unlinked (General)</span>
                     )}
                   </TableCell>
 

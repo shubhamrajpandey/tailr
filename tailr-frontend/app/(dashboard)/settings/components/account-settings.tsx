@@ -17,12 +17,8 @@ import {
 
 export function AccountSettings() {
   const { settings, updateAccount } = useSettings();
-  const [profileFeedback, setProfileFeedback] = React.useState<string | null>(
-    null
-  );
-  const [passwordFeedback, setPasswordFeedback] = React.useState<string | null>(
-    null
-  );
+  const [profileFeedback, setProfileFeedback] = React.useState<string | null>(null);
+  const [passwordFeedback, setPasswordFeedback] = React.useState<string | null>(null);
 
   const {
     register: registerProfile,
@@ -78,10 +74,7 @@ export function AccountSettings() {
         title="Personal Profile"
         description="Your primary contact details used when generating resumes, cover letters, and job tracking records."
       >
-        <form
-          onSubmit={handleSubmitProfile(onSaveProfile)}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmitProfile(onSaveProfile)} className="space-y-5">
           {profileFeedback && (
             <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -145,10 +138,7 @@ export function AccountSettings() {
         title="Security & Password"
         description="Update your local dashboard password credentials. Passwords require at least 8 characters."
       >
-        <form
-          onSubmit={handleSubmitPassword(onSavePassword)}
-          className="space-y-5"
-        >
+        <form onSubmit={handleSubmitPassword(onSavePassword)} className="space-y-5">
           {passwordFeedback && (
             <div className="flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
               <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -166,9 +156,7 @@ export function AccountSettings() {
                 type="password"
                 placeholder="••••••••"
                 icon={<Lock className="h-4 w-4" />}
-                className={
-                  passwordErrors.currentPassword ? "border-rose-500" : ""
-                }
+                className={passwordErrors.currentPassword ? "border-rose-500" : ""}
               />
               {passwordErrors.currentPassword && (
                 <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
@@ -204,9 +192,7 @@ export function AccountSettings() {
                 type="password"
                 placeholder="••••••••"
                 icon={<KeyRound className="h-4 w-4" />}
-                className={
-                  passwordErrors.confirmPassword ? "border-rose-500" : ""
-                }
+                className={passwordErrors.confirmPassword ? "border-rose-500" : ""}
               />
               {passwordErrors.confirmPassword && (
                 <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">

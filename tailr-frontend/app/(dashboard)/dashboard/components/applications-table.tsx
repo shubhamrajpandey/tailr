@@ -58,8 +58,7 @@ export function ApplicationsTable({
   const filteredApplications = React.useMemo(() => {
     return applications
       .filter((app) => {
-        const matchesStatus =
-          statusFilter === "ALL" || app.status === statusFilter;
+        const matchesStatus = statusFilter === "ALL" || app.status === statusFilter;
         const query = debouncedSearchQuery.trim().toLowerCase();
         const matchesSearch =
           !query ||
@@ -75,9 +74,7 @@ export function ApplicationsTable({
         } else if (sortField === "status") {
           cmp = a.status.localeCompare(b.status);
         } else {
-          cmp =
-            new Date(a.appliedDate || "").getTime() -
-            new Date(b.appliedDate || "").getTime();
+          cmp = new Date(a.appliedDate || "").getTime() - new Date(b.appliedDate || "").getTime();
         }
         return sortAsc ? cmp : -cmp;
       });
@@ -135,7 +132,8 @@ export function ApplicationsTable({
                 Applications Pipeline
               </h2>
               <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
-                {paginatedApplications.length} of {applications.length} applications (max {PAGE_SIZE} per page)
+                {paginatedApplications.length} of {applications.length} applications (max{" "}
+                {PAGE_SIZE} per page)
               </span>
             </div>
           </div>
@@ -178,7 +176,11 @@ export function ApplicationsTable({
                     <DropdownMenuItem
                       key={status}
                       onClick={() => setStatusFilter(status)}
-                      className={statusFilter === status ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                      className={
+                        statusFilter === status
+                          ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                          : ""
+                      }
                     >
                       {status === "ALL" ? "All Stages" : status}
                     </DropdownMenuItem>
@@ -210,9 +212,7 @@ export function ApplicationsTable({
                 onCheckedChange={(checked) => toggleSelectAll(Boolean(checked))}
               />
               <span className="font-medium">
-                {selectedIds.size > 0
-                  ? `${selectedIds.size} selected`
-                  : "Select all on page"}
+                {selectedIds.size > 0 ? `${selectedIds.size} selected` : "Select all on page"}
               </span>
             </label>
           </div>
@@ -298,7 +298,10 @@ export function ApplicationsTable({
           <tbody className="divide-y divide-neutral-100 dark:divide-white/[0.04]">
             {paginatedApplications.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                <td
+                  colSpan={7}
+                  className="py-12 text-center text-sm text-neutral-500 dark:text-neutral-400"
+                >
                   <div className="max-w-xs mx-auto space-y-2">
                     <p className="font-semibold text-neutral-800 dark:text-neutral-200">
                       No applications found

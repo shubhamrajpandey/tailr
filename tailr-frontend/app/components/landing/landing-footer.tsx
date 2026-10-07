@@ -22,7 +22,8 @@ export function LandingFooter() {
               </span>
             </Link>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm leading-relaxed">
-              The intelligent career operating system. Streamline your job hunt, align master resumes with AI precision, and maximize interview callbacks.
+              The intelligent career operating system. Streamline your job hunt, align master
+              resumes with AI precision, and maximize interview callbacks.
             </p>
             <div className="flex items-center gap-2 pt-1 sm:pt-2">
               <ThemeToggle />
@@ -37,27 +38,42 @@ export function LandingFooter() {
             </div>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/resume" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/resume"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Master Resume
                 </Link>
               </li>
               <li>
-                <Link href="/resume/tailor" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/resume/tailor"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   AI Tailoring Engine
                 </Link>
               </li>
               <li>
-                <Link href="/applications" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/applications"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Applications CRM
                 </Link>
               </li>
               <li>
-                <Link href="/analytics" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/analytics"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Response Analytics
                 </Link>
               </li>
               <li>
-                <Link href="/cover-letter" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/cover-letter"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Cover Letter Writer
                 </Link>
               </li>
@@ -71,22 +87,36 @@ export function LandingFooter() {
             </div>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link href="/docs" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <Link
+                  href="/docs"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Documentation
                 </Link>
               </li>
               <li>
-                <a href="#faq" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a
+                  href="#faq"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   ATS Best Practices
                 </a>
               </li>
               <li>
-                <a href="#workflow" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a
+                  href="#workflow"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   Workflow Guide
                 </a>
               </li>
               <li>
-                <a href="https://github.com/shubhamrajpandey/tailr" target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                <a
+                  href="https://github.com/shubhamrajpandey/tailr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                >
                   GitHub Repository
                 </a>
               </li>
@@ -125,9 +155,7 @@ export function LandingFooter() {
 
         {/* Bottom Copyright Bar */}
         <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-neutral-100 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs text-neutral-500 dark:text-neutral-500 text-center sm:text-left">
-          <div>
-            &copy; {new Date().getFullYear()} Tailr. All rights reserved.
-          </div>
+          <div>&copy; {new Date().getFullYear()} Tailr. All rights reserved.</div>
           <div className="flex items-center gap-1">
             <span>Built with precision for top engineers & designers</span>
           </div>

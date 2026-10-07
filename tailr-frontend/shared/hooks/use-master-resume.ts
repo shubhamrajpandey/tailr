@@ -40,7 +40,6 @@ export const BLANK_MASTER_RESUME: MasterResume = {
 
 export const INITIAL_MASTER_RESUME: MasterResume = BLANK_MASTER_RESUME;
 
-
 /**
  * Module-level memory cache for useSyncExternalStore reference stability.
  * Scope: Client-side module lifetime.

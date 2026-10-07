@@ -36,7 +36,10 @@ export function getApplicationsSnapshot(): Application[] {
       return cachedApplicationsSnapshot;
     }
   } catch (err) {
-    console.error("[useApplicationsStore] Failed to parse cached applications from localStorage:", err);
+    console.error(
+      "[useApplicationsStore] Failed to parse cached applications from localStorage:",
+      err
+    );
   }
   return [];
 }

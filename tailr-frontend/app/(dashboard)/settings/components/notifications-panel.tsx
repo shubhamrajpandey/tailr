@@ -1,14 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Bell,
-  Briefcase,
-  Sparkles,
-  MailCheck,
-  ShieldCheck,
-  CheckCircle2,
-} from "lucide-react";
+import { Bell, Briefcase, Sparkles, MailCheck, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { Switch } from "@/shared/components/ui/switch";
 import { SettingsSection } from "./settings-section";
 import { SaveChangesBar } from "./save-changes-bar";
@@ -45,7 +38,6 @@ export function NotificationsPanel() {
 
   return (
     <div className="space-y-6">
-
       {successFeedback && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs font-medium animate-in fade-in duration-200">
           <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
@@ -89,7 +81,8 @@ export function NotificationsPanel() {
                   Follow-Up Reminders
                 </span>
                 <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                  Alert me when an application exceeds the ghosted threshold without recruiter reply.
+                  Alert me when an application exceeds the ghosted threshold without recruiter
+                  reply.
                 </p>
               </div>
             </div>
@@ -164,7 +157,8 @@ export function NotificationsPanel() {
                 Monday Morning Digest
               </span>
               <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                Receive weekly stats on submitted applications, interview rate, and top company targets.
+                Receive weekly stats on submitted applications, interview rate, and top company
+                targets.
               </p>
             </div>
           </div>
@@ -190,7 +184,8 @@ export function NotificationsPanel() {
                 New Device & Session Sign-Ins
               </span>
               <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                Immediately email me when a new refresh token is issued from an unrecognized IP or browser.
+                Immediately email me when a new refresh token is issued from an unrecognized IP or
+                browser.
               </p>
             </div>
           </div>

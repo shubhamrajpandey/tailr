@@ -9,9 +9,7 @@ function validateAgainstMaster(
   const violations: string[] = [];
 
   // Check company names
-  const masterCompanies = new Set(
-    master.experience.map((e) => e.company.toLowerCase().trim())
-  );
+  const masterCompanies = new Set(master.experience.map((e) => e.company.toLowerCase().trim()));
   for (const exp of tailored.experience) {
     if (!masterCompanies.has(exp.company.toLowerCase().trim())) {
       violations.push(`Unrecognized company: "${exp.company}"`);
@@ -19,9 +17,7 @@ function validateAgainstMaster(
   }
 
   // Check job titles
-  const masterTitles = new Set(
-    master.experience.map((e) => e.title.toLowerCase().trim())
-  );
+  const masterTitles = new Set(master.experience.map((e) => e.title.toLowerCase().trim()));
   for (const exp of tailored.experience) {
     if (!masterTitles.has(exp.title.toLowerCase().trim())) {
       violations.push(`Altered job title: "${exp.title}"`);
@@ -71,10 +67,7 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!masterResume || !masterResume.basics) {
-      return NextResponse.json(
-        { error: "Invalid master resume data provided." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid master resume data provided." }, { status: 400 });
     }
 
     if (!jobDescription || jobDescription.trim().length < 20) {
@@ -176,7 +169,8 @@ export async function POST(request: NextRequest) {
           type: "reorder",
           original: masterResume.skills.frameworks.join(", "),
           updated: frameworks.join(", "),
-          reason: "Promoted Next.js (App Router / Turbopack) to first position in frameworks matrix.",
+          reason:
+            "Promoted Next.js (App Router / Turbopack) to first position in frameworks matrix.",
         });
       }
     }
@@ -188,7 +182,9 @@ export async function POST(request: NextRequest) {
 
       if (wantsPerformance) {
         // Swap performance bullet to position 0
-        const perfIdx = leadRole.bullets.findIndex((b) => b.includes("LCP") || b.includes("Largest Contentful"));
+        const perfIdx = leadRole.bullets.findIndex(
+          (b) => b.includes("LCP") || b.includes("Largest Contentful")
+        );
         if (perfIdx > 0) {
           const [perfBullet] = leadRole.bullets.splice(perfIdx, 1);
           leadRole.bullets.unshift(perfBullet);
@@ -198,7 +194,8 @@ export async function POST(request: NextRequest) {
             type: "reorder",
             original: `Lead role primary bullet: "${originalBullets[0]}"`,
             updated: `Lead role primary bullet: "${perfBullet}"`,
-            reason: "Elevated LCP web performance and heap memory reduction metrics to first bullet in current experience.",
+            reason:
+              "Elevated LCP web performance and heap memory reduction metrics to first bullet in current experience.",
           });
         }
       }
@@ -207,7 +204,10 @@ export async function POST(request: NextRequest) {
         // Emphasize design system bullet
         const dsBullet = leadRole.bullets.find((b) => b.includes("design system"));
         if (dsBullet) {
-          const updatedBullet = dsBullet.replace("cutting new screen development cycles by 42%", "accelerating velocity by 42% across 14 product squads");
+          const updatedBullet = dsBullet.replace(
+            "cutting new screen development cycles by 42%",
+            "accelerating velocity by 42% across 14 product squads"
+          );
           const idx = leadRole.bullets.indexOf(dsBullet);
           leadRole.bullets[idx] = updatedBullet;
           changes.push({

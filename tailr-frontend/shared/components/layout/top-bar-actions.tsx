@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  ChevronDown,
-  LogOut,
-  Loader2,
-  Settings,
-  BookOpen,
-  BarChart3,
-} from "lucide-react";
+import { ChevronDown, LogOut, Loader2, Settings, BookOpen, BarChart3 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -62,9 +55,7 @@ export function TopBarActions() {
               {fullName}
             </p>
             {userEmail && (
-              <p className="text-[11px] text-neutral-500 truncate mt-0.5">
-                {userEmail}
-              </p>
+              <p className="text-[11px] text-neutral-500 truncate mt-0.5">{userEmail}</p>
             )}
           </div>
           <DropdownMenuSeparator />

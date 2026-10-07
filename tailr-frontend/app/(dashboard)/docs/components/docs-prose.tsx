@@ -42,9 +42,7 @@ export function DocsProse({ subsections, className }: DocsProseProps) {
                 const label = hasLabel ? bp.slice(0, colonIndex) : null;
                 const rest = hasLabel ? bp.slice(colonIndex + 1).trim() : bp;
                 const isShortcut =
-                  label?.includes("Ctrl") ||
-                  label?.includes("Tab") ||
-                  label?.includes("Escape");
+                  label?.includes("Ctrl") || label?.includes("Tab") || label?.includes("Escape");
 
                 return (
                   <div

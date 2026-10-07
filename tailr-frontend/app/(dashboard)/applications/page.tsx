@@ -48,27 +48,14 @@ function ApplicationsView() {
     if (!rawStatus) return "ALL";
     const upper = rawStatus.toUpperCase();
     if (
-      [
-        "ACTIVE",
-        "WISHLIST",
-        "APPLIED",
-        "INTERVIEW",
-        "OFFER",
-        "REJECTED",
-        "GHOSTED",
-      ].includes(upper)
+      ["ACTIVE", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].includes(upper)
     ) {
       return upper;
     }
     return "ALL";
   }, [rawStatus]);
 
-  const {
-    applications,
-    isLoaded,
-    updateStatus,
-    deleteApplication,
-  } = useApplications();
+  const { applications, isLoaded, updateStatus, deleteApplication } = useApplications();
 
   const handleStatusFilterChange = (newStatus: string) => {
     if (newStatus === "ALL") {
@@ -105,7 +92,10 @@ function ApplicationsView() {
 
           <div className="flex items-center gap-3">
             <Link href="/applications/new" className="w-full sm:w-auto">
-              <Button variant="primary" className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10">
+              <Button
+                variant="primary"
+                className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10"
+              >
                 <Plus className="h-4 w-4" />
                 New Application
               </Button>

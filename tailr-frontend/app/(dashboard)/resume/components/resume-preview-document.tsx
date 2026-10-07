@@ -9,10 +9,7 @@ interface ResumePreviewDocumentProps {
   className?: string;
 }
 
-export function ResumePreviewDocument({
-  resume,
-  className = "",
-}: ResumePreviewDocumentProps) {
+export function ResumePreviewDocument({ resume, className = "" }: ResumePreviewDocumentProps) {
   const { basics, summary, experience, skills, projects, education, certifications, achievements } =
     resume;
 

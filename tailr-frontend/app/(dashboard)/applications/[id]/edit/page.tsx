@@ -41,9 +41,7 @@ export default function EditApplicationPage() {
     return (
       <div className="flex-1 p-10 flex flex-col items-center justify-center gap-3">
         <h2 className="text-xl font-bold">Application Not Found</h2>
-        <p className="text-sm text-neutral-400">
-          Cannot edit an application that does not exist.
-        </p>
+        <p className="text-sm text-neutral-400">Cannot edit an application that does not exist.</p>
         <Link href="/applications" className="mt-2">
           <Button variant="primary" className="gap-2">
             <ArrowLeft className="h-4 w-4" />

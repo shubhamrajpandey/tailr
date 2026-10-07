@@ -19,6 +19,7 @@ Build and maintain the Tailr frontend (Next.js + TypeScript + Tailwind + shadcn/
 ## F — Format (the rules)
 
 ### 1. Domain-based folder structure
+
 Organize by feature/domain, not by file type. Each domain owns its page(s) and the components only it uses. Shared, cross-domain building blocks live separately.
 
 ```
@@ -64,30 +65,36 @@ shared/
 Rule: if a component is used by more than one domain, it moves to `shared/components/`. If it's only ever used inside `applications/`, it stays in `applications/components/`. Don't pre-emptively move things to shared "just in case" — wait until a second domain actually needs it.
 
 ### 2. shadcn/ui components — install once, reuse everywhere, use variants
+
 - Every primitive (Button, Dropdown, Dialog, Input, Badge, Card, etc.) comes from the shadcn CLI into `shared/components/ui/`. Never hand-roll a one-off button or dropdown inline in a page.
 - Example: `shared/components/ui/button.tsx` is the single source for every button in the app. Different look/behavior needs (primary action, destructive delete, ghost icon button) are expressed as **variants** on that one component — via the `variant` and `size` props shadcn's `cva`-based buttons already support — never as a new copy-pasted button component.
 - Same rule for every other primitive: one `dropdown-menu.tsx`, one `dialog.tsx`, one `badge.tsx` — reused everywhere, customized only through props/variants.
 - If a genuinely new visual variant is needed (e.g. a new badge color for application status), extend that component's variant map — don't create `status-badge-2.tsx`.
 
 ### 3. File size limit
+
 No file should exceed ~500 lines. If a component file is approaching that limit, it's a signal to split it into smaller subcomponents (e.g. `application-form.tsx` growing too large → extract `application-form-company-fields.tsx`, `application-form-jd-field.tsx`). Prefer several small, named, single-responsibility components over one large one.
 
 ### 4. Component conventions
+
 - One component per file, named the same as the file (`application-card.tsx` exports `ApplicationCard`).
 - Props typed explicitly with an interface, never `any`.
 - Presentational components stay dumb (props in, JSX out); data-fetching and state logic live in hooks (`shared/hooks/` or domain-local `use-*.ts`) — don't fetch data inside deeply nested presentational components.
 - Co-locate a component's own tiny helper types/constants in the same file only if they're not reused elsewhere; otherwise they go in `shared/types/`.
 
 ### 5. Styling
+
 - Tailwind utility classes directly in JSX for one-off layout; shared visual patterns (card padding, section spacing) become a small reusable component, not a repeated class string pasted across files.
 - Use the `cn()` utility (from `shared/lib/utils.ts`, the standard shadcn helper) for conditional class merging — never string-concatenate classNames manually.
 
 ### 6. Naming
+
 - Files: `kebab-case.tsx`
 - Components/types: `PascalCase`
 - Hooks: `use-kebab-case.ts` exporting `useCamelCase`
 
 ### 7. No hardcoded/arbitrary values — everything comes from design tokens
+
 Never write arbitrary Tailwind values like `text-[30px]`, `text-[#1a1a1a]`, `p-[18px]`, `w-[342px]`. Every color, font size, spacing value, radius, and shadow must come from a defined token in `globals.css` / `tailwind.config.ts` — never typed inline as a magic number.
 
 **Typography:** Define a fixed type scale in `tailwind.config.ts` (or as CSS variables in `globals.css`) — e.g. `text-xs / sm / base / lg / xl / 2xl / 3xl` mapped to your actual design sizes once, then used everywhere via the class name, never overridden per-component with `text-[Npx]`. If the design needs a size the default Tailwind scale doesn't have, add it to the scale in config — don't bracket-override it inline.
@@ -122,6 +129,7 @@ npx husky init
 ```
 
 Add to `package.json`:
+
 ```json
 {
   "lint-staged": {
@@ -132,15 +140,18 @@ Add to `package.json`:
 ```
 
 Replace the contents of `.husky/pre-commit` with:
+
 ```bash
 npx lint-staged
 ```
 
 Optional but recommended: a second check that fails the commit on TypeScript errors, since lint-staged alone won't catch type errors:
+
 ```bash
 # .husky/pre-commit, add after lint-staged
 npm run typecheck
 ```
+
 (where `typecheck` in `package.json` scripts is `tsc --noEmit`)
 
 This gives you: every commit is auto-formatted, auto-linted, and type-checked before it's allowed to land — exactly the safety net you want when an AI agent is generating a lot of the code.

@@ -132,15 +132,23 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                     <Briefcase className="h-3.5 w-3.5" />
                   </div>
                 </div>
-                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">
-                  8
-                </div>
+                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">8</div>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                     ↗ +12% vs last week
                   </span>
-                  <svg className="w-16 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 60 20">
-                    <path d="M2 16 L15 12 L30 14 L42 6 L58 4" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-16 h-5 text-indigo-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 60 20"
+                  >
+                    <path
+                      d="M2 16 L15 12 L30 14 L42 6 L58 4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
@@ -153,15 +161,23 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                     <MessageSquareText className="h-3.5 w-3.5" />
                   </div>
                 </div>
-                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">
-                  57%
-                </div>
+                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">57%</div>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                     ↗ +4.2% vs last week
                   </span>
-                  <svg className="w-16 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 60 20">
-                    <path d="M2 15 L14 11 L28 13 L44 8 L58 5" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-16 h-5 text-indigo-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 60 20"
+                  >
+                    <path
+                      d="M2 15 L14 11 L28 13 L44 8 L58 5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
@@ -174,15 +190,23 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                     <Sparkles className="h-3.5 w-3.5" />
                   </div>
                 </div>
-                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">
-                  43%
-                </div>
+                <div className="text-3xl font-extrabold text-neutral-950 dark:text-white">43%</div>
                 <div className="flex items-center justify-between pt-1">
                   <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                     ↗ +6.5% vs last week
                   </span>
-                  <svg className="w-16 h-5 text-indigo-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 60 20">
-                    <path d="M2 17 L16 14 L30 15 L45 9 L58 4" strokeLinecap="round" strokeLinejoin="round" />
+                  <svg
+                    className="w-16 h-5 text-indigo-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 60 20"
+                  >
+                    <path
+                      d="M2 17 L16 14 L30 15 L45 9 L58 4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </div>
               </div>
@@ -205,8 +229,12 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                   </div>
 
                   <div className="flex items-baseline gap-2 mt-2">
-                    <span className="text-2xl font-extrabold text-neutral-950 dark:text-white">8</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">↗ +14% vs last week</span>
+                    <span className="text-2xl font-extrabold text-neutral-950 dark:text-white">
+                      8
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      ↗ +14% vs last week
+                    </span>
                     <span className="text-[11px] text-neutral-400">applications submitted</span>
                   </div>
                 </div>
@@ -217,15 +245,26 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                   {[
                     { day: "Sun", h: "h-6", bg: "bg-indigo-100 dark:bg-indigo-500/20" },
                     { day: "Mon", h: "h-14", bg: "bg-indigo-200 dark:bg-indigo-500/30" },
-                    { day: "Tue", h: "h-24", bg: "bg-gradient-to-t from-indigo-600 to-indigo-400 shadow-xs shadow-indigo-500/30" },
+                    {
+                      day: "Tue",
+                      h: "h-24",
+                      bg: "bg-gradient-to-t from-indigo-600 to-indigo-400 shadow-xs shadow-indigo-500/30",
+                    },
                     { day: "Wed", h: "h-10", bg: "bg-indigo-100 dark:bg-indigo-500/20" },
                     { day: "Thu", h: "h-18", bg: "bg-indigo-200 dark:bg-indigo-500/30" },
                     { day: "Fri", h: "h-14", bg: "bg-indigo-200 dark:bg-indigo-500/30" },
                     { day: "Sat", h: "h-8", bg: "bg-indigo-100 dark:bg-indigo-500/20" },
                   ].map((bar) => (
-                    <div key={bar.day} className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end">
-                      <div className={`w-full max-w-[28px] ${bar.h} ${bar.bg} rounded-t-md transition-all`} />
-                      <span className="text-[10px] text-neutral-500 dark:text-neutral-400">{bar.day}</span>
+                    <div
+                      key={bar.day}
+                      className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end"
+                    >
+                      <div
+                        className={`w-full max-w-[28px] ${bar.h} ${bar.bg} rounded-t-md transition-all`}
+                      />
+                      <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                        {bar.day}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -243,13 +282,22 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
 
                   {/* Filter Tabs */}
                   <div className="flex items-center gap-1 mt-2.5 p-1 rounded-lg bg-neutral-100 dark:bg-white/[0.04]">
-                    <button type="button" className="flex-1 py-1 rounded-md text-[10px] font-bold bg-white dark:bg-[#1b1c26] text-neutral-950 dark:text-white shadow-2xs">
+                    <button
+                      type="button"
+                      className="flex-1 py-1 rounded-md text-[10px] font-bold bg-white dark:bg-[#1b1c26] text-neutral-950 dark:text-white shadow-2xs"
+                    >
                       Today
                     </button>
-                    <button type="button" className="flex-1 py-1 rounded-md text-[10px] font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+                    <button
+                      type="button"
+                      className="flex-1 py-1 rounded-md text-[10px] font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                    >
                       Yesterday
                     </button>
-                    <button type="button" className="flex-1 py-1 rounded-md text-[10px] font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white">
+                    <button
+                      type="button"
+                      className="flex-1 py-1 rounded-md text-[10px] font-medium text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                    >
                       This week
                     </button>
                   </div>
@@ -262,7 +310,9 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
 
                   <div className="flex items-center justify-between text-[10px] text-neutral-400 mt-2">
                     <span>2 activities logged</span>
-                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Live Sync</span>
+                    <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+                      Live Sync
+                    </span>
                   </div>
 
                   {/* Activity 1 */}

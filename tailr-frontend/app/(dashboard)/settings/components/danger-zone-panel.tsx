@@ -43,7 +43,8 @@ export function DangerZonePanel() {
   const [deleteError, setDeleteError] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
-  const isDeleteConfirmed = typedPhrase.trim() === CONFIRMATION_PHRASE && password.trim().length > 0;
+  const isDeleteConfirmed =
+    typedPhrase.trim() === CONFIRMATION_PHRASE && password.trim().length > 0;
 
   const handleDeactivate = async () => {
     setIsDeactivating(true);
@@ -69,8 +70,8 @@ export function DangerZonePanel() {
     } catch (err: any) {
       setDeleteError(
         err?.response?.data?.message ||
-        err?.message ||
-        "Failed to delete account. Please verify your password."
+          err?.message ||
+          "Failed to delete account. Please verify your password."
       );
       setIsDeleting(false);
     }
@@ -94,7 +95,8 @@ export function DangerZonePanel() {
               <span>Deactivate Workspace</span>
             </div>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-              Temporarily deactivate your workspace and hide all public portfolio links. You can reactivate your account at any time simply by signing back in.
+              Temporarily deactivate your workspace and hide all public portfolio links. You can
+              reactivate your account at any time simply by signing back in.
             </p>
           </div>
 
@@ -120,7 +122,8 @@ export function DangerZonePanel() {
               <span>Permanently Delete Account</span>
             </div>
             <p className="text-xs text-rose-900/80 dark:text-rose-200/80 leading-relaxed font-medium">
-              Once deleted, your account and all associated assets are irrevocably destroyed. This action cannot be reversed.
+              Once deleted, your account and all associated assets are irrevocably destroyed. This
+              action cannot be reversed.
             </p>
           </div>
 
@@ -158,16 +161,13 @@ export function DangerZonePanel() {
           <DialogHeader>
             <DialogTitle>Deactivate Workspace?</DialogTitle>
             <DialogDescription>
-              Your active session will be signed out and portfolio access paused. Your data remains safely preserved in PostgreSQL.
+              Your active session will be signed out and portfolio access paused. Your data remains
+              safely preserved in PostgreSQL.
             </DialogDescription>
           </DialogHeader>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsDeactivateOpen(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => setIsDeactivateOpen(false)}>
               Cancel
             </Button>
             <Button
@@ -199,7 +199,9 @@ export function DangerZonePanel() {
               </DialogTitle>
             </div>
             <DialogDescription className="text-neutral-600 dark:text-neutral-300">
-              This action is <strong className="text-rose-600 dark:text-rose-400">IRREVERSIBLE</strong>. All your master resumes, applications, and settings will be permanently wiped.
+              This action is{" "}
+              <strong className="text-rose-600 dark:text-rose-400">IRREVERSIBLE</strong>. All your
+              master resumes, applications, and settings will be permanently wiped.
             </DialogDescription>
           </DialogHeader>
 
@@ -263,11 +265,7 @@ export function DangerZonePanel() {
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={() => setIsDeleteOpen(false)}
-            >
+            <Button type="button" variant="ghost" onClick={() => setIsDeleteOpen(false)}>
               Cancel
             </Button>
             <Button

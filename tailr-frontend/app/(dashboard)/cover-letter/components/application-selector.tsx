@@ -85,9 +85,7 @@ export function ApplicationSelector({
             onChange={(e) => onSelectApplication(e.target.value)}
             className="w-full h-10 px-3 text-xs rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 font-medium focus:outline-none focus:border-indigo-500 shadow-2xs cursor-pointer"
           >
-            <option value="">
-              -- Choose an application to auto-fill job fields --
-            </option>
+            <option value="">-- Choose an application to auto-fill job fields --</option>
             {applications.map((app) => (
               <option key={app.id} value={app.id}>
                 {app.companyName} — {app.positionTitle} ({app.status})
@@ -96,11 +94,12 @@ export function ApplicationSelector({
           </select>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] text-neutral-500 dark:text-neutral-400">
             <span>
-              Selecting an application auto-populates the company, position, hiring
-              manager, and description below.
+              Selecting an application auto-populates the company, position, hiring manager, and
+              description below.
             </span>
             <span className="text-indigo-600 dark:text-indigo-400 font-medium">
-              Haven&apos;t added this job yet? Switch to <strong>&ldquo;Direct / Manual Input&rdquo;</strong> above.
+              Haven&apos;t added this job yet? Switch to{" "}
+              <strong>&ldquo;Direct / Manual Input&rdquo;</strong> above.
             </span>
           </div>
         </div>
@@ -109,7 +108,9 @@ export function ApplicationSelector({
         <div className="p-3.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 text-xs text-neutral-700 dark:text-neutral-300 flex items-center gap-2.5">
           <Info className="h-4 w-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
           <span>
-            <strong>Direct Input Mode:</strong> If you haven&apos;t added this job to your tracker yet, simply fill in the company, position, and job description below to generate your cover letter directly.
+            <strong>Direct Input Mode:</strong> If you haven&apos;t added this job to your tracker
+            yet, simply fill in the company, position, and job description below to generate your
+            cover letter directly.
           </span>
         </div>
       )}
@@ -125,9 +126,7 @@ export function ApplicationSelector({
             </label>
             <Input
               value={jobDetails.companyName}
-              onChange={(e) =>
-                onChangeJobDetails({ companyName: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ companyName: e.target.value })}
               placeholder="e.g. Stripe, OpenAI, Figma"
               className="text-xs"
               required
@@ -142,9 +141,7 @@ export function ApplicationSelector({
             </label>
             <Input
               value={jobDetails.positionTitle}
-              onChange={(e) =>
-                onChangeJobDetails({ positionTitle: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ positionTitle: e.target.value })}
               placeholder="e.g. Senior Frontend Engineer"
               className="text-xs"
               required
@@ -159,9 +156,7 @@ export function ApplicationSelector({
             </label>
             <Input
               value={jobDetails.location}
-              onChange={(e) =>
-                onChangeJobDetails({ location: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ location: e.target.value })}
               placeholder="e.g. Remote, San Francisco, CA"
               className="text-xs"
             />
@@ -176,9 +171,7 @@ export function ApplicationSelector({
             <Input
               type="url"
               value={jobDetails.jobUrl}
-              onChange={(e) =>
-                onChangeJobDetails({ jobUrl: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ jobUrl: e.target.value })}
               placeholder="https://..."
               className="text-xs"
             />
@@ -194,9 +187,7 @@ export function ApplicationSelector({
             </label>
             <Input
               value={jobDetails.hiringManager}
-              onChange={(e) =>
-                onChangeJobDetails({ hiringManager: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ hiringManager: e.target.value })}
               placeholder="e.g. Sarah Jenkins (leave blank if unknown)"
               className="text-xs"
             />
@@ -209,9 +200,7 @@ export function ApplicationSelector({
             </label>
             <Input
               value={jobDetails.hiringManagerTitle}
-              onChange={(e) =>
-                onChangeJobDetails({ hiringManagerTitle: e.target.value })
-              }
+              onChange={(e) => onChangeJobDetails({ hiringManagerTitle: e.target.value })}
               placeholder="e.g. VP of Engineering, Head of Talent"
               className="text-xs"
             />
@@ -232,17 +221,14 @@ export function ApplicationSelector({
 
           <Textarea
             value={jobDetails.jobDescription}
-            onChange={(e) =>
-              onChangeJobDetails({ jobDescription: e.target.value })
-            }
+            onChange={(e) => onChangeJobDetails({ jobDescription: e.target.value })}
             placeholder="Paste the full job posting requirements, required tech stack, responsibilities, and qualifications..."
             rows={7}
             className="text-xs font-mono leading-relaxed"
           />
           <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-            The AI cross-references this description against your verified
-            master resume to find exact skill matches and relevant career
-            accomplishments.
+            The AI cross-references this description against your verified master resume to find
+            exact skill matches and relevant career accomplishments.
           </p>
         </div>
       </div>

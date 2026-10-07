@@ -2,7 +2,16 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Mail, Lock, Eye, EyeOff, Loader2, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -51,7 +60,7 @@ export function AuthForm() {
         onError: (error) => {
           setFormError(extractErrorMessage(error));
         },
-      },
+      }
     );
   };
 
@@ -147,11 +156,7 @@ export function AuthForm() {
                 className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             }
             className="h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10"
@@ -213,17 +218,12 @@ export function AuthForm() {
           <div className="w-full border-t border-neutral-200 dark:border-white/10" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-neutral-400 font-medium">
-            Or continue with
-          </span>
+          <span className="bg-background px-3 text-neutral-400 font-medium">Or continue with</span>
         </div>
       </div>
 
       {/* Social Sign-In (Google only) */}
-      <SocialAuthButtons
-        isLoading={isLoading}
-        onSocialClick={handleSocialSignIn}
-      />
+      <SocialAuthButtons isLoading={isLoading} onSocialClick={handleSocialSignIn} />
 
       {/* Switch to Sign Up Screen */}
       <div className="text-center pt-2">
@@ -247,7 +247,8 @@ export function AuthForm() {
           <DialogHeader>
             <DialogTitle>Reset Your Password</DialogTitle>
             <DialogDescription>
-              Enter the email address associated with your account and we will send you a link to reset your password.
+              Enter the email address associated with your account and we will send you a link to
+              reset your password.
             </DialogDescription>
           </DialogHeader>
 
@@ -260,7 +261,11 @@ export function AuthForm() {
                 Password reset link sent!
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">
-                We sent instructions to <span className="font-semibold text-neutral-800 dark:text-neutral-200">{forgotEmail}</span>. Check your inbox and spam folders.
+                We sent instructions to{" "}
+                <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                  {forgotEmail}
+                </span>
+                . Check your inbox and spam folders.
               </p>
               <Button
                 type="button"

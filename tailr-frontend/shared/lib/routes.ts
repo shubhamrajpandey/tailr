@@ -39,10 +39,7 @@ export const ROUTES = {
 /**
  * Routes restricted to unauthenticated guests (redirects active sessions to dashboard).
  */
-export const AUTH_ROUTES: readonly string[] = [
-  ROUTES.LOGIN,
-  ROUTES.SIGNUP,
-];
+export const AUTH_ROUTES: readonly string[] = [ROUTES.LOGIN, ROUTES.SIGNUP];
 
 /**
  * Route prefixes requiring an active authentication session.
@@ -72,7 +69,5 @@ export function isProtectedRoute(pathname: string): boolean {
  * Helper to determine whether a given pathname is an auth route (login/signup).
  */
 export function isAuthRoute(pathname: string): boolean {
-  return AUTH_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
+  return AUTH_ROUTES.some((route) => pathname === route || pathname.startsWith(`${route}/`));
 }

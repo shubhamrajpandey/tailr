@@ -168,9 +168,11 @@ export function useSettings() {
             defaultStatus:
               remoteSettings.applications?.defaultStatus || current.applications.defaultStatus,
             defaultSortOrder:
-              remoteSettings.applications?.defaultSortOrder || current.applications.defaultSortOrder,
+              remoteSettings.applications?.defaultSortOrder ||
+              current.applications.defaultSortOrder,
             ghostedThresholdDays:
-              remoteSettings.applications?.ghostedThresholdDays ?? current.applications.ghostedThresholdDays,
+              remoteSettings.applications?.ghostedThresholdDays ??
+              current.applications.ghostedThresholdDays,
           },
           notifications: current.notifications,
           appearance: {
@@ -369,16 +371,13 @@ export function useSettings() {
     [persist]
   );
 
-  const changePassword = React.useCallback(
-    async (currentPassword: string, newPassword: string) => {
-      const res = await authApiClient.put("/settings/password", {
-        currentPassword,
-        newPassword,
-      });
-      return res.data;
-    },
-    []
-  );
+  const changePassword = React.useCallback(async (currentPassword: string, newPassword: string) => {
+    const res = await authApiClient.put("/settings/password", {
+      currentPassword,
+      newPassword,
+    });
+    return res.data;
+  }, []);
 
   const exportData = React.useCallback(async () => {
     const res = await authApiClient.get("/settings/export-data");

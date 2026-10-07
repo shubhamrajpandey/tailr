@@ -1,10 +1,7 @@
 import { z } from "zod";
 
 export const accountProfileSchema = z.object({
-  name: z
-    .string()
-    .min(1, { message: "Name is required" })
-    .max(80, { message: "Name is too long" }),
+  name: z.string().min(1, { message: "Name is required" }).max(80, { message: "Name is too long" }),
   email: z
     .string()
     .min(1, { message: "Email is required" })
@@ -18,12 +15,8 @@ export const accountPasswordSchema = z
     currentPassword: z
       .string()
       .min(6, { message: "Current password must be at least 6 characters" }),
-    newPassword: z
-      .string()
-      .min(8, { message: "New password must be at least 8 characters" }),
-    confirmPassword: z
-      .string()
-      .min(1, { message: "Please confirm your new password" }),
+    newPassword: z.string().min(8, { message: "New password must be at least 8 characters" }),
+    confirmPassword: z.string().min(1, { message: "Please confirm your new password" }),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "New passwords do not match",
@@ -42,11 +35,7 @@ export const aiSettingsSchema = z.object({
 export type AISettingsValues = z.infer<typeof aiSettingsSchema>;
 
 export const resumeSettingsSchema = z.object({
-  defaultTemplate: z.enum([
-    "modern_minimalist",
-    "executive_classic",
-    "technical_single_column",
-  ]),
+  defaultTemplate: z.enum(["modern_minimalist", "executive_classic", "technical_single_column"]),
   includeContactHeader: z.boolean(),
   includeLinkedIn: z.boolean(),
   defaultPageMargin: z.enum(["compact", "normal", "spacious"]),
@@ -66,6 +55,4 @@ export const applicationSettingsSchema = z.object({
   ghostedThresholdDays: z.number().nullable(),
 });
 
-export type ApplicationSettingsValues = z.infer<
-  typeof applicationSettingsSchema
->;
+export type ApplicationSettingsValues = z.infer<typeof applicationSettingsSchema>;

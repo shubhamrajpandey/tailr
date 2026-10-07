@@ -18,9 +18,7 @@ interface CandidateVerificationCardProps {
   masterResume: ResumeData;
 }
 
-export function CandidateVerificationCard({
-  masterResume,
-}: CandidateVerificationCardProps) {
+export function CandidateVerificationCard({ masterResume }: CandidateVerificationCardProps) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const basics = masterResume.basics || {
@@ -92,17 +90,11 @@ export function CandidateVerificationCard({
           {/* Quick Metrics & Toggle */}
           <div className="flex items-center gap-3 self-end md:self-center">
             <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-neutral-600 dark:text-neutral-400 bg-white/70 dark:bg-neutral-800/80 px-3 py-1.5 rounded-lg border border-neutral-200/80 dark:border-white/10">
-              <span className="text-neutral-900 dark:text-white font-bold">
-                {experienceCount}
-              </span>{" "}
+              <span className="text-neutral-900 dark:text-white font-bold">{experienceCount}</span>{" "}
               Roles •
-              <span className="text-neutral-900 dark:text-white font-bold">
-                {skillCount}
-              </span>{" "}
+              <span className="text-neutral-900 dark:text-white font-bold">{skillCount}</span>{" "}
               Skills •
-              <span className="text-neutral-900 dark:text-white font-bold">
-                {projectCount}
-              </span>{" "}
+              <span className="text-neutral-900 dark:text-white font-bold">{projectCount}</span>{" "}
               Projects
             </div>
 
@@ -127,16 +119,14 @@ export function CandidateVerificationCard({
         <div className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400">
           <UserCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
           <span>
-            <strong>Zero-Hallucination Guardrail:</strong> The AI generator is
-            locked to the qualifications and achievements verified below.
+            <strong>Zero-Hallucination Guardrail:</strong> The AI generator is locked to the
+            qualifications and achievements verified below.
           </span>
         </div>
         {primaryRole && (
           <span className="hidden lg:inline text-neutral-500 dark:text-neutral-400">
             Current Anchor:{" "}
-            <strong className="text-neutral-800 dark:text-neutral-200">
-              {primaryRole.title}
-            </strong>{" "}
+            <strong className="text-neutral-800 dark:text-neutral-200">{primaryRole.title}</strong>{" "}
             at {primaryRole.company}
           </span>
         )}
@@ -172,12 +162,9 @@ export function CandidateVerificationCard({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h4 className="font-bold text-neutral-900 dark:text-white">
-                        {exp.title}
-                      </h4>
+                      <h4 className="font-bold text-neutral-900 dark:text-white">{exp.title}</h4>
                       <p className="text-neutral-500 dark:text-neutral-400 font-medium">
-                        {exp.company}{" "}
-                        {exp.location ? `• ${exp.location}` : ""}
+                        {exp.company} {exp.location ? `• ${exp.location}` : ""}
                       </p>
                     </div>
                     <span className="text-[11px] px-2 py-0.5 rounded bg-neutral-100 dark:bg-white/5 font-mono text-neutral-600 dark:text-neutral-300 shrink-0">

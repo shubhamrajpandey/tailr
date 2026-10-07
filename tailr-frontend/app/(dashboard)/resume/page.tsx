@@ -1,15 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Sparkles,
-  User,
-  Code2,
-  Briefcase,
-  FolderGit2,
-  GraduationCap,
-  Award,
-} from "lucide-react";
+import { Sparkles, User, Code2, Briefcase, FolderGit2, GraduationCap, Award } from "lucide-react";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
@@ -160,7 +152,11 @@ function MasterResumeEditor({
     }
   };
 
-  const handleUploadRaw = async (payload: { rawText?: string; pdfBase64?: string; title?: string }) => {
+  const handleUploadRaw = async (payload: {
+    rawText?: string;
+    pdfBase64?: string;
+    title?: string;
+  }) => {
     const res = await uploadRawResume(payload);
     const uploadedRecord = res?.data as ResumeExportData | undefined;
     if (uploadedRecord) {
@@ -265,8 +261,7 @@ function MasterResumeEditor({
 }
 
 export default function MasterResumePage() {
-  const { masterResume, isLoaded, updateMasterResume, resetToDefault } =
-    useMasterResume();
+  const { masterResume, isLoaded, updateMasterResume, resetToDefault } = useMasterResume();
 
   if (!isLoaded) {
     return (

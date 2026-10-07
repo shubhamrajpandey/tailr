@@ -75,10 +75,7 @@ export function LanguageSelector({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn(triggerStyles, className)}
-        aria-label="Select language"
-      >
+      <DropdownMenuTrigger className={cn(triggerStyles, className)} aria-label="Select language">
         <Globe className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400 shrink-0" />
         <span className="font-semibold">{currentLang}</span>
         <ChevronDown className="h-3 w-3 text-neutral-400 transition-transform ml-0.5 shrink-0" />

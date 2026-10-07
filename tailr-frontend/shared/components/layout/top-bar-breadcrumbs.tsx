@@ -16,27 +16,15 @@ export interface BreadcrumbItem {
  * Static route-to-breadcrumb dictionary for predictable, instantaneous O(1) route lookups.
  */
 export const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
-  [ROUTES.HOME]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Dashboard" },
-  ],
-  [ROUTES.DASHBOARD]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Dashboard" },
-  ],
-  [ROUTES.APPLICATIONS]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Applications" },
-  ],
+  [ROUTES.HOME]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Dashboard" }],
+  [ROUTES.DASHBOARD]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Dashboard" }],
+  [ROUTES.APPLICATIONS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Applications" }],
   [ROUTES.NEW_APPLICATION]: [
     { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Applications", href: ROUTES.APPLICATIONS },
     { label: "New Application" },
   ],
-  [ROUTES.RESUME]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Master Resume" },
-  ],
+  [ROUTES.RESUME]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Master Resume" }],
   [ROUTES.RESUME_TAILOR]: [
     { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Resume", href: ROUTES.RESUME },
@@ -56,22 +44,10 @@ export const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
     { label: "Cover Letters", href: ROUTES.COVER_LETTER },
     { label: "New Letter" },
   ],
-  [ROUTES.ANALYTICS]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Analytics" },
-  ],
-  [ROUTES.COMPANIES]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Companies" },
-  ],
-  [ROUTES.SETTINGS]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Settings" },
-  ],
-  [ROUTES.DOCS]: [
-    { label: "Overview", href: ROUTES.DASHBOARD },
-    { label: "Documentation" },
-  ],
+  [ROUTES.ANALYTICS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Analytics" }],
+  [ROUTES.COMPANIES]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Companies" }],
+  [ROUTES.SETTINGS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Settings" }],
+  [ROUTES.DOCS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Documentation" }],
 };
 
 interface DynamicBreadcrumbPattern {
@@ -114,10 +90,7 @@ const DYNAMIC_BREADCRUMB_PATTERNS: DynamicBreadcrumbPattern[] = [
   },
   {
     matches: (pathname) => pathname.startsWith(ROUTES.RESUMES_LEGACY),
-    resolve: () => [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Resume" },
-    ],
+    resolve: () => [{ label: "Overview", href: "/dashboard" }, { label: "Resume" }],
   },
   {
     matches: (pathname) => pathname.startsWith("/cover-letter/"),
@@ -132,8 +105,7 @@ const DYNAMIC_BREADCRUMB_PATTERNS: DynamicBreadcrumbPattern[] = [
     resolve: (pathname) => {
       const sub = pathname.replace("/settings/", "");
       const subLabel =
-        SETTINGS_SUB_LABELS[sub] ||
-        sub.charAt(0).toUpperCase() + sub.slice(1).replace(/-/g, " ");
+        SETTINGS_SUB_LABELS[sub] || sub.charAt(0).toUpperCase() + sub.slice(1).replace(/-/g, " ");
       return [
         { label: "Overview", href: "/dashboard" },
         { label: "Settings", href: "/settings/account" },
@@ -162,10 +134,7 @@ export function getDefaultBreadcrumbs(pathname: string): BreadcrumbItem[] {
     { label: "Overview", href: "/dashboard" },
     ...segments.map((seg, idx) => ({
       label: seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, " "),
-      href:
-        idx < segments.length - 1
-          ? `/${segments.slice(0, idx + 1).join("/")}`
-          : undefined,
+      href: idx < segments.length - 1 ? `/${segments.slice(0, idx + 1).join("/")}` : undefined,
     })),
   ];
 }
@@ -224,9 +193,7 @@ export function TopBarBreadcrumbs({ breadcrumbs }: TopBarBreadcrumbsProps) {
                   </span>
                 )}
                 {!isLast && (
-                  <span className="text-neutral-300 dark:text-neutral-600 font-normal">
-                    /
-                  </span>
+                  <span className="text-neutral-300 dark:text-neutral-600 font-normal">/</span>
                 )}
               </React.Fragment>
             );

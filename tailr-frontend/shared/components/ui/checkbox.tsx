@@ -2,8 +2,7 @@ import * as React from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
-export interface CheckboxProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onCheckedChange?: (checked: boolean) => void;
 }
 

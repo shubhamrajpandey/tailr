@@ -78,9 +78,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
   const isApplicationsRoute = pathname.startsWith("/applications");
   const isResumeRoute = pathname.startsWith("/resume") || pathname.startsWith("/resumes");
 
-  const [expandedSections, setExpandedSections] = React.useState<
-    Record<string, boolean>
-  >({
+  const [expandedSections, setExpandedSections] = React.useState<Record<string, boolean>>({
     Applications: true,
     Resumes: true,
   });
@@ -92,8 +90,8 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
         (title === "Applications"
           ? isApplicationsRoute
           : title === "Resumes"
-          ? isResumeRoute
-          : false);
+            ? isResumeRoute
+            : false);
       return {
         ...prev,
         [title]: !current,
@@ -206,8 +204,8 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
               (item.title === "Applications"
                 ? isApplicationsRoute
                 : item.title === "Resumes"
-                ? isResumeRoute
-                : false);
+                  ? isResumeRoute
+                  : false);
             const isDirectActive = item.href
               ? item.href === "/dashboard"
                 ? pathname === "/dashboard"
@@ -268,16 +266,14 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                     <ChevronDown
                       className={cn(
                         "h-4 w-4 text-neutral-400 transition-transform duration-200",
-                        isExpanded &&
-                          "rotate-180 text-neutral-900 dark:text-white"
+                        isExpanded && "rotate-180 text-neutral-900 dark:text-white"
                       )}
                     />
                   </button>
                   {isExpanded && (
                     <div className="pl-6 pr-1 space-y-1 border-l border-neutral-200 dark:border-white/[0.06] ml-4 mt-1">
                       {item.subItems.map((sub) => {
-                        const isSubActive =
-                          sub.isActive ?? pathname === sub.href;
+                        const isSubActive = sub.isActive ?? pathname === sub.href;
                         return (
                           <Link
                             key={sub.title}
@@ -361,8 +357,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
         <div className="space-y-1">
           {analyticsNavItems.map((item) => {
             const Icon = item.icon;
-            const isActive =
-              pathname === "/analytics" || pathname.startsWith("/analytics");
+            const isActive = pathname === "/analytics" || pathname.startsWith("/analytics");
 
             if (isCollapsed) {
               return (
@@ -420,9 +415,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
         <div className="space-y-1">
           {supportNavItems.map((item) => {
             const Icon = item.icon;
-            const isDirectActive = item.href
-              ? pathname.startsWith(item.href)
-              : false;
+            const isDirectActive = item.href ? pathname.startsWith(item.href) : false;
 
             if (isCollapsed) {
               return (

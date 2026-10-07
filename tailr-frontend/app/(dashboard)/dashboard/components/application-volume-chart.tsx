@@ -39,8 +39,12 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     return (
       <div className="rounded-lg border border-neutral-200 dark:border-white/10 bg-white/95 dark:bg-[#17181f]/95 px-3.5 py-2.5 text-xs shadow-xl backdrop-blur-md">
         <p className="font-semibold text-neutral-950 dark:text-white text-sm flex items-center justify-between gap-3">
-          <span>{item.day} ({item.fullDate})</span>
-          <span className="font-mono text-indigo-600 dark:text-indigo-400 font-bold">{item.applications} applied</span>
+          <span>
+            {item.day} ({item.fullDate})
+          </span>
+          <span className="font-mono text-indigo-600 dark:text-indigo-400 font-bold">
+            {item.applications} applied
+          </span>
         </p>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
           {item.isPeak ? "Peak submission day" : "Scheduled submissions"}
@@ -167,11 +171,7 @@ export function ApplicationVolumeChart({
               content={<CustomTooltip />}
               cursor={{ fill: "rgba(100, 116, 139, 0.08)", radius: 6 }}
             />
-            <Bar
-              dataKey="applications"
-              radius={[6, 6, 2, 2]}
-              maxBarSize={38}
-            >
+            <Bar dataKey="applications" radius={[6, 6, 2, 2]} maxBarSize={38}>
               {data.map((entry, index) => {
                 const isHovered = hoveredIndex === index;
                 const isPeak = entry.isPeak;

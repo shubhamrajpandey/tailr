@@ -87,10 +87,7 @@ export function StatCard({
 
         {/* Dynamic Sparkline SVG */}
         <div className="shrink-0 w-24 h-9">
-          <svg
-            viewBox={`0 0 ${width} ${height}`}
-            className="w-full h-full overflow-visible"
-          >
+          <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
             <defs>
               <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor={strokeColor} stopOpacity={0.25} />

@@ -29,8 +29,7 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 
 export const metadata: Metadata = {
   title: "Tailr",
-  description:
-    "Zero-hallucination AI resume tailoring and precision job application tracker.",
+  description: "Zero-hallucination AI resume tailoring and precision job application tracker.",
   icons: {
     icon: [
       {
@@ -46,11 +45,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"

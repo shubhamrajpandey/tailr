@@ -12,10 +12,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/shared/components/ui/card";
-import {
-  applicationFormSchema,
-  ApplicationFormValues,
-} from "@/shared/lib/validations/application";
+import { applicationFormSchema, ApplicationFormValues } from "@/shared/lib/validations/application";
 import { ApplicationFormCompanyFields } from "./application-form-company-fields";
 import { ApplicationFormStatusFields } from "./application-form-status-fields";
 import { ApplicationFormHrFields } from "./application-form-hr-fields";
@@ -119,11 +116,7 @@ export function ApplicationForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ApplicationFormJdField
-            register={register}
-            watch={watch}
-            errors={errors}
-          />
+          <ApplicationFormJdField register={register} watch={watch} errors={errors} />
         </CardContent>
       </Card>
 
@@ -151,11 +144,7 @@ export function ApplicationForm({
             className="w-full sm:w-auto gap-2 min-w-[140px] justify-center h-10 shadow-sm font-semibold"
           >
             <Save className="h-4 w-4" />
-            {isSubmitting
-              ? "Saving..."
-              : mode === "create"
-              ? "Create Application"
-              : "Save Changes"}
+            {isSubmitting ? "Saving..." : mode === "create" ? "Create Application" : "Save Changes"}
           </Button>
         </div>
       </div>

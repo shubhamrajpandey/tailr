@@ -36,11 +36,7 @@ export function ApplicationStatusBadge({
   const label = statusLabelMap[status] || status;
 
   return (
-    <Badge
-      variant={variant}
-      dot={dot}
-      className={cn("capitalize tracking-normal", className)}
-    >
+    <Badge variant={variant} dot={dot} className={cn("capitalize tracking-normal", className)}>
       {label}
     </Badge>
   );

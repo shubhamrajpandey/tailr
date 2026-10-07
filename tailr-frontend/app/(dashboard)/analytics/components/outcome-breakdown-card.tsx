@@ -11,11 +11,7 @@ interface OutcomeBreakdownCardProps {
   hasData: boolean;
 }
 
-export function OutcomeBreakdownCard({
-  items,
-  totalApplied,
-  hasData,
-}: OutcomeBreakdownCardProps) {
+export function OutcomeBreakdownCard({ items, totalApplied, hasData }: OutcomeBreakdownCardProps) {
   // Pre-defined color palette for segments matching the sleek dark aesthetic
   const segmentGradients = [
     "bg-[#4f46e5]", // Deep vibrant indigo

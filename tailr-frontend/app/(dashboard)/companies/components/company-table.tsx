@@ -161,7 +161,8 @@ export function CompanyTable({
                 No companies match your filters
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
-                Try searching with different keywords, tech stack terms, or clearing your active filters.
+                Try searching with different keywords, tech stack terms, or clearing your active
+                filters.
               </p>
             </div>
             {onResetFilters && (
@@ -198,7 +199,7 @@ export function CompanyTable({
       >
         {viewMode === "table" && (
           <p className="md:hidden text-[11px] text-neutral-500 dark:text-neutral-400 py-2 px-3 border-b border-neutral-100 dark:border-white/5">
-             Swipe horizontally to view all columns
+            Swipe horizontally to view all columns
           </p>
         )}
 
@@ -283,12 +284,24 @@ export function CompanyTable({
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell><div className="h-5 w-24 rounded-full bg-neutral-200 dark:bg-white/10" /></TableCell>
-                    <TableCell><div className="h-3 w-28 rounded bg-neutral-200 dark:bg-white/10" /></TableCell>
-                    <TableCell><div className="h-5 w-36 rounded bg-neutral-200 dark:bg-white/10" /></TableCell>
-                    <TableCell><div className="h-4 w-12 rounded bg-neutral-200 dark:bg-white/10" /></TableCell>
-                    <TableCell><div className="h-3.5 w-24 rounded bg-neutral-200 dark:bg-white/10" /></TableCell>
-                    <TableCell><div className="h-6 w-6 ml-auto rounded bg-neutral-200 dark:bg-white/10" /></TableCell>
+                    <TableCell>
+                      <div className="h-5 w-24 rounded-full bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-3 w-28 rounded bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-36 rounded bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-12 rounded bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-3.5 w-24 rounded bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-6 w-6 ml-auto rounded bg-neutral-200 dark:bg-white/10" />
+                    </TableCell>
                   </TableRow>
                 ))
               ) : sortedCompanies.length === 0 ? (
@@ -303,7 +316,8 @@ export function CompanyTable({
                           No companies match your filters
                         </p>
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm">
-                          Try searching with different keywords, tech stack terms, or clearing your active filters.
+                          Try searching with different keywords, tech stack terms, or clearing your
+                          active filters.
                         </p>
                       </div>
                       {onResetFilters && (

@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  CheckCircle2,
-  AlertCircle,
-  AlertTriangle,
-  Info,
-  X,
-} from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { toastStore, type ToastItem, type ToastType } from "@/shared/lib/toast";
 
@@ -80,7 +74,7 @@ export function Toaster() {
             role="alert"
             className={cn(
               "pointer-events-auto flex items-start gap-3 w-full p-3.5 rounded-xl border shadow-lg backdrop-blur-md transition-all duration-200 animate-in fade-in slide-in-from-bottom-3",
-              "bg-white/95 dark:bg-[#111216]/95 text-neutral-900 dark:text-neutral-100",
+              "bg-card/95 text-foreground",
               style.border,
               style.glow
             )}
@@ -95,9 +89,7 @@ export function Toaster() {
             </div>
 
             <div className="flex-1 min-w-0 pr-1">
-              <div className="text-xs font-semibold leading-snug">
-                {item.title}
-              </div>
+              <div className="text-xs font-semibold leading-snug">{item.title}</div>
               {item.description && (
                 <p className="text-[11px] text-neutral-600 dark:text-neutral-400 mt-0.5 leading-relaxed break-words">
                   {item.description}

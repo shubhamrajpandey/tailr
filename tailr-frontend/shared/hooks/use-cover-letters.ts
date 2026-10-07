@@ -79,9 +79,7 @@ function subscribeCoverLetters(callback: () => void) {
  * @returns Cover letters list, CRUD mutations, loading state, and manual refresh trigger.
  */
 export function useCoverLetters() {
-  const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector(
-    (state) => state.auth
-  );
+  const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector((state) => state.auth);
   const [isLoading, setIsLoading] = React.useState(false);
   const [isLoaded, setIsLoaded] = React.useState(false);
 
@@ -111,22 +109,20 @@ export function useCoverLetters() {
     try {
       const res = await authApiClient.get("/cover-letters");
       if (res.data?.success && Array.isArray(res.data?.data?.coverLetters)) {
-        const serverLetters: CoverLetter[] = res.data.data.coverLetters.map(
-          (cl: any) => ({
-            id: cl.id,
-            applicationId: cl.applicationId || null,
-            companyName: cl.companyName,
-            positionTitle: cl.positionTitle,
-            recipientName: cl.recipientName || null,
-            recipientTitle: cl.recipientTitle || null,
-            tone: cl.tone,
-            status: cl.status,
-            content: cl.content,
-            keyHighlights: Array.isArray(cl.keyHighlights) ? cl.keyHighlights : [],
-            createdAt: cl.createdAt,
-            updatedAt: cl.updatedAt,
-          })
-        );
+        const serverLetters: CoverLetter[] = res.data.data.coverLetters.map((cl: any) => ({
+          id: cl.id,
+          applicationId: cl.applicationId || null,
+          companyName: cl.companyName,
+          positionTitle: cl.positionTitle,
+          recipientName: cl.recipientName || null,
+          recipientTitle: cl.recipientTitle || null,
+          tone: cl.tone,
+          status: cl.status,
+          content: cl.content,
+          keyHighlights: Array.isArray(cl.keyHighlights) ? cl.keyHighlights : [],
+          createdAt: cl.createdAt,
+          updatedAt: cl.updatedAt,
+        }));
         persist(serverLetters);
       }
     } catch (err) {
@@ -185,9 +181,7 @@ export function useCoverLetters() {
             createdAt: res.data.data.coverLetter.createdAt,
             updatedAt: res.data.data.coverLetter.updatedAt,
           };
-          const updatedList = next.map((cl) =>
-            cl.id === tempId ? updatedLetter : cl
-          );
+          const updatedList = next.map((cl) => (cl.id === tempId ? updatedLetter : cl));
           persist(updatedList);
           return updatedLetter;
         }

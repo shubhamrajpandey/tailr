@@ -17,10 +17,7 @@ interface EducationFieldArrayProps {
   onChange: (updated: ResumeEducation[]) => void;
 }
 
-export function EducationFieldArray({
-  education,
-  onChange,
-}: EducationFieldArrayProps) {
+export function EducationFieldArray({ education, onChange }: EducationFieldArrayProps) {
   const addEducation = () => {
     const newEdu: ResumeEducation = {
       id: `edu-${Date.now()}`,
@@ -94,7 +91,9 @@ export function EducationFieldArray({
                   <div className="flex items-center gap-2 min-w-0">
                     <div className="h-2 w-2 rounded-full bg-indigo-500 shrink-0" />
                     <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
-                      {edu.degree ? `${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}` : "Degree"}
+                      {edu.degree
+                        ? `${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ""}`
+                        : "Degree"}
                     </span>
                   </div>
                   {edu.institution && (
@@ -127,9 +126,7 @@ export function EducationFieldArray({
                       </label>
                       <Input
                         value={edu.gpa || ""}
-                        onChange={(e) =>
-                          updateEducation(eIdx, { ...edu, gpa: e.target.value })
-                        }
+                        onChange={(e) => updateEducation(eIdx, { ...edu, gpa: e.target.value })}
                         placeholder="e.g. 3.85 / 4.0"
                         icon={<Award className="h-4 w-4 text-neutral-400" />}
                       />
@@ -143,9 +140,7 @@ export function EducationFieldArray({
                       </label>
                       <Input
                         value={edu.degree}
-                        onChange={(e) =>
-                          updateEducation(eIdx, { ...edu, degree: e.target.value })
-                        }
+                        onChange={(e) => updateEducation(eIdx, { ...edu, degree: e.target.value })}
                         placeholder="e.g. Bachelor of Science"
                       />
                     </div>
@@ -183,9 +178,7 @@ export function EducationFieldArray({
                       </label>
                       <Input
                         value={edu.endDate}
-                        onChange={(e) =>
-                          updateEducation(eIdx, { ...edu, endDate: e.target.value })
-                        }
+                        onChange={(e) => updateEducation(eIdx, { ...edu, endDate: e.target.value })}
                         placeholder="2019-05"
                         icon={<Calendar className="h-4 w-4 text-neutral-400" />}
                       />

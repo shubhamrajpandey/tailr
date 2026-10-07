@@ -14,11 +14,7 @@ import {
   UserCheck,
 } from "lucide-react";
 import { Company } from "@/shared/types/company";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/shared/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/shared/components/ui/dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 
@@ -37,9 +33,7 @@ function getInitials(name: string): string {
 function getWebsiteDisplay(websiteUrl?: string | null) {
   if (!websiteUrl) return null;
   try {
-    const url = new URL(
-      websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`
-    );
+    const url = new URL(websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`);
     return { href: url.href, label: url.hostname.replace(/^www\./, "") };
   } catch (err) {
     console.warn("[CompanyDetailDialog] Invalid company website URL:", err);
@@ -47,11 +41,7 @@ function getWebsiteDisplay(websiteUrl?: string | null) {
   }
 }
 
-export function CompanyDetailDialog({
-  company,
-  isOpen,
-  onClose,
-}: CompanyDetailDialogProps) {
+export function CompanyDetailDialog({ company, isOpen, onClose }: CompanyDetailDialogProps) {
   const [copiedEmail, setCopiedEmail] = React.useState(false);
 
   if (!company) return null;
@@ -237,9 +227,7 @@ export function CompanyDetailDialog({
                 {company.description}
               </p>
             ) : (
-              <p className="text-xs italic text-neutral-400">
-                No description provided.
-              </p>
+              <p className="text-xs italic text-neutral-400">No description provided.</p>
             )}
           </div>
         </div>

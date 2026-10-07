@@ -23,7 +23,8 @@ export default function ResumeVersionsPage() {
               </span>
             </h1>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-              Every tailored and customized version of your resume, tied to your job application tracker.
+              Every tailored and customized version of your resume, tied to your job application
+              tracker.
             </p>
           </div>
 

@@ -10,10 +10,7 @@ interface TailoringChangesListProps {
   matchScore?: number;
 }
 
-export function TailoringChangesList({
-  changes,
-  matchScore,
-}: TailoringChangesListProps) {
+export function TailoringChangesList({ changes, matchScore }: TailoringChangesListProps) {
   const [filterType, setFilterType] = React.useState<string>("ALL");
 
   const filteredChanges = React.useMemo(() => {

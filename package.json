@@ -23,6 +23,15 @@
   },
   "homepage": "https://github.com/shubhamrajpandey/tailr#readme",
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0"
+  },
+  "lint-staged": {
+    "tailr-frontend/**/*.{ts,tsx}": [
+      "npx --prefix tailr-frontend prettier --write"
+    ],
+    "*.{json,md}": [
+      "npx --prefix tailr-frontend prettier --write"
+    ]
   }
 }

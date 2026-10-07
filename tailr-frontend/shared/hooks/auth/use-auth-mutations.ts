@@ -15,11 +15,7 @@ import { useRouter } from "next/navigation";
 import { type AxiosError } from "axios";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
-import {
-  clearCredentials,
-  setAuthStep,
-  setCredentials,
-} from "@/shared/store/auth-slice";
+import { clearCredentials, setAuthStep, setCredentials } from "@/shared/store/auth-slice";
 import { removeAuthCookie } from "@/shared/lib/cookie";
 import {
   getErrorMessage,
@@ -78,9 +74,7 @@ export function useSignupMutation() {
 
   return useMutation<SignupResponse, AxiosError<ApiErrorBody>, SignupRequest>({
     mutationFn: (body) =>
-      authApiClient
-        .post<SignupResponse>("/auth/signup", body)
-        .then((res) => res.data),
+      authApiClient.post<SignupResponse>("/auth/signup", body).then((res) => res.data),
 
     onSuccess: (_data, variables) => {
       // Signal Redux that we're now in the OTP step for this signup flow.
@@ -103,15 +97,9 @@ export function useVerifyOtpMutation() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  return useMutation<
-    VerifyOtpResponse,
-    AxiosError<ApiErrorBody>,
-    VerifyOtpRequest
-  >({
+  return useMutation<VerifyOtpResponse, AxiosError<ApiErrorBody>, VerifyOtpRequest>({
     mutationFn: (body) =>
-      authApiClient
-        .post<VerifyOtpResponse>("/auth/verify-otp", body)
-        .then((res) => res.data),
+      authApiClient.post<VerifyOtpResponse>("/auth/verify-otp", body).then((res) => res.data),
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
@@ -138,15 +126,9 @@ export function useVerifyOtpMutation() {
  * The caller is responsible for resetting the countdown timer UI.
  */
 export function useResendOtpMutation() {
-  return useMutation<
-    ResendOtpResponse,
-    AxiosError<ApiErrorBody>,
-    ResendOtpRequest
-  >({
+  return useMutation<ResendOtpResponse, AxiosError<ApiErrorBody>, ResendOtpRequest>({
     mutationFn: (body) =>
-      authApiClient
-        .post<ResendOtpResponse>("/auth/resend-otp", body)
-        .then((res) => res.data),
+      authApiClient.post<ResendOtpResponse>("/auth/resend-otp", body).then((res) => res.data),
   });
 }
 
@@ -167,9 +149,7 @@ export function useLoginMutation() {
 
   return useMutation<LoginResponse, AxiosError<ApiErrorBody>, LoginRequest>({
     mutationFn: (body) =>
-      authApiClient
-        .post<LoginResponse>("/auth/login", body)
-        .then((res) => res.data),
+      authApiClient.post<LoginResponse>("/auth/login", body).then((res) => res.data),
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
@@ -204,10 +184,7 @@ export function useLogoutMutation() {
   const router = useRouter();
 
   return useMutation<LogoutResponse, AxiosError<ApiErrorBody>, void>({
-    mutationFn: () =>
-      authApiClient
-        .post<LogoutResponse>("/auth/logout")
-        .then((res) => res.data),
+    mutationFn: () => authApiClient.post<LogoutResponse>("/auth/logout").then((res) => res.data),
 
     onSuccess: () => {
       removeAuthCookie();
@@ -243,10 +220,7 @@ export function useLogoutMutation() {
 export function useRefreshQuery() {
   return useQuery<RefreshResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.refresh,
-    queryFn: () =>
-      authApiClient
-        .post<RefreshResponse>("/auth/refresh")
-        .then((res) => res.data),
+    queryFn: () => authApiClient.post<RefreshResponse>("/auth/refresh").then((res) => res.data),
 
     staleTime: Infinity,
     retry: false,
@@ -269,8 +243,7 @@ export function useMeQuery() {
 
   return useQuery<MeResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.me,
-    queryFn: () =>
-      authApiClient.get<MeResponse>("/auth/me").then((res) => res.data),
+    queryFn: () => authApiClient.get<MeResponse>("/auth/me").then((res) => res.data),
     enabled: isAuthenticated,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,

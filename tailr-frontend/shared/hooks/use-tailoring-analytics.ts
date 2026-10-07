@@ -38,9 +38,7 @@ export function useTailoringAnalytics(): TailoringAnalytics {
 
     // 1. Average Versions per Application
     const appsCount = Math.max(1, applications.length);
-    const avgVersionsPerApplication = Number(
-      (versions.length / appsCount).toFixed(1)
-    );
+    const avgVersionsPerApplication = Number((versions.length / appsCount).toFixed(1));
 
     // 2. Edited vs Accepted As-Is
     // Track versions that were modified after AI generation vs saved without post-generation edits
@@ -56,9 +54,7 @@ export function useTailoringAnalytics(): TailoringAnalytics {
     });
 
     const acceptedAsIsRate =
-      totalTailoredResumes > 0
-        ? Math.round((acceptedAsIsCount / totalTailoredResumes) * 100)
-        : 85;
+      totalTailoredResumes > 0 ? Math.round((acceptedAsIsCount / totalTailoredResumes) * 100) : 85;
 
     // 3. Aggregate Changes by Type across all versions
     let rephraseCount = 0;
@@ -80,8 +76,7 @@ export function useTailoringAnalytics(): TailoringAnalytics {
       }
     });
 
-    const totalModificationsApplied =
-      rephraseCount + reorderCount + emphasizeCount;
+    const totalModificationsApplied = rephraseCount + reorderCount + emphasizeCount;
 
     const changesByType: TailoringChangeTypeStat[] = [
       {
@@ -105,8 +100,7 @@ export function useTailoringAnalytics(): TailoringAnalytics {
             ? Math.round((emphasizeCount / totalModificationsApplied) * 100)
             : 0,
         badgeVariant: "emphasize",
-        description:
-          "Highlighted existing relevant frameworks, metrics, and domain proficiencies",
+        description: "Highlighted existing relevant frameworks, metrics, and domain proficiencies",
       },
       {
         type: "reorder",
@@ -132,17 +126,15 @@ export function useTailoringAnalytics(): TailoringAnalytics {
       achievements: "Key Achievements",
     };
 
-    const changesBySection: TailoringSectionStat[] = Object.entries(
-      sectionCounts
-    ).map(([sec, count]) => ({
-      section: sec,
-      label: sectionLabels[sec] || sec,
-      count,
-      percentage:
-        totalModificationsApplied > 0
-          ? Math.round((count / totalModificationsApplied) * 100)
-          : 0,
-    })).sort((a, b) => b.count - a.count);
+    const changesBySection: TailoringSectionStat[] = Object.entries(sectionCounts)
+      .map(([sec, count]) => ({
+        section: sec,
+        label: sectionLabels[sec] || sec,
+        count,
+        percentage:
+          totalModificationsApplied > 0 ? Math.round((count / totalModificationsApplied) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
 
     return {
       totalTailoredResumes,

@@ -117,10 +117,7 @@ interface SettingsSidebarProps {
 export function SettingsSidebar({ className }: SettingsSidebarProps) {
   const pathname = usePathname();
 
-  const allItems = React.useMemo(
-    () => SETTINGS_NAV_GROUPS.flatMap((g) => g.items),
-    []
-  );
+  const allItems = React.useMemo(() => SETTINGS_NAV_GROUPS.flatMap((g) => g.items), []);
 
   return (
     <nav
@@ -149,8 +146,8 @@ export function SettingsSidebar({ className }: SettingsSidebarProps) {
                     ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30 font-semibold shadow-2xs"
                     : "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 font-semibold shadow-2xs"
                   : item.isDanger
-                  ? "text-rose-600/80 dark:text-rose-400/80 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 border border-transparent"
-                  : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] border border-transparent"
+                    ? "text-rose-600/80 dark:text-rose-400/80 hover:text-rose-700 dark:hover:text-rose-300 hover:bg-rose-500/10 border border-transparent"
+                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] border border-transparent"
               )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0" />

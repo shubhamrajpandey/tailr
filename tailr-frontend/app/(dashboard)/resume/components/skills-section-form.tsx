@@ -28,7 +28,10 @@ export function SkillsSectionForm({ skills, onChange }: SkillsSectionFormProps) 
     if (!raw) return;
 
     // Support comma-separated batch adding
-    const parts = raw.split(",").map((skill) => skill.trim()).filter(Boolean);
+    const parts = raw
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean);
     const existing = new Set(skills[category].map((skill) => skill.toLowerCase()));
     const toAdd = parts.filter((part) => !existing.has(part.toLowerCase()));
 
@@ -84,7 +87,8 @@ export function SkillsSectionForm({ skills, onChange }: SkillsSectionFormProps) 
             Technical Skills & Competencies
           </h2>
           <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Categorized technical capabilities. AI tailoring reorders these based on target job description matches.
+            Categorized technical capabilities. AI tailoring reorders these based on target job
+            description matches.
           </p>
         </div>
       </div>

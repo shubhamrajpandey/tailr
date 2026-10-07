@@ -25,9 +25,7 @@ export interface UseApplicationsOptions {
  * @returns Application entities, loading flags, sync helpers, and CRUD operations.
  */
 export function useApplications(options?: UseApplicationsOptions) {
-  const { isAuthenticated, isBootstrapping } = useAppSelector(
-    (state) => state.auth
-  );
+  const { isAuthenticated, isBootstrapping } = useAppSelector((state) => state.auth);
 
   const { applications, persist } = useApplicationsStore();
 

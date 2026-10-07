@@ -42,9 +42,7 @@ export function ResumeComparisonPanel({
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
-            <TabsTrigger value="summary">
-              Summary {summaryChanged && "•"}
-            </TabsTrigger>
+            <TabsTrigger value="summary">Summary {summaryChanged && "•"}</TabsTrigger>
             <TabsTrigger value="experience">
               Experience {experienceChanges.length > 0 && `(${experienceChanges.length})`}
             </TabsTrigger>
@@ -224,9 +222,7 @@ export function ResumeComparisonPanel({
                 <span className="text-xs font-semibold block text-neutral-800 dark:text-neutral-200">
                   {p.name}
                 </span>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {p.description}
-                </p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">{p.description}</p>
               </div>
             ))}
           </div>

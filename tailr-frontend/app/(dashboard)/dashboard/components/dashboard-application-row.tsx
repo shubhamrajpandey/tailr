@@ -214,10 +214,7 @@ export function DashboardApplicationRow({
               );
             })}
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              destructive
-              onClick={() => onDelete?.(app.id)}
-            >
+            <DropdownMenuItem destructive onClick={() => onDelete?.(app.id)}>
               <Trash2 className="h-3.5 w-3.5" />
               <span>Delete Application</span>
             </DropdownMenuItem>

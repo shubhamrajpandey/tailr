@@ -178,8 +178,7 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Keyboard Shortcuts & Ergonomics",
     category: "Productivity",
     badge: "Productivity",
-    summary:
-      "Speed up your daily workflow with built-in navigation shortcuts and quick actions.",
+    summary: "Speed up your daily workflow with built-in navigation shortcuts and quick actions.",
     subsections: [
       {
         title: "Speed & Accessibility",

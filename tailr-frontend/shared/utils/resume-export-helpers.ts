@@ -172,9 +172,10 @@ export function printAtsResumeDirectly(data: ResumeExportData) {
         ? `${proj.title} <span style="font-weight: normal; color: #555;">| ${proj.technologies}</span>`
         : proj.title;
 
-      const linkHtml = proj.liveUrl && proj.liveUrl !== "#"
-        ? ` | <a href="${proj.liveUrl}" style="text-decoration: underline; color: #2563eb;">Live Demo</a>`
-        : "";
+      const linkHtml =
+        proj.liveUrl && proj.liveUrl !== "#"
+          ? ` | <a href="${proj.liveUrl}" style="text-decoration: underline; color: #2563eb;">Live Demo</a>`
+          : "";
 
       const bullets = (proj.bullets || [])
         .map((b) => `<li style="margin-bottom: 2px;">${b}</li>`)

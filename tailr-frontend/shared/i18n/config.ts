@@ -87,7 +87,8 @@ if (!i18n.isInitialized) {
 export const changeAppLanguage = async (langCode: SupportedLanguageCode) => {
   if (typeof window !== "undefined") {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, langCode);
-    document.documentElement.lang = langCode === "nep" ? "ne" : langCode === "spa" ? "es" : langCode === "ger" ? "de" : "en";
+    document.documentElement.lang =
+      langCode === "nep" ? "ne" : langCode === "spa" ? "es" : langCode === "ger" ? "de" : "en";
     if (langCode === "nep") {
       document.body.classList.add("lang-nepali");
     } else {

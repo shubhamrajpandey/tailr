@@ -31,13 +31,7 @@ export interface TailorResumeVariables {
   resumeData?: ResumeExportData;
 }
 
-export type TailoringStage =
-  | "idle"
-  | "analyzing"
-  | "tailoring"
-  | "scoring"
-  | "ready"
-  | "error";
+export type TailoringStage = "idle" | "analyzing" | "tailoring" | "scoring" | "ready" | "error";
 
 const STAGE_MESSAGES: Record<TailoringStage, string> = {
   idle: "",
@@ -132,11 +126,7 @@ export function useTailorResumeMutation() {
     return () => clearTimers();
   }, [clearTimers]);
 
-  const mutation = useMutation<
-    TailoredResumeResult,
-    Error,
-    TailorResumeVariables
-  >({
+  const mutation = useMutation<TailoredResumeResult, Error, TailorResumeVariables>({
     mutationKey: ["resume", "tailor"],
     mutationFn: async (variables) => {
       clearTimers();
@@ -151,15 +141,19 @@ export function useTailorResumeMutation() {
         const { data } = await authApiClient.post<{
           success: boolean;
           data: TailoredResumeResult;
-        }>("/resume/tailor", {
-          companyName: variables.companyName.trim(),
-          positionTitle: variables.positionTitle.trim(),
-          jobDescription: variables.jobDescription.trim(),
-          resumeId: variables.resumeId,
-          resumeData: variables.resumeData,
-        }, {
-          timeout: 45000,
-        });
+        }>(
+          "/resume/tailor",
+          {
+            companyName: variables.companyName.trim(),
+            positionTitle: variables.positionTitle.trim(),
+            jobDescription: variables.jobDescription.trim(),
+            resumeId: variables.resumeId,
+            resumeData: variables.resumeData,
+          },
+          {
+            timeout: 45000,
+          }
+        );
 
         if (!data?.data) {
           throw new Error("Invalid response format from resume tailoring service.");

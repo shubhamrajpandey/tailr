@@ -14,11 +14,7 @@ interface CoverLetterListProps {
   onOpenGenerator?: () => void;
 }
 
-export function CoverLetterList({
-  coverLetters,
-  onDelete,
-  onOpenGenerator,
-}: CoverLetterListProps) {
+export function CoverLetterList({ coverLetters, onDelete, onOpenGenerator }: CoverLetterListProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState<string>("ALL");
 
@@ -56,7 +52,8 @@ export function CoverLetterList({
             No cover letters yet
           </h3>
           <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-            Generate tailored, zero-hallucination cover letters aligned with your master resume and target job descriptions.
+            Generate tailored, zero-hallucination cover letters aligned with your master resume and
+            target job descriptions.
           </p>
         </div>
         {onOpenGenerator ? (
@@ -148,11 +145,7 @@ export function CoverLetterList({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
           {filtered.map((letter) => (
-            <CoverLetterCard
-              key={letter.id}
-              coverLetter={letter}
-              onDelete={onDelete}
-            />
+            <CoverLetterCard key={letter.id} coverLetter={letter} onDelete={onDelete} />
           ))}
         </div>
       )}

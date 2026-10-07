@@ -10,9 +10,7 @@ interface AccordionContextValue {
   type: "single" | "multiple";
 }
 
-const AccordionContext = React.createContext<AccordionContextValue | undefined>(
-  undefined
-);
+const AccordionContext = React.createContext<AccordionContextValue | undefined>(undefined);
 
 interface AccordionProps extends React.HTMLAttributes<HTMLDivElement> {
   type?: "single" | "multiple";
@@ -41,9 +39,7 @@ export function Accordion({
 
   const expandedItems = React.useMemo(() => {
     if (controlledValue !== undefined) {
-      return new Set(
-        Array.isArray(controlledValue) ? controlledValue : [controlledValue]
-      );
+      return new Set(Array.isArray(controlledValue) ? controlledValue : [controlledValue]);
     }
     return uncontrolledItems;
   }, [controlledValue, uncontrolledItems]);
@@ -87,17 +83,12 @@ interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
 }
 
-export function AccordionItem({
-  value,
-  className,
-  children,
-  ...props
-}: AccordionItemProps) {
+export function AccordionItem({ value, className, children, ...props }: AccordionItemProps) {
   return (
     <div
       data-value={value}
       className={cn(
-        "rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 transition-all overflow-hidden",
+        "rounded-xl border border-neutral-200 dark:border-card-border bg-card transition-all overflow-hidden",
         className
       )}
       {...props}
@@ -114,8 +105,7 @@ export function AccordionItem({
   );
 }
 
-interface AccordionTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface AccordionTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   itemValue?: string;
 }
 

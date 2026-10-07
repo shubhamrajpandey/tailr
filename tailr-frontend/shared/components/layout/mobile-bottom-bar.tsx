@@ -3,13 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  FileText,
-  Plus,
-  Mail,
-  Building2,
-} from "lucide-react";
+import { Home, FileText, Plus, Mail, Building2 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 export function MobileBottomBar() {
@@ -20,8 +14,7 @@ export function MobileBottomBar() {
   const isAddActive = pathname === "/applications/new";
   const isCoverLetterActive = pathname.startsWith("/cover-letter");
   const isCompaniesActive =
-    pathname.startsWith("/companies") ||
-    (pathname.startsWith("/applications") && !isAddActive);
+    pathname.startsWith("/companies") || (pathname.startsWith("/applications") && !isAddActive);
 
   return (
     <div className="lg:hidden fixed bottom-4 inset-x-0 z-40 flex justify-center pointer-events-none px-4 select-none">

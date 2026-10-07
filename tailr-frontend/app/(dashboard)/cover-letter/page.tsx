@@ -25,13 +25,8 @@ export default function CoverLettersPage() {
   // View state: "letters" | "generator"
   const [activeTab, setActiveTab] = React.useState<"letters" | "generator">(initialTab);
 
-  const {
-    coverLetters,
-    isLoaded,
-    deleteCoverLetter,
-    saveCoverLetter,
-    updateCoverLetter,
-  } = useCoverLetters();
+  const { coverLetters, isLoaded, deleteCoverLetter, saveCoverLetter, updateCoverLetter } =
+    useCoverLetters();
   const { applications } = useApplications();
   const { masterResume } = useMasterResume();
 
@@ -49,8 +44,7 @@ export default function CoverLettersPage() {
   }, [preselectAppId, applications]);
 
   // Mode & Selection State for Generator
-  const [selectedApplicationId, setSelectedApplicationId] =
-    React.useState<string>(preselectAppId);
+  const [selectedApplicationId, setSelectedApplicationId] = React.useState<string>(preselectAppId);
   const [isManualMode, setIsManualMode] = React.useState<boolean>(false);
 
   // Job Details State
@@ -147,8 +141,7 @@ export default function CoverLettersPage() {
   };
 
   const isFormValid =
-    jobDetails.companyName.trim().length > 0 &&
-    jobDetails.positionTitle.trim().length > 0;
+    jobDetails.companyName.trim().length > 0 && jobDetails.positionTitle.trim().length > 0;
 
   const handleGenerate = () => {
     if (!isFormValid) {
@@ -160,7 +153,9 @@ export default function CoverLettersPage() {
     if (isCoverLetterInCooldown) {
       setQuotaDialogType("cooldown");
       setQuotaDialogRetryAfter(coverLetterCooldownSeconds);
-      setQuotaDialogMsg(`Please wait ${coverLetterCooldownSeconds}s before generating another cover letter.`);
+      setQuotaDialogMsg(
+        `Please wait ${coverLetterCooldownSeconds}s before generating another cover letter.`
+      );
       setQuotaDialogOpen(true);
       return;
     }
@@ -230,8 +225,7 @@ export default function CoverLettersPage() {
 
     try {
       const payloadData = {
-        applicationId:
-          !isManualMode && selectedApplicationId ? selectedApplicationId : null,
+        applicationId: !isManualMode && selectedApplicationId ? selectedApplicationId : null,
         companyName: jobDetails.companyName.trim() || "Target Company",
         positionTitle: jobDetails.positionTitle.trim() || "Target Position",
         recipientName: jobDetails.hiringManager.trim() || null,
@@ -242,8 +236,8 @@ export default function CoverLettersPage() {
           preferences.tone === "enthusiastic"
             ? ("conversational" as const)
             : preferences.tone === "technical" || preferences.length === "short"
-            ? ("concise" as const)
-            : ("formal" as const),
+              ? ("concise" as const)
+              : ("formal" as const),
         content: draftContent,
         status: letterStatus,
         keyHighlights,

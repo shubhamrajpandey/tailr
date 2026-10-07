@@ -42,7 +42,9 @@ export function SummarySectionForm({ summary, onChange }: SummarySectionFormProp
         <div className="flex items-start gap-2 p-2.5 rounded-lg bg-indigo-50/60 dark:bg-indigo-500/5 border border-indigo-200/60 dark:border-indigo-500/15 text-xs text-indigo-900 dark:text-indigo-300">
           <Info className="h-4 w-4 shrink-0 text-indigo-600 dark:text-indigo-400 mt-0.5" />
           <p>
-            <strong>Tailoring Tip:</strong> The AI will rephrase and refocus this summary to match target job descriptions while retaining your authentic achievements and experience metrics.
+            <strong>Tailoring Tip:</strong> The AI will rephrase and refocus this summary to match
+            target job descriptions while retaining your authentic achievements and experience
+            metrics.
           </p>
         </div>
       </div>

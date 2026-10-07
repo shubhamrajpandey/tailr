@@ -69,7 +69,10 @@ export function AiQuotaBadge({
     >
       <Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
       <span>
-        <strong className="font-semibold">{remaining} of {limit}</strong> free {label} left today
+        <strong className="font-semibold">
+          {remaining} of {limit}
+        </strong>{" "}
+        free {label} left today
       </span>
       {/* Progress dots */}
       <div className="flex items-center gap-1 ml-0.5">

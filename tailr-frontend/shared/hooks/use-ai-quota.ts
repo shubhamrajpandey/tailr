@@ -29,11 +29,12 @@ const DEFAULT_QUOTA_STATUS: UserQuotaStatus = {
 export function formatResetTime(resetsInSeconds: number, resetsAt: string | null): string {
   if (resetsInSeconds <= 0 && !resetsAt) return "";
 
-  const seconds = resetsInSeconds > 0
-    ? resetsInSeconds
-    : resetsAt
-    ? Math.max(0, Math.ceil((new Date(resetsAt).getTime() - Date.now()) / 1000))
-    : 0;
+  const seconds =
+    resetsInSeconds > 0
+      ? resetsInSeconds
+      : resetsAt
+        ? Math.max(0, Math.ceil((new Date(resetsAt).getTime() - Date.now()) / 1000))
+        : 0;
 
   if (seconds <= 0) return "Available now";
 

@@ -129,7 +129,9 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
                   {act.description}
                 </p>
                 <div className="mt-1.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
-                  <span className="text-neutral-800 dark:text-neutral-300 font-semibold">{act.companyName}</span>
+                  <span className="text-neutral-800 dark:text-neutral-300 font-semibold">
+                    {act.companyName}
+                  </span>
                   <span>•</span>
                   <span className="truncate">{act.positionTitle}</span>
                 </div>

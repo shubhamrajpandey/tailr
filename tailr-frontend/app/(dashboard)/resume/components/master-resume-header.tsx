@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Sparkles,
-  Save,
-  RotateCcw,
-  Check,
-  ArrowRight,
-  Upload,
-  Loader2,
-} from "lucide-react";
+import { Sparkles, Save, RotateCcw, Check, ArrowRight, Upload, Loader2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 export interface ResumeSectionItem {
@@ -48,7 +40,8 @@ export function MasterResumeHeader({
               Master Resume
             </h1>
             <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-              Your canonical career record. Upload your resume or edit below to tailor for any role with zero hallucination.
+              Your canonical career record. Upload your resume or edit below to tailor for any role
+              with zero hallucination.
             </p>
           </div>
 

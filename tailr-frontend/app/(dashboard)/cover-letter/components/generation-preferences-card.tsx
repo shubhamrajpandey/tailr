@@ -1,14 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Sliders,
-  Volume2,
-  LayoutTemplate,
-  MessageSquareQuote,
-  Clock,
-  Check,
-} from "lucide-react";
+import { Sliders, Volume2, LayoutTemplate, MessageSquareQuote, Clock, Check } from "lucide-react";
 import {
   CoverLetterLength,
   CoverLetterTone,
@@ -134,9 +127,7 @@ export function GenerationPreferencesCard({
               <Clock className="h-3.5 w-3.5 text-indigo-500" />
               Document Length
             </label>
-            <span className="text-[11px] text-neutral-500 font-mono">
-              Word count target
-            </span>
+            <span className="text-[11px] text-neutral-500 font-mono">Word count target</span>
           </div>
 
           <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
@@ -184,9 +175,7 @@ export function GenerationPreferencesCard({
               <Volume2 className="h-3.5 w-3.5 text-indigo-500" />
               Writing Tone & Voice
             </label>
-            <span className="text-[11px] text-neutral-500 font-mono">
-              Select AI persona
-            </span>
+            <span className="text-[11px] text-neutral-500 font-mono">Select AI persona</span>
           </div>
 
           <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
@@ -234,9 +223,7 @@ export function GenerationPreferencesCard({
               <LayoutTemplate className="h-3.5 w-3.5 text-indigo-500" />
               Document Layout Template
             </label>
-            <span className="text-[11px] text-neutral-500 font-mono">
-              Export format style
-            </span>
+            <span className="text-[11px] text-neutral-500 font-mono">Export format style</span>
           </div>
 
           <div className="flex items-stretch gap-3 overflow-x-auto pb-2.5 pt-0.5 scroll-smooth snap-x snap-mandatory">
@@ -284,22 +271,18 @@ export function GenerationPreferencesCard({
               <MessageSquareQuote className="h-3.5 w-3.5 text-indigo-500" />
               Additional Information & Focus Notes (Optional)
             </label>
-            <span className="text-[11px] text-neutral-500">
-              Custom instructions for AI
-            </span>
+            <span className="text-[11px] text-neutral-500">Custom instructions for AI</span>
           </div>
           <Textarea
             value={preferences.additionalInformation}
-            onChange={(e) =>
-              onChange({ additionalInformation: e.target.value })
-            }
+            onChange={(e) => onChange({ additionalInformation: e.target.value })}
             placeholder="e.g. Mention that I was referred by Jane Smith; emphasize my experience leading distributed teams; highlight my 2-week notice period..."
             rows={3}
             className="text-xs font-normal"
           />
           <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-            Any specific context, referral details, availability dates, or focus
-            areas you want woven into the letter narrative.
+            Any specific context, referral details, availability dates, or focus areas you want
+            woven into the letter narrative.
           </p>
         </div>
       </div>

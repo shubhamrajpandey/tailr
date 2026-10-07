@@ -66,8 +66,8 @@ export async function POST(request: NextRequest) {
               tone === "conversational"
                 ? "natural"
                 : tone === "concise"
-                ? "technical"
-                : "professional",
+                  ? "technical"
+                  : "professional",
             template,
             length,
             additionalInformation: customInstructions,
@@ -127,9 +127,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("Cover letter generation error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate cover letter" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to generate cover letter" }, { status: 500 });
   }
 }

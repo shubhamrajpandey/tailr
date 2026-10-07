@@ -8,8 +8,7 @@ import { AuthTestimonialPreview } from "../login/components/auth-testimonial-pre
 
 export const metadata: Metadata = {
   title: "Create Account — Tailr",
-  description:
-    "Join Tailr to build ATS-optimized resumes and accelerate your career growth.",
+  description: "Join Tailr to build ATS-optimized resumes and accelerate your career growth.",
 };
 
 export default function SignupPage() {

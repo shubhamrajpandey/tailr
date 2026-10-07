@@ -17,11 +17,7 @@ import {
   ArrowRight,
   X,
 } from "lucide-react";
-import {
-  CoverLetterTone,
-  CoverLetterLength,
-  CoverLetterTemplate,
-} from "../types";
+import { CoverLetterTone, CoverLetterLength, CoverLetterTemplate } from "../types";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import {
@@ -136,33 +132,20 @@ export function CoverLetterEditor({
               Zero-Hallucination Verified Cover Letter
             </h4>
             <p className="text-xs text-amber-800/90 dark:text-amber-300/80 leading-relaxed">
-              This draft is strictly synthesized from your master resume. Review
-              the tone and facts, make any personal refinements, and download
-              in your preferred format.
+              This draft is strictly synthesized from your master resume. Review the tone and facts,
+              make any personal refinements, and download in your preferred format.
             </p>
           </div>
         </div>
 
         <div className="shrink-0 flex items-center gap-2 flex-wrap">
-          <Badge
-            variant="secondary"
-            dot={false}
-            className="font-semibold capitalize text-xs"
-          >
+          <Badge variant="secondary" dot={false} className="font-semibold capitalize text-xs">
             {tone} Tone
           </Badge>
-          <Badge
-            variant="outline"
-            dot={false}
-            className="font-semibold capitalize text-xs"
-          >
+          <Badge variant="outline" dot={false} className="font-semibold capitalize text-xs">
             {template} Template
           </Badge>
-          <Badge
-            variant="outline"
-            dot={false}
-            className="font-semibold capitalize text-xs"
-          >
+          <Badge variant="outline" dot={false} className="font-semibold capitalize text-xs">
             {length}
           </Badge>
         </div>
@@ -285,8 +268,8 @@ export function CoverLetterEditor({
         ) : (
           <div className="w-full space-y-3">
             <div className="text-xs text-neutral-500">
-              Directly edit the paragraphs below. Changes are reflected
-              instantly in your formatted preview and downloads.
+              Directly edit the paragraphs below. Changes are reflected instantly in your formatted
+              preview and downloads.
             </div>
             <textarea
               value={content}
@@ -341,9 +324,7 @@ export function CoverLetterEditor({
       {error && (
         <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 flex items-center gap-2.5">
           <AlertCircle className="h-4 w-4 text-rose-600 dark:text-rose-400 shrink-0" />
-          <p className="text-xs font-medium text-rose-900 dark:text-rose-200">
-            {error}
-          </p>
+          <p className="text-xs font-medium text-rose-900 dark:text-rose-200">{error}</p>
         </div>
       )}
 

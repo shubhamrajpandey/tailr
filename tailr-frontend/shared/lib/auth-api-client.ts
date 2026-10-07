@@ -23,10 +23,7 @@ import axios, {
 import { store } from "@/shared/store";
 import { clearCredentials, setCredentials } from "@/shared/store/auth-slice";
 import type { RefreshResponse } from "@/shared/types/auth";
-import {
-  removeAuthCookie,
-  isTokenValid,
-} from "./cookie";
+import { removeAuthCookie, isTokenValid } from "./cookie";
 
 // ─── Concurrent Refresh Queuing (Mutex Pattern) ────────────────────────────────
 /**
@@ -69,8 +66,7 @@ function notifySubscribers(token: string) {
 
 // ─── Axios Instance ─────────────────────────────────────────────────────────────
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export const authApiClient = axios.create({
   baseURL: BASE_URL,
@@ -92,7 +88,7 @@ authApiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // ─── Response Interceptor ───────────────────────────────────────────────────────
@@ -128,9 +124,8 @@ authApiClient.interceptors.response.use(
       return new Promise<unknown>((resolve) => {
         subscribeToRefresh((newToken) => {
           if (originalRequest.headers) {
-            (
-              originalRequest.headers as Record<string, string>
-            ).Authorization = `Bearer ${newToken}`;
+            (originalRequest.headers as Record<string, string>).Authorization =
+              `Bearer ${newToken}`;
           }
           resolve(authApiClient(originalRequest));
         });
@@ -143,9 +138,7 @@ authApiClient.interceptors.response.use(
 
     try {
       // POST /auth/refresh — browser sends the HttpOnly cookie automatically.
-      const { data } = await authApiClient.post<RefreshResponse>(
-        "/auth/refresh",
-      );
+      const { data } = await authApiClient.post<RefreshResponse>("/auth/refresh");
       const { user, accessToken: newToken } = data.data;
 
       // Hydrate Redux with the new token in memory.
@@ -156,8 +149,7 @@ authApiClient.interceptors.response.use(
 
       // Retry the original request.
       if (originalRequest.headers) {
-        (originalRequest.headers as Record<string, string>).Authorization =
-          `Bearer ${newToken}`;
+        (originalRequest.headers as Record<string, string>).Authorization = `Bearer ${newToken}`;
       }
       return authApiClient(originalRequest);
     } catch (refreshErr) {
@@ -179,7 +171,7 @@ authApiClient.interceptors.response.use(
     } finally {
       isRefreshing = false;
     }
-  },
+  }
 );
 
 export default authApiClient;

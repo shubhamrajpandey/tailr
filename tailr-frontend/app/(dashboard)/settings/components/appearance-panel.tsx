@@ -16,15 +16,12 @@ export function AppearancePanel() {
   const [density, setDensity] = React.useState<"comfortable" | "compact">(
     settings.appearance.density
   );
-  const [highContrast, setHighContrast] = React.useState<boolean>(
-    settings.appearance.highContrast
-  );
+  const [highContrast, setHighContrast] = React.useState<boolean>(settings.appearance.highContrast);
   const [successFeedback, setSuccessFeedback] = React.useState<string | null>(null);
 
   const isDirty = React.useMemo(() => {
     return (
-      density !== settings.appearance.density ||
-      highContrast !== settings.appearance.highContrast
+      density !== settings.appearance.density || highContrast !== settings.appearance.highContrast
     );
   }, [density, highContrast, settings.appearance]);
 
@@ -231,10 +228,7 @@ export function AppearancePanel() {
               Increases the opacity and definition of table grid lines and card borders.
             </p>
           </div>
-          <Switch
-            checked={highContrast}
-            onCheckedChange={setHighContrast}
-          />
+          <Switch checked={highContrast} onCheckedChange={setHighContrast} />
         </div>
       </SettingsSection>
 

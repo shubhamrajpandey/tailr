@@ -48,10 +48,7 @@ export const authSlice = createSlice({
      * Called by TanStack Query mutation callbacks on successful login,
      * OTP verification, or silent token refresh. Stores user + token in memory.
      */
-    setCredentials: (
-      state,
-      action: PayloadAction<{ user: User; accessToken: string }>,
-    ) => {
+    setCredentials: (state, action: PayloadAction<{ user: User; accessToken: string }>) => {
       state.user = action.payload.user;
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
@@ -81,8 +78,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, clearCredentials, setAuthStep } =
-  authSlice.actions;
+export const { setCredentials, clearCredentials, setAuthStep } = authSlice.actions;
 
 // ─── Selectors ──────────────────────────────────────────────────────────────────
 

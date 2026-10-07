@@ -31,9 +31,7 @@ export function ApplicationFormCompanyFields({
             {...register("companyName")}
           />
           {errors.companyName && (
-            <p className="text-xs text-rose-500 font-medium">
-              {errors.companyName.message}
-            </p>
+            <p className="text-xs text-rose-500 font-medium">{errors.companyName.message}</p>
           )}
         </div>
 
@@ -53,9 +51,7 @@ export function ApplicationFormCompanyFields({
             {...register("companyWebsite")}
           />
           {errors.companyWebsite && (
-            <p className="text-xs text-rose-500 font-medium">
-              {errors.companyWebsite.message}
-            </p>
+            <p className="text-xs text-rose-500 font-medium">{errors.companyWebsite.message}</p>
           )}
         </div>
       </div>
@@ -75,9 +71,7 @@ export function ApplicationFormCompanyFields({
           {...register("positionTitle")}
         />
         {errors.positionTitle && (
-          <p className="text-xs text-rose-500 font-medium">
-            {errors.positionTitle.message}
-          </p>
+          <p className="text-xs text-rose-500 font-medium">{errors.positionTitle.message}</p>
         )}
       </div>
     </div>

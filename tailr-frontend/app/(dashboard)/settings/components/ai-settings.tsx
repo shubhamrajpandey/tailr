@@ -18,10 +18,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { SettingsSection } from "./settings-section";
 import { useSettings } from "@/shared/hooks/use-settings";
-import {
-  aiSettingsSchema,
-  AISettingsValues,
-} from "@/shared/lib/validations/settings";
+import { aiSettingsSchema, AISettingsValues } from "@/shared/lib/validations/settings";
 
 export function AISettings() {
   const { settings, updateAI } = useSettings();
@@ -86,10 +83,7 @@ export function AISettings() {
               <Cpu className="h-3.5 w-3.5" />
               Active Gemini Model
             </label>
-            <Select
-              {...register("model")}
-              icon={<Cpu className="h-4 w-4 text-neutral-400" />}
-            >
+            <Select {...register("model")} icon={<Cpu className="h-4 w-4 text-neutral-400" />}>
               <option value="gemini-1.5-flash">
                 Gemini 1.5 Flash (Recommended — High speed, lowest latency)
               </option>
@@ -111,8 +105,8 @@ export function AISettings() {
                   "Gemini 2.0 Flash: Cutting-edge latency and reasoning balance, optimized for strict truth extraction."}
               </div>
               <p>
-                Requests are processed through server-side ElysiaJS routes. Raw
-                prompt payloads are never dispatched client-side.
+                Requests are processed through server-side ElysiaJS routes. Raw prompt payloads are
+                never dispatched client-side.
               </p>
             </div>
           </div>
@@ -131,8 +125,8 @@ export function AISettings() {
                 <code className="px-1.5 py-0.5 rounded bg-neutral-200 dark:bg-white/10 font-mono text-neutral-900 dark:text-neutral-200">
                   GEMINI_API_KEY
                 </code>{" "}
-                environment variable in the backend runtime. Keys cannot be
-                viewed or edited from the browser to prevent credential leakage.
+                environment variable in the backend runtime. Keys cannot be viewed or edited from
+                the browser to prevent credential leakage.
               </p>
             </div>
           </div>
@@ -194,9 +188,8 @@ export function AISettings() {
                 Truth-Constraint Policy
               </div>
               <p className="text-xs text-indigo-700/80 dark:text-indigo-300/80">
-                All AI generations are strictly bound to facts present in your
-                Master Resume. Hallucinated skills or fictitious employment are
-                permanently blocked.
+                All AI generations are strictly bound to facts present in your Master Resume.
+                Hallucinated skills or fictitious employment are permanently blocked.
               </p>
             </div>
             <Badge
@@ -208,12 +201,7 @@ export function AISettings() {
           </div>
 
           <div className="flex items-center justify-end pt-2">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting}
-              className="gap-2"
-            >
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="gap-2">
               <Save className="h-4 w-4" />
               {isSubmitting ? "Saving..." : "Save AI Preferences"}
             </Button>

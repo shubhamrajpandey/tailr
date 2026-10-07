@@ -2,13 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  Edit,
-  Trash2,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
+import { ExternalLink, Edit, Trash2, Sparkles, ChevronDown } from "lucide-react";
 import { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { Button } from "@/shared/components/ui/button";
@@ -99,7 +93,11 @@ export function ApplicationDetailHeader({
                 <DropdownMenuItem
                   key={st}
                   onClick={() => onStatusChange(st)}
-                  className={application.status === st ? "font-bold text-indigo-600 dark:text-indigo-400" : ""}
+                  className={
+                    application.status === st
+                      ? "font-bold text-indigo-600 dark:text-indigo-400"
+                      : ""
+                  }
                 >
                   <ApplicationStatusBadge status={st} dot={false} />
                 </DropdownMenuItem>
@@ -109,7 +107,11 @@ export function ApplicationDetailHeader({
 
           {/* Tailor Resume Action Button */}
           <Link href={`/resume/tailor?appId=${application.id}`} className="flex-1 sm:flex-initial">
-            <Button variant="primary" size="sm" className="w-full sm:w-auto gap-1.5 font-semibold h-9 justify-center">
+            <Button
+              variant="primary"
+              size="sm"
+              className="w-full sm:w-auto gap-1.5 font-semibold h-9 justify-center"
+            >
               <Sparkles className="h-4 w-4" />
               Tailor Resume
             </Button>
@@ -154,11 +156,7 @@ export function ApplicationDetailHeader({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setDeleteOpen(false)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setDeleteOpen(false)}>
               Cancel
             </Button>
             <Button

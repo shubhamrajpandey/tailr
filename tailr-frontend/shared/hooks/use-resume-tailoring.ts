@@ -3,13 +3,7 @@
 import * as React from "react";
 import { ResumeData, ResumeChange } from "@/shared/types/resume";
 
-export type TailoringStatus =
-  | "idle"
-  | "analyzing"
-  | "tailoring"
-  | "validating"
-  | "ready"
-  | "error";
+export type TailoringStatus = "idle" | "analyzing" | "tailoring" | "validating" | "ready" | "error";
 
 export interface TailoringResult {
   tailoredResume: ResumeData;

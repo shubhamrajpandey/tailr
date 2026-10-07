@@ -24,11 +24,7 @@ interface TailorWorkspaceFormProps {
   saveVersion: ReturnType<typeof useResumeVersions>["saveVersion"];
 }
 
-function TailorWorkspaceForm({
-  initialApp,
-  masterResume,
-  saveVersion,
-}: TailorWorkspaceFormProps) {
+function TailorWorkspaceForm({ initialApp, masterResume, saveVersion }: TailorWorkspaceFormProps) {
   const {
     mutateAsync: tailorResumeAsync,
     isTailoring,
@@ -37,15 +33,9 @@ function TailorWorkspaceForm({
   } = useTailorResumeMutation();
 
   const [applicationId, setApplicationId] = React.useState(initialApp?.id || "");
-  const [targetCompany, setTargetCompany] = React.useState(
-    initialApp?.companyName || ""
-  );
-  const [targetPosition, setTargetPosition] = React.useState(
-    initialApp?.positionTitle || ""
-  );
-  const [jobDescription, setJobDescription] = React.useState(
-    initialApp?.jobDescriptionRaw || ""
-  );
+  const [targetCompany, setTargetCompany] = React.useState(initialApp?.companyName || "");
+  const [targetPosition, setTargetPosition] = React.useState(initialApp?.positionTitle || "");
+  const [jobDescription, setJobDescription] = React.useState(initialApp?.jobDescriptionRaw || "");
   const [atsResult, setAtsResult] = React.useState<TailoredResumeResult | null>(null);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
 
@@ -149,9 +139,7 @@ function TailorWorkspaceForm({
 
       setAtsResult(result);
       setTimeout(() => {
-        document
-          .getElementById("ats-tailored-station")
-          ?.scrollIntoView({ behavior: "smooth" });
+        document.getElementById("ats-tailored-station")?.scrollIntoView({ behavior: "smooth" });
       }, 150);
     } catch (err: any) {
       if (err?.code === "COOLDOWN_ACTIVE" || err?.status === 429) {
@@ -203,101 +191,111 @@ function TailorWorkspaceForm({
   return (
     <>
       {/* Header Bar */}
-        <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5 sm:gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                  AI Resume Tailoring Studio
-                </h1>
-                <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
-                  ATS Optimized & LaTeX
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-normal leading-relaxed">
-                Tailor your master resume to match target job keywords with zero hallucination. Generates 100% compliant single-column ATS LaTeX and PDF.
-              </p>
-              <div className="mt-2.5 sm:mt-3">
-                <AiQuotaBadge
-                  label="tailors"
-                  limit={resumeLimit}
-                  remaining={resumeRemaining}
-                  used={resumeUsed}
-                  resetFormatted={resumeResetFormatted}
-                  cooldownSeconds={resumeCooldownSeconds}
-                />
-              </div>
+      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-2.5 sm:gap-3 border-b border-neutral-200/80 dark:border-white/5 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
+                AI Resume Tailoring Studio
+              </h1>
+              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
+                ATS Optimized & LaTeX
+              </span>
             </div>
-
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link href="/resume" className="flex-1 sm:flex-initial">
-                <Button variant="secondary" size="sm" className="w-full gap-1.5 font-semibold text-xs h-9 justify-center">
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  <span>Master Resume</span>
-                </Button>
-              </Link>
-              <Link href="/resume/versions" className="flex-1 sm:flex-initial">
-                <Button variant="secondary" size="sm" className="w-full gap-1.5 font-semibold text-xs h-9 justify-center">
-                  <Layers className="h-3.5 w-3.5" />
-                  <span>Saved Versions</span>
-                </Button>
-              </Link>
+            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-normal leading-relaxed">
+              Tailor your master resume to match target job keywords with zero hallucination.
+              Generates 100% compliant single-column ATS LaTeX and PDF.
+            </p>
+            <div className="mt-2.5 sm:mt-3">
+              <AiQuotaBadge
+                label="tailors"
+                limit={resumeLimit}
+                remaining={resumeRemaining}
+                used={resumeUsed}
+                resetFormatted={resumeResetFormatted}
+                cooldownSeconds={resumeCooldownSeconds}
+              />
             </div>
           </div>
-        </header>
 
-        {/* Content Canvas with Mobile Bottom Navigation Clearance */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 space-y-6 sm:space-y-8 w-full max-w-7xl mx-auto">
-          {/* Step 1: Input Job Description & Target Role */}
-          <TailoringPromptInput
-            jobDescription={jobDescription}
-            targetCompany={targetCompany}
-            targetPosition={targetPosition}
-            applicationId={applicationId}
-            isLoading={isTailoring}
-            statusMessage={stageMessage}
-            onJobDescriptionChange={setJobDescription}
-            onTargetCompanyChange={setTargetCompany}
-            onTargetPositionChange={setTargetPosition}
-            onApplicationSelect={setApplicationId}
-            onSubmit={handleSubmit}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Link href="/resume" className="flex-1 sm:flex-initial">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full gap-1.5 font-semibold text-xs h-9 justify-center"
+              >
+                <ArrowLeft className="h-3.5 w-3.5" />
+                <span>Master Resume</span>
+              </Button>
+            </Link>
+            <Link href="/resume/versions" className="flex-1 sm:flex-initial">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="w-full gap-1.5 font-semibold text-xs h-9 justify-center"
+              >
+                <Layers className="h-3.5 w-3.5" />
+                <span>Saved Versions</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Content Canvas with Mobile Bottom Navigation Clearance */}
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 space-y-6 sm:space-y-8 w-full max-w-7xl mx-auto">
+        {/* Step 1: Input Job Description & Target Role */}
+        <TailoringPromptInput
+          jobDescription={jobDescription}
+          targetCompany={targetCompany}
+          targetPosition={targetPosition}
+          applicationId={applicationId}
+          isLoading={isTailoring}
+          statusMessage={stageMessage}
+          onJobDescriptionChange={setJobDescription}
+          onTargetCompanyChange={setTargetCompany}
+          onTargetPositionChange={setTargetPosition}
+          onApplicationSelect={setApplicationId}
+          onSubmit={handleSubmit}
+        />
+
+        {/* Progressive Stage Feedback */}
+        {isTailoring && (
+          <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 flex items-center gap-3 animate-in fade-in">
+            <Loader2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" />
+            <div className="space-y-0.5 min-w-0">
+              <p className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
+                AI Tailoring Pipeline Active
+              </p>
+              <p className="text-xs text-indigo-800/90 dark:text-indigo-300/80 font-medium">
+                {stageMessage ||
+                  "Analyzing job description keywords and aligning resume bullets..."}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Error Notice */}
+        {(errorMsg || mutationError) && (
+          <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{errorMsg || mutationError?.message}</span>
+          </div>
+        )}
+
+        {/* Step 2: ATS Tailored Result Station */}
+        {atsResult && (
+          <AtsTailoredResultStation
+            result={atsResult}
+            companyName={targetCompany}
+            positionTitle={targetPosition}
+            onSaveVersion={handleSaveToVersions}
           />
+        )}
+      </main>
 
-          {/* Progressive Stage Feedback */}
-          {isTailoring && (
-            <div className="p-4 rounded-xl bg-indigo-50/70 dark:bg-indigo-500/10 border border-indigo-200/80 dark:border-indigo-500/20 flex items-center gap-3 animate-in fade-in">
-              <Loader2 className="h-5 w-5 text-indigo-600 dark:text-indigo-400 animate-spin shrink-0" />
-              <div className="space-y-0.5 min-w-0">
-                <p className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
-                  AI Tailoring Pipeline Active
-                </p>
-                <p className="text-xs text-indigo-800/90 dark:text-indigo-300/80 font-medium">
-                  {stageMessage || "Analyzing job description keywords and aligning resume bullets..."}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Error Notice */}
-          {(errorMsg || mutationError) && (
-            <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
-              <span>{errorMsg || mutationError?.message}</span>
-            </div>
-          )}
-
-          {/* Step 2: ATS Tailored Result Station */}
-          {atsResult && (
-            <AtsTailoredResultStation
-              result={atsResult}
-              companyName={targetCompany}
-              positionTitle={targetPosition}
-              onSaveVersion={handleSaveToVersions}
-            />
-          )}
-        </main>
-
-        {/* Floating Scroll To Top */}
+      {/* Floating Scroll To Top */}
       <ScrollToTop threshold={200} />
 
       {/* AI Rate Limit & Daily Quota Modal */}

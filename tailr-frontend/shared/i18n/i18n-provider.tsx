@@ -11,7 +11,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguageCode;
     if (saved && ["eng", "nep", "spa", "ger"].includes(saved)) {
       i18n.changeLanguage(saved);
-      document.documentElement.lang = saved === "nep" ? "ne" : saved === "spa" ? "es" : saved === "ger" ? "de" : "en";
+      document.documentElement.lang =
+        saved === "nep" ? "ne" : saved === "spa" ? "es" : saved === "ger" ? "de" : "en";
       if (saved === "nep") {
         document.body.classList.add("lang-nepali");
       }

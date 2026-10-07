@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  MoreHorizontal,
-  FileText,
-  Trash2,
-  Edit,
-  Eye,
-  Sparkles,
-} from "lucide-react";
+import { ExternalLink, MoreHorizontal, FileText, Trash2, Edit, Eye, Sparkles } from "lucide-react";
 import type { Application } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { TableRow, TableCell } from "@/shared/components/ui/table";
@@ -177,10 +169,7 @@ export function ApplicationsListRow({
               <span>Mark as Offer</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              destructive
-              onClick={() => onDelete?.(app.id)}
-            >
+            <DropdownMenuItem destructive onClick={() => onDelete?.(app.id)}>
               <Trash2 className="h-4 w-4" />
               <span>Delete</span>
             </DropdownMenuItem>

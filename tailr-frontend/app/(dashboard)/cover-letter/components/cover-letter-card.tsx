@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Calendar,
-  Copy,
-  Check,
-  Trash2,
-  ArrowRight,
-  FileText,
-  Printer,
-} from "lucide-react";
+import { Calendar, Copy, Check, Trash2, ArrowRight, FileText, Printer } from "lucide-react";
 import { CoverLetter } from "@/shared/types/cover-letter";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
@@ -26,10 +18,7 @@ interface CoverLetterCardProps {
   onDelete?: (id: string) => void;
 }
 
-export function CoverLetterCard({
-  coverLetter,
-  onDelete,
-}: CoverLetterCardProps) {
+export function CoverLetterCard({ coverLetter, onDelete }: CoverLetterCardProps) {
   const [copied, setCopied] = React.useState(false);
   const { masterResume } = useMasterResume();
 
@@ -81,14 +70,11 @@ export function CoverLetterCard({
     }
   };
 
-  const formattedDate = new Date(coverLetter.createdAt).toLocaleDateString(
-    "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }
-  );
+  const formattedDate = new Date(coverLetter.createdAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
   const excerpt =
     coverLetter.content.length > 220

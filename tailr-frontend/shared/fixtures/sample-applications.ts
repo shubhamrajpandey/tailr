@@ -29,7 +29,13 @@ export function generateSampleApplications(): Application[] {
       hrLinkedinUrl: "https://linkedin.com/in/sample-recruiter-1",
       hrAvatarUrl: null,
       resumeVersionId: "v1",
-      resumeVersion: { id: "v1", label: "AI Lead v1.0", matchScore: 94, source: "AI_TAILORED", createdAt: offsetDate(4) },
+      resumeVersion: {
+        id: "v1",
+        label: "AI Lead v1.0",
+        matchScore: 94,
+        source: "AI_TAILORED",
+        createdAt: offsetDate(4),
+      },
       createdAt: offsetDate(4),
       updatedAt: offsetDate(0),
     },
@@ -48,7 +54,13 @@ export function generateSampleApplications(): Application[] {
       hrLinkedinUrl: "https://linkedin.com/in/sample-recruiter-2",
       hrAvatarUrl: null,
       resumeVersionId: "v2",
-      resumeVersion: { id: "v2", label: "FullStack v2.1", matchScore: 91, source: "AI_TAILORED", createdAt: offsetDate(3) },
+      resumeVersion: {
+        id: "v2",
+        label: "FullStack v2.1",
+        matchScore: 91,
+        source: "AI_TAILORED",
+        createdAt: offsetDate(3),
+      },
       createdAt: offsetDate(3),
       updatedAt: offsetDate(0),
     },
@@ -67,7 +79,13 @@ export function generateSampleApplications(): Application[] {
       hrLinkedinUrl: "https://linkedin.com/in/sample-recruiter-3",
       hrAvatarUrl: null,
       resumeVersionId: "v3",
-      resumeVersion: { id: "v3", label: "Backend Lead", matchScore: 88, source: "AI_TAILORED", createdAt: offsetDate(2) },
+      resumeVersion: {
+        id: "v3",
+        label: "Backend Lead",
+        matchScore: 88,
+        source: "AI_TAILORED",
+        createdAt: offsetDate(2),
+      },
       createdAt: offsetDate(2),
       updatedAt: offsetDate(2),
     },
@@ -115,9 +133,7 @@ export function generateSampleApplications(): Application[] {
 /**
  * Utility to seed the local store with sample applications for preview and demo testing.
  */
-export function seedSampleApplications(
-  persistFn?: (apps: Application[]) => void
-): Application[] {
+export function seedSampleApplications(persistFn?: (apps: Application[]) => void): Application[] {
   const sampleApps = generateSampleApplications();
   if (persistFn) {
     persistFn(sampleApps);

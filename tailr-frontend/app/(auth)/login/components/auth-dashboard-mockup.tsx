@@ -22,12 +22,12 @@ export function AuthDashboardMockup() {
             {/* Brand Header */}
             <div className="flex items-center gap-2 px-1">
               <Image
-                  src="/main_logo.png"
-                  alt="Tailr Logo"
-                  width={20}
-                  height={20}
-                  className="object-contain"
-                />
+                src="/main_logo.png"
+                alt="Tailr Logo"
+                width={20}
+                height={20}
+                className="object-contain"
+              />
               <span className="font-bold text-xs tracking-tight text-neutral-900 dark:text-white">
                 Tailr
               </span>

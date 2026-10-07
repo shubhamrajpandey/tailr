@@ -25,9 +25,7 @@ interface ApplicationDetailInfoProps {
   application: Application;
 }
 
-export function ApplicationDetailInfo({
-  application,
-}: ApplicationDetailInfoProps) {
+export function ApplicationDetailInfo({ application }: ApplicationDetailInfoProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
       {/* Left 2 Columns: Job Description & Overview */}
@@ -41,9 +39,7 @@ export function ApplicationDetailInfo({
                 {application.jobDescriptionRaw?.length || 0} characters
               </span>
             </CardTitle>
-            <CardDescription>
-              Original posting requirements provided for this role.
-            </CardDescription>
+            <CardDescription>Original posting requirements provided for this role.</CardDescription>
           </CardHeader>
           <CardContent>
             {application.jobDescriptionRaw ? (
@@ -134,9 +130,7 @@ export function ApplicationDetailInfo({
                 )}
               </div>
             ) : (
-              <p className="text-xs text-neutral-400 italic">
-                No recruiter contact assigned yet.
-              </p>
+              <p className="text-xs text-neutral-400 italic">No recruiter contact assigned yet.</p>
             )}
           </CardContent>
         </Card>
@@ -188,7 +182,8 @@ export function ApplicationDetailInfo({
                     No tailored resume linked
                   </p>
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto">
-                    Use Tailr AI to match your master resume against this role without hallucinations.
+                    Use Tailr AI to match your master resume against this role without
+                    hallucinations.
                   </p>
                 </div>
                 <Link href={`/resume/tailor?appId=${application.id}`}>

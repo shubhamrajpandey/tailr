@@ -8,7 +8,8 @@ import { AuthTestimonialPreview } from "./components/auth-testimonial-preview";
 
 export const metadata: Metadata = {
   title: "Sign In — Tailr",
-  description: "Sign in to your Tailr personal workspace to tailor resumes and track job applications.",
+  description:
+    "Sign in to your Tailr personal workspace to tailor resumes and track job applications.",
 };
 
 export default function LoginPage() {

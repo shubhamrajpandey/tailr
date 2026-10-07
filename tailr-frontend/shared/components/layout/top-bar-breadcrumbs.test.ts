@@ -1,8 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  BREADCRUMB_MAP,
-  getDefaultBreadcrumbs,
-} from "./top-bar-breadcrumbs";
+import { BREADCRUMB_MAP, getDefaultBreadcrumbs } from "./top-bar-breadcrumbs";
 import { ROUTES } from "@/shared/lib/routes";
 
 describe("top-bar-breadcrumbs", () => {
@@ -24,10 +21,7 @@ describe("top-bar-breadcrumbs", () => {
 
   it("getDefaultBreadcrumbs returns static map when matched", () => {
     const result = getDefaultBreadcrumbs(ROUTES.SETTINGS);
-    expect(result).toEqual([
-      { label: "Overview", href: ROUTES.DASHBOARD },
-      { label: "Settings" },
-    ]);
+    expect(result).toEqual([{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Settings" }]);
   });
 
   it("getDefaultBreadcrumbs resolves dynamic application detail route", () => {

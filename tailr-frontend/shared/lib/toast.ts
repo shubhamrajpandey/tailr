@@ -29,7 +29,12 @@ class ToastStore {
     this.listeners.forEach((listener) => listener(copy));
   }
 
-  public add(type: ToastType, title: string, description?: string, duration: number = 4500): string {
+  public add(
+    type: ToastType,
+    title: string,
+    description?: string,
+    duration: number = 4500
+  ): string {
     const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
     const newToast: ToastItem = {
       id,

@@ -19,26 +19,16 @@ export function AuthTestimonialPreview() {
       {/* Testimonial Quote & Author Info */}
       <div className="space-y-6 relative z-10">
         <blockquote className="text-xl sm:text-2xl font-normal tracking-tight text-neutral-800 dark:text-neutral-200 leading-snug">
-          <span className="font-bold text-neutral-950 dark:text-white">
-            Tailr
-          </span>{" "}
-          has completely{" "}
-          <span className="font-bold text-neutral-950 dark:text-white">
-            changed
-          </span>{" "}
-          how we manage{" "}
+          <span className="font-bold text-neutral-950 dark:text-white">Tailr</span> has completely{" "}
+          <span className="font-bold text-neutral-950 dark:text-white">changed</span> how we manage{" "}
           <span className="font-normal text-neutral-700 dark:text-neutral-300">
             job applications and resume tailoring
           </span>
           . It&apos;s{" "}
-          <span className="font-bold text-neutral-950 dark:text-white">
-            fast, intuitive
-          </span>
-          , and gives us{" "}
-          <span className="font-bold text-neutral-950 dark:text-white">
-            clear insights
-          </span>{" "}
-          that actually matter.
+          <span className="font-bold text-neutral-950 dark:text-white">fast, intuitive</span>, and
+          gives us{" "}
+          <span className="font-bold text-neutral-950 dark:text-white">clear insights</span> that
+          actually matter.
         </blockquote>
 
         {/* Author Details */}

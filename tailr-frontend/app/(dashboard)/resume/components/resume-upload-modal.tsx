@@ -78,7 +78,9 @@ export function ResumeUploadModal({
 
   const handleSubmit = async () => {
     if (!rawText.trim() && !pdfBase64) {
-      setError("Please choose a resume file (.pdf, .tex, .txt, etc.) or paste your resume content.");
+      setError(
+        "Please choose a resume file (.pdf, .tex, .txt, etc.) or paste your resume content."
+      );
       return;
     }
 
@@ -115,7 +117,8 @@ export function ResumeUploadModal({
                 Upload & AI Parse Master Resume
               </h3>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Upload your PDF, LaTeX source, Markdown, or paste raw text. The AI extracts your credentials and saves to the database.
+                Upload your PDF, LaTeX source, Markdown, or paste raw text. The AI extracts your
+                credentials and saves to the database.
               </p>
             </div>
           </div>

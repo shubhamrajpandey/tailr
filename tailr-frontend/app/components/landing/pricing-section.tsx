@@ -76,7 +76,8 @@ export function PricingSection() {
             Invest in Your Career Trajectory
           </h2>
           <p className="mt-3 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400">
-            One extra interview callback pays for a lifetime of Tailr. Pick the plan that matches your career ambitions.
+            One extra interview callback pays for a lifetime of Tailr. Pick the plan that matches
+            your career ambitions.
           </p>
 
           {/* Monthly / Annual Toggle */}
@@ -149,9 +150,7 @@ export function PricingSection() {
                   </span>
                 </div>
                 {plan.subtext && (
-                  <p className="text-[11px] text-neutral-400 mt-1 font-mono">
-                    {plan.subtext}
-                  </p>
+                  <p className="text-[11px] text-neutral-400 mt-1 font-mono">{plan.subtext}</p>
                 )}
 
                 <div className="mt-8 space-y-3 pt-6 border-t border-neutral-100 dark:border-white/5">
@@ -159,7 +158,10 @@ export function PricingSection() {
                     Included Capabilities
                   </div>
                   {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-start gap-2.5 text-xs text-neutral-600 dark:text-neutral-300">
+                    <div
+                      key={feature}
+                      className="flex items-start gap-2.5 text-xs text-neutral-600 dark:text-neutral-300"
+                    >
                       <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                       <span>{feature}</span>
                     </div>

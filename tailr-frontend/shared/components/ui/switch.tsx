@@ -1,8 +1,7 @@
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 
-export interface SwitchProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
 }

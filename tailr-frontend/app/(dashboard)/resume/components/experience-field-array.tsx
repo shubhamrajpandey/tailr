@@ -28,10 +28,7 @@ interface ExperienceFieldArrayProps {
   onChange: (updated: ResumeExperience[]) => void;
 }
 
-export function ExperienceFieldArray({
-  experience,
-  onChange,
-}: ExperienceFieldArrayProps) {
+export function ExperienceFieldArray({ experience, onChange }: ExperienceFieldArrayProps) {
   const addExperience = () => {
     const newExp: ResumeExperience = {
       id: `exp-${Date.now()}`,
@@ -143,7 +140,9 @@ export function ExperienceFieldArray({
                     <span className="font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                       {exp.title || "Untitled Position"}
                     </span>
-                    <span className="text-neutral-400 dark:text-neutral-500 text-xs sm:text-sm">at</span>
+                    <span className="text-neutral-400 dark:text-neutral-500 text-xs sm:text-sm">
+                      at
+                    </span>
                     <span className="font-semibold text-neutral-700 dark:text-neutral-300 truncate">
                       {exp.company || "Company"}
                     </span>

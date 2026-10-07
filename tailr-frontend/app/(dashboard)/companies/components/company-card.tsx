@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Globe,
-  MapPin,
-  Mail,
-  ChevronRight,
-  Sparkles,
-} from "lucide-react";
+import { Globe, MapPin, Mail, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Company } from "@/shared/types/company";
 import { Badge } from "@/shared/components/ui/badge";
@@ -20,11 +14,7 @@ interface CompanyCardProps {
   onSelect: (company: Company) => void;
 }
 
-export function CompanyCard({
-  company,
-  isSelected,
-  onSelect,
-}: CompanyCardProps) {
+export function CompanyCard({ company, isSelected, onSelect }: CompanyCardProps) {
   const initial = getInitials(company.name);
   const accentColor = getAvatarColor(company.name);
 
@@ -176,11 +166,7 @@ export function CompanyCard({
               title="View LinkedIn profile"
               className="p-1.5 rounded-md text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors"
             >
-              <svg
-                className="h-3.5 w-3.5 fill-current"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
+              <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.2a1.6 1.6 0 0 0-1.6 1.6c0 .88.72 1.6 1.6 1.6a1.6 1.6 0 0 0 1.6-1.6c0-.88-.72-1.6-1.6-1.6Z" />
               </svg>
             </a>

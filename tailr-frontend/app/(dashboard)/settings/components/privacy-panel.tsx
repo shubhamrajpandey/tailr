@@ -1,14 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Download,
-  Eye,
-  Lock,
-  CheckCircle2,
-  FileJson,
-  Loader2,
-} from "lucide-react";
+import { Download, Eye, Lock, CheckCircle2, FileJson, Loader2 } from "lucide-react";
 import { SettingsSection } from "./settings-section";
 import { Button } from "@/shared/components/ui/button";
 import { Switch } from "@/shared/components/ui/switch";
@@ -22,15 +15,13 @@ export function PrivacyPanel() {
   const { applications } = useApplications();
   const authUser = useAppSelector((state) => state.auth.user);
 
-  const [analyticsOptIn, setAnalyticsOptIn] = React.useState(
-    settings.privacy.analyticsOptIn
-  );
+  const [analyticsOptIn, setAnalyticsOptIn] = React.useState(settings.privacy.analyticsOptIn);
   const [aiImprovementOptIn, setAiImprovementOptIn] = React.useState(
     settings.privacy.aiImprovementOptIn
   );
-  const [profileVisibility, setProfileVisibility] = React.useState<
-    "private" | "recruiter_only"
-  >(settings.privacy.profileVisibility);
+  const [profileVisibility, setProfileVisibility] = React.useState<"private" | "recruiter_only">(
+    settings.privacy.profileVisibility
+  );
 
   const [isExporting, setIsExporting] = React.useState(false);
   const [successFeedback, setSuccessFeedback] = React.useState<string | null>(null);
@@ -124,7 +115,8 @@ export function PrivacyPanel() {
                 JSON Data Archive
               </span>
               <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 leading-relaxed">
-                Includes your profile, {applications.length} job application records, and model configurations.
+                Includes your profile, {applications.length} job application records, and model
+                configurations.
               </p>
             </div>
           </div>
@@ -214,10 +206,7 @@ export function PrivacyPanel() {
                 Sends non-identifying ATS match rate metrics to evaluate Gemini prompt formatting.
               </p>
             </div>
-            <Switch
-              checked={aiImprovementOptIn}
-              onCheckedChange={setAiImprovementOptIn}
-            />
+            <Switch checked={aiImprovementOptIn} onCheckedChange={setAiImprovementOptIn} />
           </div>
 
           <div className="flex items-center justify-between p-3.5 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.02]">
@@ -229,10 +218,7 @@ export function PrivacyPanel() {
                 Collects client-side performance benchmarks (LCP, page transitions).
               </p>
             </div>
-            <Switch
-              checked={analyticsOptIn}
-              onCheckedChange={setAnalyticsOptIn}
-            />
+            <Switch checked={analyticsOptIn} onCheckedChange={setAnalyticsOptIn} />
           </div>
         </div>
       </SettingsSection>

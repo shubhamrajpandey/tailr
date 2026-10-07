@@ -184,9 +184,7 @@ export function CoverLetterPreview({
 
         {/* Recipient Block */}
         <div className="text-xs leading-relaxed text-neutral-800 dark:text-neutral-200 print:text-black space-y-0.5">
-          <p className="font-bold">
-            {recipientName || "Hiring Team"}
-          </p>
+          <p className="font-bold">{recipientName || "Hiring Team"}</p>
           {recipientTitle && <p>{recipientTitle}</p>}
           <p>{companyName}</p>
         </div>

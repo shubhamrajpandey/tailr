@@ -3,5 +3,5 @@
   "framework": "nextjs",
   "buildCommand": "cd tailr-frontend && npm run build",
   "outputDirectory": "tailr-frontend/.next",
-  "installCommand": "cd tailr-frontend && npm install"
+  "installCommand": "cd tailr-frontend && npm install --legacy-peer-deps"
 }

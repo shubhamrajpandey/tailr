@@ -76,7 +76,8 @@ export function CertificationsFieldArray({
                 Certifications
               </h2>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Optional: Industry credentials & accreditations (AWS, Meta, etc.). Leave empty if none.
+                Optional: Industry credentials & accreditations (AWS, Meta, etc.). Leave empty if
+                none.
               </p>
             </div>
           </div>
@@ -100,7 +101,8 @@ export function CertificationsFieldArray({
                 No certifications listed.
               </p>
               <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
-                This section is optional and automatically omitted from your ATS resume if empty. Click &quot;+ Add&quot; to include industry certifications.
+                This section is optional and automatically omitted from your ATS resume if empty.
+                Click &quot;+ Add&quot; to include industry certifications.
               </p>
             </div>
           ) : (
@@ -193,7 +195,8 @@ export function CertificationsFieldArray({
                 No honors or achievements listed.
               </p>
               <p className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-0.5">
-                This section is optional and automatically omitted from your ATS resume if empty. Click &quot;+ Add&quot; to include competitions or honors.
+                This section is optional and automatically omitted from your ATS resume if empty.
+                Click &quot;+ Add&quot; to include competitions or honors.
               </p>
             </div>
           ) : (
@@ -236,9 +239,7 @@ export function CertificationsFieldArray({
                   <div className="sm:col-span-3">
                     <Input
                       value={ach.description}
-                      onChange={(e) =>
-                        updateAch(aIdx, { ...ach, description: e.target.value })
-                      }
+                      onChange={(e) => updateAch(aIdx, { ...ach, description: e.target.value })}
                       placeholder="Brief detail of outcome or audience e.g. Awarded Grand Prize out of 450+ teams"
                       className="text-xs h-8"
                     />

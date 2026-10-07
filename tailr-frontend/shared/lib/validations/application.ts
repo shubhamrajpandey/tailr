@@ -17,10 +17,9 @@ export const applicationFormSchema = z.object({
   companyWebsite: z
     .string()
     .trim()
-    .refine(
-      (val) => !val || /^https?:\/\/.+/i.test(val),
-      { message: "Must be a valid URL starting with http:// or https://" }
-    )
+    .refine((val) => !val || /^https?:\/\/.+/i.test(val), {
+      message: "Must be a valid URL starting with http:// or https://",
+    })
     .optional()
     .or(z.literal("")),
   positionTitle: z
@@ -38,10 +37,9 @@ export const applicationFormSchema = z.object({
   hrLinkedinUrl: z
     .string()
     .trim()
-    .refine(
-      (val) => !val || /^https?:\/\/.+/i.test(val),
-      { message: "Must be a valid URL starting with http:// or https://" }
-    )
+    .refine((val) => !val || /^https?:\/\/.+/i.test(val), {
+      message: "Must be a valid URL starting with http:// or https://",
+    })
     .optional()
     .or(z.literal("")),
 });

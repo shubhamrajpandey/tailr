@@ -1,10 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  useApplications,
-  APPLICATIONS_UPDATED_EVENT,
-} from "@/shared/hooks/use-applications";
+import { useApplications, APPLICATIONS_UPDATED_EVENT } from "@/shared/hooks/use-applications";
 import {
   ConversionFunnelAnalytics,
   FunnelStageData,
@@ -99,14 +96,8 @@ export function useConversionFunnel(): ConversionFunnelAnalytics {
         label: "Applied",
         description: "Applications tailored and formally submitted",
         count: appliedCount,
-        percentOfPrevious:
-          wishlistCount > 0
-            ? Math.round((appliedCount / wishlistCount) * 100)
-            : 0,
-        percentOfTotal:
-          wishlistCount > 0
-            ? Math.round((appliedCount / wishlistCount) * 100)
-            : 0,
+        percentOfPrevious: wishlistCount > 0 ? Math.round((appliedCount / wishlistCount) * 100) : 0,
+        percentOfTotal: wishlistCount > 0 ? Math.round((appliedCount / wishlistCount) * 100) : 0,
         dropOffCount: Math.max(0, wishlistCount - appliedCount),
         dropOffPercent:
           wishlistCount > 0
@@ -118,33 +109,19 @@ export function useConversionFunnel(): ConversionFunnelAnalytics {
         label: "Interview Stage",
         description: "Recruiter screens and technical interviews secured",
         count: interviewCount,
-        percentOfPrevious:
-          appliedCount > 0
-            ? Math.round((interviewCount / appliedCount) * 100)
-            : 0,
-        percentOfTotal:
-          wishlistCount > 0
-            ? Math.round((interviewCount / wishlistCount) * 100)
-            : 0,
+        percentOfPrevious: appliedCount > 0 ? Math.round((interviewCount / appliedCount) * 100) : 0,
+        percentOfTotal: wishlistCount > 0 ? Math.round((interviewCount / wishlistCount) * 100) : 0,
         dropOffCount: Math.max(0, appliedCount - interviewCount),
         dropOffPercent:
-          appliedCount > 0
-            ? Math.round(((appliedCount - interviewCount) / appliedCount) * 100)
-            : 0,
+          appliedCount > 0 ? Math.round(((appliedCount - interviewCount) / appliedCount) * 100) : 0,
       },
       {
         id: "offer",
         label: "Offer Received",
         description: "Job offers received or currently under negotiation",
         count: offerCount,
-        percentOfPrevious:
-          interviewCount > 0
-            ? Math.round((offerCount / interviewCount) * 100)
-            : 0,
-        percentOfTotal:
-          wishlistCount > 0
-            ? Math.round((offerCount / wishlistCount) * 100)
-            : 0,
+        percentOfPrevious: interviewCount > 0 ? Math.round((offerCount / interviewCount) * 100) : 0,
+        percentOfTotal: wishlistCount > 0 ? Math.round((offerCount / wishlistCount) * 100) : 0,
         dropOffCount: Math.max(0, interviewCount - offerCount),
         dropOffPercent:
           interviewCount > 0

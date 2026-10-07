@@ -108,9 +108,7 @@ export function TopBarMobileMenu() {
                     <span className="text-sm font-bold text-neutral-900 dark:text-white truncate">
                       {fullName}
                     </span>
-                    <span className="text-xs text-neutral-500 truncate">
-                      {userEmail}
-                    </span>
+                    <span className="text-xs text-neutral-500 truncate">{userEmail}</span>
                   </div>
                 </div>
 

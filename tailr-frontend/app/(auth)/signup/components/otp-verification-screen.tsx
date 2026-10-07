@@ -131,7 +131,7 @@ export function OtpVerificationScreen({
           setTimeout(() => inputRefs.current[0]?.focus(), 50);
         },
         // onSuccess: handled in useVerifyOtpMutation → dispatches setCredentials + router.push
-      },
+      }
     );
   };
 
@@ -154,7 +154,7 @@ export function OtpVerificationScreen({
         onError: (err) => {
           setError(extractErrorMessage(err));
         },
-      },
+      }
     );
   };
 
@@ -175,7 +175,9 @@ export function OtpVerificationScreen({
             Email Verified!
           </h2>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Welcome, <span className="font-semibold text-neutral-900 dark:text-white">{fullName}</span>. Your account has been created successfully.
+            Welcome,{" "}
+            <span className="font-semibold text-neutral-900 dark:text-white">{fullName}</span>. Your
+            account has been created successfully.
           </p>
         </div>
         <div className="flex items-center justify-center gap-2 text-xs text-indigo-600 dark:text-indigo-400 font-medium">
@@ -258,8 +260,8 @@ export function OtpVerificationScreen({
                 error
                   ? "border-rose-400 dark:border-rose-600 focus:ring-rose-500/20"
                   : digit
-                  ? "border-indigo-500/80 ring-2 ring-indigo-500/10 dark:border-indigo-400"
-                  : "border-neutral-200 dark:border-white/10 focus:border-indigo-500 focus:ring-indigo-500/20"
+                    ? "border-indigo-500/80 ring-2 ring-indigo-500/10 dark:border-indigo-400"
+                    : "border-neutral-200 dark:border-white/10 focus:border-indigo-500 focus:ring-indigo-500/20"
               }`}
             />
           ))}

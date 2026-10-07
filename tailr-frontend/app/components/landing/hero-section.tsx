@@ -2,12 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Rocket,
-  Target,
-} from "lucide-react";
+import { ArrowRight, CheckCircle2, Rocket, Target } from "lucide-react";
 import { HeroPreviewCard } from "./hero-preview-card";
 
 export function HeroSection() {
@@ -100,12 +95,14 @@ export function HeroSection() {
 
         {/* ─── 5. Headline ─── */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.12] sm:leading-[1.08] font-sans break-words">
-          All-in-One Workspace<br className="hidden sm:inline" /> for Tailored Resumes
+          All-in-One Workspace
+          <br className="hidden sm:inline" /> for Tailored Resumes
         </h1>
 
         {/* ─── 6. Subtitle ─── */}
         <p className="mt-4 sm:mt-6 text-sm sm:text-lg text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed font-normal px-2">
-          Plan, tailor, and track everything your career needs,<br className="hidden sm:inline" /> in one beautiful, unified tool.
+          Plan, tailor, and track everything your career needs,
+          <br className="hidden sm:inline" /> in one beautiful, unified tool.
         </p>
 
         {/* ─── 7. CTA Buttons ─── */}

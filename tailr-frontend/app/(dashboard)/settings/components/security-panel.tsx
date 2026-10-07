@@ -4,14 +4,7 @@ import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Lock,
-  KeyRound,
-  Shield,
-  CheckCircle2,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
+import { Lock, KeyRound, Shield, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { SettingsSection } from "./settings-section";
@@ -153,9 +146,7 @@ export function SecurityPanel() {
                 className={errors.newPassword ? "border-rose-500" : ""}
               />
               {errors.newPassword && (
-                <p className="text-xs text-rose-500 font-medium">
-                  {errors.newPassword.message}
-                </p>
+                <p className="text-xs text-rose-500 font-medium">{errors.newPassword.message}</p>
               )}
             </div>
 
@@ -193,17 +184,17 @@ export function SecurityPanel() {
                     passwordStrength >= 4
                       ? "text-emerald-500 font-bold"
                       : passwordStrength >= 2
-                      ? "text-amber-500 font-medium"
-                      : "text-rose-500 font-medium"
+                        ? "text-amber-500 font-medium"
+                        : "text-rose-500 font-medium"
                   }
                 >
                   {passwordStrength >= 4
                     ? "Very Strong"
                     : passwordStrength >= 3
-                    ? "Good"
-                    : passwordStrength >= 2
-                    ? "Fair"
-                    : "Weak"}
+                      ? "Good"
+                      : passwordStrength >= 2
+                        ? "Fair"
+                        : "Weak"}
                 </span>
               </div>
               <div className="grid grid-cols-5 gap-1.5 h-1.5">
@@ -215,8 +206,8 @@ export function SecurityPanel() {
                         ? passwordStrength >= 4
                           ? "bg-emerald-500"
                           : passwordStrength >= 2
-                          ? "bg-amber-500"
-                          : "bg-rose-500"
+                            ? "bg-amber-500"
+                            : "bg-rose-500"
                         : "bg-neutral-200 dark:bg-neutral-800"
                     }`}
                   />

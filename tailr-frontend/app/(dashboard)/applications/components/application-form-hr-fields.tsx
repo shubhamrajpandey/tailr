@@ -9,10 +9,7 @@ interface ApplicationFormHrFieldsProps {
   errors: FieldErrors<ApplicationFormValues>;
 }
 
-export function ApplicationFormHrFields({
-  register,
-  errors,
-}: ApplicationFormHrFieldsProps) {
+export function ApplicationFormHrFields({ register, errors }: ApplicationFormHrFieldsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       {/* HR Contact Name */}
@@ -30,9 +27,7 @@ export function ApplicationFormHrFields({
           {...register("hrName")}
         />
         {errors.hrName && (
-          <p className="text-xs text-rose-500 font-medium">
-            {errors.hrName.message}
-          </p>
+          <p className="text-xs text-rose-500 font-medium">{errors.hrName.message}</p>
         )}
       </div>
 
@@ -52,9 +47,7 @@ export function ApplicationFormHrFields({
           {...register("hrLinkedinUrl")}
         />
         {errors.hrLinkedinUrl && (
-          <p className="text-xs text-rose-500 font-medium">
-            {errors.hrLinkedinUrl.message}
-          </p>
+          <p className="text-xs text-rose-500 font-medium">{errors.hrLinkedinUrl.message}</p>
         )}
       </div>
     </div>

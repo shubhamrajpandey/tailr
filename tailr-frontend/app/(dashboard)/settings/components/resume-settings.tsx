@@ -3,23 +3,13 @@
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  FileText,
-  Printer,
-  Layout,
-  Save,
-  CheckCircle2,
-  Check,
-} from "lucide-react";
+import { FileText, Printer, Layout, Save, CheckCircle2, Check } from "lucide-react";
 import { Select } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
 import { Button } from "@/shared/components/ui/button";
 import { SettingsSection } from "./settings-section";
 import { useSettings } from "@/shared/hooks/use-settings";
-import {
-  resumeSettingsSchema,
-  ResumeSettingsValues,
-} from "@/shared/lib/validations/settings";
+import { resumeSettingsSchema, ResumeSettingsValues } from "@/shared/lib/validations/settings";
 import { cn } from "@/shared/lib/utils";
 
 const TEMPLATE_OPTIONS = [
@@ -154,9 +144,7 @@ export function ResumeSettings() {
                 </div>
                 <Switch
                   checked={includeContactHeader}
-                  onCheckedChange={(val) =>
-                    setValue("includeContactHeader", val)
-                  }
+                  onCheckedChange={(val) => setValue("includeContactHeader", val)}
                 />
               </div>
 
@@ -183,15 +171,9 @@ export function ResumeSettings() {
                   Page Margins
                 </label>
                 <Select {...register("defaultPageMargin")}>
-                  <option value="compact">
-                    Compact (0.4 in — Maximize content density)
-                  </option>
-                  <option value="normal">
-                    Normal (0.6 in — Balanced readability)
-                  </option>
-                  <option value="spacious">
-                    Spacious (0.8 in — Executive brevity)
-                  </option>
+                  <option value="compact">Compact (0.4 in — Maximize content density)</option>
+                  <option value="normal">Normal (0.6 in — Balanced readability)</option>
+                  <option value="spacious">Spacious (0.8 in — Executive brevity)</option>
                 </Select>
               </div>
 
@@ -209,12 +191,7 @@ export function ResumeSettings() {
           </div>
 
           <div className="flex items-center justify-end pt-2">
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting}
-              className="gap-2"
-            >
+            <Button type="submit" variant="primary" disabled={isSubmitting} className="gap-2">
               <Save className="h-4 w-4" />
               {isSubmitting ? "Saving..." : "Save Resume Defaults"}
             </Button>

@@ -24,10 +24,13 @@ export function WorkflowSection() {
             <span>Seamless 4-Step Pipeline</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans leading-[1.15]">
-            From Job Description to Tailored PDF<br className="hidden sm:inline" /> in 4 Steps
+            From Job Description to Tailored PDF
+            <br className="hidden sm:inline" /> in 4 Steps
           </h2>
           <p className="mt-3.5 sm:mt-4 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed">
-            A battle-tested workflow designed to eliminate hours of manual resume editing and maximize<br className="hidden sm:inline" /> interview callback rates.
+            A battle-tested workflow designed to eliminate hours of manual resume editing and
+            maximize
+            <br className="hidden sm:inline" /> interview callback rates.
           </p>
         </div>
 
@@ -42,7 +45,8 @@ export function WorkflowSection() {
                 key={step.id}
                 onClick={() => setActiveIdx(idx)}
                 style={{
-                  transition: "flex 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.4s ease",
+                  transition:
+                    "flex 0.5s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, box-shadow 0.4s ease",
                 }}
                 className={cn(
                   "relative rounded-3xl overflow-hidden cursor-pointer select-none border transition-all h-full",
@@ -75,7 +79,9 @@ export function WorkflowSection() {
                 <div
                   className={cn(
                     "absolute inset-0 p-7 xl:p-8 flex items-stretch z-10 transition-opacity duration-300 overflow-hidden",
-                    isExpanded ? "opacity-100 pointer-events-auto delay-100" : "opacity-0 pointer-events-none"
+                    isExpanded
+                      ? "opacity-100 pointer-events-auto delay-100"
+                      : "opacity-0 pointer-events-none"
                   )}
                 >
                   {/* Fixed width inner canvas: prevents words from wrapping into single-character columns while flex animates */}
@@ -110,7 +116,10 @@ export function WorkflowSection() {
 
                         <div className="space-y-1.5 pt-1">
                           {step.benefits.map((b) => (
-                            <div key={b} className="flex items-center gap-2 text-xs text-neutral-700 dark:text-neutral-300 font-sans">
+                            <div
+                              key={b}
+                              className="flex items-center gap-2 text-xs text-neutral-700 dark:text-neutral-300 font-sans"
+                            >
                               <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
                               <span>{b}</span>
                             </div>
@@ -120,7 +129,10 @@ export function WorkflowSection() {
 
                       {/* Bottom Action Bar */}
                       <div className="pt-3 flex items-center justify-between border-t border-slate-200/70 dark:border-white/10">
-                        <Link href="/register" className="group/btn inline-flex items-center gap-2.5">
+                        <Link
+                          href="/register"
+                          className="group/btn inline-flex items-center gap-2.5"
+                        >
                           <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white group-hover/btn:text-indigo-600 dark:group-hover/btn:text-indigo-400 transition-colors font-sans">
                             Read More
                           </span>
@@ -141,9 +153,7 @@ export function WorkflowSection() {
                     </div>
 
                     {/* Right Column: High-Fidelity UI Preview Card */}
-                    <div className="col-span-6 flex flex-col justify-center">
-                      {step.preview}
-                    </div>
+                    <div className="col-span-6 flex flex-col justify-center">{step.preview}</div>
                   </div>
                 </div>
 
@@ -151,7 +161,9 @@ export function WorkflowSection() {
                 <div
                   className={cn(
                     "absolute inset-0 p-5 sm:p-6 flex flex-col justify-between z-10 transition-opacity duration-200 overflow-hidden",
-                    !isExpanded ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    !isExpanded
+                      ? "opacity-100 pointer-events-auto"
+                      : "opacity-0 pointer-events-none"
                   )}
                 >
                   <div className="space-y-3">

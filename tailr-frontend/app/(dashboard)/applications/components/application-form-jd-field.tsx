@@ -9,11 +9,7 @@ interface ApplicationFormJdFieldProps {
   errors: FieldErrors<ApplicationFormValues>;
 }
 
-export function ApplicationFormJdField({
-  register,
-  watch,
-  errors,
-}: ApplicationFormJdFieldProps) {
+export function ApplicationFormJdField({ register, watch, errors }: ApplicationFormJdFieldProps) {
   const jdText = watch("jobDescriptionRaw") || "";
   const wordCount = jdText.trim() ? jdText.trim().split(/\s+/).length : 0;
 
@@ -38,12 +34,11 @@ export function ApplicationFormJdField({
         {...register("jobDescriptionRaw")}
       />
       {errors.jobDescriptionRaw ? (
-        <p className="text-xs text-rose-500 font-medium">
-          {errors.jobDescriptionRaw.message}
-        </p>
+        <p className="text-xs text-rose-500 font-medium">{errors.jobDescriptionRaw.message}</p>
       ) : (
         <p className="text-xs text-neutral-500 dark:text-neutral-400">
-          Tip: Paste the complete responsibilities and qualification requirements for the highest resume match score.
+          Tip: Paste the complete responsibilities and qualification requirements for the highest
+          resume match score.
         </p>
       )}
     </div>

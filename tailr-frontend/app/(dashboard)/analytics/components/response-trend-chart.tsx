@@ -30,9 +30,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
     const item = payload[0].payload;
     return (
       <div className="rounded-lg border border-neutral-200 dark:border-white/10 bg-white/95 dark:bg-neutral-900/95 px-3.5 py-2.5 text-xs shadow-xl backdrop-blur-md">
-        <p className="font-bold text-neutral-950 dark:text-white text-xs mb-1">
-          {item.period}
-        </p>
+        <p className="font-bold text-neutral-950 dark:text-white text-xs mb-1">{item.period}</p>
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-4">
             <span className="text-neutral-500 dark:text-neutral-400">Applications:</span>
@@ -146,25 +144,15 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
               cursor={{ fill: "rgba(100, 116, 139, 0.08)", radius: 6 }}
             />
 
-            <Bar
-              dataKey="appliedCount"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={44}
-            >
+            <Bar dataKey="appliedCount" radius={[6, 6, 0, 0]} maxBarSize={44}>
               {data.map((item, index) => {
                 const isHighlighted =
-                  hoveredIndex !== null
-                    ? hoveredIndex === index
-                    : item.appliedCount === maxVal;
+                  hoveredIndex !== null ? hoveredIndex === index : item.appliedCount === maxVal;
 
                 return (
                   <Cell
                     key={`cell-${index}`}
-                    fill={
-                      isHighlighted
-                        ? "url(#activeBarGradient)"
-                        : "url(#inactiveBarGradient)"
-                    }
+                    fill={isHighlighted ? "url(#activeBarGradient)" : "url(#inactiveBarGradient)"}
                     className="transition-all duration-200 cursor-pointer"
                   />
                 );

@@ -6,20 +6,12 @@ import { Button } from "@/shared/components/ui/button";
 import { SettingsSidebar } from "./components/settings-sidebar";
 import { useSettings } from "@/shared/hooks/use-settings";
 
-export default function SettingsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const { resetToDefaults } = useSettings();
   const [resetFeedback, setResetFeedback] = React.useState(false);
 
   const handleReset = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to reset all preferences to default values?"
-      )
-    ) {
+    if (window.confirm("Are you sure you want to reset all preferences to default values?")) {
       resetToDefaults();
       setResetFeedback(true);
       setTimeout(() => setResetFeedback(false), 3000);
@@ -36,7 +28,8 @@ export default function SettingsLayout({
               Settings & Preferences
             </h1>
             <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 sm:mt-1 font-medium">
-              Manage your personal profile, security credentials, appearance, and AI workspace defaults.
+              Manage your personal profile, security credentials, appearance, and AI workspace
+              defaults.
             </p>
           </div>
 

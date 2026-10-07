@@ -15,14 +15,12 @@ const badgeVariants = cva(
           "border-neutral-200 dark:border-white/15 text-neutral-700 dark:text-neutral-300 bg-transparent",
         wishlist:
           "border-purple-500/25 bg-purple-500/10 text-purple-700 dark:text-purple-300 font-medium",
-        applied:
-          "border-sky-500/25 bg-sky-500/10 text-sky-700 dark:text-sky-300 font-medium",
+        applied: "border-sky-500/25 bg-sky-500/10 text-sky-700 dark:text-sky-300 font-medium",
         interview:
           "border-amber-500/25 bg-amber-500/10 text-amber-800 dark:text-amber-300 font-medium",
         offer:
           "border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium",
-        rejected:
-          "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300 font-medium",
+        rejected: "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300 font-medium",
         ghosted:
           "border-slate-500/25 bg-slate-500/10 text-slate-700 dark:text-slate-400 font-medium",
         // AI Tailoring Change & Source Types
@@ -61,8 +59,7 @@ export type BadgeVariant =
   | "manual";
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
   dot?: boolean;
 }
 
@@ -87,11 +84,7 @@ function Badge({ className, variant, dot = true, children, ...props }: BadgeProp
 
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props}>
-      {dot && (
-        <span
-          className={cn("h-2 w-2 rounded-full inline-block shrink-0", dotColor)}
-        />
-      )}
+      {dot && <span className={cn("h-2 w-2 rounded-full inline-block shrink-0", dotColor)} />}
       <span>{children}</span>
     </div>
   );

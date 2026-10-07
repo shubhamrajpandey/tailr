@@ -36,12 +36,7 @@ export function MobileNav({ className }: MobileNavProps) {
   const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
 
-  const {
-    resumeRemaining,
-    resumeLimit,
-    coverLetterRemaining,
-    coverLetterLimit,
-  } = useAiQuota();
+  const { resumeRemaining, resumeLimit, coverLetterRemaining, coverLetterLimit } = useAiQuota();
 
   // Close drawer on route change
   React.useEffect(() => {
@@ -124,7 +119,7 @@ export function MobileNav({ className }: MobileNavProps) {
       {/* Slide-over Mobile Drawer */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 w-[285px] sm:w-[320px] bg-white dark:bg-[#0c0d10] border-r border-neutral-200 dark:border-white/10 z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out",
+          "fixed inset-y-0 left-0 w-[285px] sm:w-[320px] bg-sidebar border-r border-sidebar-border z-50 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -142,9 +137,7 @@ export function MobileNav({ className }: MobileNavProps) {
               <span className="font-extrabold text-base tracking-tight text-neutral-950 dark:text-white font-sans">
                 Tailr
               </span>
-              <span className="text-[10px] text-neutral-500 font-medium">
-                AI Career Suite
-              </span>
+              <span className="text-[10px] text-neutral-500 font-medium">AI Career Suite</span>
             </div>
           </Link>
 
@@ -248,9 +241,7 @@ export function MobileNav({ className }: MobileNavProps) {
                 <span className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                   {fullName}
                 </span>
-                <span className="text-[11px] text-neutral-500 truncate">
-                  {userEmail}
-                </span>
+                <span className="text-[11px] text-neutral-500 truncate">{userEmail}</span>
               </div>
             </div>
 

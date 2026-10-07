@@ -1,10 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  useApplications,
-  APPLICATIONS_UPDATED_EVENT,
-} from "@/shared/hooks/use-applications";
+import { useApplications, APPLICATIONS_UPDATED_EVENT } from "@/shared/hooks/use-applications";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import {
   ResponseRateAnalytics,
@@ -71,7 +68,13 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         avgDaysDelta: kpi.avgDaysDelta || "-1.4 days faster",
         trendData: velocity.trendData,
         outcomeBreakdown: respondedOutcomes.length > 0 ? respondedOutcomes : outcomes.breakdown,
-        sparklineResponseRates: kpi.sparklines?.responseRate || [40, 50, 45, 60, kpi.responseRatePercent],
+        sparklineResponseRates: kpi.sparklines?.responseRate || [
+          40,
+          50,
+          45,
+          60,
+          kpi.responseRatePercent,
+        ],
         hasData: true,
       };
     }
@@ -130,9 +133,7 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
 
     appliedApps.forEach((app) => {
       const isResponded =
-        app.status === "INTERVIEW" ||
-        app.status === "OFFER" ||
-        app.status === "REJECTED";
+        app.status === "INTERVIEW" || app.status === "OFFER" || app.status === "REJECTED";
 
       if (isResponded) {
         const start = app.appliedDate
@@ -197,11 +198,7 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
       const dayName = daysOrder[date.getDay()];
       if (dayCounts[dayName]) {
         dayCounts[dayName].applied += 1;
-        if (
-          app.status === "INTERVIEW" ||
-          app.status === "OFFER" ||
-          app.status === "REJECTED"
-        ) {
+        if (app.status === "INTERVIEW" || app.status === "OFFER" || app.status === "REJECTED") {
           dayCounts[dayName].responded += 1;
         }
       }

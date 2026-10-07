@@ -106,9 +106,7 @@ export function AccountPanel() {
       setTimeout(() => setSuccessFeedback(null), 3500);
     } catch (err: any) {
       const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to update profile settings.";
+        err?.response?.data?.message || err?.message || "Failed to update profile settings.";
       setErrorMessage(msg);
     }
   };
@@ -243,9 +241,7 @@ export function AccountPanel() {
                 className={errors.fullName ? "border-rose-500" : ""}
               />
               {errors.fullName && (
-                <p className="text-xs text-rose-500 font-medium">
-                  {errors.fullName.message}
-                </p>
+                <p className="text-xs text-rose-500 font-medium">{errors.fullName.message}</p>
               )}
             </div>
 
@@ -283,7 +279,8 @@ export function AccountPanel() {
                 </Button>
               </div>
               <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
-                Email changes require 6-digit OTP verification matching our backend security protocol.
+                Email changes require 6-digit OTP verification matching our backend security
+                protocol.
               </p>
             </div>
           </div>
@@ -307,7 +304,15 @@ export function AccountPanel() {
           </h3>
         </div>
         <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
-          Your credentials and master resumes are encrypted in transit and at rest. To update your password, passkeys, or multi-factor options, navigate to the <a href="/settings/security" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Security Settings</a>.
+          Your credentials and master resumes are encrypted in transit and at rest. To update your
+          password, passkeys, or multi-factor options, navigate to the{" "}
+          <a
+            href="/settings/security"
+            className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+          >
+            Security Settings
+          </a>
+          .
         </p>
       </div>
 
@@ -327,7 +332,8 @@ export function AccountPanel() {
               <DialogHeader>
                 <DialogTitle>Change Account Email</DialogTitle>
                 <DialogDescription>
-                  Enter your new email address. We will dispatch a 6-digit verification code to confirm ownership.
+                  Enter your new email address. We will dispatch a 6-digit verification code to
+                  confirm ownership.
                 </DialogDescription>
               </DialogHeader>
 
@@ -347,11 +353,7 @@ export function AccountPanel() {
                   placeholder="new.email@example.com"
                   icon={<Mail className="h-4 w-4" />}
                 />
-                {emailError && (
-                  <p className="text-xs text-rose-500 font-medium">
-                    {emailError}
-                  </p>
-                )}
+                {emailError && <p className="text-xs text-rose-500 font-medium">{emailError}</p>}
               </div>
 
               <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-2.5">
@@ -383,7 +385,9 @@ export function AccountPanel() {
               <DialogHeader>
                 <DialogTitle>Verify 6-Digit OTP</DialogTitle>
                 <DialogDescription>
-                  We sent a 6-digit code to <strong className="text-neutral-900 dark:text-white">{newEmail}</strong>. Enter it below to complete the change.
+                  We sent a 6-digit code to{" "}
+                  <strong className="text-neutral-900 dark:text-white">{newEmail}</strong>. Enter it
+                  below to complete the change.
                 </DialogDescription>
               </DialogHeader>
 
@@ -405,11 +409,7 @@ export function AccountPanel() {
                   icon={<KeyRound className="h-4 w-4" />}
                   className="tracking-widest font-mono text-center text-lg font-bold"
                 />
-                {otpError && (
-                  <p className="text-xs text-rose-500 font-medium">
-                    {otpError}
-                  </p>
-                )}
+                {otpError && <p className="text-xs text-rose-500 font-medium">{otpError}</p>}
                 <div className="flex items-center justify-between text-xs pt-1">
                   <span className="text-neutral-500">Didn&apos;t receive it?</span>
                   <button
@@ -418,9 +418,7 @@ export function AccountPanel() {
                     onClick={handleRequestOtp}
                     className="text-indigo-600 dark:text-indigo-400 font-semibold disabled:opacity-50 hover:underline cursor-pointer"
                   >
-                    {resendCooldown > 0
-                      ? `Resend in ${resendCooldown}s`
-                      : "Resend Code"}
+                    {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend Code"}
                   </button>
                 </div>
               </div>

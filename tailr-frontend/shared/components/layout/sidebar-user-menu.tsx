@@ -2,13 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Settings,
-  BookOpen,
-  LogOut,
-  Loader2,
-  MoreVertical,
-} from "lucide-react";
+import { Settings, BookOpen, LogOut, Loader2, MoreVertical } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -119,7 +113,9 @@ export function SidebarUserMenu({ isCollapsed }: SidebarUserMenuProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
               <div className="px-2 py-1.5">
-                <p className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">{fullName}</p>
+                <p className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                  {fullName}
+                </p>
                 <p className="text-[11px] text-neutral-500 truncate">{userEmail}</p>
               </div>
               <DropdownMenuSeparator />

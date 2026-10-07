@@ -135,7 +135,11 @@ export function LandingNav() {
           <div className="pt-3 border-t border-neutral-200 dark:border-white/10 flex flex-col gap-2.5">
             {authUser ? (
               <Link href="/dashboard" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="primary" size="default" className="w-full gap-2 h-11 text-sm font-semibold">
+                <Button
+                  variant="primary"
+                  size="default"
+                  className="w-full gap-2 h-11 text-sm font-semibold"
+                >
                   <span>Go to Dashboard</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -143,12 +147,20 @@ export function LandingNav() {
             ) : (
               <>
                 <Link href="/login" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="secondary" size="default" className="w-full h-11 text-sm font-semibold">
+                  <Button
+                    variant="secondary"
+                    size="default"
+                    className="w-full h-11 text-sm font-semibold"
+                  >
                     Log In
                   </Button>
                 </Link>
                 <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="primary" size="default" className="w-full gap-1.5 h-11 text-sm font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white">
+                  <Button
+                    variant="primary"
+                    size="default"
+                    className="w-full gap-1.5 h-11 text-sm font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white"
+                  >
                     <span>Sign Up (Free)</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>

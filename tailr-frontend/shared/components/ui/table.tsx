@@ -1,18 +1,13 @@
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
 
-const Table = React.forwardRef<
-  HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn("w-full caption-bottom text-sm", className)}
-      {...props}
-    />
-  </div>
-));
+const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
+  ({ className, ...props }, ref) => (
+    <div className="relative w-full overflow-auto">
+      <table ref={ref} className={cn("w-full caption-bottom text-sm", className)} {...props} />
+    </div>
+  )
+);
 Table.displayName = "Table";
 
 const TableHeader = React.forwardRef<
@@ -33,7 +28,10 @@ const TableBody = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0 divide-y divide-neutral-100 dark:divide-white/[0.04]", className)}
+    className={cn(
+      "[&_tr:last-child]:border-0 divide-y divide-neutral-100 dark:divide-white/[0.04]",
+      className
+    )}
     {...props}
   />
 ));
@@ -54,19 +52,18 @@ const TableFooter = React.forwardRef<
 ));
 TableFooter.displayName = "TableFooter";
 
-const TableRow = React.forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement>
->(({ className, ...props }, ref) => (
-  <tr
-    ref={ref}
-    className={cn(
-      "border-b border-neutral-100 dark:border-white/[0.04] transition-colors hover:bg-neutral-50/80 dark:hover:bg-white/[0.03] data-[state=selected]:bg-indigo-50/60 dark:data-[state=selected]:bg-indigo-950/20",
-      className
-    )}
-    {...props}
-  />
-));
+const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTMLTableRowElement>>(
+  ({ className, ...props }, ref) => (
+    <tr
+      ref={ref}
+      className={cn(
+        "border-b border-neutral-100 dark:border-white/[0.04] transition-colors hover:bg-neutral-50/80 dark:hover:bg-white/[0.03] data-[state=selected]:bg-indigo-50/60 dark:data-[state=selected]:bg-indigo-950/20",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 TableRow.displayName = "TableRow";
 
 const TableHead = React.forwardRef<
@@ -111,13 +108,4 @@ const TableCaption = React.forwardRef<
 ));
 TableCaption.displayName = "TableCaption";
 
-export {
-  Table,
-  TableHeader,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableCaption,
-};
+export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };

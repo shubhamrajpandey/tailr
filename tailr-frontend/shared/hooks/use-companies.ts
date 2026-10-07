@@ -1,17 +1,9 @@
 "use client";
 
-import {
-  useInfiniteQuery,
-  useQuery,
-  type InfiniteData,
-} from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
 import { useDebounce } from "@/shared/hooks/use-debounce";
 import { authApiClient } from "@/shared/lib/auth-api-client";
-import type {
-  Company,
-  CompanyListResponse,
-  CompanyDetailResponse,
-} from "@/shared/types/company";
+import type { Company, CompanyListResponse, CompanyDetailResponse } from "@/shared/types/company";
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
@@ -50,16 +42,12 @@ async function fetchCompanies(
   }
   params.set("limit", "50");
 
-  const { data } = await authApiClient.get<CompanyListResponse>(
-    `/companies?${params.toString()}`
-  );
+  const { data } = await authApiClient.get<CompanyListResponse>(`/companies?${params.toString()}`);
   return data;
 }
 
 async function fetchCompanyById(id: string): Promise<Company> {
-  const { data } = await authApiClient.get<CompanyDetailResponse>(
-    `/companies/${id}`
-  );
+  const { data } = await authApiClient.get<CompanyDetailResponse>(`/companies/${id}`);
   return data.data.company;
 }
 
@@ -91,14 +79,20 @@ export function useCompaniesQuery({ search, letter, sector }: UseCompaniesQueryO
     CompanyListResponse,
     Error,
     InfiniteData<CompanyListResponse>,
-    readonly [...readonly ["companies", "list"], { search?: string; letter?: string; sector?: string }],
+    readonly [
+      ...(readonly ["companies", "list"]),
+      { search?: string; letter?: string; sector?: string },
+    ],
     string | null
   >({
-    queryKey: [...companyKeys.lists(), {
-      search: debouncedSearch,
-      letter: effectiveLetter,
-      sector: sector ?? "",
-    }] as const,
+    queryKey: [
+      ...companyKeys.lists(),
+      {
+        search: debouncedSearch,
+        letter: effectiveLetter,
+        sector: sector ?? "",
+      },
+    ] as const,
     queryFn: ({ pageParam }) =>
       fetchCompanies(debouncedSearch, effectiveLetter, sector, pageParam ?? null),
     initialPageParam: null,

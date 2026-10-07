@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  Search,
-  Filter,
-  ArrowUpDown,
-  Plus,
-  X,
-  LayoutGrid,
-  List,
-} from "lucide-react";
+import { Search, Filter, ArrowUpDown, Plus, X, LayoutGrid, List } from "lucide-react";
 import type { Application, ApplicationStatus } from "@/shared/types/application";
 import {
   Table,
@@ -63,7 +55,8 @@ export function ApplicationsListTable({
   onDelete,
 }: ApplicationsListTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [internalStatusFilter, setInternalStatusFilter] = React.useState<string>(currentStatusFilter);
+  const [internalStatusFilter, setInternalStatusFilter] =
+    React.useState<string>(currentStatusFilter);
   const statusFilter = onStatusFilterChange ? currentStatusFilter : internalStatusFilter;
   const [sortField, setSortField] = React.useState<SortField>("appliedDate");
   const [sortAsc, setSortAsc] = React.useState(false);
@@ -137,11 +130,9 @@ export function ApplicationsListTable({
   };
 
   const allSelected =
-    filteredApplications.length > 0 &&
-    filteredApplications.every((app) => selectedIds.has(app.id));
+    filteredApplications.length > 0 && filteredApplications.every((app) => selectedIds.has(app.id));
 
-  const activeOption =
-    FILTER_OPTIONS.find((opt) => opt.key === statusFilter) || FILTER_OPTIONS[0];
+  const activeOption = FILTER_OPTIONS.find((opt) => opt.key === statusFilter) || FILTER_OPTIONS[0];
 
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 shadow-xs transition-all duration-200">
@@ -170,7 +161,11 @@ export function ApplicationsListTable({
                   <DropdownMenuItem
                     key={opt.key}
                     onClick={() => handleFilterSelect(opt.key)}
-                    className={statusFilter === opt.key ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}
+                    className={
+                      statusFilter === opt.key
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                        : ""
+                    }
                   >
                     {opt.label}
                   </DropdownMenuItem>

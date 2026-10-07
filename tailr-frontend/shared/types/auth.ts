@@ -57,16 +57,12 @@ export type ApiErrorCode =
 /** Maps backend error codes to UI-friendly messages */
 export const API_ERROR_MESSAGES: Record<string, string> = {
   EMAIL_TAKEN: "This email is already registered. Try signing in instead.",
-  OTP_INCORRECT:
-    "That code doesn't match. Double-check the code in your email.",
-  OTP_EXPIRED:
-    "Your verification code has expired. Please request a new one.",
+  OTP_INCORRECT: "That code doesn't match. Double-check the code in your email.",
+  OTP_EXPIRED: "Your verification code has expired. Please request a new one.",
   OTP_NOT_FOUND: "Verification code not found. Please sign up again.",
   INVALID_CREDENTIALS: "Incorrect email or password. Please try again.",
-  ACCOUNT_NOT_VERIFIED:
-    "Your email hasn't been verified yet. Check your inbox for the OTP.",
-  RATE_LIMITED:
-    "Too many requests. Please wait a moment before trying again.",
+  ACCOUNT_NOT_VERIFIED: "Your email hasn't been verified yet. Check your inbox for the OTP.",
+  RATE_LIMITED: "Too many requests. Please wait a moment before trying again.",
   UNAUTHORIZED: "Your session has expired. Please sign in again.",
   VALIDATION_ERROR: "Some fields are invalid. Please review and try again.",
   INTERNAL_ERROR: "Something went wrong on our end. Please try again shortly.",
@@ -74,11 +70,7 @@ export const API_ERROR_MESSAGES: Record<string, string> = {
 
 /** Returns a user-friendly error message from a backend error code. */
 export function getErrorMessage(code: string, fallback?: string): string {
-  return (
-    API_ERROR_MESSAGES[code] ??
-    fallback ??
-    "An unexpected error occurred. Please try again."
-  );
+  return API_ERROR_MESSAGES[code] ?? fallback ?? "An unexpected error occurred. Please try again.";
 }
 
 // ─── Endpoint Request Bodies ────────────────────────────────────────────────────

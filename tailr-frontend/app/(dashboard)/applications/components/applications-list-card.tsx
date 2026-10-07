@@ -2,15 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import {
-  ExternalLink,
-  MoreHorizontal,
-  FileText,
-  Trash2,
-  Edit,
-  Eye,
-  Sparkles,
-} from "lucide-react";
+import { ExternalLink, MoreHorizontal, FileText, Trash2, Edit, Eye, Sparkles } from "lucide-react";
 import type { Application } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { Button } from "@/shared/components/ui/button";
@@ -106,13 +98,22 @@ export function ApplicationsListCard({
       {/* Card Actions Footer */}
       <div className="flex items-center gap-2 pt-2 border-t border-neutral-200/60 dark:border-white/[0.06]">
         <Link href={ROUTES.APPLICATION_DETAIL(app.id)} className="flex-1">
-          <Button variant="outline" size="sm" className="w-full gap-1.5 h-8 text-xs font-semibold justify-center">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full gap-1.5 h-8 text-xs font-semibold justify-center"
+          >
             <Eye className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
             View Details
           </Button>
         </Link>
         <Link href={ROUTES.APPLICATION_EDIT(app.id)}>
-          <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" title="Edit Application">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 px-2.5 text-xs"
+            title="Edit Application"
+          >
             <Edit className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
           </Button>
         </Link>

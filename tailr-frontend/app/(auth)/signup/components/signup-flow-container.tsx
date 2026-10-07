@@ -3,10 +3,7 @@
 import * as React from "react";
 import { SignupForm } from "./signup-form";
 import { OtpVerificationScreen } from "./otp-verification-screen";
-import {
-  useSignupMutation,
-  extractErrorMessage,
-} from "@/shared/hooks/auth/use-auth-mutations";
+import { useSignupMutation, extractErrorMessage } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
 
 /**
@@ -34,11 +31,7 @@ export function SignupFlowContainer() {
 
   const signupMutation = useSignupMutation();
 
-  const handleProceedToOtp = (data: {
-    fullName: string;
-    email: string;
-    password: string;
-  }) => {
+  const handleProceedToOtp = (data: { fullName: string; email: string; password: string }) => {
     setUserData(data);
     setSignupError(null);
 
@@ -54,7 +47,7 @@ export function SignupFlowContainer() {
           setSignupError(extractErrorMessage(error));
         },
         // onSuccess is handled inside useSignupMutation → dispatches setAuthStep("otp")
-      },
+      }
     );
   };
 

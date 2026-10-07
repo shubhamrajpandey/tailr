@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  accountProfileSchema,
-  accountPasswordSchema,
-  aiSettingsSchema,
-} from "./settings";
+import { accountProfileSchema, accountPasswordSchema, aiSettingsSchema } from "./settings";
 
 describe("settings validations", () => {
   describe("accountProfileSchema", () => {

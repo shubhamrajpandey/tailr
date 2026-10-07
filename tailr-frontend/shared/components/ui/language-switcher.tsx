@@ -35,8 +35,7 @@ export function LanguageSwitcher({
   const currentLangCode = (i18n.language || DEFAULT_LANGUAGE) as SupportedLanguageCode;
 
   const currentLang =
-    SUPPORTED_LANGUAGES.find((lang) => lang.code === currentLangCode) ||
-    SUPPORTED_LANGUAGES[0];
+    SUPPORTED_LANGUAGES.find((lang) => lang.code === currentLangCode) || SUPPORTED_LANGUAGES[0];
 
   const handleLanguageSelect = (code: SupportedLanguageCode) => {
     changeAppLanguage(code);
@@ -46,8 +45,8 @@ export function LanguageSwitcher({
     variant === "outline"
       ? "h-9 inline-flex items-center gap-2 px-3 rounded-lg border border-neutral-200/90 dark:border-white/10 bg-white/80 dark:bg-white/[0.04] text-xs font-medium text-neutral-800 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white transition-all shadow-xs cursor-pointer backdrop-blur-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
       : variant === "solid"
-      ? "h-9 inline-flex items-center gap-2 px-3 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-800 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all cursor-pointer shadow-xs"
-      : "h-9 inline-flex items-center gap-2 px-2.5 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer";
+        ? "h-9 inline-flex items-center gap-2 px-3 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-xs font-semibold text-neutral-800 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all cursor-pointer shadow-xs"
+        : "h-9 inline-flex items-center gap-2 px-2.5 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer";
 
   return (
     <DropdownMenu>
@@ -56,9 +55,7 @@ export function LanguageSwitcher({
         aria-label={t("navbar.language", "Language Selection")}
       >
         <Globe className="h-4 w-4 text-primary shrink-0 transition-transform group-hover:rotate-12" />
-        <span className="font-semibold text-xs tracking-wide">
-          {currentLang.nativeName}
-        </span>
+        <span className="font-semibold text-xs tracking-wide">{currentLang.nativeName}</span>
         <ChevronDown className="h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500 transition-transform ml-0.5 shrink-0" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -88,9 +85,7 @@ export function LanguageSwitcher({
                   {lang.name} • {lang.currency} ({lang.currencySymbol})
                 </span>
               </div>
-              {isSelected && (
-                <Check className="h-4 w-4 text-primary shrink-0 ml-2" />
-              )}
+              {isSelected && <Check className="h-4 w-4 text-primary shrink-0 ml-2" />}
             </DropdownMenuItem>
           );
         })}

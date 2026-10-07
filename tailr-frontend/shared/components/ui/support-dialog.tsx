@@ -39,7 +39,8 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
 
   const phoneNumber = "9740858524";
   const internationalPhone = "+977 9740858524";
-  const whatsappUrl = "https://wa.me/9779740858524?text=Hi%20Shubham%2C%20I%20need%20assistance%20with%20Tailr.";
+  const whatsappUrl =
+    "https://wa.me/9779740858524?text=Hi%20Shubham%2C%20I%20need%20assistance%20with%20Tailr.";
   const emailAddress = "shubhamrajpandey88@gmail.com";
   const mailtoUrl = `mailto:${emailAddress}?subject=Tailr%20Platform%20Support%20Request`;
 
@@ -63,9 +64,7 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
               <Headphones className="h-4 w-4" />
             </div>
             <div>
-              <DialogTitle className="text-base sm:text-lg font-bold">
-                Contact Support
-              </DialogTitle>
+              <DialogTitle className="text-base sm:text-lg font-bold">Contact Support</DialogTitle>
               <DialogDescription className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                 Reach out directly via WhatsApp or email for fast assistance.
               </DialogDescription>

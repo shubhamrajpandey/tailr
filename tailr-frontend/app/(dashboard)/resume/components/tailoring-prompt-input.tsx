@@ -178,7 +178,8 @@ export function TailoringPromptInput({
             </div>
           ) : (
             <span className="text-xs text-neutral-500 dark:text-neutral-400">
-              The AI strictly reorders and emphasizes your authentic experience without hallucinating.
+              The AI strictly reorders and emphasizes your authentic experience without
+              hallucinating.
             </span>
           )}
         </div>

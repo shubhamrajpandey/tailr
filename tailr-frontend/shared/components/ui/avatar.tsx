@@ -33,11 +33,7 @@ export function Avatar({
     >
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={alt}
-          className="aspect-square h-full w-full object-cover"
-        />
+        <img src={src} alt={alt} className="aspect-square h-full w-full object-cover" />
       ) : (
         <span className="uppercase tracking-wider font-bold text-inherit leading-none flex items-center justify-center">
           {fallback.slice(0, 2)}

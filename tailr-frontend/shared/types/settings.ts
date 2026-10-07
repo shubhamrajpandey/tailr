@@ -1,16 +1,10 @@
-export type GeminiModel =
-  | "gemini-1.5-pro"
-  | "gemini-1.5-flash"
-  | "gemini-2.0-flash";
+export type GeminiModel = "gemini-1.5-pro" | "gemini-1.5-flash" | "gemini-2.0-flash";
 
 export type TailoringAggressiveness = "conservative" | "balanced" | "dynamic";
 
 export type CoverLetterToneSetting = "formal" | "conversational" | "concise";
 
-export type ResumeTemplate =
-  | "modern_minimalist"
-  | "executive_classic"
-  | "technical_single_column";
+export type ResumeTemplate = "modern_minimalist" | "executive_classic" | "technical_single_column";
 
 export type PageMargin = "compact" | "normal" | "spacious";
 
@@ -19,10 +13,7 @@ export type PaperSize = "letter" | "a4";
 export type DefaultApplicationStatus = "WISHLIST" | "APPLIED";
 
 export type ApplicationSortOrder =
-  | "applied_date_desc"
-  | "applied_date_asc"
-  | "company_name_asc"
-  | "status_priority";
+  "applied_date_desc" | "applied_date_asc" | "company_name_asc" | "status_priority";
 
 export interface AccountSettings {
   name: string;

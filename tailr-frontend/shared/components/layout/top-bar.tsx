@@ -15,11 +15,7 @@
 
 import * as React from "react";
 import { cn } from "@/shared/lib/utils";
-import {
-  TopBarBreadcrumbs,
-  BreadcrumbItem,
-  getDefaultBreadcrumbs,
-} from "./top-bar-breadcrumbs";
+import { TopBarBreadcrumbs, BreadcrumbItem, getDefaultBreadcrumbs } from "./top-bar-breadcrumbs";
 import { TopBarActions } from "./top-bar-actions";
 import { TopBarMobileMenu } from "./top-bar-mobile-menu";
 
@@ -34,10 +30,7 @@ export interface TopBarProps {
   className?: string;
 }
 
-export function TopBar({
-  breadcrumbs,
-  className,
-}: TopBarProps) {
+export function TopBar({ breadcrumbs, className }: TopBarProps) {
   return (
     <header
       className={cn(

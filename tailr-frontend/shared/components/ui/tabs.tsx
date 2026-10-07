@@ -46,10 +46,7 @@ function Tabs({
   );
 }
 
-function TabsList({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+function TabsList({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(
@@ -61,17 +58,11 @@ function TabsList({
   );
 }
 
-interface TabsTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string;
 }
 
-function TabsTrigger({
-  value,
-  className,
-  children,
-  ...props
-}: TabsTriggerProps) {
+function TabsTrigger({ value, className, children, ...props }: TabsTriggerProps) {
   const context = React.useContext(TabsContext);
   if (!context) throw new Error("TabsTrigger must be used within Tabs");
 

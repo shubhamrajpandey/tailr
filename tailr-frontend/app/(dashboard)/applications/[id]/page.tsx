@@ -13,8 +13,7 @@ export default function ApplicationDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const { getApplication, updateStatus, deleteApplication, isLoaded } =
-    useApplications();
+  const { getApplication, updateStatus, deleteApplication, isLoaded } = useApplications();
 
   const application = getApplication(id);
 

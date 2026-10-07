@@ -1,13 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Sparkles,
-  Loader2,
-  AlertCircle,
-  FileCheck2,
-  CheckCircle2,
-} from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, FileCheck2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { ApplicationSelector } from "./application-selector";
 import { CandidateVerificationCard } from "./candidate-verification-card";
@@ -121,10 +115,7 @@ export function CoverLetterGeneratorTab({
       />
 
       {/* Section 2: Generation Preferences (Length, Tone, Template, Custom Notes) */}
-      <GenerationPreferencesCard
-        preferences={preferences}
-        onChange={onUpdatePreferences}
-      />
+      <GenerationPreferencesCard preferences={preferences} onChange={onUpdatePreferences} />
 
       {/* Section 3: Generate Trigger Bar */}
       <div className="rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900 p-4 sm:p-6 space-y-4 shadow-2xs">
@@ -135,8 +126,8 @@ export function CoverLetterGeneratorTab({
               3. Generate Tailored Cover Letter
             </h3>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Synthesize your verified master resume achievements, apply your
-              chosen tone and template, and match with the job description.
+              Synthesize your verified master resume achievements, apply your chosen tone and
+              template, and match with the job description.
             </p>
             <div className="pt-1.5">
               <AiQuotaBadge
@@ -181,8 +172,7 @@ export function CoverLetterGeneratorTab({
                 AI Pipeline Running with Zero-Hallucination Guardrails
               </p>
               <p className="text-xs text-indigo-800/90 dark:text-indigo-300/80 font-medium">
-                {stageMessage ||
-                  "Evaluating verified credentials against role requirements..."}
+                {stageMessage || "Evaluating verified credentials against role requirements..."}
               </p>
             </div>
           </div>

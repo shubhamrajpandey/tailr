@@ -57,9 +57,7 @@ export function ApplicationFormStatusFields({
             <option value="GHOSTED">Ghosted (No response)</option>
           </Select>
           {errors.status && (
-            <p className="text-xs text-rose-500 font-medium">
-              {errors.status.message}
-            </p>
+            <p className="text-xs text-rose-500 font-medium">{errors.status.message}</p>
           )}
         </div>
 
@@ -106,9 +104,7 @@ export function ApplicationFormStatusFields({
             {...register("positionOpenDate")}
           />
           {errors.positionOpenDate && (
-            <p className="text-xs text-rose-500 font-medium">
-              {errors.positionOpenDate.message}
-            </p>
+            <p className="text-xs text-rose-500 font-medium">{errors.positionOpenDate.message}</p>
           )}
         </div>
 
@@ -128,9 +124,7 @@ export function ApplicationFormStatusFields({
             {...register("appliedDate")}
           />
           {errors.appliedDate && (
-            <p className="text-xs text-rose-500 font-medium">
-              {errors.appliedDate.message}
-            </p>
+            <p className="text-xs text-rose-500 font-medium">{errors.appliedDate.message}</p>
           )}
         </div>
       </div>

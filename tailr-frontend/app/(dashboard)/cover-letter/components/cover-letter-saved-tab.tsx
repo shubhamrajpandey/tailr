@@ -38,7 +38,8 @@ export function CoverLetterSavedTab({
               Create a Tailored Cover Letter with Gemini AI
             </h3>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">
-              Grounds every paragraph in your master resume credentials and formats into Professional, Minimal, or Modern styles.
+              Grounds every paragraph in your master resume credentials and formats into
+              Professional, Minimal, or Modern styles.
             </p>
           </div>
         </div>
