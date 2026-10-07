@@ -67,7 +67,9 @@ function notifySubscribers(token: string) {
 
 // ─── Axios Instance ─────────────────────────────────────────────────────────────
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
 
 export const authApiClient = axios.create({
   baseURL: BASE_URL,

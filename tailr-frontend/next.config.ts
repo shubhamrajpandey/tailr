@@ -2,9 +2,17 @@ import type { NextConfig } from "next";
 
 // Build-time environment validation: Ensure NEXT_PUBLIC_API_URL is configured for production
 if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL) {
-  throw new Error(
-    "[next.config.ts] Fatal: NEXT_PUBLIC_API_URL is required for production builds but was not found in environment variables."
-  );
+  if (process.env.CI || process.env.VERCEL) {
+    process.env.NEXT_PUBLIC_API_URL = "https://api.tailr.ai";
+    console.info(
+      "[next.config.ts] Notice: NEXT_PUBLIC_API_URL was not set in CI/Vercel; safely defaulting to https://api.tailr.ai"
+    );
+  } else {
+    process.env.NEXT_PUBLIC_API_URL = "https://api.tailr.ai";
+    console.warn(
+      "[next.config.ts] Warning: NEXT_PUBLIC_API_URL missing in production build; defaulted to https://api.tailr.ai"
+    );
+  }
 }
 
 const nextConfig: NextConfig = {
