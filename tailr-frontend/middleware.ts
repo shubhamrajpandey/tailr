@@ -5,11 +5,16 @@ import { ROUTES, isProtectedRoute, isAuthRoute } from "./shared/lib/routes";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Retrieve the secure HttpOnly refresh token managed by the backend.
+  // Retrieve session cookies.
   // Access tokens are kept in Redux memory only (never written to document.cookie)
-  // to prevent XSS exfiltration.
-  const refreshToken = request.cookies.get("refreshToken")?.value;
-  const hasValidSession = Boolean(refreshToken && refreshToken.trim().length > 0);
+  // to prevent XSS exfiltration. A lightweight boolean session indicator (tailr_session)
+  // or backend HttpOnly refreshToken signals an active authenticated session.
+  const sessionIndicator =
+    request.cookies.get("tailr_session")?.value ||
+    request.cookies.get("refreshToken")?.value ||
+    request.cookies.get("tailr_access_token")?.value ||
+    request.cookies.get("accessToken")?.value;
+  const hasValidSession = Boolean(sessionIndicator && sessionIndicator.trim().length > 0);
 
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {

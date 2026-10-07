@@ -4,6 +4,7 @@ import { useEffect, type ReactNode } from "react";
 import { useRefreshQuery } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { setCredentials, clearCredentials } from "@/shared/store/auth-slice";
+import { setSessionCookie, removeAuthCookie } from "@/shared/lib/cookie";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -16,7 +17,9 @@ interface AuthProviderProps {
  * 1. Tokens are kept strictly in-memory (Redux authSlice).
  * 2. Silent session bootstrap: Uses HttpOnly refreshToken cookie via POST /auth/refresh.
  * 3. Never writes JWT tokens to document.cookie or localStorage, preventing XSS token exfiltration.
- * 4. Race condition protection: If refresh completes while user is already authenticated
+ * 4. Maintains a lightweight, secret-free boolean cookie (tailr_session) so Next.js edge
+ *    middleware allows navigation to protected routes.
+ * 5. Race condition protection: If refresh completes while user is already authenticated
  *    (e.g. manual login finished before refresh resolved), it retains current session.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -25,9 +28,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const { data, isError, isPending } = useRefreshQuery();
 
-  // 1. On refresh success: populate Redux in-memory credentials
+  // 1. On refresh success: populate Redux in-memory credentials and set session indicator
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
+      setSessionCookie();
       dispatch(
         setCredentials({
           user: data.data.user,
@@ -42,6 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (isError && !isPending) {
       // Do NOT destroy an active session if user logged in concurrently while refresh was in-flight
       if (!isAuthenticated) {
+        removeAuthCookie();
         dispatch(clearCredentials());
       }
     }

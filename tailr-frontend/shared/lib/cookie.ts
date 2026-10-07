@@ -10,6 +10,19 @@
 import type { User } from "@/shared/types/auth";
 
 export const AUTH_COOKIE_NAME = "tailr_access_token";
+export const SESSION_COOKIE_NAME = "tailr_session";
+
+/**
+ * Sets a lightweight boolean session indicator cookie for Next.js edge middleware.
+ * Contains ZERO secrets, ZERO tokens, and ZERO PII.
+ */
+export function setSessionCookie(): void {
+  if (typeof document === "undefined") return;
+  const isSecure = window.location.protocol === "https:";
+  const secureFlag = isSecure ? "; Secure" : "";
+  // 7-day session indicator
+  document.cookie = `${SESSION_COOKIE_NAME}=1; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+}
 
 /**
  * Reads a cookie value by name safely.
@@ -37,7 +50,8 @@ export function getCookie(name: string): string | null {
 export function removeAuthCookie(): void {
   if (typeof document === "undefined") return;
 
-  // Clear any legacy client-set cookies
+  // Clear session indicator and any legacy client-set cookies
+  document.cookie = `${SESSION_COOKIE_NAME}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `accessToken=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 }

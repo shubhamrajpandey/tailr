@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { isTokenValid, removeAuthCookie, getUserFromToken } from "./cookie";
+import { isTokenValid, removeAuthCookie, getUserFromToken, setSessionCookie } from "./cookie";
 
 describe("cookie utilities", () => {
   beforeEach(() => {
@@ -74,6 +74,17 @@ describe("cookie utilities", () => {
       expect(user?.email).toBe("alex@example.com");
       expect(user?.fullName).toBe("Alex Morgan");
       expect(user?.isVerified).toBe(true);
+    });
+  });
+
+  describe("session cookie helpers", () => {
+    it("sets and removes session indicator cookie correctly", () => {
+      setSessionCookie();
+      expect(document.cookie).toContain("tailr_session=1");
+
+      removeAuthCookie();
+      // After removal max-age=0 is set
+      expect(() => removeAuthCookie()).not.toThrow();
     });
   });
 

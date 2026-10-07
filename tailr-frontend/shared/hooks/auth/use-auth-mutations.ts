@@ -16,7 +16,7 @@ import { type AxiosError } from "axios";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { clearCredentials, setAuthStep, setCredentials } from "@/shared/store/auth-slice";
-import { removeAuthCookie } from "@/shared/lib/cookie";
+import { setSessionCookie, removeAuthCookie } from "@/shared/lib/cookie";
 import {
   getErrorMessage,
   type ApiErrorBody,
@@ -103,6 +103,7 @@ export function useVerifyOtpMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      setSessionCookie();
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -138,9 +139,9 @@ export function useResendOtpMutation() {
  * POST /auth/login
  * Authenticates the user. On success:
  * - Dispatches credentials to Redux (user + in-memory accessToken).
- * - The HttpOnly refresh token cookie is set automatically by the browser.
+ * - Sets a lightweight session indicator cookie for Next.js middleware.
  * - Cancels any stale bootstrap refresh request so it cannot wipe the session.
- * - Redirects to /dashboard.
+ * - Redirects to /dashboard or target redirect path.
  */
 export function useLoginMutation() {
   const dispatch = useAppDispatch();
@@ -153,6 +154,7 @@ export function useLoginMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      setSessionCookie();
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -163,7 +165,11 @@ export function useLoginMutation() {
         data: { user, accessToken },
       });
 
-      router.push("/dashboard");
+      const targetPath =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+          : "/dashboard";
+      router.push(targetPath);
     },
   });
 }
