@@ -12,7 +12,7 @@ import type { ReactNode } from "react";
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute>
-      <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
+      <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors">
         {/* Left Sidebar Navigation */}
         <div className="print:hidden">
           <Sidebar />

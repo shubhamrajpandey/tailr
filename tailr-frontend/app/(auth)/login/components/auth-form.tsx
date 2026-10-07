@@ -213,7 +213,7 @@ export function AuthForm() {
           <div className="w-full border-t border-neutral-200 dark:border-white/10" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-white dark:bg-[#090a0c] px-3 text-neutral-400 font-medium">
+          <span className="bg-background px-3 text-neutral-400 font-medium">
             Or continue with
           </span>
         </div>

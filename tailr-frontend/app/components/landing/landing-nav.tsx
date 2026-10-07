@@ -35,7 +35,7 @@ export function LandingNav() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 select-none",
         isScrolled
-          ? "bg-white/85 dark:bg-[#090a0c]/85 backdrop-blur-md border-b border-neutral-200/80 dark:border-white/10 shadow-xs"
+          ? "bg-background/85 backdrop-blur-md border-b border-neutral-200/80 dark:border-white/10 shadow-xs"
           : "bg-transparent border-b border-transparent"
       )}
     >
@@ -118,7 +118,7 @@ export function LandingNav() {
 
       {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="sm:hidden border-b border-neutral-200 dark:border-white/10 bg-white/95 dark:bg-[#090a0c]/95 backdrop-blur-xl px-4 py-4 space-y-4 shadow-xl animate-in slide-in-from-top-2">
+        <div className="sm:hidden border-b border-neutral-200 dark:border-white/10 bg-background/95 backdrop-blur-xl px-4 py-4 space-y-4 shadow-xl animate-in slide-in-from-top-2">
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <a

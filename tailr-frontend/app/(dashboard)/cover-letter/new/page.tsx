@@ -15,7 +15,7 @@ export default function NewCoverLetterRedirect() {
   }, [router, searchParams]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center gap-2 text-sm text-neutral-400 font-sans">
+    <div className="flex min-h-screen bg-background items-center justify-center gap-2 text-sm text-neutral-400 font-sans">
       <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />
       <span>Loading AI Generator Studio in Cover Letters...</span>
     </div>

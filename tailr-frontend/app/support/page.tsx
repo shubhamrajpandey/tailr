@@ -10,7 +10,7 @@ export default function SupportPage() {
   const [open, setOpen] = React.useState(true);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#090a0c] text-neutral-900 dark:text-neutral-100 flex flex-col items-center justify-center p-4 font-sans">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 font-sans">
       <SupportDialog
         open={open}
         onOpenChange={(newOpen) => {

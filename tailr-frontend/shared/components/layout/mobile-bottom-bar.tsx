@@ -91,7 +91,7 @@ export function MobileBottomBar() {
                 "relative h-[52px] w-[52px] rounded-full flex items-center justify-center bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 text-white shadow-[0_8px_24px_rgba(99,102,241,0.5)] ring-4 transition-all duration-200",
                 isAddActive
                   ? "ring-indigo-400 shadow-[0_10px_28px_rgba(99,102,241,0.7)] scale-105"
-                  : "ring-white dark:ring-[#090a0c] group-hover:scale-105"
+                  : "ring-background group-hover:scale-105"
               )}
             >
               <Plus className="h-6 w-6 stroke-[2.7] transition-transform duration-200 group-hover:rotate-90" />

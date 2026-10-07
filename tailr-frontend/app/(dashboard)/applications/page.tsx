@@ -138,7 +138,7 @@ export default function ApplicationsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex min-h-screen bg-slate-50 dark:bg-[#090a0c] items-center justify-center text-sm text-neutral-400">
+        <div className="flex min-h-screen bg-background items-center justify-center text-sm text-neutral-400">
           Loading...
         </div>
       }

@@ -41,7 +41,7 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 w-full h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between bg-slate-50/95 dark:bg-[#090a0c]/95 backdrop-blur-md transition-colors select-none border-b border-neutral-200/60 dark:border-white/[0.05]",
+        "sticky top-0 z-40 w-full h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between bg-background/95 backdrop-blur-md transition-colors select-none border-b border-neutral-200/60 dark:border-white/[0.05]",
         className
       )}
     >
