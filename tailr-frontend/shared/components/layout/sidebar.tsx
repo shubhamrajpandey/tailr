@@ -43,12 +43,17 @@ function getSidebarCollapsedServerSnapshot(): boolean {
 
 function subscribeSidebarCollapsed(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handler = () => callback();
-  window.addEventListener("tailr_sidebar_collapsed_changed", handler);
-  window.addEventListener("storage", handler);
+  const handleCustom = () => callback();
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === null || e.key === SIDEBAR_COLLAPSE_KEY) {
+      callback();
+    }
+  };
+  window.addEventListener("tailr_sidebar_collapsed_changed", handleCustom);
+  window.addEventListener("storage", handleStorage);
   return () => {
-    window.removeEventListener("tailr_sidebar_collapsed_changed", handler);
-    window.removeEventListener("storage", handler);
+    window.removeEventListener("tailr_sidebar_collapsed_changed", handleCustom);
+    window.removeEventListener("storage", handleStorage);
   };
 }
 

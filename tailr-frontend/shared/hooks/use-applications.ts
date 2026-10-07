@@ -55,21 +55,39 @@ function getServerApplicationsSnapshot(): Application[] {
 }
 
 /**
+ * Module-level synchronization throttle & in-flight promise tracker.
+ * Prevents redundant concurrent requests when SidebarNav and dashboard pages mount simultaneously.
+ */
+let inFlightSyncPromise: Promise<void> | null = null;
+let lastSyncTimestamp = 0;
+const SYNC_COOLDOWN_MS = 15_000;
+
+/**
  * Store subscriber for useSyncExternalStore.
- * Listens to local custom events and window storage events.
+ * Listens to local custom events and window storage events with strict key filtering
+ * to prevent unnecessary re-render cascades on unrelated localStorage writes.
  */
 function subscribeApplications(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handleUpdate = () => {
-    cachedRawApplicationsJson = null;
-    cachedApplicationsSnapshot = null;
+
+  const handleCustomUpdate = () => {
     callback();
   };
-  window.addEventListener("tailr_applications_updated", handleUpdate);
-  window.addEventListener("storage", handleUpdate);
+
+  const handleStorageUpdate = (event: StorageEvent) => {
+    // Only invalidate if the event is for APPLICATIONS_STORAGE_KEY or clear()
+    if (event.key === null || event.key === APPLICATIONS_STORAGE_KEY) {
+      cachedRawApplicationsJson = null;
+      cachedApplicationsSnapshot = null;
+      callback();
+    }
+  };
+
+  window.addEventListener("tailr_applications_updated", handleCustomUpdate);
+  window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_applications_updated", handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener("tailr_applications_updated", handleCustomUpdate);
+    window.removeEventListener("storage", handleStorageUpdate);
   };
 }
 
@@ -77,14 +95,15 @@ function subscribeApplications(callback: () => void) {
  * Primary hook for job application tracking, CRUD mutations, and backend synchronization.
  *
  * Implements an optimistic-first offline-capable architecture:
- * - Subscribes to local storage via `useSyncExternalStore` for instantaneous UI updates.
+ * - Subscribes to local storage via `useSyncExternalStore` with strict key filtering.
  * - Synchronizes with the PostgreSQL backend (`/applications`) when authenticated.
+ * - Deduplicates in-flight network requests across layout, sidebar, and page components.
  * - Provides optimistic local updates with background REST sync for creations, edits, and deletions.
  *
  * @returns Application entities, loading flags, sync helpers, and CRUD operations.
  */
 export function useApplications() {
-  const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector(
+  const { isAuthenticated, isBootstrapping } = useAppSelector(
     (state) => state.auth
   );
   const [isLoading, setIsLoading] = React.useState(false);
@@ -107,51 +126,73 @@ export function useApplications() {
     }
   }, []);
 
-  // Synchronize applications with PostgreSQL backend
-  const syncApplications = React.useCallback(async () => {
-    // If still bootstrapping auth session, defer sync until auth resolves
-    if (isBootstrapping) return;
+  // Synchronize applications with PostgreSQL backend with in-flight deduplication
+  const syncApplications = React.useCallback(
+    async (force = false) => {
+      // Defer sync until auth resolves or if user is unauthenticated
+      if (isBootstrapping || !isAuthenticated) return;
 
-    setIsLoading(true);
-    try {
-      const res = await authApiClient.get("/applications");
-      if (
-        res.data?.success &&
-        Array.isArray(res.data?.data?.applications)
-      ) {
-        const serverApps: Application[] = res.data.data.applications.map(
-          (app: any) => ({
-            id: app.id,
-            companyName: app.companyName,
-            companyWebsite: app.companyWebsite,
-            positionTitle: app.positionTitle,
-            jobDescriptionRaw: app.jobDescriptionRaw,
-            positionOpenDate: app.positionOpenDate,
-            appliedDate: app.appliedDate,
-            deadline: app.deadline,
-            applied: app.applied,
-            status: app.status as ApplicationStatus,
-            hrName: app.hrName,
-            hrLinkedinUrl: app.hrLinkedinUrl,
-            hrAvatarUrl: app.hrAvatarUrl,
-            resumeVersionId: app.resumeVersionId,
-            resumeVersion: app.resumeVersion,
-            createdAt: app.createdAt,
-            updatedAt: app.updatedAt,
-          })
-        );
-        persist(serverApps);
+      // Throttle rapid repeated syncs unless forced
+      const now = Date.now();
+      if (!force && now - lastSyncTimestamp < SYNC_COOLDOWN_MS) {
+        return;
       }
-    } catch (err) {
-      console.warn("[useApplications] Failed to sync with backend:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [isBootstrapping, persist]);
+
+      // Return shared promise if an identical sync is already in flight
+      if (inFlightSyncPromise) {
+        return inFlightSyncPromise;
+      }
+
+      setIsLoading(true);
+      inFlightSyncPromise = (async () => {
+        try {
+          const res = await authApiClient.get("/applications");
+          if (
+            res.data?.success &&
+            Array.isArray(res.data?.data?.applications)
+          ) {
+            const serverApps: Application[] = res.data.data.applications.map(
+              (app: any) => ({
+                id: app.id,
+                companyName: app.companyName,
+                companyWebsite: app.companyWebsite,
+                positionTitle: app.positionTitle,
+                jobDescriptionRaw: app.jobDescriptionRaw,
+                positionOpenDate: app.positionOpenDate,
+                appliedDate: app.appliedDate,
+                deadline: app.deadline,
+                applied: app.applied,
+                status: app.status as ApplicationStatus,
+                hrName: app.hrName,
+                hrLinkedinUrl: app.hrLinkedinUrl,
+                hrAvatarUrl: app.hrAvatarUrl,
+                resumeVersionId: app.resumeVersionId,
+                resumeVersion: app.resumeVersion,
+                createdAt: app.createdAt,
+                updatedAt: app.updatedAt,
+              })
+            );
+            persist(serverApps);
+            lastSyncTimestamp = Date.now();
+          }
+        } catch (err) {
+          console.warn("[useApplications] Failed to sync with backend:", err);
+        } finally {
+          setIsLoading(false);
+          inFlightSyncPromise = null;
+        }
+      })();
+
+      return inFlightSyncPromise;
+    },
+    [isBootstrapping, isAuthenticated, persist]
+  );
 
   React.useEffect(() => {
-    syncApplications();
-  }, [syncApplications, isAuthenticated, accessToken]);
+    if (isAuthenticated && !isBootstrapping) {
+      syncApplications();
+    }
+  }, [syncApplications, isAuthenticated, isBootstrapping]);
 
   const getApplication = React.useCallback(
     (id: string): Application | undefined => {

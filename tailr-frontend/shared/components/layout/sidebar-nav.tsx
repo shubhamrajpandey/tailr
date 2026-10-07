@@ -100,22 +100,24 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
     });
   };
 
-  const totalApplications = applications.length;
-  const activePipelineCount = React.useMemo(
-    () =>
-      applications.filter(
-        (a) => a.status !== "REJECTED" && a.status !== "GHOSTED"
-      ).length,
-    [applications]
-  );
-  const interviewCount = React.useMemo(
-    () => applications.filter((a) => a.status === "INTERVIEW").length,
-    [applications]
-  );
-  const offerCount = React.useMemo(
-    () => applications.filter((a) => a.status === "OFFER").length,
-    [applications]
-  );
+  const { totalApplications, activePipelineCount, interviewCount, offerCount } =
+    React.useMemo(() => {
+      let active = 0;
+      let interview = 0;
+      let offer = 0;
+      for (let i = 0; i < applications.length; i++) {
+        const s = applications[i].status;
+        if (s !== "REJECTED" && s !== "GHOSTED") active++;
+        if (s === "INTERVIEW") interview++;
+        if (s === "OFFER") offer++;
+      }
+      return {
+        totalApplications: applications.length,
+        activePipelineCount: active,
+        interviewCount: interview,
+        offerCount: offer,
+      };
+    }, [applications]);
 
   const mainNavItems: NavItem[] = [
     {

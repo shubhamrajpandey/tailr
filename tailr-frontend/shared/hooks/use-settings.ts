@@ -73,16 +73,24 @@ function getServerUserSettingsSnapshot(): UserSettings {
 
 function subscribeUserSettings(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handleUpdate = () => {
-    cachedRawUserSettingsJson = null;
-    cachedUserSettingsSnapshot = null;
+
+  const handleCustomUpdate = () => {
     callback();
   };
-  window.addEventListener("tailr_settings_updated", handleUpdate);
-  window.addEventListener("storage", handleUpdate);
+
+  const handleStorageUpdate = (event: StorageEvent) => {
+    if (event.key === null || event.key === USER_SETTINGS_STORAGE_KEY) {
+      cachedRawUserSettingsJson = null;
+      cachedUserSettingsSnapshot = null;
+      callback();
+    }
+  };
+
+  window.addEventListener("tailr_settings_updated", handleCustomUpdate);
+  window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_settings_updated", handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener("tailr_settings_updated", handleCustomUpdate);
+    window.removeEventListener("storage", handleStorageUpdate);
   };
 }
 

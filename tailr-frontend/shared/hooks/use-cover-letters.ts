@@ -49,16 +49,24 @@ function getServerCoverLettersSnapshot(): CoverLetter[] {
 
 function subscribeCoverLetters(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handleUpdate = () => {
-    cachedRawCoverLettersJson = null;
-    cachedCoverLettersSnapshot = null;
+
+  const handleCustomUpdate = () => {
     callback();
   };
-  window.addEventListener("tailr_cover_letters_updated", handleUpdate);
-  window.addEventListener("storage", handleUpdate);
+
+  const handleStorageUpdate = (event: StorageEvent) => {
+    if (event.key === null || event.key === COVER_LETTERS_STORAGE_KEY) {
+      cachedRawCoverLettersJson = null;
+      cachedCoverLettersSnapshot = null;
+      callback();
+    }
+  };
+
+  window.addEventListener("tailr_cover_letters_updated", handleCustomUpdate);
+  window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_cover_letters_updated", handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener("tailr_cover_letters_updated", handleCustomUpdate);
+    window.removeEventListener("storage", handleStorageUpdate);
   };
 }
 

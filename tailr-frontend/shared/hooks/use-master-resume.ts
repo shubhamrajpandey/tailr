@@ -175,19 +175,28 @@ function getServerMasterResumeSnapshot(): MasterResume {
 
 /**
  * Store subscriber for useSyncExternalStore.
+ * Listens to local custom events and window storage events with strict key filtering.
  */
 function subscribeMasterResume(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handleUpdate = () => {
-    cachedRawMasterResumeJson = null;
-    cachedMasterResumeSnapshot = null;
+
+  const handleCustomUpdate = () => {
     callback();
   };
-  window.addEventListener("tailr_master_resume_updated", handleUpdate);
-  window.addEventListener("storage", handleUpdate);
+
+  const handleStorageUpdate = (event: StorageEvent) => {
+    if (event.key === null || event.key === MASTER_RESUME_STORAGE_KEY) {
+      cachedRawMasterResumeJson = null;
+      cachedMasterResumeSnapshot = null;
+      callback();
+    }
+  };
+
+  window.addEventListener("tailr_master_resume_updated", handleCustomUpdate);
+  window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_master_resume_updated", handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener("tailr_master_resume_updated", handleCustomUpdate);
+    window.removeEventListener("storage", handleStorageUpdate);
   };
 }
 

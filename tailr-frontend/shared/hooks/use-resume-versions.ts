@@ -177,16 +177,24 @@ function getServerResumeVersionsSnapshot(): ResumeVersion[] {
 
 function subscribeResumeVersions(callback: () => void) {
   if (typeof window === "undefined") return () => {};
-  const handleUpdate = () => {
-    cachedRawResumeVersionsJson = null;
-    cachedResumeVersionsSnapshot = null;
+
+  const handleCustomUpdate = () => {
     callback();
   };
-  window.addEventListener("tailr_resume_versions_updated", handleUpdate);
-  window.addEventListener("storage", handleUpdate);
+
+  const handleStorageUpdate = (event: StorageEvent) => {
+    if (event.key === null || event.key === RESUME_VERSIONS_STORAGE_KEY) {
+      cachedRawResumeVersionsJson = null;
+      cachedResumeVersionsSnapshot = null;
+      callback();
+    }
+  };
+
+  window.addEventListener("tailr_resume_versions_updated", handleCustomUpdate);
+  window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_resume_versions_updated", handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
+    window.removeEventListener("tailr_resume_versions_updated", handleCustomUpdate);
+    window.removeEventListener("storage", handleStorageUpdate);
   };
 }
 
