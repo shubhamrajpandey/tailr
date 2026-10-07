@@ -42,7 +42,7 @@ export function BasicsSectionForm({ basics, onChange }: BasicsSectionFormProps) 
           <Input
             value={basics.name}
             onChange={(e) => handleChange("name", e.target.value)}
-            placeholder="e.g. Shubham Raj Pandey"
+            placeholder="e.g. Alex Morgan"
             icon={<User className="h-4 w-4 text-neutral-400" />}
           />
         </div>
@@ -55,7 +55,7 @@ export function BasicsSectionForm({ basics, onChange }: BasicsSectionFormProps) 
             type="email"
             value={basics.email}
             onChange={(e) => handleChange("email", e.target.value)}
-            placeholder="e.g. shubham@example.com"
+            placeholder="e.g. alex@example.com"
             icon={<Mail className="h-4 w-4 text-neutral-400" />}
           />
         </div>

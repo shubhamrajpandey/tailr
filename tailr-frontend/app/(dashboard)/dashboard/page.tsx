@@ -73,7 +73,7 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-                  Hello, {user?.fullName || "Shubham Raj Pandey"}
+                  Hello, {user?.fullName || "User"}
                 </h1>
                 <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
                   Here are the latest insights from your job applications and tailoring pipeline.

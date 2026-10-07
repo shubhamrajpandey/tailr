@@ -20,7 +20,7 @@ import {
   setAuthStep,
   setCredentials,
 } from "@/shared/store/auth-slice";
-import { setAuthCookie, removeAuthCookie } from "@/shared/lib/cookie";
+import { removeAuthCookie } from "@/shared/lib/cookie";
 import {
   getErrorMessage,
   type ApiErrorBody,
@@ -115,7 +115,6 @@ export function useVerifyOtpMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
-      setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -174,7 +173,6 @@ export function useLoginMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
-      setAuthCookie(accessToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache

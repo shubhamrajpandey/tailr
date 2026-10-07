@@ -24,8 +24,6 @@ import { store } from "@/shared/store";
 import { clearCredentials, setCredentials } from "@/shared/store/auth-slice";
 import type { RefreshResponse } from "@/shared/types/auth";
 import {
-  getAuthTokenFromCookie,
-  setAuthCookie,
   removeAuthCookie,
   isTokenValid,
 } from "./cookie";
@@ -84,12 +82,11 @@ export const authApiClient = axios.create({
 });
 
 // ─── Request Interceptor ────────────────────────────────────────────────────────
-// Attaches the access token from Redux or Cookie as a Bearer header.
+// Attaches the access token from Redux memory as a Bearer header.
 
 authApiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token =
-      store.getState().auth.accessToken || getAuthTokenFromCookie();
+    const token = store.getState().auth.accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -117,8 +114,7 @@ authApiClient.interceptors.response.use(
     if (!is401 || alreadyRetried || isRefreshEndpoint) {
       if (is401 && isRefreshEndpoint) {
         // Stale refresh attempt failed: only clear credentials if user is NOT currently authenticated
-        const currentToken =
-          store.getState().auth.accessToken || getAuthTokenFromCookie();
+        const currentToken = store.getState().auth.accessToken;
         if (!currentToken || !isTokenValid(currentToken)) {
           removeAuthCookie();
           store.dispatch(clearCredentials());
@@ -152,8 +148,7 @@ authApiClient.interceptors.response.use(
       );
       const { user, accessToken: newToken } = data.data;
 
-      // Hydrate Redux with the new token and sync cookies.
-      setAuthCookie(newToken);
+      // Hydrate Redux with the new token in memory.
       store.dispatch(setCredentials({ user, accessToken: newToken }));
 
       // Retry all queued requests with the new token.
@@ -168,8 +163,7 @@ authApiClient.interceptors.response.use(
     } catch (refreshErr) {
       console.warn("[authApiClient] Silent token refresh failed:", refreshErr);
       // Refresh failed — only wipe credentials and redirect if current token is missing or expired
-      const currentToken =
-        store.getState().auth.accessToken || getAuthTokenFromCookie();
+      const currentToken = store.getState().auth.accessToken;
       if (!currentToken || !isTokenValid(currentToken)) {
         removeAuthCookie();
         store.dispatch(clearCredentials());

@@ -140,7 +140,11 @@ export function mapDbResumeToResumeData(
   }
 
   // Certifications & Achievements mapping
-  const isCustomUserResume = Boolean(fullName && fullName !== "Shubham Raj Pandey (Sample)");
+  const isCustomUserResume = Boolean(
+    fullName &&
+      fullName !== "Alex Morgan" &&
+      !fullName.toLowerCase().includes("sample")
+  );
   const certifications: ResumeCertification[] = Array.isArray(dbData.certifications)
     ? dbData.certifications.map((c, idx) => ({
         id: c.id || `cert-${idx + 1}`,

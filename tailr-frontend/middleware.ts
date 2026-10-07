@@ -21,36 +21,14 @@ const PROTECTED_PREFIXES = [
  */
 const AUTH_ROUTES = ["/login", "/signup"];
 
-function isTokenValid(token?: string): boolean {
-  if (!token) return false;
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) {
-      console.warn("[middleware] Malformed JWT token: expected 3 dot-separated segments, got", parts.length);
-      return false;
-    }
-    const json = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"));
-    const payload = JSON.parse(json);
-    if (!payload.exp) return true;
-    // Expired if current time exceeds token expiry (with 10s leeway)
-    return Date.now() < (payload.exp - 10) * 1000;
-  } catch (err) {
-    console.warn("[middleware] Failed to parse JWT token expiry due to invalid format:", err);
-    return false;
-  }
-}
-
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Retrieve auth token from cookies
-  const accessToken =
-    request.cookies.get("tailr_access_token")?.value ||
-    request.cookies.get("accessToken")?.value;
+  // Retrieve the secure HttpOnly refresh token managed by the backend.
+  // Access tokens are kept in Redux memory only (never written to document.cookie)
+  // to prevent XSS exfiltration.
   const refreshToken = request.cookies.get("refreshToken")?.value;
-
-  const hasValidAccessToken = isTokenValid(accessToken);
-  const hasRefreshToken = Boolean(refreshToken);
+  const hasValidSession = Boolean(refreshToken && refreshToken.trim().length > 0);
 
   const isProtectedRoute = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -60,16 +38,15 @@ export function middleware(request: NextRequest) {
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // 1. Unauthenticated user on a protected route with NO tokens at all → hard redirect to /login
-  //    If a refresh token exists, let the client-side AuthProvider handle the refresh flow.
-  if (isProtectedRoute && !hasValidAccessToken && !hasRefreshToken) {
+  // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
+  if (isProtectedRoute && !hasValidSession) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // 2. Already authenticated (valid access token) user visiting /login or /signup → /dashboard
-  if (isAuthRoute && hasValidAccessToken) {
+  // 2. Active session holder accessing /login or /signup -> redirect to /dashboard
+  if (isAuthRoute && hasValidSession) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

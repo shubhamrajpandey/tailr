@@ -83,8 +83,8 @@ export interface UserSettings {
 
 export const DEFAULT_USER_SETTINGS: UserSettings = {
   account: {
-    name: "Shubham Raj Pandey",
-    email: "shubham.pandey@example.com",
+    name: "",
+    email: "",
   },
   ai: {
     model: "gemini-1.5-flash",

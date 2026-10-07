@@ -237,7 +237,7 @@ export function AccountPanel() {
               </label>
               <Input
                 id="fullName"
-                placeholder="e.g. Shubham Raj Pandey"
+                placeholder="e.g. Alex Morgan"
                 icon={<User className="h-4 w-4" />}
                 {...register("fullName")}
                 className={errors.fullName ? "border-rose-500" : ""}

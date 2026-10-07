@@ -108,7 +108,7 @@ export function SignupForm({
               setFullName(e.target.value);
               if (error) setError(null);
             }}
-            placeholder="e.g. Shubham Raj Pandey"
+            placeholder="e.g. Alex Morgan"
             icon={<User className="h-4 w-4 text-neutral-400" />}
             className="h-10 text-xs rounded-xl bg-neutral-50/50 dark:bg-white/[0.03] border-neutral-200 dark:border-white/10"
             autoFocus

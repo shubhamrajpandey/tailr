@@ -1,10 +1,10 @@
 /**
- * Client-side Cookie Utilities for Auth Tokens.
+ * Client-side Cookie & Token Utilities.
  *
- * Enforces:
- * - Tokens are stored in Cookies (NEVER localStorage).
- * - Read by Next.js edge/server middleware for instant SSR route protection.
- * - SameSite=Lax for CSRF mitigation.
+ * Security Architecture:
+ * - JWT access tokens are stored in memory only (Redux authSlice), NEVER in document.cookie or localStorage.
+ * - Refresh sessions are managed securely by the backend using HttpOnly, SameSite=Lax cookies.
+ * - This module provides safe reading and cleanup utilities without exposing access tokens to XSS vectors.
  */
 
 import type { User } from "@/shared/types/auth";
@@ -12,33 +12,7 @@ import type { User } from "@/shared/types/auth";
 export const AUTH_COOKIE_NAME = "tailr_access_token";
 
 /**
- * Stores the JWT access token in browser cookies.
- * @param token JWT token string
- * @param maxAgeDays Expiry in days (defaults to 7 days)
- */
-export function setAuthCookie(token: string, maxAgeDays = 7): void {
-  if (typeof document === "undefined") return;
-
-  const maxAgeSeconds = maxAgeDays * 24 * 60 * 60;
-  const isSecure = window.location.protocol === "https:";
-  const secureFlag = isSecure ? "; Secure" : "";
-
-  document.cookie = `${AUTH_COOKIE_NAME}=${encodeURIComponent(
-    token
-  )}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
-
-  // Legacy edge-middleware compatibility:
-  // Early iterations of the Next.js edge runtime middleware and backend proxy specifically
-  // looked for the cookie name 'accessToken'. While the frontend now standardizes on the
-  // namespaced 'tailr_access_token' (AUTH_COOKIE_NAME), 'accessToken' is set as an alias to
-  // avoid invalidating active sessions during rolling deployments and cross-service proxying.
-  document.cookie = `accessToken=${encodeURIComponent(
-    token
-  )}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
-}
-
-/**
- * Reads a cookie value by name.
+ * Reads a cookie value by name safely.
  */
 export function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -58,21 +32,14 @@ export function getCookie(name: string): string | null {
 }
 
 /**
- * Reads the current access token from cookies.
- */
-export function getAuthTokenFromCookie(): string | null {
-  return getCookie(AUTH_COOKIE_NAME) || getCookie("accessToken");
-}
-
-/**
- * Clears the auth cookies on logout.
+ * Purges client-side residual auth cookies on logout.
  */
 export function removeAuthCookie(): void {
   if (typeof document === "undefined") return;
 
+  // Clear any legacy client-set cookies
   document.cookie = `${AUTH_COOKIE_NAME}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
   document.cookie = `accessToken=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
-  document.cookie = `refreshToken=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;
 }
 
 /**
@@ -120,4 +87,3 @@ export function getUserFromToken(token?: string | null): User | null {
     return null;
   }
 }
-
