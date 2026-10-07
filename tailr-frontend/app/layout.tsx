@@ -30,7 +30,10 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata: Metadata = {
-  title: "Tailr",
+  title: {
+    default: "Tailr — Zero-Hallucination AI Resume Tailoring & Job CRM",
+    template: "%s — Tailr",
+  },
   description: "Zero-hallucination AI resume tailoring and precision job application tracker.",
   icons: {
     icon: [
