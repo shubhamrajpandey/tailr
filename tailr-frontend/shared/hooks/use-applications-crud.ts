@@ -109,10 +109,10 @@ export function useApplicationsCrud({
   );
 
   const updateApplication = React.useCallback(
-    (
+    async (
       id: string,
       values: Partial<ApplicationFormValues> | Partial<Application>
-    ): Application | undefined => {
+    ): Promise<Application | undefined> => {
       const originalApp = applications.find((app) => app.id === id);
       if (!originalApp) return undefined;
 
@@ -128,18 +128,18 @@ export function useApplicationsCrud({
 
       // Async backend sync if valid UUID
       if (isUuidV4(id)) {
-        apiClient
-          .patch(`/applications/${id}`, values)
-          .catch((err: any) => {
-            console.error(`[useApplicationsCrud] Failed to patch application ${id}:`, err);
-            // Roll back to previous state snapshot to prevent permanent state divergence
-            persist(previousApplications);
-            const reason =
-              err?.response?.data?.message ||
-              err?.message ||
-              "Server update failed. Your changes have been reverted.";
-            toast.error("Failed to update application", reason);
-          });
+        try {
+          await apiClient.patch(`/applications/${id}`, values);
+        } catch (err: any) {
+          console.error(`[useApplicationsCrud] Failed to patch application ${id}:`, err);
+          // Roll back to previous state snapshot to prevent permanent state divergence
+          persist(previousApplications);
+          const reason =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Server update failed. Your changes have been reverted.";
+          toast.error("Failed to update application", reason);
+        }
       }
 
       return updated;
@@ -148,8 +148,8 @@ export function useApplicationsCrud({
   );
 
   const updateStatus = React.useCallback(
-    (id: string, newStatus: ApplicationStatus) => {
-      updateApplication(id, {
+    async (id: string, newStatus: ApplicationStatus): Promise<void> => {
+      await updateApplication(id, {
         status: newStatus,
         applied: newStatus !== "WISHLIST",
         appliedDate:
@@ -162,7 +162,7 @@ export function useApplicationsCrud({
   );
 
   const deleteApplication = React.useCallback(
-    (id: string) => {
+    async (id: string): Promise<void> => {
       const targetApp = applications.find((app) => app.id === id);
       if (!targetApp) return;
 
@@ -171,21 +171,19 @@ export function useApplicationsCrud({
       persist(next);
 
       if (isUuidV4(id)) {
-        apiClient
-          .delete(`/applications/${id}`)
-          .then(() => {
-            toast.success("Application deleted", `${targetApp.companyName} was removed`);
-          })
-          .catch((err: any) => {
-            console.error(`[useApplicationsCrud] Failed to delete application ${id}:`, err);
-            // Roll back to previous snapshot to restore the deleted record
-            persist(previousApplications);
-            const reason =
-              err?.response?.data?.message ||
-              err?.message ||
-              "Server could not delete the record. Item restored.";
-            toast.error("Failed to delete application", reason);
-          });
+        try {
+          await apiClient.delete(`/applications/${id}`);
+          toast.success("Application deleted", `${targetApp.companyName} was removed`);
+        } catch (err: any) {
+          console.error(`[useApplicationsCrud] Failed to delete application ${id}:`, err);
+          // Roll back to previous snapshot to restore the deleted record
+          persist(previousApplications);
+          const reason =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Server could not delete the record. Item restored.";
+          toast.error("Failed to delete application", reason);
+        }
       } else {
         toast.success("Application deleted", `${targetApp.companyName} was removed`);
       }

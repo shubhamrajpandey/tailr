@@ -3,23 +3,15 @@
 import * as React from "react";
 import Link from "next/link";
 import {
-  ExternalLink,
-  MoreHorizontal,
   Search,
   Filter,
   ArrowUpDown,
-  FileText,
-  Trash2,
-  Edit,
-  Eye,
-  Sparkles,
   Plus,
   X,
   LayoutGrid,
   List,
 } from "lucide-react";
-import { Application, ApplicationStatus } from "@/shared/types/application";
-import { ApplicationStatusBadge } from "./application-status-badge";
+import type { Application, ApplicationStatus } from "@/shared/types/application";
 import {
   Table,
   TableHeader,
@@ -31,15 +23,16 @@ import {
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { Avatar } from "@/shared/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
 } from "@/shared/components/ui/dropdown-menu";
-import { formatDate, cn } from "@/shared/lib/utils";
+import { cn } from "@/shared/lib/utils";
+import { ROUTES } from "@/shared/lib/routes";
+import { ApplicationsListCard } from "./applications-list-card";
+import { ApplicationsListRow } from "./applications-list-row";
 
 interface ApplicationsListTableProps {
   applications: Application[];
@@ -155,7 +148,6 @@ export function ApplicationsListTable({
       {/* Controls Bar: Search & Status Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-neutral-200 dark:border-white/[0.06]">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
-          {/* Search Input */}
           <div className="w-full sm:w-72">
             <Input
               type="text"
@@ -168,7 +160,6 @@ export function ApplicationsListTable({
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
-            {/* Status Filter Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-white/[0.03] text-sm font-medium text-neutral-700 dark:text-neutral-200 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-colors shadow-xs">
                 <Filter className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
@@ -187,7 +178,6 @@ export function ApplicationsListTable({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Clear Filter Chip (Visible when filtering) */}
             {statusFilter !== "ALL" && (
               <button
                 type="button"
@@ -206,7 +196,7 @@ export function ApplicationsListTable({
           <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
             Showing {filteredApplications.length} of {applications.length} applications
           </span>
-          <Link href="/applications/new" className="hidden sm:inline-flex">
+          <Link href={ROUTES.NEW_APPLICATION} className="hidden sm:inline-flex">
             <Button variant="primary" size="sm" className="gap-1.5 font-semibold">
               <Plus className="h-4 w-4" />
               New Application
@@ -250,7 +240,7 @@ export function ApplicationsListTable({
         </div>
       </div>
 
-      {/* Mobile Card List (Visible on < sm screens when viewMode is cards) */}
+      {/* Mobile Card List (< sm) */}
       <div className={cn("space-y-3 pt-3", viewMode === "cards" ? "block sm:hidden" : "hidden")}>
         {filteredApplications.length === 0 ? (
           <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
@@ -272,7 +262,7 @@ export function ApplicationsListTable({
                 Clear Status Filter
               </Button>
             ) : (
-              <Link href="/applications/new" className="mt-2">
+              <Link href={ROUTES.NEW_APPLICATION} className="mt-2">
                 <Button variant="primary" size="sm" className="gap-1.5">
                   <Plus className="h-4 w-4" />
                   Add Application
@@ -282,355 +272,111 @@ export function ApplicationsListTable({
           </div>
         ) : (
           filteredApplications.map((app) => (
-            <div
+            <ApplicationsListCard
               key={app.id}
-              className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-neutral-50/60 dark:bg-white/[0.02] p-3.5 space-y-2.5 shadow-2xs"
-            >
-              {/* Header: Avatar + Title/Company + Status Badge */}
-              <div className="flex items-start justify-between gap-2.5">
-                <div className="flex items-start gap-2.5 min-w-0 flex-1">
-                  <div className="h-9 w-9 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-xs text-neutral-800 dark:text-white shrink-0 shadow-2xs mt-0.5">
-                    {app.companyName.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <Link
-                      href={`/applications/${app.id}`}
-                      className="font-bold text-sm text-neutral-900 dark:text-neutral-100 hover:text-indigo-600 dark:hover:text-indigo-400 line-clamp-1 transition-colors"
-                    >
-                      {app.positionTitle}
-                    </Link>
-                    <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 font-medium mt-0.5">
-                      <span className="truncate">{app.companyName}</span>
-                      {app.companyWebsite && (
-                        <a
-                          href={app.companyWebsite}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-neutral-400 hover:text-indigo-600 shrink-0"
-                        >
-                          <ExternalLink className="h-3 w-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="shrink-0 pt-0.5">
-                  <ApplicationStatusBadge status={app.status} />
-                </div>
-              </div>
-
-              {/* Metadata chips: Applied date & Tailored resume & HR */}
-              <div className="flex flex-wrap items-center gap-1.5 text-xs pt-0.5">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white dark:bg-white/[0.05] border border-neutral-200/80 dark:border-white/10 text-neutral-600 dark:text-neutral-300 font-mono text-[11px]">
-                  {formatDate(app.appliedDate)}
-                </span>
-
-                {app.hrName && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white dark:bg-white/[0.05] border border-neutral-200/80 dark:border-white/10 text-neutral-600 dark:text-neutral-300 text-[11px] truncate max-w-[150px]">
-                    <span className="text-neutral-400 mr-1">HR:</span> {app.hrName}
-                  </span>
-                )}
-
-                {app.resumeVersion ? (
-                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20 text-[11px]">
-                    <FileText className="h-3 w-3" />
-                    <span className="truncate max-w-[90px]">{app.resumeVersion.label}</span>
-                    {app.resumeVersion.matchScore && (
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono ml-0.5">
-                        {app.resumeVersion.matchScore}%
-                      </span>
-                    )}
-                  </div>
-                ) : (
-                  <Link
-                    href={`/resume/tailor?appId=${app.id}`}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline text-[11px]"
-                  >
-                    <Sparkles className="h-3 w-3" />
-                    Tailor
-                  </Link>
-                )}
-              </div>
-
-              {/* Card Actions Footer */}
-              <div className="flex items-center gap-2 pt-2 border-t border-neutral-200/60 dark:border-white/[0.06]">
-                <Link href={`/applications/${app.id}`} className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full gap-1.5 h-8 text-xs font-semibold justify-center">
-                    <Eye className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-                    View Details
-                  </Button>
-                </Link>
-                <Link href={`/applications/${app.id}/edit`}>
-                  <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs" title="Edit Application">
-                    <Edit className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
-                  </Button>
-                </Link>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="p-1.5 rounded-lg border border-neutral-200 dark:border-white/10 hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors h-8 w-8 flex items-center justify-center shrink-0">
-                    <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "INTERVIEW")}>
-                      <span className="h-2 w-2 rounded-full bg-amber-400 mr-1" />
-                      <span>Move to Interview</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "OFFER")}>
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 mr-1" />
-                      <span>Mark as Offer</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem destructive onClick={() => onDelete?.(app.id)}>
-                      <Trash2 className="h-4 w-4" />
-                      <span>Delete</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
+              application={app}
+              onStatusChange={onStatusChange}
+              onDelete={onDelete}
+            />
           ))
         )}
       </div>
 
-      {/* Table Component (Always on >= sm screens, or on mobile when viewMode is table) */}
+      {/* Desktop Responsive Table (>= sm, or mobile table mode) */}
       <div className={cn("overflow-x-auto", viewMode === "table" ? "block" : "hidden sm:block")}>
         {viewMode === "table" && (
           <p className="sm:hidden text-[11px] text-neutral-500 dark:text-neutral-400 pt-2 pb-1.5 px-0.5">
-           Swipe horizontally to view all columns
+            Swipe horizontally to view all columns
           </p>
         )}
         <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-10">
-              <Checkbox
-                checked={allSelected}
-                onCheckedChange={toggleSelectAll}
-              />
-            </TableHead>
-            <TableHead
-              className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
-              onClick={() => toggleSort("companyName")}
-            >
-              <div className="flex items-center gap-1.5">
-                <span>Position & Company</span>
-                <ArrowUpDown className="h-3.5 w-3.5" />
-              </div>
-            </TableHead>
-            <TableHead>HR Contact</TableHead>
-            <TableHead
-              className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
-              onClick={() => toggleSort("status")}
-            >
-              <div className="flex items-center gap-1.5">
-                <span>Status</span>
-                <ArrowUpDown className="h-3.5 w-3.5" />
-              </div>
-            </TableHead>
-            <TableHead
-              className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
-              onClick={() => toggleSort("appliedDate")}
-            >
-              <div className="flex items-center gap-1.5">
-                <span>Applied Date</span>
-                <ArrowUpDown className="h-3.5 w-3.5" />
-              </div>
-            </TableHead>
-            <TableHead>Tailored Resume</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredApplications.length === 0 ? (
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={7} className="py-16 text-center">
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-                    No applications found
-                  </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm">
-                    {searchQuery || statusFilter !== "ALL"
-                      ? "Try adjusting your search query or status filter to see results."
-                      : "Start tracking your job search by adding your first job application."}
-                  </p>
-                  {statusFilter !== "ALL" ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleFilterSelect("ALL")}
-                      className="mt-2"
-                    >
-                      Clear Status Filter
-                    </Button>
-                  ) : (
-                    <Link href="/applications/new" className="mt-2">
-                      <Button variant="primary" size="sm" className="gap-1.5">
-                        <Plus className="h-4 w-4" />
-                        Add Application
-                      </Button>
-                    </Link>
-                  )}
+              <TableHead className="w-10">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={(checked) => toggleSelectAll(Boolean(checked))}
+                />
+              </TableHead>
+              <TableHead
+                className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+                onClick={() => toggleSort("companyName")}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Position & Company</span>
+                  <ArrowUpDown className="h-3.5 w-3.5" />
                 </div>
-              </TableCell>
+              </TableHead>
+              <TableHead>HR Contact</TableHead>
+              <TableHead
+                className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+                onClick={() => toggleSort("status")}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Status</span>
+                  <ArrowUpDown className="h-3.5 w-3.5" />
+                </div>
+              </TableHead>
+              <TableHead
+                className="cursor-pointer hover:text-neutral-900 dark:hover:text-neutral-200 transition-colors"
+                onClick={() => toggleSort("appliedDate")}
+              >
+                <div className="flex items-center gap-1.5">
+                  <span>Applied Date</span>
+                  <ArrowUpDown className="h-3.5 w-3.5" />
+                </div>
+              </TableHead>
+              <TableHead>Tailored Resume</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
-          ) : (
-            filteredApplications.map((app) => {
-              const isSelected = selectedIds.has(app.id);
-
-              return (
-                <TableRow
-                  key={app.id}
-                  data-state={isSelected ? "selected" : undefined}
-                >
-                  {/* Select Checkbox */}
-                  <TableCell>
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={(checked) => toggleSelectOne(app.id, checked)}
-                    />
-                  </TableCell>
-
-                  {/* Position & Company */}
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-white/10 flex items-center justify-center font-bold text-xs text-neutral-800 dark:text-white shrink-0 shadow-xs">
-                        {app.companyName.slice(0, 2).toUpperCase()}
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <Link
-                          href={`/applications/${app.id}`}
-                          className="font-semibold text-sm text-neutral-900 dark:text-neutral-100 hover:text-indigo-600 dark:hover:text-indigo-400 truncate font-sans transition-colors"
-                        >
-                          {app.positionTitle}
-                        </Link>
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 font-medium mt-0.5">
-                          {app.companyName}
-                          {app.companyWebsite && (
-                            <a
-                              href={app.companyWebsite}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-neutral-400 dark:text-neutral-500 hover:text-indigo-600 dark:hover:text-indigo-400"
-                            >
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  {/* HR Contact */}
-                  <TableCell>
-                    {app.hrName ? (
-                      <div className="flex items-center gap-2.5">
-                        <Avatar
-                          fallback={app.hrName}
-                          size="default"
-                          className="bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 font-semibold"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-sm text-neutral-800 dark:text-neutral-200 font-medium">
-                            {app.hrName}
-                          </span>
-                          {app.hrLinkedinUrl && (
-                            <a
-                              href={app.hrLinkedinUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
-                            >
-                              LinkedIn Profile
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-neutral-400 font-medium">Unassigned</span>
-                    )}
-                  </TableCell>
-
-                  {/* Status Badge */}
-                  <TableCell>
-                    <ApplicationStatusBadge status={app.status} />
-                  </TableCell>
-
-                  {/* Applied Date */}
-                  <TableCell className="font-mono text-xs text-neutral-600 dark:text-neutral-300 font-medium">
-                    {formatDate(app.appliedDate)}
-                  </TableCell>
-
-                  {/* Tailored Resume */}
-                  <TableCell>
-                    {app.resumeVersion ? (
-                      <div className="flex items-center gap-2">
-                        <div className="p-1 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                          <FileText className="h-3.5 w-3.5" />
-                        </div>
-                        <span className="text-xs text-neutral-700 dark:text-neutral-200 font-medium truncate max-w-[140px]">
-                          {app.resumeVersion.label}
-                        </span>
-                        {app.resumeVersion.matchScore && (
-                          <span className="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
-                            {app.resumeVersion.matchScore}%
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        href={`/resume/tailor?appId=${app.id}`}
-                        className="inline-flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+          </TableHeader>
+          <TableBody>
+            {filteredApplications.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="py-16 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                      No applications found
+                    </p>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm">
+                      {searchQuery || statusFilter !== "ALL"
+                        ? "Try adjusting your search query or status filter to see results."
+                        : "Start tracking your job search by adding your first job application."}
+                    </p>
+                    {statusFilter !== "ALL" ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleFilterSelect("ALL")}
+                        className="mt-2"
                       >
-                        <Sparkles className="h-3.5 w-3.5" />
-                        Tailor Resume
+                        Clear Status Filter
+                      </Button>
+                    ) : (
+                      <Link href={ROUTES.NEW_APPLICATION} className="mt-2">
+                        <Button variant="primary" size="sm" className="gap-1.5">
+                          <Plus className="h-4 w-4" />
+                          Add Application
+                        </Button>
                       </Link>
                     )}
-                  </TableCell>
-
-                  {/* Row Actions Menu */}
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="p-1.5 rounded-md text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.08] transition-colors">
-                        <MoreHorizontal className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <Link href={`/applications/${app.id}`}>
-                          <DropdownMenuItem>
-                            <Eye className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                            <span>View Details</span>
-                          </DropdownMenuItem>
-                        </Link>
-                        <Link href={`/applications/${app.id}/edit`}>
-                          <DropdownMenuItem>
-                            <Edit className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
-                            <span>Edit Application</span>
-                          </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "INTERVIEW")}>
-                          <span className="h-2 w-2 rounded-full bg-amber-400 mr-1" />
-                          <span>Move to Interview</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "OFFER")}>
-                          <span className="h-2 w-2 rounded-full bg-emerald-400 mr-1" />
-                          <span>Mark as Offer</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          destructive
-                          onClick={() => onDelete?.(app.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          <span>Delete</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredApplications.map((app) => (
+                <ApplicationsListRow
+                  key={app.id}
+                  application={app}
+                  isSelected={selectedIds.has(app.id)}
+                  onToggleSelect={toggleSelectOne}
+                  onStatusChange={onStatusChange}
+                  onDelete={onDelete}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

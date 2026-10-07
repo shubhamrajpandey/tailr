@@ -168,8 +168,8 @@ describe("useApplicationsCrud (SRP & DIP)", () => {
       })
     );
 
-    act(() => {
-      result.current.updateApplication("c9bf9e57-1685-4c89-bafb-ff5af830be8a", {
+    await act(async () => {
+      await result.current.updateApplication("c9bf9e57-1685-4c89-bafb-ff5af830be8a", {
         positionTitle: "Director of Engineering",
       });
     });
@@ -194,8 +194,8 @@ describe("useApplicationsCrud (SRP & DIP)", () => {
       })
     );
 
-    act(() => {
-      result.current.deleteApplication("c9bf9e57-1685-4c89-bafb-ff5af830be8a");
+    await act(async () => {
+      await result.current.deleteApplication("c9bf9e57-1685-4c89-bafb-ff5af830be8a");
     });
 
     expect(mockPersist).toHaveBeenCalledWith([]);

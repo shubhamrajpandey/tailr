@@ -17,6 +17,8 @@ import { ApplicationsTable } from "./components/applications-table";
 import { useDashboardData } from "@/shared/hooks/use-dashboard-data";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+import { ROUTES } from "@/shared/lib/routes";
 
 export default function DashboardPage() {
   const user = useAppSelector((state) => state.auth.user);
@@ -82,23 +84,25 @@ export default function DashboardPage() {
 
               {/* Desktop Direct Action Button */}
               <div className="hidden sm:flex items-center gap-2.5 shrink-0">
-                <Link href="/resume/tailor">
-                  <button
-                    type="button"
-                    className="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold hover:bg-indigo-100 dark:hover:bg-indigo-500/20 transition-colors cursor-pointer"
+                <Link href={ROUTES.RESUME_TAILOR}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5 bg-indigo-50/50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/20"
                   >
                     <Sparkles className="h-3.5 w-3.5" />
                     <span>AI Tailor Workspace</span>
-                  </button>
+                  </Button>
                 </Link>
-                <Link href="/applications/new">
-                  <button
-                    type="button"
-                    className="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-semibold shadow-md shadow-indigo-500/20 border border-indigo-400/30 transition-all cursor-pointer active:scale-[0.98]"
+                <Link href={ROUTES.NEW_APPLICATION}>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="gap-1.5"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     <span>New Application</span>
-                  </button>
+                  </Button>
                 </Link>
               </div>
             </div>
