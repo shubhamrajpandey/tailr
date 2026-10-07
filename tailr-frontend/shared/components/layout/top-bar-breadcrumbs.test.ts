@@ -3,28 +3,29 @@ import {
   BREADCRUMB_MAP,
   getDefaultBreadcrumbs,
 } from "./top-bar-breadcrumbs";
+import { ROUTES } from "@/shared/lib/routes";
 
 describe("top-bar-breadcrumbs", () => {
   it("resolves static paths with O(1) dictionary lookups", () => {
-    expect(BREADCRUMB_MAP["/dashboard"]).toEqual([
-      { label: "Overview", href: "/dashboard" },
+    expect(BREADCRUMB_MAP[ROUTES.DASHBOARD]).toEqual([
+      { label: "Overview", href: ROUTES.DASHBOARD },
       { label: "Dashboard" },
     ]);
-    expect(BREADCRUMB_MAP["/applications"]).toEqual([
-      { label: "Overview", href: "/dashboard" },
+    expect(BREADCRUMB_MAP[ROUTES.APPLICATIONS]).toEqual([
+      { label: "Overview", href: ROUTES.DASHBOARD },
       { label: "Applications" },
     ]);
-    expect(BREADCRUMB_MAP["/applications/new"]).toEqual([
-      { label: "Overview", href: "/dashboard" },
-      { label: "Applications", href: "/applications" },
+    expect(BREADCRUMB_MAP[ROUTES.NEW_APPLICATION]).toEqual([
+      { label: "Overview", href: ROUTES.DASHBOARD },
+      { label: "Applications", href: ROUTES.APPLICATIONS },
       { label: "New Application" },
     ]);
   });
 
   it("getDefaultBreadcrumbs returns static map when matched", () => {
-    const result = getDefaultBreadcrumbs("/settings");
+    const result = getDefaultBreadcrumbs(ROUTES.SETTINGS);
     expect(result).toEqual([
-      { label: "Overview", href: "/dashboard" },
+      { label: "Overview", href: ROUTES.DASHBOARD },
       { label: "Settings" },
     ]);
   });

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/lib/utils";
+import { ROUTES } from "@/shared/lib/routes";
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,60 +16,60 @@ export interface BreadcrumbItem {
  * Static route-to-breadcrumb dictionary for predictable, instantaneous O(1) route lookups.
  */
 export const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
-  "/": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.HOME]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Dashboard" },
   ],
-  "/dashboard": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.DASHBOARD]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Dashboard" },
   ],
-  "/applications": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.APPLICATIONS]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Applications" },
   ],
-  "/applications/new": [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Applications", href: "/applications" },
+  [ROUTES.NEW_APPLICATION]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
+    { label: "Applications", href: ROUTES.APPLICATIONS },
     { label: "New Application" },
   ],
-  "/resume": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.RESUME]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Master Resume" },
   ],
-  "/resume/tailor": [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Resume", href: "/resume" },
+  [ROUTES.RESUME_TAILOR]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
+    { label: "Resume", href: ROUTES.RESUME },
     { label: "Tailor Resume" },
   ],
-  "/resume/versions": [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Resume", href: "/resume" },
+  [ROUTES.RESUME_VERSIONS]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
+    { label: "Resume", href: ROUTES.RESUME },
     { label: "Saved Versions" },
   ],
-  "/cover-letter": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.COVER_LETTER]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Cover Letters" },
   ],
-  "/cover-letter/new": [
-    { label: "Overview", href: "/dashboard" },
-    { label: "Cover Letters", href: "/cover-letter" },
+  [ROUTES.NEW_COVER_LETTER]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
+    { label: "Cover Letters", href: ROUTES.COVER_LETTER },
     { label: "New Letter" },
   ],
-  "/analytics": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.ANALYTICS]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Analytics" },
   ],
-  "/companies": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.COMPANIES]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Companies" },
   ],
-  "/settings": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.SETTINGS]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Settings" },
   ],
-  "/docs": [
-    { label: "Overview", href: "/dashboard" },
+  [ROUTES.DOCS]: [
+    { label: "Overview", href: ROUTES.DASHBOARD },
     { label: "Documentation" },
   ],
 };
@@ -87,32 +88,32 @@ const SETTINGS_SUB_LABELS: Record<string, string> = {
 const DYNAMIC_BREADCRUMB_PATTERNS: DynamicBreadcrumbPattern[] = [
   {
     matches: (pathname) =>
-      pathname.startsWith("/applications/") && pathname.endsWith("/edit"),
+      pathname.startsWith(`${ROUTES.APPLICATIONS}/`) && pathname.endsWith("/edit"),
     resolve: () => [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Applications", href: "/applications" },
+      { label: "Overview", href: ROUTES.DASHBOARD },
+      { label: "Applications", href: ROUTES.APPLICATIONS },
       { label: "Edit Application" },
     ],
   },
   {
-    matches: (pathname) => pathname.startsWith("/applications/"),
+    matches: (pathname) => pathname.startsWith(`${ROUTES.APPLICATIONS}/`),
     resolve: () => [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Applications", href: "/applications" },
+      { label: "Overview", href: ROUTES.DASHBOARD },
+      { label: "Applications", href: ROUTES.APPLICATIONS },
       { label: "Application Details" },
     ],
   },
   {
-    matches: (pathname) => pathname.startsWith("/resume/versions/"),
+    matches: (pathname) => pathname.startsWith(`${ROUTES.RESUME_VERSIONS}/`),
     resolve: () => [
-      { label: "Overview", href: "/dashboard" },
-      { label: "Resume", href: "/resume" },
-      { label: "Saved Versions", href: "/resume/versions" },
+      { label: "Overview", href: ROUTES.DASHBOARD },
+      { label: "Resume", href: ROUTES.RESUME },
+      { label: "Saved Versions", href: ROUTES.RESUME_VERSIONS },
       { label: "Version Comparison" },
     ],
   },
   {
-    matches: (pathname) => pathname.startsWith("/resumes"),
+    matches: (pathname) => pathname.startsWith(ROUTES.RESUMES_LEGACY),
     resolve: () => [
       { label: "Overview", href: "/dashboard" },
       { label: "Resume" },

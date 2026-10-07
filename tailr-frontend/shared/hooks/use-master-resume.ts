@@ -6,126 +6,40 @@ import { MasterResume, ResumeData } from "@/shared/types/resume";
 const MASTER_RESUME_STORAGE_KEY = "tailr_master_resume_v1";
 
 /**
- * DEV DEFAULT / SEED DATA — replace before production or empty this before shipping.
+ * Blank Master Resume Template.
  *
- * This object serves as initial fallback seed data during local development and preview mode.
- * In a production deployment, user resume data is fetched from the authenticated
- * backend endpoint (e.g. GET /resume/master) or initialized via user onboarding.
+ * Represents an unpopulated new user profile. New users populate their
+ * master profile either via the master resume editor, onboarding flow,
+ * or by uploading an existing resume document (PDF / text).
  */
-export const INITIAL_MASTER_RESUME: MasterResume = {
-  id: "master-001",
+export const BLANK_MASTER_RESUME: MasterResume = {
+  id: "master-default",
   basics: {
-    name: "Alex Morgan",
-    email: "alex.morgan@example.com",
-    phone: "+1 (555) 019-2834",
-    location: "San Francisco, CA (Open to Remote)",
-    linkedin: "https://linkedin.com/in/alex-morgan-sample",
-    github: "https://github.com/example/alex-morgan",
-    portfolio: "https://alexmorgan.example.com",
+    name: "",
+    email: "",
+    phone: "",
+    location: "",
+    linkedin: "",
+    github: "",
+    portfolio: "",
   },
-  summary:
-    "Product-minded Software Engineer with extensive experience developing scalable, accessible, and high-performance web applications. Skilled in modern React, Next.js, TypeScript, and full-stack API integration with a strong focus on developer tooling and user experience.",
-  education: [
-    {
-      id: "edu-01",
-      institution: "State University",
-      degree: "Bachelor of Science",
-      fieldOfStudy: "Computer Science",
-      startDate: "2016-09",
-      endDate: "2020-05",
-      gpa: "3.8 / 4.0",
-      highlights: [
-        "Dean's Honor List",
-        "Senior Capstone Project in Distributed Systems",
-      ],
-    },
-  ],
+  summary: "",
+  education: [],
   skills: {
-    languages: ["TypeScript", "JavaScript", "HTML5", "CSS3", "Python", "SQL"],
-    frameworks: [
-      "React",
-      "Next.js",
-      "Tailwind CSS",
-      "Node.js",
-      "Express",
-    ],
-    tools: [
-      "Vite",
-      "Git / GitHub Actions",
-      "Docker",
-      "Jest / Playwright",
-      "PostgreSQL",
-    ],
-    other: [
-      "Web Performance & Core Web Vitals",
-      "Design Systems & Token Architecture",
-      "REST & GraphQL APIs",
-      "Accessibility (WCAG 2.1 AA)",
-    ],
+    languages: [],
+    frameworks: [],
+    tools: [],
+    other: [],
   },
-  experience: [
-    {
-      id: "exp-01",
-      company: "Acme Cloud Technologies",
-      title: "Senior Frontend Engineer",
-      location: "San Francisco, CA",
-      startDate: "2022-03",
-      endDate: "Present",
-      current: true,
-      bullets: [
-        "Architected modular component systems consumed by multiple product squads, accelerating feature delivery cycles.",
-        "Refactored complex analytics dashboards utilizing virtualized tables, reducing memory usage and optimizing Core Web Vitals.",
-        "Engineered client-side performance telemetry monitoring interaction latencies across primary application workflows.",
-      ],
-    },
-    {
-      id: "exp-02",
-      company: "Nexus Financial Software",
-      title: "Software Engineer",
-      location: "San Francisco, CA",
-      startDate: "2020-06",
-      endDate: "2022-02",
-      current: false,
-      bullets: [
-        "Developed customer billing and transaction dashboards processing multi-currency workflows.",
-        "Contributed to frontend architecture modernization from legacy build pipelines to Next.js SSR.",
-        "Implemented WCAG 2.1 AA accessibility guidelines across core customer-facing workflows.",
-      ],
-    },
-  ],
-  projects: [
-    {
-      id: "proj-01",
-      name: "Tailr — Resume Tailoring Platform",
-      description:
-        "Web application designed to tailor resumes to target job descriptions with structured comparisons and CRM pipeline tracking.",
-      bullets: [
-        "Built with Next.js App Router, React, TypeScript, and Tailwind CSS.",
-        "Designed side-by-side comparison viewer highlighting tailored resume sections.",
-      ],
-      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
-      link: "https://github.com/example/tailr",
-    },
-  ],
-  certifications: [
-    {
-      id: "cert-01",
-      name: "Cloud Solutions Architect — Associate",
-      issuer: "Cloud Certification Institute",
-      date: "2023-04",
-      url: "https://example.com/certifications",
-    },
-  ],
-  achievements: [
-    {
-      id: "ach-01",
-      title: "1st Place Winner — Hackathon 2024",
-      description: "Recognized for building a real-time collaborative developer workspace.",
-      date: "2024-03",
-    },
-  ],
-  updatedAt: "2026-01-01T00:00:00Z",
+  experience: [],
+  projects: [],
+  certifications: [],
+  achievements: [],
+  updatedAt: new Date().toISOString(),
 };
+
+export const INITIAL_MASTER_RESUME: MasterResume = BLANK_MASTER_RESUME;
+
 
 /**
  * Module-level memory cache for useSyncExternalStore reference stability.

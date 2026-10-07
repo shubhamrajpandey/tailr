@@ -1,25 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-
-/**
- * Route paths that require an active authentication session.
- */
-const PROTECTED_PREFIXES = [
-  "/dashboard",
-  "/applications",
-  "/resume",
-  "/resumes",
-  "/analytics",
-  "/settings",
-  "/companies",
-  "/cover-letter",
-  "/docs",
-];
-
-/**
- * Public authentication routes where logged-in users should be redirected to dashboard.
- */
-const AUTH_ROUTES = ["/login", "/signup"];
+import { ROUTES, isProtectedRoute, isAuthRoute } from "./shared/lib/routes";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -30,24 +11,16 @@ export function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken")?.value;
   const hasValidSession = Boolean(refreshToken && refreshToken.trim().length > 0);
 
-  const isProtectedRoute = PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
-
-  const isAuthRoute = AUTH_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
-  );
-
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
-  if (isProtectedRoute && !hasValidSession) {
-    const loginUrl = new URL("/login", request.url);
+  if (isProtectedRoute(pathname) && !hasValidSession) {
+    const loginUrl = new URL(ROUTES.LOGIN, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // 2. Active session holder accessing /login or /signup -> redirect to /dashboard
-  if (isAuthRoute && hasValidSession) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (isAuthRoute(pathname) && hasValidSession) {
+    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
   }
 
   return NextResponse.next();

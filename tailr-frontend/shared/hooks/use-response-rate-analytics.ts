@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { useApplications } from "@/shared/hooks/use-applications";
+import {
+  useApplications,
+  APPLICATIONS_UPDATED_EVENT,
+} from "@/shared/hooks/use-applications";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import {
   ResponseRateAnalytics,
@@ -38,10 +41,10 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
       fetchBackendAnalytics();
     };
 
-    window.addEventListener("tailr_applications_updated", handleUpdate);
+    window.addEventListener(APPLICATIONS_UPDATED_EVENT, handleUpdate);
     return () => {
       isMounted = false;
-      window.removeEventListener("tailr_applications_updated", handleUpdate);
+      window.removeEventListener(APPLICATIONS_UPDATED_EVENT, handleUpdate);
     };
   }, []);
 

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useApplications } from "@/shared/hooks/use-applications";
+import { ROUTES } from "@/shared/lib/routes";
 
 export interface NavSubItem {
   title: string;
@@ -35,7 +36,7 @@ export interface NavItem {
 const analyticsNavItems: NavItem[] = [
   {
     title: "Analytics",
-    href: "/analytics",
+    href: ROUTES.ANALYTICS,
     icon: BarChart3,
   },
 ];
@@ -43,12 +44,12 @@ const analyticsNavItems: NavItem[] = [
 const supportNavItems: NavItem[] = [
   {
     title: "Settings",
-    href: "/settings",
+    href: ROUTES.SETTINGS,
     icon: Settings,
   },
   {
     title: "Docs",
-    href: "/docs",
+    href: ROUTES.DOCS,
     icon: BookOpen,
   },
 ];
@@ -122,7 +123,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
   const mainNavItems: NavItem[] = [
     {
       title: "Overview",
-      href: "/dashboard",
+      href: ROUTES.DASHBOARD,
       icon: LayoutDashboard,
     },
     {
@@ -131,27 +132,27 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       subItems: [
         {
           title: "All Applications",
-          href: "/applications",
+          href: ROUTES.APPLICATIONS,
           badge: totalApplications,
-          isActive: pathname === "/applications" && !currentStatus,
+          isActive: pathname === ROUTES.APPLICATIONS && !currentStatus,
         },
         {
           title: "Active Pipeline",
-          href: "/applications?status=active",
+          href: `${ROUTES.APPLICATIONS}?status=active`,
           badge: activePipelineCount,
-          isActive: pathname === "/applications" && currentStatus === "active",
+          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "active",
         },
         {
           title: "Interview Stage",
-          href: "/applications?status=interview",
+          href: `${ROUTES.APPLICATIONS}?status=interview`,
           badge: interviewCount,
-          isActive: pathname === "/applications" && currentStatus === "interview",
+          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "interview",
         },
         {
           title: "Offers",
-          href: "/applications?status=offer",
+          href: `${ROUTES.APPLICATIONS}?status=offer`,
           badge: offerCount,
-          isActive: pathname === "/applications" && currentStatus === "offer",
+          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "offer",
         },
       ],
     },
@@ -161,29 +162,29 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       subItems: [
         {
           title: "Master Resume",
-          href: "/resume",
-          isActive: pathname === "/resume" || pathname === "/resumes",
+          href: ROUTES.RESUME,
+          isActive: pathname === ROUTES.RESUME || pathname === ROUTES.RESUMES_LEGACY,
         },
         {
           title: "AI Tailor Workspace",
-          href: "/resume/tailor",
-          isActive: pathname === "/resume/tailor" || pathname === "/resumes/tailored",
+          href: ROUTES.RESUME_TAILOR,
+          isActive: pathname === ROUTES.RESUME_TAILOR || pathname === "/resumes/tailored",
         },
         {
           title: "Saved Versions",
-          href: "/resume/versions",
-          isActive: pathname.startsWith("/resume/versions"),
+          href: ROUTES.RESUME_VERSIONS,
+          isActive: pathname.startsWith(ROUTES.RESUME_VERSIONS),
         },
       ],
     },
     {
       title: "Cover Letter",
-      href: "/cover-letter",
+      href: ROUTES.COVER_LETTER,
       icon: Mail,
     },
     {
       title: "Companies & HR",
-      href: "/companies",
+      href: ROUTES.COMPANIES,
       icon: Building2,
     },
   ];

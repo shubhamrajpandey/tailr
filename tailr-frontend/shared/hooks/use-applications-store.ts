@@ -52,6 +52,8 @@ export function getServerApplicationsSnapshot(): Application[] {
  * Store subscriber for useSyncExternalStore.
  * Listens to local custom events and window storage events with strict key filtering.
  */
+export const APPLICATIONS_UPDATED_EVENT = "tailr_applications_updated" as const;
+
 export function subscribeApplications(callback: () => void): () => void {
   if (typeof window === "undefined") return () => {};
 
@@ -68,10 +70,10 @@ export function subscribeApplications(callback: () => void): () => void {
     }
   };
 
-  window.addEventListener("tailr_applications_updated", handleCustomUpdate);
+  window.addEventListener(APPLICATIONS_UPDATED_EVENT, handleCustomUpdate);
   window.addEventListener("storage", handleStorageUpdate);
   return () => {
-    window.removeEventListener("tailr_applications_updated", handleCustomUpdate);
+    window.removeEventListener(APPLICATIONS_UPDATED_EVENT, handleCustomUpdate);
     window.removeEventListener("storage", handleStorageUpdate);
   };
 }
@@ -93,7 +95,7 @@ export function useApplicationsStore() {
       localStorage.setItem(APPLICATIONS_STORAGE_KEY, raw);
       cachedRawApplicationsJson = raw;
       cachedApplicationsSnapshot = next;
-      window.dispatchEvent(new Event("tailr_applications_updated"));
+      window.dispatchEvent(new Event(APPLICATIONS_UPDATED_EVENT));
     } catch (err) {
       console.warn("[useApplicationsStore] Failed to persist applications to localStorage:", err);
     }

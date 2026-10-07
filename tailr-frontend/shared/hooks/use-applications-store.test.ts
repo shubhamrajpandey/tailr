@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   APPLICATIONS_STORAGE_KEY,
+  APPLICATIONS_UPDATED_EVENT,
   getApplicationsSnapshot,
   getServerApplicationsSnapshot,
   subscribeApplications,
@@ -58,11 +59,11 @@ describe("useApplicationsStore", () => {
       const callback = vi.fn();
       const unsubscribe = subscribeApplications(callback);
 
-      window.dispatchEvent(new Event("tailr_applications_updated"));
+      window.dispatchEvent(new Event(APPLICATIONS_UPDATED_EVENT));
       expect(callback).toHaveBeenCalledTimes(1);
 
       unsubscribe();
-      window.dispatchEvent(new Event("tailr_applications_updated"));
+      window.dispatchEvent(new Event(APPLICATIONS_UPDATED_EVENT));
       expect(callback).toHaveBeenCalledTimes(1);
     });
 

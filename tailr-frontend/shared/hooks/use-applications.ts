@@ -54,6 +54,10 @@ export function useApplications(options?: UseApplicationsOptions) {
 }
 
 // Re-export sub-hooks and utilities for modular usage
-export { useApplicationsStore, APPLICATIONS_STORAGE_KEY } from "./use-applications-store";
+export {
+  useApplicationsStore,
+  APPLICATIONS_STORAGE_KEY,
+  APPLICATIONS_UPDATED_EVENT,
+} from "./use-applications-store";
 export { useApplicationsSync } from "./use-applications-sync";
 export { useApplicationsCrud } from "./use-applications-crud";
