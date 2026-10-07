@@ -26,8 +26,8 @@ export function useConversionFunnel(): ConversionFunnelAnalytics {
         if (isMounted && res.data?.success && res.data?.data) {
           setBackendFunnel(res.data.data);
         }
-      } catch {
-        // Fallback silently
+      } catch (err) {
+        console.warn("[useConversionFunnel] Failed to fetch backend funnel analytics:", err);
       }
     }
     fetchFunnel();

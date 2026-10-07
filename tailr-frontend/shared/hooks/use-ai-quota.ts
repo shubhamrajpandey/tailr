@@ -19,6 +19,13 @@ const DEFAULT_QUOTA_STATUS: UserQuotaStatus = {
   cooldownSeconds: 20,
 };
 
+/**
+ * Formats a remaining quota reset cooldown into human-readable duration strings.
+ *
+ * @param resetsInSeconds Number of seconds remaining until quota refresh.
+ * @param resetsAt ISO timestamp for future quota refresh boundary.
+ * @returns Formatted duration string (e.g., "Resets in 2h 15m", "Available now").
+ */
 export function formatResetTime(resetsInSeconds: number, resetsAt: string | null): string {
   if (resetsInSeconds <= 0 && !resetsAt) return "";
 
@@ -42,6 +49,14 @@ export function formatResetTime(resetsInSeconds: number, resetsAt: string | null
   return `Resets in ${seconds}s`;
 }
 
+/**
+ * Hook for polling and tracking AI generation usage quotas and anti-spam cooldowns.
+ *
+ * Fetches remaining quota for resume tailoring and cover letter generations from
+ * the `/auth/me` endpoint via TanStack Query with active client-side ticker counting.
+ *
+ * @returns Remaining limits, reset timestamps, cooldown state, and refetch method.
+ */
 export function useAiQuota() {
   const queryClient = useQueryClient();
 

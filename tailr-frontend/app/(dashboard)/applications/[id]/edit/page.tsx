@@ -23,7 +23,8 @@ export default function EditApplicationPage() {
     try {
       updateApplication(id, values);
       router.push(`/applications/${id}`);
-    } catch {
+    } catch (err) {
+      console.warn("[EditApplicationPage] Failed to update application:", err);
       setIsSubmitting(false);
     }
   };

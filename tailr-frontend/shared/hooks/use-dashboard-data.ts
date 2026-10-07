@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {
-  Application,
   ApplicationStatus,
   ApplicationStats,
   VolumeTrendPoint,
@@ -10,6 +9,14 @@ import {
 import { ActivityEvent } from "@/shared/types/activity";
 import { useApplications } from "./use-applications";
 
+/**
+ * Aggregator hook powering the primary user dashboard.
+ *
+ * Derives statistical summaries, dynamic application volume trends (last 7 days),
+ * and consolidated chronological activity events from the live applications collection.
+ *
+ * @returns Applications list, activity timeline, computed statistics, trend points, and status modifiers.
+ */
 export function useDashboardData() {
   const {
     applications,

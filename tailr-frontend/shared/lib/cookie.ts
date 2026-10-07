@@ -88,7 +88,8 @@ export function isTokenValid(token?: string | null): boolean {
     const payload = JSON.parse(json);
     if (!payload.exp) return true;
     return Date.now() < (payload.exp - 10) * 1000;
-  } catch {
+  } catch (err) {
+    console.warn("[cookie] Failed to decode or parse JWT token expiry:", err);
     return false;
   }
 }
@@ -114,7 +115,8 @@ export function getUserFromToken(token?: string | null): User | null {
         ? new Date(payload.iat * 1000).toISOString()
         : new Date().toISOString(),
     };
-  } catch {
+  } catch (err) {
+    console.warn("[cookie] Failed to extract user payload from JWT token:", err);
     return null;
   }
 }

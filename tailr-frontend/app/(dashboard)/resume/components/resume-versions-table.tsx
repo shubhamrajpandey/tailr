@@ -58,7 +58,8 @@ export function ResumeVersionsTable({
         day: "numeric",
         year: "numeric",
       });
-    } catch {
+    } catch (err) {
+      console.warn("[ResumeVersionsTable] Invalid date format:", err);
       return dateString;
     }
   };

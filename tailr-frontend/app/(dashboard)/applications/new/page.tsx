@@ -18,7 +18,8 @@ export default function NewApplicationPage() {
     try {
       const created = await createApplication(values);
       router.push(`/applications/${created.id}`);
-    } catch {
+    } catch (err) {
+      console.warn("[NewApplicationPage] Failed to create application:", err);
       setIsSubmitting(false);
     }
   };

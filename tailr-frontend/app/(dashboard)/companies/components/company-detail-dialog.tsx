@@ -41,7 +41,8 @@ function getWebsiteDisplay(websiteUrl?: string | null) {
       websiteUrl.startsWith("http") ? websiteUrl : `https://${websiteUrl}`
     );
     return { href: url.href, label: url.hostname.replace(/^www\./, "") };
-  } catch {
+  } catch (err) {
+    console.warn("[CompanyDetailDialog] Invalid company website URL:", err);
     return { href: websiteUrl, label: websiteUrl };
   }
 }

@@ -7,6 +7,7 @@ import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppSelector } from "@/shared/store/hooks";
 import { generateSampleApplications } from "@/shared/lib/sample-applications";
 import { isUuidV4 } from "@/shared/lib/utils";
+import { toast } from "@/shared/lib/toast";
 
 const APPLICATIONS_STORAGE_KEY = "tailr_applications_v2";
 
@@ -40,8 +41,8 @@ function getApplicationsSnapshot(): Application[] {
       cachedApplicationsSnapshot = parsed;
       return cachedApplicationsSnapshot;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    console.error("[useApplications] Failed to parse cached applications from localStorage:", err);
   }
   return [];
 }
@@ -72,6 +73,16 @@ function subscribeApplications(callback: () => void) {
   };
 }
 
+/**
+ * Primary hook for job application tracking, CRUD mutations, and backend synchronization.
+ *
+ * Implements an optimistic-first offline-capable architecture:
+ * - Subscribes to local storage via `useSyncExternalStore` for instantaneous UI updates.
+ * - Synchronizes with the PostgreSQL backend (`/applications`) when authenticated.
+ * - Provides optimistic local updates with background REST sync for creations, edits, and deletions.
+ *
+ * @returns Application entities, loading flags, sync helpers, and CRUD operations.
+ */
 export function useApplications() {
   const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector(
     (state) => state.auth
@@ -91,8 +102,8 @@ export function useApplications() {
       cachedRawApplicationsJson = raw;
       cachedApplicationsSnapshot = next;
       window.dispatchEvent(new Event("tailr_applications_updated"));
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useApplications] Failed to persist applications to localStorage:", err);
     }
   }, []);
 
@@ -174,6 +185,7 @@ export function useApplications() {
         updatedAt: now,
       };
 
+      const previousApplications = applications;
       const next = [newApp, ...applications];
       persist(next);
 
@@ -204,13 +216,22 @@ export function useApplications() {
             a.id === tempId ? updatedApp : a
           );
           persist(updatedList);
+          toast.success("Application created", `${newApp.companyName} — ${newApp.positionTitle}`);
           return updatedApp;
         }
-      } catch (err) {
-        console.warn("[useApplications] Failed to save application to backend:", err);
-      }
 
-      return newApp;
+        throw new Error(res.data?.message || "Server did not return a valid application record.");
+      } catch (err: any) {
+        // Rollback optimistic write: remove the unpersisted temp application
+        persist(previousApplications);
+        const reason =
+          err?.response?.data?.message ||
+          err?.message ||
+          "Could not save application to the server. Local changes were rolled back.";
+        console.error("[useApplications] Failed to save application to backend:", err);
+        toast.error("Failed to create application", reason);
+        throw err;
+      }
     },
     [applications, persist]
   );
@@ -220,29 +241,35 @@ export function useApplications() {
       id: string,
       values: Partial<ApplicationFormValues> | Partial<Application>
     ): Application | undefined => {
-      let updated: Application | undefined;
-      const next = applications.map((app) => {
-        if (app.id !== id) return app;
-        updated = {
-          ...app,
-          ...values,
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      });
+      const originalApp = applications.find((app) => app.id === id);
+      if (!originalApp) return undefined;
 
-      if (updated) {
-        persist(next);
+      const previousApplications = applications;
+      const updated: Application = {
+        ...originalApp,
+        ...values,
+        updatedAt: new Date().toISOString(),
+      };
 
-        // Async backend sync if valid UUID
-        if (isUuidV4(id)) {
-          authApiClient
-            .patch(`/applications/${id}`, values)
-            .catch((err) => {
-              console.warn(`[useApplications] Failed to patch application ${id}:`, err);
-            });
-        }
+      const next = applications.map((app) => (app.id === id ? updated : app));
+      persist(next);
+
+      // Async backend sync if valid UUID
+      if (isUuidV4(id)) {
+        authApiClient
+          .patch(`/applications/${id}`, values)
+          .catch((err: any) => {
+            console.error(`[useApplications] Failed to patch application ${id}:`, err);
+            // Roll back to previous state snapshot to prevent permanent state divergence
+            persist(previousApplications);
+            const reason =
+              err?.response?.data?.message ||
+              err?.message ||
+              "Server update failed. Your changes have been reverted.";
+            toast.error("Failed to update application", reason);
+          });
       }
+
       return updated;
     },
     [applications, persist]
@@ -264,15 +291,31 @@ export function useApplications() {
 
   const deleteApplication = React.useCallback(
     (id: string) => {
+      const targetApp = applications.find((app) => app.id === id);
+      if (!targetApp) return;
+
+      const previousApplications = applications;
       const next = applications.filter((app) => app.id !== id);
       persist(next);
 
       if (isUuidV4(id)) {
         authApiClient
           .delete(`/applications/${id}`)
-          .catch((err) => {
-            console.warn(`[useApplications] Failed to delete application ${id}:`, err);
+          .then(() => {
+            toast.success("Application deleted", `${targetApp.companyName} was removed`);
+          })
+          .catch((err: any) => {
+            console.error(`[useApplications] Failed to delete application ${id}:`, err);
+            // Roll back to previous snapshot to restore the deleted record
+            persist(previousApplications);
+            const reason =
+              err?.response?.data?.message ||
+              err?.message ||
+              "Server could not delete the record. Item restored.";
+            toast.error("Failed to delete application", reason);
           });
+      } else {
+        toast.success("Application deleted", `${targetApp.companyName} was removed`);
       }
     },
     [applications, persist]

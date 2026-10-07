@@ -61,8 +61,8 @@ export function LanguageSelector({
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem(LANGUAGE_PREF_STORAGE_KEY, code);
-      } catch {
-        // ignore storage errors
+      } catch (err) {
+        console.warn("[LanguageSelector] Failed to persist language preference:", err);
       }
     }
     onChange?.(code);

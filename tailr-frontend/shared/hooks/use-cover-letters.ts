@@ -37,8 +37,8 @@ function getCoverLettersSnapshot(): CoverLetter[] {
       cachedCoverLettersSnapshot = parsed;
       return parsed;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    console.warn("[useCoverLetters] Failed to parse cached cover letters from localStorage:", err);
   }
   return [];
 }
@@ -62,6 +62,14 @@ function subscribeCoverLetters(callback: () => void) {
   };
 }
 
+/**
+ * Hook for managing AI-generated and custom cover letters.
+ *
+ * Implements reactive multi-tab localStorage persistence via `useSyncExternalStore`
+ * combined with remote PostgreSQL synchronization (`/cover-letters`) for authenticated sessions.
+ *
+ * @returns Cover letters list, CRUD mutations, loading state, and manual refresh trigger.
+ */
 export function useCoverLetters() {
   const { isAuthenticated, accessToken, isBootstrapping } = useAppSelector(
     (state) => state.auth
@@ -82,8 +90,8 @@ export function useCoverLetters() {
       cachedRawCoverLettersJson = raw;
       cachedCoverLettersSnapshot = next;
       window.dispatchEvent(new Event("tailr_cover_letters_updated"));
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useCoverLetters] Failed to persist cover letters to localStorage:", err);
     }
   }, []);
 

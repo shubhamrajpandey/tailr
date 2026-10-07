@@ -12,6 +12,7 @@ import { cn } from "@/shared/lib/utils";
 import { MobileBottomBar } from "./mobile-bottom-bar";
 import { SidebarNav, SidebarNavFallback } from "./sidebar-nav";
 import { SidebarQuotaDisplay } from "./sidebar-quota-display";
+import { SidebarUserMenu } from "./sidebar-user-menu";
 /**
  * Sidebar Navigation Layout Component
  *

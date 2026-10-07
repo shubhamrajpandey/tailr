@@ -60,8 +60,8 @@ export function TailoringPromptInput({
         setPasted(true);
         setTimeout(() => setPasted(false), 2000);
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[TailoringPromptInput] Clipboard paste access denied or unavailable:", err);
     }
   };
 

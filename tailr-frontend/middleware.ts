@@ -25,13 +25,17 @@ function isTokenValid(token?: string): boolean {
   if (!token) return false;
   try {
     const parts = token.split(".");
-    if (parts.length !== 3) return false;
+    if (parts.length !== 3) {
+      console.warn("[middleware] Malformed JWT token: expected 3 dot-separated segments, got", parts.length);
+      return false;
+    }
     const json = atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"));
     const payload = JSON.parse(json);
     if (!payload.exp) return true;
     // Expired if current time exceeds token expiry (with 10s leeway)
     return Date.now() < (payload.exp - 10) * 1000;
-  } catch {
+  } catch (err) {
+    console.warn("[middleware] Failed to parse JWT token expiry due to invalid format:", err);
     return false;
   }
 }

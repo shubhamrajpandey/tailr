@@ -165,7 +165,8 @@ authApiClient.interceptors.response.use(
           `Bearer ${newToken}`;
       }
       return authApiClient(originalRequest);
-    } catch {
+    } catch (refreshErr) {
+      console.warn("[authApiClient] Silent token refresh failed:", refreshErr);
       // Refresh failed — only wipe credentials and redirect if current token is missing or expired
       const currentToken =
         store.getState().auth.accessToken || getAuthTokenFromCookie();

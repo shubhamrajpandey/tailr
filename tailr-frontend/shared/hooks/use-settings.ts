@@ -61,7 +61,8 @@ function getUserSettingsSnapshot(): UserSettings {
     cachedRawUserSettingsJson = raw;
     cachedUserSettingsSnapshot = merged;
     return merged;
-  } catch {
+  } catch (err) {
+    console.warn("[useSettings] Failed to parse cached user settings from localStorage:", err);
     return DEFAULT_USER_SETTINGS;
   }
 }
@@ -85,6 +86,15 @@ function subscribeUserSettings(callback: () => void) {
   };
 }
 
+/**
+ * Global settings management hook for user configuration, AI customization, and preferences.
+ *
+ * Coordinates multi-tab localStorage persistence via `useSyncExternalStore` with
+ * remote backend persistence (`/settings`) across account, AI, resume, applications CRM,
+ * notifications, appearance, and privacy domains.
+ *
+ * @returns Settings model, loading states, domain-specific updaters, and account mutation handlers.
+ */
 export function useSettings() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, accessToken, isBootstrapping, user } = useAppSelector(
@@ -106,8 +116,8 @@ export function useSettings() {
       cachedRawUserSettingsJson = raw;
       cachedUserSettingsSnapshot = next;
       window.dispatchEvent(new Event("tailr_settings_updated"));
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useSettings] Failed to persist user settings to localStorage:", err);
     }
   }, []);
 
@@ -404,8 +414,8 @@ export function useSettings() {
         appearance: DEFAULT_USER_SETTINGS.appearance,
         privacy: DEFAULT_USER_SETTINGS.privacy,
       });
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useSettings] Failed to reset settings on backend:", err);
     }
   }, [persist]);
 

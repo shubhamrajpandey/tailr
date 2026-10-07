@@ -55,7 +55,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // 2. On refresh success: sync new credentials
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
-      setAuthCookie(data.data.accessToken);
+      try {
+        setAuthCookie(data.data.accessToken);
+      } catch (err) {
+        console.error("[AuthProvider] Failed to persist refreshed auth token in cookie:", err);
+      }
       dispatch(
         setCredentials({
           user: data.data.user,

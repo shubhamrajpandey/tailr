@@ -22,6 +22,14 @@ export interface CoverLetterGenerationResult {
   keyHighlights: string[];
 }
 
+/**
+ * Hook managing real-time AI cover letter generation pipelines.
+ *
+ * Coordinates multi-step UI feedback (reading resume → analyzing role → drafting → validating)
+ * and generates job-specific cover letters tailored to the target role and company.
+ *
+ * @returns Pipeline execution status, user-facing progress messages, generated result, and `generateCoverLetter` action.
+ */
 export function useCoverLetterGeneration() {
   const [status, setStatus] =
     React.useState<CoverLetterGenerationStatus>("idle");

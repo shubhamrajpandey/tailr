@@ -17,6 +17,14 @@ export interface TailoringResult {
   matchScore: number;
 }
 
+/**
+ * Hook orchestrating progressive AI resume tailoring workflows.
+ *
+ * Manages the multi-stage tailoring pipeline (idle → analyzing → tailoring → validating → ready),
+ * progressive status messaging, diff calculations, match scoring, and error boundaries.
+ *
+ * @returns Current pipeline status, progress messages, tailored output, and `tailorResume` runner.
+ */
 export function useResumeTailoring() {
   const [status, setStatus] = React.useState<TailoringStatus>("idle");
   const [statusMessage, setStatusMessage] = React.useState<string>("");

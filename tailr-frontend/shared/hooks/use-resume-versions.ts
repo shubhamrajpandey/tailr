@@ -165,8 +165,8 @@ function getResumeVersionsSnapshot(): ResumeVersion[] {
       cachedResumeVersionsSnapshot = parsed;
       return cachedResumeVersionsSnapshot;
     }
-  } catch {
-    // fallback
+  } catch (err) {
+    console.warn("[useResumeVersions] Failed to parse cached resume versions from localStorage:", err);
   }
   return INITIAL_RESUME_VERSIONS;
 }
@@ -190,6 +190,14 @@ function subscribeResumeVersions(callback: () => void) {
   };
 }
 
+/**
+ * Hook for managing versioned snapshots of tailored and customized resumes.
+ *
+ * Tracks historical variants tied to specific job applications or tailoring runs,
+ * enabling multi-version diffing, rollback, and template customization.
+ *
+ * @returns Saved resume versions list and mutation methods (saveVersion, deleteVersion, updateVersion).
+ */
 export function useResumeVersions() {
   const versions = React.useSyncExternalStore(
     subscribeResumeVersions,
@@ -204,8 +212,8 @@ export function useResumeVersions() {
       cachedRawResumeVersionsJson = raw;
       cachedResumeVersionsSnapshot = next;
       window.dispatchEvent(new Event("tailr_resume_versions_updated"));
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn("[useResumeVersions] Failed to persist resume versions to localStorage:", err);
     }
   }, []);
 

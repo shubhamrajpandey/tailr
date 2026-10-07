@@ -27,8 +27,8 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         if (isMounted && res.data?.success && res.data?.data) {
           setBackendOverview(res.data.data);
         }
-      } catch {
-        // Fallback to client calculations silently
+      } catch (err) {
+        console.warn("[useResponseRateAnalytics] Failed to fetch backend overview analytics:", err);
       }
     }
 
