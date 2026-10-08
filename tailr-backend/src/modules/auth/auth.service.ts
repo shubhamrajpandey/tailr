@@ -138,8 +138,14 @@ export class AuthService {
       throw new BadRequestError("Verification code is invalid or has expired. Please request a new code.");
     }
 
-    const inputCodeHash = hashToken(code);
-    if (activeOtp.codeHash !== inputCodeHash) {
+    // Constant-time comparison prevents SHA-256 hash timing attacks
+    const inputHashBuffer = Buffer.from(hashToken(code), "hex");
+    const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
+    const hashesMatch =
+      inputHashBuffer.length === storedHashBuffer.length &&
+      crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer);
+
+    if (!hashesMatch) {
       throw new BadRequestError("Invalid verification code. Please check and try again.");
     }
 
@@ -269,10 +275,10 @@ export class AuthService {
     const tokenHash = hashToken(rawRefreshToken);
     const now = new Date();
 
+    // Look up the token regardless of revocation status to detect token reuse
     const storedToken = await db.query.refreshTokens.findFirst({
       where: and(
         eq(refreshTokens.tokenHash, tokenHash),
-        isNull(refreshTokens.revokedAt),
         gt(refreshTokens.expiresAt, now)
       ),
       with: {
@@ -282,6 +288,23 @@ export class AuthService {
 
     if (!storedToken || !storedToken.user) {
       throw new UnauthorizedError("Invalid or expired refresh token. Please sign in again.");
+    }
+
+    // RFC 6819 Token Reuse Detection: if this token was already revoked, it means
+    // the token was stolen and replayed. Revoke ALL tokens for this user immediately.
+    if (storedToken.revokedAt !== null) {
+      await db
+        .update(refreshTokens)
+        .set({ revokedAt: now })
+        .where(
+          and(
+            eq(refreshTokens.userId, storedToken.user.id),
+            isNull(refreshTokens.revokedAt)
+          )
+        );
+      throw new UnauthorizedError(
+        "Session compromised. All active sessions have been revoked. Please sign in again."
+      );
     }
 
     // Invalidate the old refresh token (Token Rotation)
