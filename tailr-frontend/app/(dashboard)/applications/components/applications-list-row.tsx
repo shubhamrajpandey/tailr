@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { ExternalLink, MoreHorizontal, FileText, Trash2, Edit, Eye, Sparkles } from "lucide-react";
-import type { Application } from "@/shared/types/application";
+import type { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { TableRow, TableCell } from "@/shared/components/ui/table";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -22,7 +22,7 @@ export interface ApplicationsListRowProps {
   application: Application;
   isSelected: boolean;
   onToggleSelect: (id: string, checked: boolean) => void;
-  onStatusChange?: (id: string, newStatus: any) => void;
+  onStatusChange?: (id: string, newStatus: ApplicationStatus) => void;
   onDelete?: (id: string) => void;
 }
 

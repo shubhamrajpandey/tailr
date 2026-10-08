@@ -13,17 +13,43 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import { ROUTES } from "@/shared/lib/routes";
 
+let currentMinuteCache = 0;
+function subscribeMinute(callback: () => void) {
+  const intervalId = setInterval(() => {
+    currentMinuteCache = Math.floor(Date.now() / 60000);
+    callback();
+  }, 60000);
+  return () => clearInterval(intervalId);
+}
+function getMinuteSnapshot(): number {
+  if (currentMinuteCache === 0 && typeof window !== "undefined") {
+    currentMinuteCache = Math.floor(Date.now() / 60000);
+  }
+  return currentMinuteCache;
+}
+function getMinuteServerSnapshot(): number {
+  return 0;
+}
+
 export default function DashboardPage() {
   const user = useAppSelector((state) => state.auth.user);
   const [mobileTab, setMobileTab] = React.useState<"chart" | "activity">("chart");
   const { applications, activities, stats, trendData, updateApplicationStatus, deleteApplication } =
     useDashboardData();
 
+  const currentMinute = React.useSyncExternalStore(
+    subscribeMinute,
+    getMinuteSnapshot,
+    getMinuteServerSnapshot
+  );
+
   // Computed weekly volume comparison: compares past 7 days against previous 7-day window
   const weeklyDelta = React.useMemo(() => {
     if (applications.length === 0) return "0% vs last week";
 
-    const now = Date.now();
+    const now = currentMinute > 0 ? currentMinute * 60000 : 0;
+    if (now === 0) return "0% vs last week";
+
     const MS_7_DAYS = 7 * 24 * 60 * 60 * 1000;
     const MS_14_DAYS = 14 * 24 * 60 * 60 * 1000;
 
@@ -52,7 +78,7 @@ export default function DashboardPage() {
     );
     const prefix = percentChange > 0 ? "+" : "";
     return `${prefix}${percentChange}% vs last week`;
-  }, [applications]);
+  }, [applications, currentMinute]);
   const firstName = user?.fullName?.split(" ")[0] || "there";
 
   return (
@@ -62,7 +88,7 @@ export default function DashboardPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-              Hello, {user?.fullName || "User"}
+              Hello, {firstName}
             </h1>
             <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
               Here are the latest insights from your job applications and tailoring pipeline.

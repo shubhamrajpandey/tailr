@@ -18,7 +18,6 @@ import {
   LogOut,
   Sparkles,
   ChevronRight,
-  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { Avatar } from "@/shared/components/ui/avatar";
@@ -31,17 +30,20 @@ interface MobileNavProps {
 }
 
 export function MobileNav({ className }: MobileNavProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
+
+  // Close drawer on route change during render to prevent cascading renders
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsOpen(false);
+  }
+
   const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
 
   const { resumeRemaining, resumeLimit, coverLetterRemaining, coverLetterLimit } = useAiQuota();
-
-  // Close drawer on route change
-  React.useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
 
   // Lock background scroll when drawer is open
   React.useEffect(() => {

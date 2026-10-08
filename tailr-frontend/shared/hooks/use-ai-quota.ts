@@ -90,7 +90,7 @@ export function useAiQuota() {
           data: UserQuotaStatus;
         }>("/quota/status");
         return data?.data || DEFAULT_QUOTA_STATUS;
-      } catch (err) {
+      } catch (_err) {
         // Fallback to defaults gracefully if unauthenticated or offline
         return DEFAULT_QUOTA_STATUS;
       }

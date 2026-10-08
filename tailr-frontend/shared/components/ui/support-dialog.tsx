@@ -1,17 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Mail,
-  Phone,
-  Copy,
-  Check,
-  ExternalLink,
-  MessageCircle,
-  Clock,
-  Sparkles,
-  Headphones,
-} from "lucide-react";
+import { Mail, Phone, Copy, Check, ExternalLink, Headphones } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +28,6 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
   const [copiedType, setCopiedType] = React.useState<"phone" | "email" | null>(null);
 
   const phoneNumber = "9740858524";
-  const internationalPhone = "+977 9740858524";
   const whatsappUrl =
     "https://wa.me/9779740858524?text=Hi%20Shubham%2C%20I%20need%20assistance%20with%20Tailr.";
   const emailAddress = "shubhamrajpandey88@gmail.com";

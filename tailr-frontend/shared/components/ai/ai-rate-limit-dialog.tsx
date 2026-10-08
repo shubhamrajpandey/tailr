@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { AlertCircle, Clock, Sparkles, ShieldAlert, Check } from "lucide-react";
+import { Clock, ShieldAlert, Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -32,12 +32,18 @@ export function AiRateLimitDialog({
   customMessage,
 }: AiRateLimitDialogProps) {
   const [countdown, setCountdown] = React.useState(retryAfterSeconds);
+  const [prevOpen, setPrevOpen] = React.useState(open);
+
+  // Store information from previous renders to reset state without triggering useEffect cascading renders
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open) {
+      setCountdown(retryAfterSeconds);
+    }
+  }
 
   React.useEffect(() => {
-    if (!open) return;
-    setCountdown(retryAfterSeconds);
-
-    if (type !== "cooldown" || retryAfterSeconds <= 0) return;
+    if (!open || type !== "cooldown" || retryAfterSeconds <= 0) return;
 
     const interval = setInterval(() => {
       setCountdown((prev) => {

@@ -1,5 +1,4 @@
 import * as React from "react";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { AuthTopNav } from "../login/components/auth-top-nav";
 import { AuthFooter } from "../login/components/auth-footer";

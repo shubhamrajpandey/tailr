@@ -105,24 +105,27 @@ export function useCoverLetters() {
   const syncCoverLetters = React.useCallback(async () => {
     if (isBootstrapping) return;
 
+    await Promise.resolve();
     setIsLoading(true);
     try {
       const res = await authApiClient.get("/cover-letters");
       if (res.data?.success && Array.isArray(res.data?.data?.coverLetters)) {
-        const serverLetters: CoverLetter[] = res.data.data.coverLetters.map((cl: any) => ({
-          id: cl.id,
-          applicationId: cl.applicationId || null,
-          companyName: cl.companyName,
-          positionTitle: cl.positionTitle,
-          recipientName: cl.recipientName || null,
-          recipientTitle: cl.recipientTitle || null,
-          tone: cl.tone,
-          status: cl.status,
-          content: cl.content,
-          keyHighlights: Array.isArray(cl.keyHighlights) ? cl.keyHighlights : [],
-          createdAt: cl.createdAt,
-          updatedAt: cl.updatedAt,
-        }));
+        const serverLetters: CoverLetter[] = res.data.data.coverLetters.map(
+          (cl: Partial<CoverLetter> & Record<string, unknown>) => ({
+            id: String(cl.id || ""),
+            applicationId: (cl.applicationId as string) || null,
+            companyName: String(cl.companyName || ""),
+            positionTitle: String(cl.positionTitle || ""),
+            recipientName: (cl.recipientName as string) || null,
+            recipientTitle: (cl.recipientTitle as string) || null,
+            tone: (cl.tone || "professional") as CoverLetter["tone"],
+            status: (cl.status || "DRAFT") as CoverLetter["status"],
+            content: String(cl.content || ""),
+            keyHighlights: Array.isArray(cl.keyHighlights) ? (cl.keyHighlights as string[]) : [],
+            createdAt: String(cl.createdAt || new Date().toISOString()),
+            updatedAt: String(cl.updatedAt || new Date().toISOString()),
+          })
+        );
         persist(serverLetters);
       }
     } catch (err) {

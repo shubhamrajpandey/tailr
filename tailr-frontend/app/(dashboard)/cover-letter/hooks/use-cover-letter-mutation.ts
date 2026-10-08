@@ -134,15 +134,25 @@ export function useGenerateCoverLetterMutation() {
         if (data?.data?.content) {
           return data.data;
         }
-      } catch (err: any) {
-        if (err.response?.status === 429) {
-          const quotaErr = err.response?.data?.error;
-          const customError: any = new Error(
-            quotaErr?.message || "Rate limit or daily generation quota reached."
+      } catch (err: unknown) {
+        const axiosErr = err as {
+          response?: {
+            status?: number;
+            data?: {
+              error?: { message?: string; code?: string; details?: Record<string, unknown> };
+            };
+          };
+        };
+        if (axiosErr.response?.status === 429) {
+          const quotaErr = axiosErr.response?.data?.error;
+          const customError = Object.assign(
+            new Error(quotaErr?.message || "Rate limit or daily generation quota reached."),
+            {
+              code: quotaErr?.code || "TOO_MANY_REQUESTS",
+              details: quotaErr?.details || {},
+              status: 429,
+            }
           );
-          customError.code = quotaErr?.code || "TOO_MANY_REQUESTS";
-          customError.details = quotaErr?.details || {};
-          customError.status = 429;
           throw customError;
         }
         console.warn(

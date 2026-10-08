@@ -92,22 +92,23 @@ export default function CoverLettersPage() {
   const [quotaDialogMsg, setQuotaDialogMsg] = React.useState<string | null>(null);
   const [quotaDialogRetryAfter, setQuotaDialogRetryAfter] = React.useState<number>(20);
 
-  // Sync when preselectedApp updates
-  React.useEffect(() => {
-    if (preselectedApp) {
-      setSelectedApplicationId(preselectedApp.id);
-      setIsManualMode(false);
-      setJobDetails({
-        companyName: preselectedApp.companyName,
-        positionTitle: preselectedApp.positionTitle,
-        location: "Remote / On-site",
-        jobUrl: preselectedApp.companyWebsite || "",
-        hiringManager: preselectedApp.hrName || "",
-        hiringManagerTitle: "",
-        jobDescription: preselectedApp.jobDescriptionRaw || "",
-      });
-    }
-  }, [preselectedApp]);
+  const [prevPreselectedAppId, setPrevPreselectedAppId] = React.useState<string | null>(null);
+
+  // Sync when preselectedApp updates during render to eliminate cascading renders
+  if (preselectedApp && preselectedApp.id !== prevPreselectedAppId) {
+    setPrevPreselectedAppId(preselectedApp.id);
+    setSelectedApplicationId(preselectedApp.id);
+    setIsManualMode(false);
+    setJobDetails({
+      companyName: preselectedApp.companyName,
+      positionTitle: preselectedApp.positionTitle,
+      location: "Remote / On-site",
+      jobUrl: preselectedApp.companyWebsite || "",
+      hiringManager: preselectedApp.hrName || "",
+      hiringManagerTitle: "",
+      jobDescription: preselectedApp.jobDescriptionRaw || "",
+    });
+  }
 
   const handleSelectApplication = (id: string) => {
     setSelectedApplicationId(id);
@@ -191,11 +192,17 @@ export default function CoverLettersPage() {
               ?.scrollIntoView({ behavior: "smooth" });
           }, 150);
         },
-        onError: (err: any) => {
-          if (err?.code === "COOLDOWN_ACTIVE" || err?.status === 429) {
+        onError: (err: unknown) => {
+          const errorObj = err as {
+            code?: string;
+            status?: number;
+            details?: { code?: string; retryAfter?: number };
+            message?: string;
+          };
+          if (errorObj?.code === "COOLDOWN_ACTIVE" || errorObj?.status === 429) {
             const isCooldown =
-              err?.code === "COOLDOWN_ACTIVE" || err?.details?.code === "COOLDOWN_ACTIVE";
-            const retryAfter = err?.details?.retryAfter || 20;
+              errorObj?.code === "COOLDOWN_ACTIVE" || errorObj?.details?.code === "COOLDOWN_ACTIVE";
+            const retryAfter = errorObj?.details?.retryAfter || 20;
 
             if (isCooldown) {
               startCooldown("cover-letter", retryAfter);
@@ -205,7 +212,7 @@ export default function CoverLettersPage() {
               setQuotaDialogType("limit");
             }
 
-            setQuotaDialogMsg(err.message || "Daily quota limit reached.");
+            setQuotaDialogMsg(errorObj.message || "Daily quota limit reached.");
             setQuotaDialogOpen(true);
           }
         },

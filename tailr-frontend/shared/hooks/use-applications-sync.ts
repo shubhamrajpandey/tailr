@@ -50,30 +50,32 @@ export function useApplicationsSync({
         return inFlightSyncPromise;
       }
 
-      setIsLoading(true);
       inFlightSyncPromise = (async () => {
+        setIsLoading(true);
         try {
           const res = await apiClient.get("/applications");
           if (res.data?.success && Array.isArray(res.data?.data?.applications)) {
-            const serverApps: Application[] = res.data.data.applications.map((app: any) => ({
-              id: app.id,
-              companyName: app.companyName,
-              companyWebsite: app.companyWebsite,
-              positionTitle: app.positionTitle,
-              jobDescriptionRaw: app.jobDescriptionRaw,
-              positionOpenDate: app.positionOpenDate,
-              appliedDate: app.appliedDate,
-              deadline: app.deadline,
-              applied: app.applied,
-              status: app.status as ApplicationStatus,
-              hrName: app.hrName,
-              hrLinkedinUrl: app.hrLinkedinUrl,
-              hrAvatarUrl: app.hrAvatarUrl,
-              resumeVersionId: app.resumeVersionId,
-              resumeVersion: app.resumeVersion,
-              createdAt: app.createdAt,
-              updatedAt: app.updatedAt,
-            }));
+            const serverApps: Application[] = res.data.data.applications.map(
+              (app: Partial<Application> & Record<string, unknown>) => ({
+                id: String(app.id || ""),
+                companyName: String(app.companyName || ""),
+                companyWebsite: app.companyWebsite as string | undefined,
+                positionTitle: String(app.positionTitle || ""),
+                jobDescriptionRaw: app.jobDescriptionRaw as string | undefined,
+                positionOpenDate: app.positionOpenDate as string | undefined,
+                appliedDate: app.appliedDate as string | undefined,
+                deadline: app.deadline as string | undefined,
+                applied: Boolean(app.applied),
+                status: (app.status || "SAVED") as ApplicationStatus,
+                hrName: app.hrName as string | undefined,
+                hrLinkedinUrl: app.hrLinkedinUrl as string | undefined,
+                hrAvatarUrl: app.hrAvatarUrl as string | undefined,
+                resumeVersionId: app.resumeVersionId as string | undefined,
+                resumeVersion: app.resumeVersion as string | undefined,
+                createdAt: (app.createdAt || new Date().toISOString()) as string,
+                updatedAt: (app.updatedAt || new Date().toISOString()) as string,
+              })
+            );
             persist(serverApps);
             lastSyncTimestamp = Date.now();
           }

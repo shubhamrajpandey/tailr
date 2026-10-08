@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   ArrowRight,
   Loader2,
-  Calendar,
   Lock,
 } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
@@ -104,9 +103,12 @@ export function AccountPanel() {
       reset(data);
       setSuccessFeedback("Profile settings saved successfully.");
       setTimeout(() => setSuccessFeedback(null), 3500);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       const msg =
-        err?.response?.data?.message || err?.message || "Failed to update profile settings.";
+        errorObj?.response?.data?.message ||
+        errorObj?.message ||
+        "Failed to update profile settings.";
       setErrorMessage(msg);
     }
   };

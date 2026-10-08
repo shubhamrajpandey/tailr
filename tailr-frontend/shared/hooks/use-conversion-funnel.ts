@@ -16,7 +16,8 @@ import { authApiClient } from "@/shared/lib/auth-api-client";
  */
 export function useConversionFunnel(): ConversionFunnelAnalytics {
   const { applications, isLoaded } = useApplications();
-  const [backendFunnel, setBackendFunnel] = React.useState<any | null>(null);
+  const [backendFunnel, setBackendFunnel] =
+    React.useState<Partial<ConversionFunnelAnalytics> | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -47,9 +48,9 @@ export function useConversionFunnel(): ConversionFunnelAnalytics {
     if (backendFunnel?.hasData && Array.isArray(backendFunnel.stages)) {
       return {
         stages: backendFunnel.stages,
-        totalPipeline: backendFunnel.totalPipeline,
-        overallConversionRate: backendFunnel.overallConversionRate,
-        biggestDropOff: null,
+        totalPipeline: backendFunnel.totalPipeline ?? 0,
+        overallConversionRate: backendFunnel.overallConversionRate ?? 0,
+        biggestDropOff: backendFunnel.biggestDropOff ?? null,
         hasData: true,
       };
     }
@@ -203,5 +204,5 @@ export function useConversionFunnel(): ConversionFunnelAnalytics {
       biggestDropOff,
       hasData: true,
     };
-  }, [applications, isLoaded]);
+  }, [applications, isLoaded, backendFunnel]);
 }

@@ -6,7 +6,6 @@ import {
   GitCompare,
   Send,
   Sparkles,
-  Zap,
   Check,
   FileText,
 } from "lucide-react";

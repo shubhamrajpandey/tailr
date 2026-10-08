@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
 import {
   AlertTriangle,
   Trash2,
@@ -26,7 +25,6 @@ import { useSettings } from "@/shared/hooks/use-settings";
 const CONFIRMATION_PHRASE = "DELETE MY ACCOUNT";
 
 export function DangerZonePanel() {
-  const router = useRouter();
   const logoutMutation = useLogoutMutation();
 
   const { deleteAccount } = useSettings();
@@ -67,10 +65,11 @@ export function DangerZonePanel() {
 
     try {
       await deleteAccount(password);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
       setDeleteError(
-        err?.response?.data?.message ||
-          err?.message ||
+        errorObj?.response?.data?.message ||
+          errorObj?.message ||
           "Failed to delete account. Please verify your password."
       );
       setIsDeleting(false);

@@ -22,23 +22,28 @@ import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
 
+const emptySubscribe = () => () => {};
+
 export function TopBarMobileMenu() {
   const pathname = usePathname();
   const [isMobileProfileOpen, setIsMobileProfileOpen] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
+  const [prevPathname, setPrevPathname] = React.useState(pathname);
+
+  // Close mobile profile bottom sheet on route changes during render
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setIsMobileProfileOpen(false);
+  }
+
+  const mounted = React.useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
   const { theme, setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark" || theme === "dark";
   const user = useAppSelector((state) => state.auth.user);
   const logoutMutation = useLogoutMutation();
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Close mobile profile bottom sheet on route changes
-  React.useEffect(() => {
-    setIsMobileProfileOpen(false);
-  }, [pathname]);
 
   // Lock body scroll when mobile profile bottom sheet is open
   React.useEffect(() => {

@@ -133,6 +133,7 @@ export function useSettings() {
   const syncSettings = React.useCallback(async () => {
     if (isBootstrapping || !isAuthenticated) return;
 
+    await Promise.resolve();
     setIsLoading(true);
     try {
       const res = await authApiClient.get("/settings");
@@ -405,7 +406,7 @@ export function useSettings() {
       dispatch(clearCredentials());
       if (typeof window !== "undefined") {
         localStorage.clear();
-        window.location.href = "/login";
+        window.location.assign("/login");
       }
     },
     [dispatch]

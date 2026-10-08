@@ -5,8 +5,6 @@ import { I18nextProvider } from "react-i18next";
 import i18n, { LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE, SupportedLanguageCode } from "./config";
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [isReady, setIsReady] = React.useState(false);
-
   React.useEffect(() => {
     const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY) as SupportedLanguageCode;
     if (saved && ["eng", "nep", "spa", "ger"].includes(saved)) {
@@ -19,7 +17,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     } else {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
     }
-    setIsReady(true);
   }, []);
 
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;

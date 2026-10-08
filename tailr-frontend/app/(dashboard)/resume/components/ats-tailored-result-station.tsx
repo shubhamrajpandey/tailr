@@ -1,19 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  Printer,
-  Copy,
-  Check,
-  Download,
-  Code2,
-  Eye,
-  Award,
-  AlertTriangle,
-  Lightbulb,
-  CheckCircle,
-  Save,
-} from "lucide-react";
+import { Printer, Copy, Check, Download, Code2, Eye, Save } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { TailoredResumeResult } from "@/shared/hooks/use-resume-api";

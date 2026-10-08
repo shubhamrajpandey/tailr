@@ -48,11 +48,16 @@ export function ApplicationsTable({
   const [sortAsc, setSortAsc] = React.useState(false);
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [prevFilterKey, setPrevFilterKey] = React.useState(
+    `${debouncedSearchQuery}|${statusFilter}`
+  );
+  const currentFilterKey = `${debouncedSearchQuery}|${statusFilter}`;
 
-  // Reset page when search or status filter changes
-  React.useEffect(() => {
+  // Reset page when search or status filter changes during render
+  if (currentFilterKey !== prevFilterKey) {
+    setPrevFilterKey(currentFilterKey);
     setCurrentPage(1);
-  }, [debouncedSearchQuery, statusFilter]);
+  }
 
   // Filter & Search logic with debounced search query
   const filteredApplications = React.useMemo(() => {

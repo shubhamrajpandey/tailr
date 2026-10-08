@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Sparkles, Clock, AlertTriangle } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
 interface AiQuotaBadgeProps {

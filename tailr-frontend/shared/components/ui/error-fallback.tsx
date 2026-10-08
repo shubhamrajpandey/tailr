@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AlertTriangle, RefreshCw, Home, ArrowLeft } from "lucide-react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
 interface ErrorFallbackProps {
   error: Error & { digest?: string };

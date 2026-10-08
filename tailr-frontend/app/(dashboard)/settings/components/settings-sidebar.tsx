@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   User,
   Shield,
-  Bell,
   Palette,
   Lock,
   Sparkles,

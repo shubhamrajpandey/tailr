@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { ExternalLink, MoreHorizontal, FileText, Trash2, Edit, Eye, Sparkles } from "lucide-react";
-import type { Application } from "@/shared/types/application";
+import type { Application, ApplicationStatus } from "@/shared/types/application";
 import { ApplicationStatusBadge } from "./application-status-badge";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -18,7 +18,7 @@ import { ROUTES } from "@/shared/lib/routes";
 
 export interface ApplicationsListCardProps {
   application: Application;
-  onStatusChange?: (id: string, newStatus: any) => void;
+  onStatusChange?: (id: string, newStatus: ApplicationStatus) => void;
   onDelete?: (id: string) => void;
 }
 
