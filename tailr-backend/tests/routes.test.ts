@@ -77,4 +77,41 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.success).toBe(false);
     expect(body.error.code).toBe("UNAUTHORIZED");
   });
+
+  it("GET /resume/master rejects unauthenticated request with 401", async () => {
+    const res = await app.handle(new Request("http://localhost:3001/resume/master"));
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  it("GET /resume rejects unauthenticated request with 401", async () => {
+    const res = await app.handle(new Request("http://localhost:3001/resume"));
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  it("GET /resume/:id rejects unauthenticated request with 401", async () => {
+    const res = await app.handle(new Request("http://localhost:3001/resume/12345678-1234-1234-1234-123456789abc"));
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  it("DELETE /resume/:id rejects unauthenticated request with 401", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/resume/12345678-1234-1234-1234-123456789abc", {
+        method: "DELETE",
+      })
+    );
+    expect(res.status).toBe(401);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
 });
+

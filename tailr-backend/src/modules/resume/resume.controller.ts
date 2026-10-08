@@ -8,21 +8,11 @@ import {
 import { assertAiQuota } from "../quota/quota.middleware";
 import { quotaService } from "../quota/quota.service";
 
-/**
- * Extracts optional authenticated user ID from JWT access token if present.
- */
-async function getUserIdFromContext(jwtAccess: any, headers: Record<string, string | undefined>): Promise<string | null> {
-  const authHeader = headers["authorization"];
-  if (!authHeader?.startsWith("Bearer ")) return null;
-  const token = authHeader.slice(7).trim();
-  if (!token) return null;
-
-  try {
-    const payload = await jwtAccess.verify(token);
-    return payload?.userId || payload?.id || payload?.sub || null;
-  } catch {
-    return null;
-  }
+export interface AuthUserContext {
+  id: string;
+  role: string;
+  email?: string;
+  fullName?: string;
 }
 
 export class ResumeController {
@@ -30,19 +20,16 @@ export class ResumeController {
    * Save or upload structured Master Resume.
    */
   async saveMasterResume({
+    authUser,
     body,
-    jwtAccess,
-    headers,
     set,
   }: {
+    authUser: AuthUserContext;
     body: SaveResumeRequest;
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
     set: Context["set"];
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
     const saved = await resumeService.saveResume(
-      userId,
+      authUser.id,
       body.resumeData,
       body.title || "Master Resume",
       body.rawContent,
@@ -61,21 +48,18 @@ export class ResumeController {
    * Upload raw resume text / Markdown / LaTeX, parse into structured ATS schema, and save.
    */
   async uploadRawResume({
+    authUser,
     body,
-    jwtAccess,
-    headers,
     set,
   }: {
+    authUser: AuthUserContext;
     body: UploadRawResumeRequest;
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
     set: Context["set"];
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
     const parsedData = await resumeService.parseRawResumeText(body.rawText, body.pdfBase64);
 
     const saved = await resumeService.saveResume(
-      userId,
+      authUser.id,
       parsedData,
       body.title || "Uploaded Resume",
       body.rawText || (body.pdfBase64 ? "[Uploaded PDF Document]" : undefined),
@@ -91,17 +75,14 @@ export class ResumeController {
   }
 
   /**
-   * Get active Master Resume.
+   * Get active Master Resume for authenticated user.
    */
   async getMasterResume({
-    jwtAccess,
-    headers,
+    authUser,
   }: {
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
+    authUser: AuthUserContext;
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
-    const result = await resumeService.getMasterResume(userId);
+    const result = await resumeService.getMasterResume(authUser.id);
 
     return {
       success: true,
@@ -111,17 +92,14 @@ export class ResumeController {
   }
 
   /**
-   * List all saved resumes.
+   * List all saved resumes owned by the authenticated user.
    */
   async listResumes({
-    jwtAccess,
-    headers,
+    authUser,
   }: {
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
+    authUser: AuthUserContext;
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
-    const list = await resumeService.listResumes(userId);
+    const list = await resumeService.listResumes(authUser.id);
 
     return {
       success: true,
@@ -130,20 +108,16 @@ export class ResumeController {
   }
 
   /**
-   * Get single resume by UUID.
+   * Get single resume by UUID with strict tenant ownership check.
    */
   async getResumeById({
+    authUser,
     params,
-    set,
   }: {
+    authUser: AuthUserContext;
     params: { id: string };
-    set: Context["set"];
   }) {
-    const record = await resumeService.getResumeById(params.id);
-    if (!record) {
-      set.status = 404;
-      return { success: false, message: "Resume not found." };
-    }
+    const record = await resumeService.getResumeById(authUser.id, params.id);
 
     return {
       success: true,
@@ -152,27 +126,23 @@ export class ResumeController {
   }
 
   /**
-   * Update resume by UUID.
+   * Update resume by UUID with strict tenant ownership check.
    */
   async updateResume({
+    authUser,
     params,
     body,
-    set,
   }: {
+    authUser: AuthUserContext;
     params: { id: string };
     body: SaveResumeRequest;
-    set: Context["set"];
   }) {
     const updated = await resumeService.updateResume(
+      authUser.id,
       params.id,
       body.resumeData,
       body.title
     );
-
-    if (!updated) {
-      set.status = 404;
-      return { success: false, message: "Resume not found." };
-    }
 
     return {
       success: true,
@@ -182,20 +152,16 @@ export class ResumeController {
   }
 
   /**
-   * Delete resume by UUID.
+   * Delete resume by UUID with strict tenant ownership check.
    */
   async deleteResume({
+    authUser,
     params,
-    set,
   }: {
+    authUser: AuthUserContext;
     params: { id: string };
-    set: Context["set"];
   }) {
-    const deleted = await resumeService.deleteResume(params.id);
-    if (!deleted) {
-      set.status = 404;
-      return { success: false, message: "Resume not found." };
-    }
+    await resumeService.deleteResume(authUser.id, params.id);
 
     return {
       success: true,
@@ -207,29 +173,25 @@ export class ResumeController {
    * Tailor Resume for specific job with Gemini AI, compute ATS score, and export LaTeX.
    */
   async tailorResume({
+    authUser,
     body,
-    jwtAccess,
-    headers,
     set,
   }: {
+    authUser: AuthUserContext;
     body: TailorResumeRequest;
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
     set: Context["set"];
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
-
     // 1. Enforce authenticated user, anti-spam cooldown, and rolling 24h quota
-    const quotaCheck = await assertAiQuota(userId, "RESUME_TAILOR", set as any);
+    const quotaCheck = await assertAiQuota(authUser.id, "RESUME_TAILOR", set as any);
 
     // Determine baseline resume to tailor from:
     // 1. Provided directly in payload body.resumeData
-    // 2. OR provided by body.resumeId
-    // 3. OR current active master resume in DB
+    // 2. OR provided by body.resumeId (strictly verified against authUser.id)
+    // 3. OR current active master resume in DB for authUser.id
     let baseResume = body.resumeData;
     if (!baseResume) {
       if (body.resumeId) {
-        const found = await resumeService.getResumeById(body.resumeId);
+        const found = await resumeService.getResumeById(authUser.id, body.resumeId);
         if (found) {
           baseResume = {
             basics: {
@@ -251,15 +213,15 @@ export class ResumeController {
       }
 
       if (!baseResume) {
-        const master = await resumeService.getMasterResume(userId);
+        const master = await resumeService.getMasterResume(authUser.id);
         baseResume = master.data;
       }
     }
 
-    const result = await resumeService.tailorResume(body, baseResume, userId);
+    const result = await resumeService.tailorResume(body, baseResume, authUser.id);
 
     // 2. Record successful AI usage event in database
-    await quotaService.recordUsage(userId!, "RESUME_TAILOR", {
+    await quotaService.recordUsage(authUser.id, "RESUME_TAILOR", {
       tailoredResumeId: result.id,
       companyName: body.companyName,
       positionTitle: body.positionTitle,
@@ -283,17 +245,14 @@ export class ResumeController {
   }
 
   /**
-   * List all tailored resumes.
+   * List all tailored resumes for the authenticated user.
    */
   async listTailoredResumes({
-    jwtAccess,
-    headers,
+    authUser,
   }: {
-    jwtAccess: any;
-    headers: Record<string, string | undefined>;
+    authUser: AuthUserContext;
   }) {
-    const userId = await getUserIdFromContext(jwtAccess, headers);
-    const list = await resumeService.listTailoredResumes(userId);
+    const list = await resumeService.listTailoredResumes(authUser.id);
 
     return {
       success: true,
@@ -302,20 +261,16 @@ export class ResumeController {
   }
 
   /**
-   * Get single tailored resume by UUID.
+   * Get single tailored resume by UUID with strict tenant ownership check.
    */
   async getTailoredResumeById({
+    authUser,
     params,
-    set,
   }: {
+    authUser: AuthUserContext;
     params: { id: string };
-    set: Context["set"];
   }) {
-    const record = await resumeService.getTailoredResumeById(params.id);
-    if (!record) {
-      set.status = 404;
-      return { success: false, message: "Tailored resume not found." };
-    }
+    const record = await resumeService.getTailoredResumeById(authUser.id, params.id);
 
     return {
       success: true,

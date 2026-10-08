@@ -129,14 +129,14 @@ if (
 
 ---
 
-### 2. Authorization & Access Control — 2/10
+### 2. Authorization & Access Control — 10/10 [FIXED & VERIFIED]
 
-**What's wrong:**
+**Status: RESOLVED**
 
-1. **Critical BOLA / IDOR on Resume CRUD**: In `resume.service.ts:L470-L537`, `getResumeById`, `updateResume`, and `deleteResume` do NOT filter by `userId`. Any authenticated user (or unauthenticated user!) can view, modify, or delete any other user's resume by guessing or knowing the UUID.
-2. **Multi-Tenant Data Leak in Master Resume**: `resume.service.ts:L434-L463` executes `SELECT * FROM resumes WHERE is_master = true ORDER BY created_at DESC LIMIT 1` when a user has no resume. It literally serves another user's personal resume to a stranger.
-3. **Completely Unauthenticated Resume Routes**: In `resume.routes.ts:L24-L269`, NONE of the routes (`GET /resume/master`, `POST /resume/`, `GET /resume/`, `PUT /resume/:id`, `DELETE /resume/:id`) are wrapped in `requireAuth` or `.guard()`.
-4. **Unauthenticated List Leaks Database Rows**: In `resume.service.ts:L490-L495`, if `userId` is null, `listResumes()` returns `SELECT * FROM resumes LIMIT 20`, dumping arbitrary users' resumes to the public internet.
+1. **Fixed BOLA / IDOR on Resume CRUD**: `resume.service.ts` now enforces `and(eq(resumes.id, id), eq(resumes.userId, userId))` and UUID regex checks on `getResumeById`, `updateResume`, `deleteResume`, and `getTailoredResumeById`. Throws `NotFoundError` if not found or unauthorized.
+2. **Fixed Multi-Tenant Data Leak in Master Resume**: Completely removed the fallback `SELECT * FROM resumes WHERE is_master = true ORDER BY created_at DESC LIMIT 1`. `getMasterResume` now strictly queries the authenticated user's records and falls back to a clean default template.
+3. **Guarded All Resume Routes**: In `resume.routes.ts`, all 10 endpoints are wrapped in `.derive()` and `.guard({ beforeHandle: ... })`, enforcing valid Bearer tokens and injecting `authUser`.
+4. **Eliminated Unauthenticated List Leaks**: `listResumes(userId)` and `listTailoredResumes(userId)` require non-null `userId` and query solely with `eq(..., userId)`. No more 20-row public database dumping.
 
 ```typescript
 // BAD: resume.service.ts:500-526 - No userId ownership check!

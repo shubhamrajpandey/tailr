@@ -13,6 +13,7 @@ import {
   EducationItem,
 } from "./resume.model";
 import { callGroqChatCompletion } from "../../utils/groq";
+import { NotFoundError, UnauthorizedError } from "../../middleware/error";
 
 /**
  * Escapes reserved LaTeX characters in user-provided text.
@@ -358,18 +359,22 @@ export class ResumeService {
    * Save or create a Master Resume in PostgreSQL.
    */
   async saveResume(
-    userId: string | null,
+    userId: string,
     data: StructuredResumeData,
     title = "Master Resume",
     rawContent?: string,
     isMaster = true
   ) {
-    // If setting as master, unmark other master resumes for this user
-    if (isMaster && userId) {
+    if (!userId) {
+      throw new UnauthorizedError("User authentication required to save resume.");
+    }
+
+    // If setting as master, unmark other master resumes for this user only
+    if (isMaster) {
       await db
         .update(resumes)
         .set({ isMaster: false })
-        .where(eq(resumes.userId, userId));
+        .where(and(eq(resumes.userId, userId), eq(resumes.isMaster, true)));
     }
 
     const [inserted] = await db
@@ -398,106 +403,93 @@ export class ResumeService {
   }
 
   /**
-   * Retrieve active Master Resume from database or return default candidate baseline.
+   * Retrieve active Master Resume for the authenticated user or return default candidate baseline.
+   * Multi-tenant safe: NEVER serves another user's resume data.
    */
-  async getMasterResume(userId?: string | null): Promise<{ id?: string; data: StructuredResumeData }> {
-    if (userId) {
-      const [userResume] = await db
-        .select()
-        .from(resumes)
-        .where(and(eq(resumes.userId, userId), eq(resumes.isMaster, true)))
-        .limit(1);
-
-      if (userResume) {
-        return {
-          id: userResume.id,
-          data: {
-            basics: {
-              fullName: userResume.fullName,
-              email: userResume.email || undefined,
-              phone: userResume.phone || undefined,
-              location: userResume.location || undefined,
-              linkedinUrl: userResume.linkedinUrl || undefined,
-              githubUrl: userResume.githubUrl || undefined,
-              portfolioUrl: userResume.portfolioUrl || undefined,
-            },
-            careerSummary: userResume.careerSummary || "",
-            technicalSkills: userResume.technicalSkills as TechnicalSkillCategory[],
-            workExperience: userResume.workExperience as WorkExperienceItem[],
-            education: userResume.education as EducationItem[],
-            projects: userResume.projects as ProjectItem[],
-          },
-        };
-      }
+  async getMasterResume(userId: string): Promise<{ id?: string; data: StructuredResumeData }> {
+    if (!userId) {
+      return { data: DEFAULT_CANDIDATE_RESUME };
     }
 
-    // Try finding any recent master resume in DB
-    const [latest] = await db
+    const [userResume] = await db
       .select()
       .from(resumes)
-      .where(eq(resumes.isMaster, true))
+      .where(and(eq(resumes.userId, userId), eq(resumes.isMaster, true)))
       .orderBy(desc(resumes.createdAt))
       .limit(1);
 
-    if (latest) {
+    if (userResume) {
       return {
-        id: latest.id,
+        id: userResume.id,
         data: {
           basics: {
-            fullName: latest.fullName,
-            email: latest.email || undefined,
-            phone: latest.phone || undefined,
-            location: latest.location || undefined,
-            linkedinUrl: latest.linkedinUrl || undefined,
-            githubUrl: latest.githubUrl || undefined,
-            portfolioUrl: latest.portfolioUrl || undefined,
+            fullName: userResume.fullName,
+            email: userResume.email || undefined,
+            phone: userResume.phone || undefined,
+            location: userResume.location || undefined,
+            linkedinUrl: userResume.linkedinUrl || undefined,
+            githubUrl: userResume.githubUrl || undefined,
+            portfolioUrl: userResume.portfolioUrl || undefined,
           },
-          careerSummary: latest.careerSummary || "",
-          technicalSkills: latest.technicalSkills as TechnicalSkillCategory[],
-          workExperience: latest.workExperience as WorkExperienceItem[],
-          education: latest.education as EducationItem[],
-          projects: latest.projects as ProjectItem[],
+          careerSummary: userResume.careerSummary || "",
+          technicalSkills: userResume.technicalSkills as TechnicalSkillCategory[],
+          workExperience: userResume.workExperience as WorkExperienceItem[],
+          education: userResume.education as EducationItem[],
+          projects: userResume.projects as ProjectItem[],
         },
       };
     }
 
+    // Default template baseline when the user has not created a master resume yet
     return { data: DEFAULT_CANDIDATE_RESUME };
   }
 
   /**
-   * Retrieve single resume by UUID.
+   * Retrieve single resume by UUID with strict ownership check (prevents BOLA / IDOR).
    */
-  async getResumeById(id: string) {
+  async getResumeById(userId: string, id: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Resume '${id}' not found.`);
+    }
+
     const [record] = await db
       .select()
       .from(resumes)
-      .where(eq(resumes.id, id))
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)))
       .limit(1);
-    return record || null;
+
+    if (!record) {
+      throw new NotFoundError(`Resume '${id}' not found or access denied.`);
+    }
+
+    return record;
   }
 
   /**
-   * List all resumes for user.
+   * List all resumes owned exclusively by the authenticated user.
    */
-  async listResumes(userId?: string | null) {
-    if (userId) {
-      return await db
-        .select()
-        .from(resumes)
-        .where(eq(resumes.userId, userId))
-        .orderBy(desc(resumes.createdAt));
+  async listResumes(userId: string) {
+    if (!userId) {
+      return [];
     }
+
     return await db
       .select()
       .from(resumes)
-      .orderBy(desc(resumes.createdAt))
-      .limit(20);
+      .where(eq(resumes.userId, userId))
+      .orderBy(desc(resumes.createdAt));
   }
 
   /**
-   * Update resume in DB.
+   * Update resume in DB with strict tenant isolation and ownership check (prevents BOLA / IDOR).
    */
-  async updateResume(id: string, data: Partial<StructuredResumeData>, title?: string) {
+  async updateResume(userId: string, id: string, data: Partial<StructuredResumeData>, title?: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Resume '${id}' not found.`);
+    }
+
     const updatePayload: Record<string, any> = {
       updatedAt: new Date(),
     };
@@ -519,20 +511,34 @@ export class ResumeService {
     const [updated] = await db
       .update(resumes)
       .set(updatePayload)
-      .where(eq(resumes.id, id))
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)))
       .returning();
+
+    if (!updated) {
+      throw new NotFoundError(`Resume '${id}' not found or you do not have permission to edit it.`);
+    }
 
     return updated;
   }
 
   /**
-   * Delete resume by ID.
+   * Delete resume by ID with strict tenant isolation and ownership check (prevents BOLA / IDOR).
    */
-  async deleteResume(id: string) {
+  async deleteResume(userId: string, id: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Resume '${id}' not found.`);
+    }
+
     const [deleted] = await db
       .delete(resumes)
-      .where(eq(resumes.id, id))
+      .where(and(eq(resumes.id, id), eq(resumes.userId, userId)))
       .returning();
+
+    if (!deleted) {
+      throw new NotFoundError(`Resume '${id}' not found or you do not have permission to delete it.`);
+    }
+
     return deleted;
   }
 
@@ -679,8 +685,11 @@ Respond ONLY with valid JSON.`;
   async tailorResume(
     request: TailorResumeRequest,
     resumeData: StructuredResumeData,
-    userId?: string | null
+    userId: string
   ) {
+    if (!userId) {
+      throw new UnauthorizedError("User authentication required to tailor resume.");
+    }
     const client = this.getClient();
     let tailoredData = resumeData;
     let atsFeedback: AtsFeedback = {
@@ -919,7 +928,7 @@ ${JSON.stringify(resumeData, null, 2)}`;
     const [saved] = await db
       .insert(tailoredResumes)
       .values({
-        userId: userId || null,
+        userId,
         resumeId: request.resumeId || null,
         companyName: request.companyName,
         positionTitle: request.positionTitle,
@@ -942,33 +951,40 @@ ${JSON.stringify(resumeData, null, 2)}`;
   }
 
   /**
-   * Get tailored resume by ID.
+   * Get tailored resume by ID with strict ownership check (prevents BOLA / IDOR).
    */
-  async getTailoredResumeById(id: string) {
+  async getTailoredResumeById(userId: string, id: string) {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (!isUuid) {
+      throw new NotFoundError(`Tailored resume '${id}' not found.`);
+    }
+
     const [record] = await db
       .select()
       .from(tailoredResumes)
-      .where(eq(tailoredResumes.id, id))
+      .where(and(eq(tailoredResumes.id, id), eq(tailoredResumes.userId, userId)))
       .limit(1);
-    return record || null;
+
+    if (!record) {
+      throw new NotFoundError(`Tailored resume '${id}' not found or access denied.`);
+    }
+
+    return record;
   }
 
   /**
-   * List tailored resumes for user.
+   * List tailored resumes owned exclusively by the authenticated user.
    */
-  async listTailoredResumes(userId?: string | null) {
-    if (userId) {
-      return await db
-        .select()
-        .from(tailoredResumes)
-        .where(eq(tailoredResumes.userId, userId))
-        .orderBy(desc(tailoredResumes.createdAt));
+  async listTailoredResumes(userId: string) {
+    if (!userId) {
+      return [];
     }
+
     return await db
       .select()
       .from(tailoredResumes)
-      .orderBy(desc(tailoredResumes.createdAt))
-      .limit(20);
+      .where(eq(tailoredResumes.userId, userId))
+      .orderBy(desc(tailoredResumes.createdAt));
   }
 }
 
