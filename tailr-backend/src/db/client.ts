@@ -25,14 +25,18 @@ const queryClient = postgres(env.DATABASE_URL, {
 export const db = drizzle(queryClient, { schema });
 
 /**
- * Helper to test database connectivity.
+ * Helper to test database connectivity with a bounded 2.5-second timeout.
  */
-export async function checkDatabaseHealth(): Promise<boolean> {
+export async function checkDatabaseHealth(timeoutMs = 2500): Promise<boolean> {
   try {
-    await queryClient`SELECT 1`;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => reject(new Error("Database health check timed out")), timeoutMs);
+    });
+    await Promise.race([queryClient`SELECT 1`, timeoutPromise]);
+    if (timer) clearTimeout(timer);
     return true;
   } catch (error) {
-    console.error("Database health check failed:", error);
     return false;
   }
 }

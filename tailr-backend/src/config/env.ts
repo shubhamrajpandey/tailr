@@ -27,23 +27,36 @@ interface EnvConfig {
   EMAIL_FROM?: string;
 }
 
+function getOrGenerateDevSecret(envVarName: string, envVal: string | undefined): string {
+  if (envVal && envVal.length >= 32) return envVal;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(`FATAL: ${envVarName} must be provided and >= 32 characters in production.`);
+  }
+  // Generate high-entropy ephemeral secret in dev/test to avoid predictable hardcoded defaults
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  const generated = Buffer.from(bytes).toString("hex");
+  if (process.env.NODE_ENV !== "test") {
+    console.warn(`[CONFIG WARNING] ${envVarName} not set or < 32 chars in dev. Using secure ephemeral key.`);
+  }
+  return generated;
+}
+
 function getEnv(): EnvConfig {
   const NODE_ENV = (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development";
   const PORT = parseInt(process.env.PORT || "3001", 10);
   const DATABASE_URL = process.env.DATABASE_URL || "postgres://postgres:postgres@localhost:5432/tailr";
 
-  const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || "default_dev_access_secret_must_be_32_characters_long!";
-  const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "default_dev_refresh_secret_must_be_32_characters_long!";
+  const JWT_ACCESS_SECRET = getOrGenerateDevSecret("JWT_ACCESS_SECRET", process.env.JWT_ACCESS_SECRET);
+  const JWT_REFRESH_SECRET = getOrGenerateDevSecret("JWT_REFRESH_SECRET", process.env.JWT_REFRESH_SECRET);
 
   if (NODE_ENV === "production") {
     if (!process.env.DATABASE_URL) {
       throw new Error("FATAL: DATABASE_URL must be provided in production.");
     }
-    if (!process.env.JWT_ACCESS_SECRET || process.env.JWT_ACCESS_SECRET.length < 32) {
-      throw new Error("FATAL: JWT_ACCESS_SECRET must be at least 32 characters in production.");
-    }
-    if (!process.env.JWT_REFRESH_SECRET || process.env.JWT_REFRESH_SECRET.length < 32) {
-      throw new Error("FATAL: JWT_REFRESH_SECRET must be at least 32 characters in production.");
+    const hasAiKey = Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY);
+    if (!hasAiKey) {
+      throw new Error("FATAL: Either GEMINI_API_KEY or GROQ_API_KEY must be provided in production for AI tailoring.");
     }
   }
 

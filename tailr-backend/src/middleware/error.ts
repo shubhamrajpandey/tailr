@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { logger } from "../utils/logger";
 
 /**
  * Base HTTP exception class.
@@ -136,7 +137,7 @@ export const errorHandler = (app: Elysia) =>
     }
 
     // 5. Unhandled internal server errors
-    console.error("Unhandled Server Error:", error);
+    logger.error("Unhandled Server Error", { code }, error);
     set.status = 500;
     return {
       success: false,

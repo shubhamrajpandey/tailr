@@ -4,8 +4,10 @@ import { jwt } from "@elysiajs/jwt";
 import { swagger } from "@elysiajs/swagger";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/error";
+import { requestLogger } from "./middleware/request-logger";
 import { platformSecurity } from "./middleware/security";
 import { globalRateLimiter } from "./middleware/rate-limiter";
+import { logger } from "./utils/logger";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { companiesRoutes } from "./modules/companies/companies.routes";
 import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
@@ -35,7 +37,10 @@ const app = new Elysia()
   // 1. Centralized JSON Error Handler (registered first to catch all downstream errors)
   .use(errorHandler)
 
-  // 2. OWASP Security Headers & 10MB Request Body Limit
+  // 2. Correlation ID & Structured HTTP Request Logging
+  .use(requestLogger)
+
+  // 3. OWASP Security Headers & 10MB Request Body Limit
   .use(platformSecurity)
 
   // 3. Global API Rate Limiter: 300 requests per minute per IP
@@ -180,25 +185,28 @@ app
   .use(settingsRoutes)
 
   // 15. Mount AI Quota & Rate Limiting Routes (/quota/*)
-  .use(quotaRoutes)
+  .use(quotaRoutes);
 
-  // 16. Bind to Port
-  .listen({
+// 16. Bind to Port conditionally (Prevents port collisions & server starts during test runner execution)
+const isTestEnv = env.NODE_ENV === "test" || Boolean(process.env.BUN_TEST);
+if (import.meta.main || !isTestEnv) {
+  app.listen({
     port: env.PORT,
     hostname: "0.0.0.0",
   });
 
-console.log(
-  `🚀 Tailr Platform API Backend is active on http://${app.server?.hostname || "localhost"}:${app.server?.port || env.PORT} (${env.NODE_ENV})`
-);
-if (isSwaggerEnabled) {
-  console.log(
-    `📖 Interactive Swagger 3.0 Documentation: http://localhost:${app.server?.port || env.PORT}/swagger`
+  logger.info(
+    `🚀 Tailr Platform API Backend is active on http://${app.server?.hostname || "localhost"}:${app.server?.port || env.PORT} (${env.NODE_ENV})`
+  );
+  if (isSwaggerEnabled) {
+    logger.info(
+      `📖 Interactive Swagger 3.0 Documentation: http://localhost:${app.server?.port || env.PORT}/swagger`
+    );
+  }
+  logger.info(
+    `🩺 Health & Database Status Probe: http://localhost:${app.server?.port || env.PORT}/health`
   );
 }
-console.log(
-  `🩺 Health & Database Status Probe: http://localhost:${app.server?.port || env.PORT}/health`
-);
 
 export type App = typeof app;
 export default app;
