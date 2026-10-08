@@ -15,6 +15,7 @@ import {
 import { NotFoundError, BadRequestError } from "../../middleware/error";
 import { hashToken } from "../../utils/crypto";
 import { env } from "../../config/env";
+import { invalidateUserCache } from "../auth/auth.service";
 import type {
   UpdateProfileInput,
   ChangePasswordInput,
@@ -264,6 +265,7 @@ class SettingsService {
         isVerified: users.isVerified,
       });
 
+    invalidateUserCache(userId);
     return updatedUser;
   }
 
@@ -303,6 +305,7 @@ class SettingsService {
       })
       .where(eq(users.id, userId));
 
+    invalidateUserCache(userId);
     return { success: true, message: "Password updated successfully." };
   }
 
@@ -325,23 +328,19 @@ class SettingsService {
       throw new NotFoundError("User not found.");
     }
 
-    const settings = await this.getSettings(userId);
-    const userApplications = await db
-      .select()
-      .from(jobApplications)
-      .where(eq(jobApplications.userId, userId));
-    const userResumes = await db
-      .select()
-      .from(resumes)
-      .where(eq(resumes.userId, userId));
-    const userTailoredResumes = await db
-      .select()
-      .from(tailoredResumes)
-      .where(eq(tailoredResumes.userId, userId));
-    const userCoverLetters = await db
-      .select()
-      .from(coverLetters)
-      .where(eq(coverLetters.userId, userId));
+    const [
+      settings,
+      userApplications,
+      userResumes,
+      userTailoredResumes,
+      userCoverLetters,
+    ] = await Promise.all([
+      this.getSettings(userId),
+      db.select().from(jobApplications).where(eq(jobApplications.userId, userId)),
+      db.select().from(resumes).where(eq(resumes.userId, userId)),
+      db.select().from(tailoredResumes).where(eq(tailoredResumes.userId, userId)),
+      db.select().from(coverLetters).where(eq(coverLetters.userId, userId)),
+    ]);
 
     return {
       exportVersion: "1.0",
@@ -375,6 +374,7 @@ class SettingsService {
 
     await db.delete(users).where(eq(users.id, userId));
 
+    invalidateUserCache(userId);
     return { success: true, message: "Account deleted permanently." };
   }
 }

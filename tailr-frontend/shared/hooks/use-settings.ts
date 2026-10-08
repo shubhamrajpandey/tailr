@@ -206,13 +206,14 @@ export function useSettings() {
   }, [syncSettings, isAuthenticated, accessToken]);
 
   const updateAccount = React.useCallback(
-    async (values: Partial<AccountSettings>) => {
+    async (values: Partial<AccountSettings> & { otp?: string; currentPassword?: string }) => {
       const current = getUserSettingsSnapshot();
       const next: UserSettings = {
         ...current,
         account: {
           ...current.account,
-          ...values,
+          name: values.name ?? current.account.name,
+          email: values.email ?? current.account.email,
         },
       };
       persist(next);
@@ -221,6 +222,8 @@ export function useSettings() {
         const res = await authApiClient.put("/settings/profile", {
           fullName: values.name,
           email: values.email,
+          otp: values.otp,
+          currentPassword: values.currentPassword,
         });
 
         if (res.data?.success && res.data?.data?.user) {

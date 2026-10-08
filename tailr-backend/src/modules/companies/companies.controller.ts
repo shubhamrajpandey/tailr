@@ -43,8 +43,15 @@ export class CompaniesController {
     };
   }
 
-  async list({ query }: { query: CompanyListQueryInput }) {
+  async list({
+    query,
+    set,
+  }: {
+    query: CompanyListQueryInput;
+    set: { headers: Record<string, string> };
+  }) {
     const result = await companiesService.list(query);
+    set.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300";
     return {
       success: true,
       data: result.data,
@@ -52,8 +59,15 @@ export class CompaniesController {
     };
   }
 
-  async getById({ params }: { params: { id: string } }) {
+  async getById({
+    params,
+    set,
+  }: {
+    params: { id: string };
+    set: { headers: Record<string, string> };
+  }) {
     const company = await companiesService.getById(params.id);
+    set.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600";
     return {
       success: true,
       data: { company },

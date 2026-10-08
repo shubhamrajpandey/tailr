@@ -8,9 +8,7 @@ import {
   TailorResumeResponseSchema,
   ResumeIdParam,
 } from "./resume.model";
-import { UnauthorizedError } from "../../middleware/error";
-import { authService } from "../auth/auth.service";
-import { env } from "../../config/env";
+import { createRequireAuth } from "../../middleware/auth-guard";
 
 /**
  * Resume Routes:
@@ -18,43 +16,8 @@ import { env } from "../../config/env";
  * Enforces strict JWT authentication and tenant isolation across all endpoints.
  */
 export const resumeRoutes = new Elysia({ prefix: "" })
-  .use(
-    jwt({
-      name: "jwtAccess",
-      secret: env.JWT_ACCESS_SECRET,
-      exp: env.JWT_ACCESS_EXPIRY,
-    })
-  )
-  .derive(async ({ headers, jwtAccess }: any) => {
-    const authHeader = headers["authorization"] || headers["Authorization"];
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return { authUser: null };
-    }
-    const token = authHeader.slice(7).trim();
-    if (!token) return { authUser: null };
-
-    try {
-      const payload = await jwtAccess.verify(token);
-      if (!payload || !payload.sub) return { authUser: null };
-      const user = await authService.getUserById(payload.sub as string);
-      return { authUser: user };
-    } catch {
-      return { authUser: null };
-    }
-  })
-  .guard(
-    {
-      beforeHandle: (ctx: any) => {
-        if (!ctx.authUser) {
-          throw new UnauthorizedError(
-            "Authentication required. Please provide a valid Bearer token."
-          );
-        }
-      },
-    },
-    (app) =>
-      app
-        // 1. Get Master Resume (Plural Standard: GET /resumes/master)
+  .use(createRequireAuth("resume"))
+  // 1. Get Master Resume (Plural Standard: GET /resumes/master)
         .get(
           "/resumes/master",
           (ctx) => resumeController.getMasterResume(ctx as any),
@@ -431,5 +394,4 @@ export const resumeRoutes = new Elysia({ prefix: "" })
               security: [{ bearerAuth: [] }],
             },
           }
-        )
-  );
+        );

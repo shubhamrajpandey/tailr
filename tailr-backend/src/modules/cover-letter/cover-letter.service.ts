@@ -218,34 +218,31 @@ Return strict JSON with two keys:
 
     const prompt = this.buildPrompt(jobDetails, candidate, preferences);
 
-    // Resilient candidate models chain to survive 503 high-demand spikes
-    const candidateModels = [
-      "gemini-3-flash-preview",
-      "gemini-3.1-flash-lite",
-      "gemini-2.5-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-flash-latest",
-    ];
-
     let responseText: string | undefined;
 
-    for (const model of candidateModels) {
-      try {
-        const response = await this.genAI.models.generateContent({
-          model,
-          contents: prompt,
-          config: {
-            responseMimeType: "application/json",
-            temperature: 0.3,
-          },
-        });
-        if (response.text?.trim()) {
-          responseText = response.text.trim();
-          break;
-        }
-      } catch (err: any) {
-        console.warn(`[CoverLetterService] Gemini model '${model}' unavailable (${err?.message?.slice(0, 100)}).`);
+    // Pin to fast, stable gemini-2.5-flash with explicit 8-second timeout
+    try {
+      const generatePromise = this.genAI.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: prompt,
+        config: {
+          responseMimeType: "application/json",
+          temperature: 0.3,
+        },
+      });
+
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Gemini generation timed out after 8000ms")), 8000)
+      );
+
+      const response: any = await Promise.race([generatePromise, timeoutPromise]);
+      if (response.text?.trim()) {
+        responseText = response.text.trim();
       }
+    } catch (err: any) {
+      console.warn(
+        `[CoverLetterService] Primary Gemini model failed or timed out (${err?.message?.slice(0, 100)}). Falling back immediately to Groq...`
+      );
     }
 
     if (!responseText) return null;

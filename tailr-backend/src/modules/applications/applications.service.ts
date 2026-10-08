@@ -1,4 +1,4 @@
-import { eq, and, desc, ilike, or } from "drizzle-orm";
+import { eq, and, desc, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db/client";
 import { jobApplications, type JobApplication, type NewJobApplication } from "../../db/schema";
 import { NotFoundError } from "../../middleware/error";
@@ -11,6 +11,7 @@ import type {
 export class ApplicationsService {
   /**
    * List all job applications for an authenticated user with optional status filter & search.
+   * Optimizes row width by omitting large text blobs (e.g. jobDescriptionRaw) unless ?includeRaw=true.
    */
   async list(userId: string, query?: ApplicationQueryInput): Promise<JobApplication[]> {
     const conditions = [eq(jobApplications.userId, userId)];
@@ -29,8 +30,33 @@ export class ApplicationsService {
       );
     }
 
+    const includeRaw =
+      query?.includeRaw === "true" ||
+      (query as any)?.includeRaw === true;
+
     return await db
-      .select()
+      .select({
+        id: jobApplications.id,
+        userId: jobApplications.userId,
+        companyName: jobApplications.companyName,
+        companyWebsite: jobApplications.companyWebsite,
+        positionTitle: jobApplications.positionTitle,
+        jobDescriptionRaw: includeRaw
+          ? jobApplications.jobDescriptionRaw
+          : sql<string | null>`NULL`,
+        positionOpenDate: jobApplications.positionOpenDate,
+        appliedDate: jobApplications.appliedDate,
+        deadline: jobApplications.deadline,
+        applied: jobApplications.applied,
+        status: jobApplications.status,
+        hrName: jobApplications.hrName,
+        hrLinkedinUrl: jobApplications.hrLinkedinUrl,
+        hrAvatarUrl: jobApplications.hrAvatarUrl,
+        resumeVersionId: jobApplications.resumeVersionId,
+        resumeVersion: jobApplications.resumeVersion,
+        createdAt: jobApplications.createdAt,
+        updatedAt: jobApplications.updatedAt,
+      })
       .from(jobApplications)
       .where(and(...conditions))
       .orderBy(desc(jobApplications.createdAt));

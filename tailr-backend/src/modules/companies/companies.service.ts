@@ -2,6 +2,7 @@ import { eq, and, ilike, sql, or, lt, desc } from "drizzle-orm";
 import { db } from "../../db/client";
 import { companies, type Company, type NewCompany } from "../../db/schema";
 import { NotFoundError } from "../../middleware/error";
+import { globalCache } from "../../utils/cache";
 import type {
   CreateCompanyInput,
   UpdateCompanyInput,
@@ -73,6 +74,7 @@ export class CompaniesService {
     };
 
     const [created] = await db.insert(companies).values(values).returning();
+    globalCache.clearPrefix("companies:");
     return toPublicCompany(created);
   }
 
@@ -129,6 +131,7 @@ export class CompaniesService {
       .where(eq(companies.id, id))
       .returning();
 
+    globalCache.clearPrefix("companies:");
     return toPublicCompany(updated);
   }
 
@@ -136,12 +139,19 @@ export class CompaniesService {
    * Returns a cursor-paginated list of companies.
    *
    * Filter precedence: search > letter (per spec).
-   * Supports filtering by sector and tech stack.
+   * Supports filtering by sector and tech stack. Cached for 60s.
    */
   async list(query: CompanyListQueryInput): Promise<{
     data: PublicCompany[];
     pageInfo: { hasMore: boolean; nextCursor: string | null };
   }> {
+    const cacheKey = `companies:list:${JSON.stringify(query)}`;
+    const cached = globalCache.get<{
+      data: PublicCompany[];
+      pageInfo: { hasMore: boolean; nextCursor: string | null };
+    }>(cacheKey);
+    if (cached) return cached;
+
     const limit = Math.min(query.limit ?? 50, 100);
     const decoded = query.cursor ? decodeCursor(query.cursor) : null;
 
@@ -202,19 +212,26 @@ export class CompaniesService {
     const hasMore = rows.length > limit;
     const page = hasMore ? rows.slice(0, limit) : rows;
 
-    return {
+    const result = {
       data: page.map(toPublicCompany),
       pageInfo: {
         hasMore,
         nextCursor: hasMore ? encodeCursor(page[page.length - 1]) : null,
       },
     };
+
+    globalCache.set(cacheKey, result, 60);
+    return result;
   }
 
   /**
-   * Returns a single company by ID or throws 404.
+   * Returns a single company by ID or throws 404. Cached for 120s.
    */
   async getById(id: string): Promise<PublicCompany> {
+    const cacheKey = `companies:id:${id}`;
+    const cached = globalCache.get<PublicCompany>(cacheKey);
+    if (cached) return cached;
+
     const company = await db.query.companies.findFirst({
       where: eq(companies.id, id),
     });
@@ -223,7 +240,9 @@ export class CompaniesService {
       throw new NotFoundError(`Company with ID "${id}" was not found.`);
     }
 
-    return toPublicCompany(company);
+    const result = toPublicCompany(company);
+    globalCache.set(cacheKey, result, 120);
+    return result;
   }
 
   /**
@@ -239,6 +258,7 @@ export class CompaniesService {
     }
 
     await db.delete(companies).where(eq(companies.id, id));
+    globalCache.clearPrefix("companies:");
   }
 }
 

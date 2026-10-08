@@ -29,6 +29,7 @@ import { SettingsSection } from "./settings-section";
 import { SaveChangesBar } from "./save-changes-bar";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { useAppSelector } from "@/shared/store/hooks";
+import { authApiClient } from "@/shared/lib/auth-api-client";
 
 const accountSchema = z.object({
   fullName: z
@@ -138,9 +139,14 @@ export function AccountPanel() {
     }
 
     setIsSendingOtp(true);
-    // Simulate backend OTP dispatch matching /auth/resend-otp logic
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    setIsSendingOtp(false);
+    try {
+      await authApiClient.post("/auth/resend-otp", { email: newEmail });
+    } catch (err: unknown) {
+      // In development or if test user, proceed so dev bypass or console preview can be used
+      console.warn("Could not send OTP via /auth/resend-otp:", err);
+    } finally {
+      setIsSendingOtp(false);
+    }
     setEmailStep("verify-otp");
     setResendCooldown(30);
 
@@ -164,16 +170,23 @@ export function AccountPanel() {
       return;
     }
 
-    setIsVerifyingOtp(true);
-    // Simulate backend verification matching /auth/verify-otp
-    await new Promise((resolve) => setTimeout(resolve, 700));
-    setIsVerifyingOtp(false);
-
-    updateAccount({ email: newEmail });
-    reset({ fullName: initialName, email: newEmail });
-    setIsEmailModalOpen(false);
-    setSuccessFeedback(`Email address verified and changed to ${newEmail}.`);
-    setTimeout(() => setSuccessFeedback(null), 4000);
+    try {
+      setIsVerifyingOtp(true);
+      await updateAccount({ email: newEmail, otp: otpCode });
+      reset({ fullName: initialName, email: newEmail });
+      setIsEmailModalOpen(false);
+      setSuccessFeedback(`Email address verified and changed to ${newEmail}.`);
+      setTimeout(() => setSuccessFeedback(null), 4000);
+    } catch (err: unknown) {
+      const errorObj = err as { response?: { data?: { message?: string } }; message?: string };
+      const msg =
+        errorObj?.response?.data?.message ||
+        errorObj?.message ||
+        "Invalid or expired verification code.";
+      setOtpError(msg);
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   return (

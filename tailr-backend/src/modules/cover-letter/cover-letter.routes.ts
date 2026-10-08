@@ -10,37 +10,13 @@ import {
   CoverLetterIdParam,
 } from "./cover-letter.model";
 import { UnauthorizedError } from "../../middleware/error";
-import { authService } from "../auth/auth.service";
-import { env } from "../../config/env";
+import { createAuthGuard } from "../../middleware/auth-guard";
 
 /**
  * Cover Letter generation and persistent CRUD routes with comprehensive OpenAPI / Swagger metadata.
  */
 export const coverLetterRoutes = new Elysia({ prefix: "" })
-  .use(
-    jwt({
-      name: "jwtAccess",
-      secret: env.JWT_ACCESS_SECRET,
-      exp: env.JWT_ACCESS_EXPIRY,
-    })
-  )
-  .derive(async ({ headers, jwtAccess }: any) => {
-    const authHeader = headers["authorization"] || headers["Authorization"];
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return { authUser: null };
-    }
-    const token = authHeader.slice(7).trim();
-    if (!token) return { authUser: null };
-
-    try {
-      const payload = await jwtAccess.verify(token);
-      if (!payload || !payload.sub) return { authUser: null };
-      const user = await authService.getUserById(payload.sub as string);
-      return { authUser: user };
-    } catch {
-      return { authUser: null };
-    }
-  })
+  .use(createAuthGuard("cover-letter"))
   // 1. Standard Plural Generation endpoint: POST /cover-letters/generate
   .post(
     "/cover-letters/generate",

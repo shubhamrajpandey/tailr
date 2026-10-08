@@ -8,16 +8,10 @@ import {
   CompanyIdParam,
 } from "./companies.model";
 import { UnauthorizedError, ForbiddenError } from "../../middleware/error";
-import { authService } from "../auth/auth.service";
-import { env } from "../../config/env";
+import { createAuthGuard } from "../../middleware/auth-guard";
 
 /**
  * Companies route plugin.
- *
- * Intentionally inlines JWT verification as a local `.derive()` instead of
- * reusing the named `authGuard` plugin. This avoids Elysia's named-plugin
- * deduplication, which would skip the derive for any plugin with a `name`
- * that was already registered by another plugin (e.g. authRoutes).
  *
  * Public (any authenticated user):
  *   GET  /companies        — paginated list (search or letter filter)
@@ -28,37 +22,7 @@ import { env } from "../../config/env";
  *   PATCH  /admin/companies/:id    — update a company
  */
 export const companiesRoutes = new Elysia({ prefix: "" })
-  .use(
-    jwt({
-      name: "jwtAccess",
-      secret: env.JWT_ACCESS_SECRET,
-      exp: env.JWT_ACCESS_EXPIRY,
-    })
-  )
-
-  // ── Inline auth derive ──────────────────────────────────────────────────
-  // Reads the Bearer token, verifies it, and attaches the user to ctx.
-  // Returns { authUser: null } on any failure — routes guard against this below.
-  .derive(async ({ headers, jwtAccess }: any) => {
-    const authHeader = headers["authorization"] || headers["Authorization"];
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return { authUser: null };
-    }
-
-    const token = authHeader.slice(7).trim();
-    if (!token) return { authUser: null };
-
-    try {
-      const payload = await jwtAccess.verify(token);
-      if (!payload || !payload.sub) return { authUser: null };
-
-      const user = await authService.getUserById(payload.sub as string);
-      return { authUser: user };
-    } catch {
-      return { authUser: null };
-    }
-  })
+  .use(createAuthGuard("companies"))
 
   // ── Public endpoints (any authenticated user) ───────────────────────────
   .guard(

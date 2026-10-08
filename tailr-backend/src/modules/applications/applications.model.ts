@@ -49,6 +49,7 @@ export const ApplicationIdParam = t.Object({
 export const ApplicationQuery = t.Object({
   status: t.Optional(ApplicationStatusEnum),
   search: t.Optional(t.String()),
+  includeRaw: t.Optional(t.Union([t.Boolean(), t.String()])),
 });
 
 export type CreateApplicationInput = typeof CreateApplicationBody.static;

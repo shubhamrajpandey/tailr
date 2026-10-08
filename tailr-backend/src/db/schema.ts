@@ -194,6 +194,8 @@ export const resumes = pgTable(
   },
   (table) => [
     index("resumes_user_id_idx").on(table.userId),
+    index("resumes_user_master_idx").on(table.userId, table.isMaster),
+    index("resumes_user_created_idx").on(table.userId, table.createdAt),
     index("resumes_is_master_idx").on(table.isMaster),
     index("resumes_created_at_idx").on(table.createdAt),
   ]
@@ -224,6 +226,7 @@ export const tailoredResumes = pgTable(
   },
   (table) => [
     index("tailored_resumes_user_id_idx").on(table.userId),
+    index("tailored_resumes_user_created_idx").on(table.userId, table.createdAt),
     index("tailored_resumes_resume_id_idx").on(table.resumeId),
     index("tailored_resumes_company_idx").on(table.companyName),
     index("tailored_resumes_ats_score_idx").on(table.atsScore),
@@ -288,9 +291,12 @@ export const jobApplications = pgTable(
   },
   (table) => [
     index("job_applications_user_id_idx").on(table.userId),
+    index("job_applications_user_created_idx").on(table.userId, table.createdAt),
+    index("job_applications_user_status_idx").on(table.userId, table.status),
     index("job_applications_status_idx").on(table.status),
     index("job_applications_applied_date_idx").on(table.appliedDate),
     index("job_applications_created_at_idx").on(table.createdAt),
+    index("job_applications_resume_version_id_idx").on(table.resumeVersionId),
   ]
 );
 
@@ -339,6 +345,7 @@ export const coverLetters = pgTable(
   },
   (table) => [
     index("cover_letters_user_id_idx").on(table.userId),
+    index("cover_letters_user_created_idx").on(table.userId, table.createdAt),
     index("cover_letters_application_id_idx").on(table.applicationId),
     index("cover_letters_company_name_idx").on(table.companyName),
     index("cover_letters_status_idx").on(table.status),
@@ -434,6 +441,7 @@ export const aiUsageLogs = pgTable(
   },
   (table) => [
     index("ai_usage_logs_user_action_idx").on(table.userId, table.action),
+    index("ai_usage_logs_user_action_created_at_idx").on(table.userId, table.action, table.createdAt),
     index("ai_usage_logs_created_at_idx").on(table.createdAt),
   ]
 );

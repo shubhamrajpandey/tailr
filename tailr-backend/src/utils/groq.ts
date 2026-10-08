@@ -23,11 +23,10 @@ export interface GroqCompletionResult {
   model: string;
 }
 
-// Ordered list of candidate Groq models
+// Real production Groq models (high throughput LLaMA 3.3)
 export const CANDIDATE_GROQ_MODELS = [
-  "openai/gpt-oss-120b",
-  "openai/gpt-oss-20b",
-  "qwen/qwen3.8-27b",
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
 ];
 
 export async function callGroqChatCompletion(
@@ -50,6 +49,7 @@ export async function callGroqChatCompletion(
             Authorization: `Bearer ${options.apiKey}`,
             "Content-Type": "application/json",
           },
+          signal: AbortSignal.timeout(8000),
           body: JSON.stringify({
             model,
             messages: options.messages,
@@ -83,8 +83,6 @@ export async function callGroqChatCompletion(
       console.warn(
         `[Groq] Model '${model}' call failed (${err?.message?.slice(0, 100)}). Trying next candidate model...`
       );
-      // Brief jitter pause before trying next candidate
-      await new Promise((resolve) => setTimeout(resolve, 200));
     }
   }
 

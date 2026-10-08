@@ -1,0 +1,277 @@
+import { StructuredResumeData } from "./resume.model";
+
+/**
+ * Escapes reserved LaTeX characters in user-provided text.
+ */
+export function escapeLatex(text: string): string {
+  if (!text) return "";
+  return text
+    .replace(/\\/g, "\\textbackslash{}")
+    .replace(/([&%$#_{}])/g, "\\$1")
+    .replace(/~/g, "\\textasciitilde{}")
+    .replace(/\^/g, "\\textasciicircum{}");
+}
+
+/**
+ * Baseline default candidate snapshot (used when initializing or testing).
+ */
+export const DEFAULT_CANDIDATE_RESUME: StructuredResumeData = {
+  basics: {
+    fullName: "Jane Candidate",
+    email: "jane.candidate@example.com",
+    phone: "+1 (555) 019-2834",
+    location: "San Francisco, CA",
+    linkedinUrl: "https://linkedin.com/in/janecandidate",
+    githubUrl: "https://github.com/janecandidate",
+    portfolioUrl: "https://janecandidate.example.com",
+  },
+  careerSummary:
+    "Full-stack software engineer with hands-on experience developing distributed web applications, event-driven microservices, and AI-enabled workflows. Skilled in building resilient RESTful APIs, high-throughput database integrations, and responsive user interfaces. Proven track record of architecting scalable systems and automating mission-critical business workflows.",
+  technicalSkills: [
+    {
+      category: "AI & Automation",
+      skills: "LLM Prompt Engineering, RAG Architectures, Vector Embeddings, LangChain, Automated Pipelines",
+    },
+    {
+      category: "Languages",
+      skills: "TypeScript, JavaScript (ES6+), Python, SQL, HTML5, CSS3",
+    },
+    {
+      category: "Frontend",
+      skills: "React.js, Next.js, Redux Toolkit, Tailwind CSS, TanStack Query",
+    },
+    {
+      category: "Backend & Systems",
+      skills: "Node.js, Express.js, Bun, ElysiaJS, WebSockets, REST APIs",
+    },
+    {
+      category: "Databases & Cloud",
+      skills: "PostgreSQL, Redis, Docker, GitHub Actions (CI/CD), AWS, Cloudflare",
+    },
+  ],
+  workExperience: [
+    {
+      role: "Software Engineer",
+      company: "Acme Cloud Solutions",
+      location: "San Francisco, CA (Remote)",
+      startDate: "Jan 2024",
+      endDate: "Present",
+      bullets: [
+        "Architected and deployed high-performance microservices using TypeScript, Node.js, and PostgreSQL, decreasing API latency by 35%",
+        "Designed real-time webhook ingestion engine handling 50k+ daily events with 99.99% reliability and zero message loss",
+        "Implemented automated CI/CD deployment pipelines using GitHub Actions, reducing release cycle time from 2 hours to 8 minutes",
+      ],
+    },
+    {
+      role: "Junior Software Developer",
+      company: "Apex Tech Innovations",
+      location: "San Francisco, CA",
+      startDate: "Jun 2022",
+      endDate: "Dec 2023",
+      bullets: [
+        "Collaborated on cross-functional teams to build responsive React and Next.js customer portals with reusable component libraries",
+        "Refactored complex database queries and added strategic indexes, improving page load speeds by 40%",
+      ],
+    },
+  ],
+  education: [
+    {
+      institution: "State University of Technology",
+      location: "San Francisco, CA",
+      degree: "B.S. in Computer Science",
+      startDate: "Sep 2018",
+      endDate: "May 2022",
+    },
+  ],
+  projects: [
+    {
+      title: "FlowMetrics -- Real-Time Analytics Platform",
+      technologies: "Next.js, TypeScript, PostgreSQL, Redis",
+      liveUrl: "https://demo.flowmetrics.example.com",
+      year: "2024",
+      bullets: [
+        "Engineered an interactive analytics dashboard featuring real-time stream aggregation and customizable data visualizations",
+        "Integrated role-based access control (RBAC) and OAuth 2.0 authentication for secure multi-tenant team management",
+      ],
+    },
+  ],
+};
+
+/**
+ * Compiles structured resume data into standard ATS-friendly LaTeX source code.
+ */
+export function generateLatexFromStructuredResume(data: StructuredResumeData): string {
+  const b = data.basics;
+
+  const headerLinks: string[] = [];
+  if (b.email) headerLinks.push(`\\href{mailto:${b.email}}{${escapeLatex(b.email)}}`);
+  if (b.linkedinUrl) headerLinks.push(`\\href{${b.linkedinUrl}}{LinkedIn}`);
+  if (b.githubUrl) headerLinks.push(`\\href{${b.githubUrl}}{GitHub}`);
+  if (b.portfolioUrl) headerLinks.push(`\\href{${b.portfolioUrl}}{Portfolio}`);
+
+  const linksLine = headerLinks.join(" $|$\n  ");
+
+  // Format Technical Skills
+  const skillsLines = (data.technicalSkills || [])
+    .map((item) => {
+      const skillsStr = Array.isArray(item.skills) ? item.skills.join(", ") : item.skills;
+      return `  \\resumeItem{\\textbf{${escapeLatex(item.category)}:} ${escapeLatex(skillsStr)}}`;
+    })
+    .join("\n");
+
+  // Format Work Experience
+  const expLines = (data.workExperience || [])
+    .map((exp) => {
+      const bulletItems = (exp.bullets || [])
+        .map((bullet) => `      \\resumeItem{${escapeLatex(bullet)}}`)
+        .join("\n");
+
+      return `  \\resumeSubheading
+    {${escapeLatex(exp.role)}}{${escapeLatex(exp.startDate)} -- ${escapeLatex(exp.endDate)}}
+    {${escapeLatex(exp.company)}}{${escapeLatex(exp.location || "")}}
+    \\resumeItemListStart
+${bulletItems}
+    \\resumeItemListEnd`;
+    })
+    .join("\n\n");
+
+  // Format Education
+  const eduLines = (data.education || [])
+    .map((edu) => {
+      return `  \\resumeSubheading
+    {${escapeLatex(edu.institution)}}{${escapeLatex(edu.location || "")}}
+    {${escapeLatex(edu.degree)}}{${escapeLatex(edu.startDate || "")}${edu.endDate ? ` -- ${escapeLatex(edu.endDate)}` : ""}}`;
+    })
+    .join("\n\n");
+
+  // Format Projects
+  const projectLines = (data.projects || [])
+    .map((proj) => {
+      const headerTitle = proj.technologies
+        ? `${escapeLatex(proj.title)} $|$ ${escapeLatex(proj.technologies)}`
+        : escapeLatex(proj.title);
+
+      const bulletItems = (proj.bullets || [])
+        .map((bullet) => `      \\resumeItem{${escapeLatex(bullet)}}`)
+        .join("\n");
+
+      return `  \\resumeProjectHeading
+    {${headerTitle}}
+    {${proj.liveUrl || "#"}}
+    {${escapeLatex(proj.year || "")}}
+    \\resumeItemListStart
+${bulletItems}
+    \\resumeItemListEnd`;
+    })
+    .join("\n\n");
+
+  return `%-------------------------
+% ATS-Friendly Resume
+% Auto-Generated by Tailr ATS Engine
+%-------------------------
+
+\\documentclass[letterpaper,11pt]{article}
+
+\\usepackage[empty]{fullpage}
+\\usepackage{titlesec}
+\\usepackage{enumitem}
+\\usepackage[hidelinks]{hyperref}
+\\usepackage{fancyhdr}
+\\usepackage[english]{babel}
+\\usepackage{tabularx}
+\\usepackage{fontawesome5}
+\\usepackage{setspace}
+
+\\pagestyle{fancy}
+\\fancyhf{}
+\\fancyfoot{}
+\\renewcommand{\\headrulewidth}{0pt}
+\\renewcommand{\\footrulewidth}{0pt}
+
+% ---------- PAGE LAYOUT ----------
+\\addtolength{\\oddsidemargin}{-0.5in}
+\\addtolength{\\evensidemargin}{-0.5in}
+\\addtolength{\\textwidth}{1in}
+\\addtolength{\\topmargin}{-0.65in}
+\\addtolength{\\textheight}{1.55in}
+
+\\urlstyle{same}
+\\raggedright
+\\setlength{\\tabcolsep}{0in}
+\\setstretch{0.97}
+
+% ---------- SECTION FORMATTING ----------
+\\titleformat{\\section}{
+  \\vspace{-6pt}\\scshape\\raggedright\\large
+}{}{0em}{}[\\titlerule \\vspace{-8pt}]
+
+% ---------- CUSTOM COMMANDS ----------
+\\newcommand{\\resumeItem}[1]{
+  \\item\\small{#1}
+}
+
+\\newcommand{\\resumeSubheading}[4]{
+  \\item
+  \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
+    \\textbf{#1} & #2 \\\\
+    \\textit{\\small#3} & \\textit{\\small #4} \\\\
+  \\end{tabular*}
+}
+
+\\newcommand{\\resumeProjectHeading}[3]{
+  \\item
+  \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
+    \\small\\textbf{#1} \\small{$|$ \\href{#2}{\\underline{Live Demo}}} & \\small #3 \\\\
+  \\end{tabular*}
+}
+
+\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.15in, label={}]}
+\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
+\\newcommand{\\resumeItemListStart}{\\begin{itemize}[itemsep=1pt]}
+\\newcommand{\\resumeItemListEnd}{\\end{itemize}}
+
+%-------------------------------------------
+%--------------- RESUME ---------------------
+%-------------------------------------------
+
+\\begin{document}
+
+% ---------- HEADER ----------
+\\begin{center}
+  {\\Huge \\scshape ${escapeLatex(b.fullName)}} \\\\ \\vspace{4pt}
+  \\small
+  ${linksLine} \\\\
+  ${escapeLatex(b.location || "")}
+\\end{center}
+
+% ---------- CAREER SUMMARY ----------
+\\section{Career Summary}
+${escapeLatex(data.careerSummary)}
+
+% ---------- TECHNICAL SKILLS ----------
+\\section{Technical Skills}
+\\resumeSubHeadingListStart
+${skillsLines}
+\\resumeSubHeadingListEnd
+
+% ---------- EXPERIENCE ----------
+\\section{Work Experience}
+\\resumeSubHeadingListStart
+${expLines}
+\\resumeSubHeadingListEnd
+
+% ---------- EDUCATION ----------
+\\section{Education}
+\\resumeSubHeadingListStart
+${eduLines}
+\\resumeSubHeadingListEnd
+
+% ---------- PROJECTS ----------
+\\section{Projects}
+\\resumeSubHeadingListStart
+${projectLines}
+\\resumeSubHeadingListEnd
+
+\\end{document}
+`.trim();
+}

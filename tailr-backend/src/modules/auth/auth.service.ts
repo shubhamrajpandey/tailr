@@ -356,8 +356,14 @@ export class AuthService {
 
   /**
    * Fetches user profile by ID excluding sensitive hash.
+   * Cached in memory with a 60-second TTL to eliminate database roundtrips on repeated requests.
    */
   async getUserById(id: string) {
+    const cached = userCache.get(id);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.data;
+    }
+
     const user = await db.query.users.findFirst({
       where: eq(users.id, id),
     });
@@ -366,7 +372,7 @@ export class AuthService {
       throw new NotFoundError("User not found.");
     }
 
-    return {
+    const result = {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
@@ -374,7 +380,33 @@ export class AuthService {
       isVerified: user.isVerified,
       createdAt: user.createdAt.toISOString(),
     };
+
+    userCache.set(id, {
+      data: result,
+      expiresAt: Date.now() + USER_CACHE_TTL_MS,
+    });
+
+    return result;
   }
+}
+
+interface CachedUser {
+  data: {
+    id: string;
+    fullName: string;
+    email: string;
+    role: string;
+    isVerified: boolean;
+    createdAt: string;
+  };
+  expiresAt: number;
+}
+
+const userCache = new Map<string, CachedUser>();
+const USER_CACHE_TTL_MS = 60 * 1000;
+
+export function invalidateUserCache(userId: string) {
+  userCache.delete(userId);
 }
 
 export const authService = new AuthService();

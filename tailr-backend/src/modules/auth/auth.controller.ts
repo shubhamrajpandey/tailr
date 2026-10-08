@@ -70,6 +70,7 @@ export class AuthController {
       sub: user.id,
       email: user.email,
       name: user.fullName,
+      role: user.role,
     });
 
     // Issue Cryptographically Secure Refresh Token
@@ -94,6 +95,7 @@ export class AuthController {
           id: user.id,
           fullName: user.fullName,
           email: user.email,
+          role: user.role,
         },
         accessToken,
       },
@@ -127,6 +129,7 @@ export class AuthController {
       sub: user.id,
       email: user.email,
       name: user.fullName,
+      role: user.role,
     });
 
     // Issue Secure Refresh Token
@@ -151,6 +154,7 @@ export class AuthController {
           id: user.id,
           fullName: user.fullName,
           email: user.email,
+          role: user.role,
         },
         accessToken,
       },
@@ -177,6 +181,7 @@ export class AuthController {
       sub: user.id,
       email: user.email,
       name: user.fullName,
+      role: user.role,
     });
 
     // Update cookies with new rotated tokens

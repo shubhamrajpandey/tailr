@@ -1,22 +1,8 @@
 import { TooManyRequestsError, UnauthorizedError } from "../../middleware/error";
 import { quotaService } from "./quota.service";
 import { env } from "../../config/env";
+import { globalCache } from "../../utils/cache";
 import type { QuotaAction } from "./quota.model";
-
-// In-memory cooldown timestamp store
-const cooldownStore = new Map<string, number>();
-
-// Clean up stale cooldown records periodically
-const COOLDOWN_CLEANUP_MS = 60 * 1000;
-setInterval(() => {
-  const now = Date.now();
-  const maxAge = (env.AI_COOLDOWN_SECONDS || 20) * 1000 * 2;
-  for (const [key, timestamp] of cooldownStore.entries()) {
-    if (now - timestamp > maxAge) {
-      cooldownStore.delete(key);
-    }
-  }
-}, COOLDOWN_CLEANUP_MS).unref();
 
 export interface QuotaCheckResult {
   userId: string;
@@ -44,7 +30,7 @@ export async function assertAiQuota(
   const now = Date.now();
 
   // 1. Anti-Spam Cooldown check
-  const lastRequestTime = cooldownStore.get(cooldownKey);
+  const lastRequestTime = globalCache.get<number>(`cooldown:${cooldownKey}`);
   if (lastRequestTime && now - lastRequestTime < cooldownMs) {
     const remainingSeconds = Math.max(1, Math.ceil((lastRequestTime + cooldownMs - now) / 1000));
     set.headers["Retry-After"] = String(remainingSeconds);
@@ -88,7 +74,7 @@ export async function assertAiQuota(
   }
 
   // Register cooldown timestamp
-  cooldownStore.set(cooldownKey, now);
+  globalCache.set(`cooldown:${cooldownKey}`, now, cooldownSeconds * 2);
 
   return {
     userId,

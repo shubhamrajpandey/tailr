@@ -1,24 +1,33 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "../../db/client";
 import { jobApplications, tailoredResumes } from "../../db/schema";
 
 export class AnalyticsService {
   /**
    * Computes comprehensive analytics overview for the authenticated user.
+   * Optimizes performance by projecting only required metric columns and running
+   * count aggregations concurrently in parallel.
    */
   async getOverview(userId: string) {
-    const apps = await db
-      .select()
-      .from(jobApplications)
-      .where(eq(jobApplications.userId, userId))
-      .orderBy(desc(jobApplications.createdAt));
+    const [apps, [tailoredCountResult]] = await Promise.all([
+      db
+        .select({
+          id: jobApplications.id,
+          status: jobApplications.status,
+          appliedDate: jobApplications.appliedDate,
+          createdAt: jobApplications.createdAt,
+          updatedAt: jobApplications.updatedAt,
+        })
+        .from(jobApplications)
+        .where(eq(jobApplications.userId, userId))
+        .orderBy(desc(jobApplications.createdAt)),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(tailoredResumes)
+        .where(eq(tailoredResumes.userId, userId)),
+    ]);
 
-    const tailoredList = await db
-      .select()
-      .from(tailoredResumes)
-      .where(eq(tailoredResumes.userId, userId));
-
-    const totalTailoredResumes = tailoredList.length;
+    const totalTailoredResumes = tailoredCountResult?.count ?? 0;
 
     if (apps.length === 0) {
       return {
