@@ -101,6 +101,7 @@ export function Sidebar() {
                 onClick={toggleCollapse}
                 className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200 p-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
                 title="Collapse Sidebar"
+                aria-label="Collapse sidebar"
               >
                 <PanelLeftClose className="h-4 w-4" />
               </button>
@@ -112,6 +113,7 @@ export function Sidebar() {
                 onClick={toggleCollapse}
                 className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 flex items-center justify-center p-1 text-neutral-600 dark:text-neutral-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 transition-all cursor-pointer shadow-xs"
                 title="Expand Sidebar"
+                aria-label="Expand sidebar"
               >
                 <PanelLeftOpen className="h-4 w-4" />
               </button>
@@ -127,6 +129,7 @@ export function Sidebar() {
               <input
                 type="text"
                 placeholder="Search anything"
+                aria-label="Search applications and resumes"
                 className="w-full bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none"
               />
               <kbd className="text-xs font-mono bg-neutral-200/70 dark:bg-white/[0.06] text-neutral-700 dark:text-neutral-300 px-2 py-0.5 rounded border border-neutral-300 dark:border-white/10 shrink-0">
@@ -138,6 +141,7 @@ export function Sidebar() {
               type="button"
               onClick={toggleCollapse}
               title="Search anything (⌘K)"
+              aria-label="Search applications and resumes"
               className="w-10 h-10 mx-auto flex items-center justify-center rounded-lg border border-neutral-200 dark:border-white/[0.07] text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <Search className="h-4 w-4" />

@@ -224,6 +224,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                   key={item.title}
                   href={targetHref}
                   title={item.title}
+                  aria-label={item.title}
                   className={cn(
                     "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative group",
                     isHighlighted
@@ -245,6 +246,8 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                   <button
                     type="button"
                     onClick={() => toggleExpand(item.title)}
+                    aria-expanded={isExpanded}
+                    aria-label={`Toggle ${item.title} section`}
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                       isHighlighted
@@ -365,6 +368,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                   key={item.title}
                   href={item.href || "#"}
                   title={item.title}
+                  aria-label={item.title}
                   className={cn(
                     "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors",
                     isActive
@@ -423,6 +427,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
                   key={item.title}
                   href={item.href || "#"}
                   title={item.title}
+                  aria-label={item.title}
                   className={cn(
                     "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative group",
                     isDirectActive

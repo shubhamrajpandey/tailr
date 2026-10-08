@@ -202,6 +202,7 @@ describe("Elysia Routes & Middleware Tests", () => {
     );
     expect(preflightRes.headers.get("access-control-allow-origin")).toBe("https://tailr-swart.vercel.app");
     expect(preflightRes.headers.get("access-control-allow-credentials")).toBe("true");
+    expect(preflightRes.headers.get("access-control-max-age")).toBe("86400");
 
     // 4. Malicious / unauthorized origin does NOT receive CORS allow headers
     const blockedRes = await app.handle(

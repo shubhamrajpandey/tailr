@@ -72,6 +72,7 @@ const app = new Elysia()
         return isOriginAllowed(origin);
       },
       credentials: true,
+      maxAge: 86400,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       allowedHeaders: [
         "Content-Type",

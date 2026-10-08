@@ -38,7 +38,10 @@ export function TopBarActions() {
 
       {/* DESKTOP: User Profile & Logout Dropdown */}
       <DropdownMenu>
-        <DropdownMenuTrigger className="h-8 inline-flex items-center gap-2 pl-1.5 pr-2.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer">
+        <DropdownMenuTrigger
+          aria-label="User account menu"
+          className="h-8 inline-flex items-center gap-2 pl-1.5 pr-2.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] transition-colors shadow-xs cursor-pointer"
+        >
           <Avatar
             fallback={initials}
             size="sm"

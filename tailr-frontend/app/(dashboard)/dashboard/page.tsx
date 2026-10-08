@@ -3,10 +3,26 @@
 import * as React from "react";
 import Link from "next/link";
 import { Briefcase, MessageSquareText, Sparkles, Plus, BarChart2, History } from "lucide-react";
+import dynamic from "next/dynamic";
 import { StatCard } from "./components/stat-card";
-import { ApplicationVolumeChart } from "./components/application-volume-chart";
 import { ActivityFeed } from "./components/activity-feed";
 import { ApplicationsTable } from "./components/applications-table";
+
+const ApplicationVolumeChart = dynamic(
+  () => import("./components/application-volume-chart").then((mod) => mod.ApplicationVolumeChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[340px] w-full rounded-2xl border border-neutral-200/80 dark:border-white/[0.08] bg-white/70 dark:bg-white/[0.02] p-5 flex flex-col justify-between animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="h-5 w-36 rounded bg-neutral-200 dark:bg-white/10" />
+          <div className="h-7 w-24 rounded bg-neutral-100 dark:bg-white/5" />
+        </div>
+        <div className="h-48 w-full rounded-xl bg-neutral-100/80 dark:bg-white/[0.03]" />
+      </div>
+    ),
+  }
+);
 import { useDashboardData } from "@/shared/hooks/use-dashboard-data";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";

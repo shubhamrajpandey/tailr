@@ -2,6 +2,17 @@ import { ProtectedRoute } from "@/shared/components/layout/protected-route";
 import { Sidebar } from "@/shared/components/layout/sidebar";
 import { TopBar } from "@/shared/components/layout/top-bar";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Precision job application pipeline, interview conversion metrics, and AI resume workspace.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 /**
  * Layout for all dashboard routes — protected behind authentication.

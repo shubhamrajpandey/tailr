@@ -31,6 +31,7 @@ export function MobileBottomBar() {
           href="/dashboard"
           className="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-95 group cursor-pointer"
           title="Dashboard"
+          aria-label="Dashboard"
         >
           <Home
             className={cn(
@@ -52,6 +53,7 @@ export function MobileBottomBar() {
           href="/resume"
           className="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-95 group cursor-pointer"
           title="Resumes"
+          aria-label="Master Resume and AI Tailoring"
         >
           <FileText
             className={cn(
@@ -74,6 +76,7 @@ export function MobileBottomBar() {
             href="/applications/new"
             className="group relative flex items-center justify-center cursor-pointer active:scale-90 transition-transform"
             title="Track New Application"
+            aria-label="Track New Job Application"
           >
             {/* Ambient decorative halo ring */}
             <div className="absolute inset-0 rounded-full bg-indigo-500/30 blur-md group-hover:bg-indigo-500/40 transition-colors" />
@@ -97,6 +100,7 @@ export function MobileBottomBar() {
           href="/cover-letter"
           className="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-95 group cursor-pointer"
           title="Cover Letters"
+          aria-label="Cover Letters"
         >
           <Mail
             className={cn(
@@ -118,6 +122,7 @@ export function MobileBottomBar() {
           href="/companies"
           className="flex flex-col items-center justify-center w-12 h-12 transition-all active:scale-95 group cursor-pointer"
           title="Companies & HR"
+          aria-label="Companies and HR Directory"
         >
           <Building2
             className={cn(
