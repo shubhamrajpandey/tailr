@@ -20,15 +20,33 @@ import { checkDatabaseHealth } from "./db/client";
 
 /**
  * Strict origin whitelist for Cross-Origin Resource Sharing.
- * Eliminates substring wildcard matching (e.g. evil-tailr.vercel.app or attacker-tailr.com).
+ * Eliminates insecure substring wildcard matching (e.g. evil-tailr.vercel.app or attacker-tailr.com).
+ * Supports explicit whitelisted domains, environment-configured origins,
+ * and authenticated Tailr Vercel deployment subdomains.
  */
-const ALLOWED_ORIGINS = new Set([
+const configuredExtraOrigins = (process.env.CORS_ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+export const ALLOWED_ORIGINS = new Set([
   env.FRONTEND_URL,
   "http://localhost:3000",
   "http://localhost:3001",
   "https://tailr.io",
   "https://www.tailr.io",
+  "https://tailr-swart.vercel.app",
+  ...configuredExtraOrigins,
 ]);
+
+// Matches https://tailr.vercel.app or https://tailr-<deployment>.vercel.app (e.g., tailr-swart.vercel.app)
+const TAILR_VERCEL_REGEX = /^https:\/\/tailr(-[a-z0-9-]+)?\.vercel\.app$/i;
+
+export const isOriginAllowed = (origin: string | null | undefined): boolean => {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  return TAILR_VERCEL_REGEX.test(origin);
+};
 
 /**
  * Production-hardened Elysia server configuration.
@@ -51,12 +69,20 @@ const app = new Elysia()
     cors({
       origin: (request: Request): boolean => {
         const origin = request.headers.get("origin");
-        if (!origin) return false;
-        return ALLOWED_ORIGINS.has(origin);
+        return isOriginAllowed(origin);
       },
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "X-Request-ID",
+        "x-request-id",
+        "Accept",
+        "Origin",
+      ],
+      exposeHeaders: ["X-Request-ID", "Content-Length", "Content-Type"],
     })
   )
 

@@ -173,7 +173,7 @@ describe("Elysia Routes & Middleware Tests", () => {
   });
 
   it("enforces strict CORS origin whitelist and blocks unauthorized origins", async () => {
-    // 1. Whitelisted origin receives CORS allow headers
+    // 1. Whitelisted local origin receives CORS allow headers
     const allowedRes = await app.handle(
       new Request("http://localhost:3001/health", {
         headers: { origin: "http://localhost:3000" },
@@ -181,13 +181,42 @@ describe("Elysia Routes & Middleware Tests", () => {
     );
     expect(allowedRes.headers.get("access-control-allow-origin")).toBe("http://localhost:3000");
 
-    // 2. Malicious / unauthorized origin does NOT receive CORS allow headers
+    // 2. Deployed frontend origin (tailr-swart.vercel.app) receives CORS allow headers
+    const vercelRes = await app.handle(
+      new Request("http://localhost:3001/health", {
+        headers: { origin: "https://tailr-swart.vercel.app" },
+      })
+    );
+    expect(vercelRes.headers.get("access-control-allow-origin")).toBe("https://tailr-swart.vercel.app");
+
+    // 3. Preflight OPTIONS request for /auth/login passes with allow headers and credentials
+    const preflightRes = await app.handle(
+      new Request("http://localhost:3001/auth/login", {
+        method: "OPTIONS",
+        headers: {
+          origin: "https://tailr-swart.vercel.app",
+          "access-control-request-method": "POST",
+          "access-control-request-headers": "content-type,authorization",
+        },
+      })
+    );
+    expect(preflightRes.headers.get("access-control-allow-origin")).toBe("https://tailr-swart.vercel.app");
+    expect(preflightRes.headers.get("access-control-allow-credentials")).toBe("true");
+
+    // 4. Malicious / unauthorized origin does NOT receive CORS allow headers
     const blockedRes = await app.handle(
       new Request("http://localhost:3001/health", {
         headers: { origin: "https://evil-tailr.vercel.app" },
       })
     );
     expect(blockedRes.headers.get("access-control-allow-origin")).toBeNull();
+
+    const blockedDomainRes = await app.handle(
+      new Request("http://localhost:3001/health", {
+        headers: { origin: "https://attacker-tailr.com" },
+      })
+    );
+    expect(blockedDomainRes.headers.get("access-control-allow-origin")).toBeNull();
   });
 
   it("verifies DEFAULT_CANDIDATE_RESUME contains only generic synthetic mock data", async () => {
