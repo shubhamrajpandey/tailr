@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
     "scan": "bun pm scan",
+    "db:migrate": "bun run scripts/migrate.ts",
     "seed:cedar-gate": "bun run --env-file .env scripts/seed-cedar-gate.ts"
   },
   "dependencies": {

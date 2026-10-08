@@ -1,44 +1,14 @@
 import { Elysia } from "elysia";
-import { jwt } from "@elysiajs/jwt";
-import { env } from "../../config/env";
-import { authService } from "../auth/auth.service";
+import { requireAuth } from "../../middleware/auth-guard";
 import { quotaService } from "./quota.service";
 import { UserQuotaStatusResponseSchema } from "./quota.model";
-import { UnauthorizedError } from "../../middleware/error";
 
 export const quotaRoutes = new Elysia({ prefix: "/quota" })
-  .use(
-    jwt({
-      name: "jwtAccess",
-      secret: env.JWT_ACCESS_SECRET,
-      exp: env.JWT_ACCESS_EXPIRY,
-    })
-  )
-  .derive(async ({ headers, jwtAccess }: any) => {
-    const authHeader = headers["authorization"] || headers["Authorization"];
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return { authUser: null };
-    }
-    const token = authHeader.slice(7).trim();
-    if (!token) return { authUser: null };
-
-    try {
-      const payload = await jwtAccess.verify(token);
-      if (!payload || !payload.sub) return { authUser: null };
-      const user = await authService.getUserById(payload.sub as string);
-      return { authUser: user };
-    } catch {
-      return { authUser: null };
-    }
-  })
+  .use(requireAuth)
   .get(
     "/status",
-    async ({ authUser }: any) => {
-      if (!authUser) {
-        throw new UnauthorizedError("Authentication required to view AI quota status.");
-      }
-
-      const status = await quotaService.getUserQuotaStatus(authUser.id);
+    async ({ authUser }) => {
+      const status = await quotaService.getUserQuotaStatus(authUser!.id);
       return {
         success: true,
         data: status,

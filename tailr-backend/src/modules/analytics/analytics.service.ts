@@ -1,35 +1,42 @@
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "../../db/client";
 import { jobApplications, tailoredResumes } from "../../db/schema";
 
 export class AnalyticsService {
   /**
    * Computes comprehensive analytics overview for the authenticated user.
-   * Optimizes performance by projecting only required metric columns and running
-   * count aggregations concurrently in parallel.
+   * Eliminates the in-memory analytics anti-pattern by executing SQL-level
+   * aggregations (COUNT FILTER, AVG) directly inside PostgreSQL.
    */
   async getOverview(userId: string) {
-    const [apps, [tailoredCountResult]] = await Promise.all([
-      db
-        .select({
-          id: jobApplications.id,
-          status: jobApplications.status,
-          appliedDate: jobApplications.appliedDate,
-          createdAt: jobApplications.createdAt,
-          updatedAt: jobApplications.updatedAt,
-        })
-        .from(jobApplications)
-        .where(eq(jobApplications.userId, userId))
-        .orderBy(desc(jobApplications.createdAt)),
-      db
-        .select({ count: sql<number>`count(*)::int` })
-        .from(tailoredResumes)
-        .where(eq(tailoredResumes.userId, userId)),
-    ]);
+    // 1. Execute SQL aggregation for core counts & average response times
+    const [overviewAgg] = await db
+      .select({
+        totalApplications: sql<number>`count(*)::int`,
+        totalApplied: sql<number>`count(*) filter (where ${jobApplications.status} != 'WISHLIST')::int`,
+        interviewCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'INTERVIEW')::int`,
+        offerCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'OFFER')::int`,
+        rejectedCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'REJECTED')::int`,
+        ghostedCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'GHOSTED')::int`,
+        awaitingCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'APPLIED')::int`,
+        respondedCount: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED'))::int`,
+        avgDaysToResponse: sql<number>`coalesce(
+          avg(
+            greatest(
+              1,
+              round(extract(epoch from (${jobApplications.updatedAt} - coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}))) / 86400)
+            )
+          ) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED')),
+          4.5
+        )::float`,
+      })
+      .from(jobApplications)
+      .where(eq(jobApplications.userId, userId));
 
-    const totalTailoredResumes = tailoredCountResult?.count ?? 0;
+    const totalApplications = overviewAgg?.totalApplications ?? 0;
 
-    if (apps.length === 0) {
+    // Fast-path for empty accounts
+    if (totalApplications === 0) {
       return {
         kpi: {
           totalApplications: 0,
@@ -74,51 +81,40 @@ export class AnalyticsService {
       };
     }
 
-    const totalApplications = apps.length;
-    const appliedApps = apps.filter((application) => application.status !== "WISHLIST");
-    const totalApplied = appliedApps.length;
+    // 2. Concurrently fetch tailored resume count and weekly distribution
+    const [[tailoredCountResult], dayDistributionRows] = await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(tailoredResumes)
+        .where(eq(tailoredResumes.userId, userId)),
+      db
+        .select({
+          dayOfWeek: sql<number>`extract(dow from coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}))::int`,
+          appliedCount: sql<number>`count(*)::int`,
+          responseCount: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED'))::int`,
+        })
+        .from(jobApplications)
+        .where(
+          sql`${jobApplications.userId} = ${userId} and ${jobApplications.status} != 'WISHLIST'`
+        )
+        .groupBy(sql`1`),
+    ]);
 
-    // Status counts
-    const interviewCount = appliedApps.filter((application) => application.status === "INTERVIEW").length;
-    const offerCount = appliedApps.filter((application) => application.status === "OFFER").length;
-    const rejectedCount = appliedApps.filter((application) => application.status === "REJECTED").length;
-    const ghostedCount = appliedApps.filter((application) => application.status === "GHOSTED").length;
-    const awaitingCount = appliedApps.filter((application) => application.status === "APPLIED").length;
+    const totalTailoredResumes = tailoredCountResult?.count ?? 0;
+    const totalApplied = overviewAgg.totalApplied;
+    const interviewCount = overviewAgg.interviewCount;
+    const offerCount = overviewAgg.offerCount;
+    const rejectedCount = overviewAgg.rejectedCount;
+    const ghostedCount = overviewAgg.ghostedCount;
+    const awaitingCount = overviewAgg.awaitingCount;
+    const respondedCount = overviewAgg.respondedCount;
 
-    const respondedCount = interviewCount + offerCount + rejectedCount;
     const responseRatePercent =
       totalApplied > 0 ? Math.round((respondedCount / totalApplied) * 100) : 0;
-
-    // Combined interview stage (interviews + offers secured)
     const interviewSecuredTotal = interviewCount + offerCount;
     const interviewRatePercent =
       totalApplied > 0 ? Math.round((interviewSecuredTotal / totalApplied) * 100) : 0;
-
-    // Average Response Time
-    let totalElapsedDays = 0;
-    let respondedWithDatesCount = 0;
-
-    appliedApps.forEach((app) => {
-      const isResponded =
-        app.status === "INTERVIEW" ||
-        app.status === "OFFER" ||
-        app.status === "REJECTED";
-
-      if (isResponded) {
-        const start = app.appliedDate
-          ? new Date(app.appliedDate).getTime()
-          : new Date(app.createdAt).getTime();
-        const end = new Date(app.updatedAt).getTime();
-        const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
-        totalElapsedDays += diffDays;
-        respondedWithDatesCount += 1;
-      }
-    });
-
-    const avgDaysToResponse =
-      respondedWithDatesCount > 0
-        ? Number((totalElapsedDays / respondedWithDatesCount).toFixed(1))
-        : 4.5;
+    const avgDaysToResponse = Number((overviewAgg.avgDaysToResponse || 4.5).toFixed(1));
 
     // Outcome Breakdown
     const breakdown = [
@@ -164,32 +160,14 @@ export class AnalyticsService {
       },
     ].filter((item) => item.count > 0);
 
-    // Weekly Trend Data (Sun - Sat)
+    // Weekly Trend Data mapping
     const daysOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const dayCounts: Record<string, { applied: number; responded: number }> = {
-      Sun: { applied: 0, responded: 0 },
-      Mon: { applied: 0, responded: 0 },
-      Tue: { applied: 0, responded: 0 },
-      Wed: { applied: 0, responded: 0 },
-      Thu: { applied: 0, responded: 0 },
-      Fri: { applied: 0, responded: 0 },
-      Sat: { applied: 0, responded: 0 },
-    };
-
-    appliedApps.forEach((app) => {
-      const dateStr = app.appliedDate || app.createdAt;
-      const date = new Date(dateStr);
-      const dayName = daysOrder[date.getDay()];
-      if (dayCounts[dayName]) {
-        dayCounts[dayName].applied += 1;
-        if (
-          app.status === "INTERVIEW" ||
-          app.status === "OFFER" ||
-          app.status === "REJECTED"
-        ) {
-          dayCounts[dayName].responded += 1;
-        }
-      }
+    const dayMap = new Map<number, { appliedCount: number; responseCount: number }>();
+    dayDistributionRows.forEach((row) => {
+      dayMap.set(row.dayOfWeek, {
+        appliedCount: row.appliedCount,
+        responseCount: row.responseCount,
+      });
     });
 
     const baselineDistribution: Record<string, number> = {
@@ -202,16 +180,15 @@ export class AnalyticsService {
       Sat: 1,
     };
 
-    const hasLiveWeekData = Object.values(dayCounts).some(
-      (dayStat) => dayStat.applied > 0
-    );
+    const hasLiveWeekData = dayDistributionRows.length > 0;
 
-    const trendData = daysOrder.map((day) => {
+    const trendData = daysOrder.map((day, index) => {
+      const stats = dayMap.get(index);
       const applied =
-        hasLiveWeekData && dayCounts[day].applied > 0
-          ? dayCounts[day].applied
+        hasLiveWeekData && stats && stats.appliedCount > 0
+          ? stats.appliedCount
           : baselineDistribution[day];
-      const responded = dayCounts[day].responded;
+      const responded = stats ? stats.responseCount : 0;
       const rate = applied > 0 ? Math.round((responded / applied) * 100) : 0;
       return {
         period: day,
@@ -254,27 +231,32 @@ export class AnalyticsService {
       aiOptimization: {
         totalTailoredResumes: Math.max(totalTailoredResumes, 5),
         acceptedAsIsRate: 85,
-        avgVersionsPerApplication: Number((totalApplications > 0 ? (totalTailoredResumes || 7) / totalApplications : 1).toFixed(1)),
+        avgVersionsPerApplication: Number(
+          (totalApplications > 0 ? (totalTailoredResumes || 7) / totalApplications : 1).toFixed(1)
+        ),
       },
       hasData: true,
     };
   }
 
   /**
-   * Computes the recruitment funnel progression analytics.
+   * Computes recruitment funnel progression analytics via direct SQL aggregation.
    */
   async getFunnel(userId: string) {
-    const apps = await db
-      .select()
+    const [funnelAgg] = await db
+      .select({
+        wishlistCount: sql<number>`count(*)::int`,
+        appliedCount: sql<number>`count(*) filter (where ${jobApplications.status} != 'WISHLIST')::int`,
+        interviewCount: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER'))::int`,
+        offerCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'OFFER')::int`,
+      })
       .from(jobApplications)
       .where(eq(jobApplications.userId, userId));
 
-    const wishlistCount = apps.length;
-    const appliedCount = apps.filter((a) => a.status !== "WISHLIST").length;
-    const interviewCount = apps.filter(
-      (a) => a.status === "INTERVIEW" || a.status === "OFFER"
-    ).length;
-    const offerCount = apps.filter((a) => a.status === "OFFER").length;
+    const wishlistCount = funnelAgg?.wishlistCount ?? 0;
+    const appliedCount = funnelAgg?.appliedCount ?? 0;
+    const interviewCount = funnelAgg?.interviewCount ?? 0;
+    const offerCount = funnelAgg?.offerCount ?? 0;
 
     const stages = [
       {

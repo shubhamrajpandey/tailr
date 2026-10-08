@@ -46,7 +46,7 @@ jobs:
           NEXT_PUBLIC_API_URL: https://api.tailr.ai
 
   backend-check:
-    name: Backend Type Check
+    name: Backend Lint, Security & Test Suite
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,7 +62,17 @@ jobs:
           bun-version: latest
 
       - name: Install Backend Dependencies
-        run: bun install --frozen-lockfile
+        run: bun install
 
-      - name: TypeScript Type Check
-        run: bun run typecheck
+      - name: TypeScript Compilation & Lint Check
+        run: bun run lint
+
+      - name: Security Vulnerability Scan
+        run: bun run scan
+
+      - name: Run Backend Unit & Integration Tests
+        run: bun test
+        env:
+          NODE_ENV: test
+          JWT_ACCESS_SECRET: default_dev_access_secret_must_be_32_characters_long!
+          JWT_REFRESH_SECRET: default_dev_refresh_secret_must_be_32_characters_long!

@@ -153,4 +153,69 @@ describe("Core Services & Observability Unit Tests", () => {
       }).not.toThrow();
     });
   });
+
+  describe("Scalability & Asynchronous Queue Processing", () => {
+    it("AsyncJobQueue handles asynchronous background task processing", async () => {
+      const { asyncJobQueue } = await import("../src/utils/async-queue");
+      const jobType = "TEST_TAILOR_JOB";
+
+      asyncJobQueue.registerHandler(jobType, async (input: { resumeId: string }) => {
+        return { score: 92, tailoredLatex: "\\section{Tailored}" };
+      });
+
+      const jobId = asyncJobQueue.enqueue(jobType, { resumeId: "res-123" }, "user-123");
+      expect(jobId).toBeDefined();
+      expect(jobId.startsWith("job_")).toBe(true);
+
+      // Allow background worker tick
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
+      const job = asyncJobQueue.getJob(jobId);
+      expect(job).toBeDefined();
+      expect(job?.status).toBe("completed");
+      expect((job?.output as any)?.score).toBe(92);
+    });
+
+    it("MemoryRateLimiterStore enforces sliding window thresholds", async () => {
+      const { MemoryRateLimiterStore } = await import("../src/middleware/rate-limiter");
+      const store = new MemoryRateLimiterStore();
+      const testKey = `test-ip-${Date.now()}`;
+
+      const res1 = await store.incrementAndCheck(testKey, 60, 2);
+      expect(res1.allowed).toBe(true);
+      expect(res1.remaining).toBe(1);
+
+      const res2 = await store.incrementAndCheck(testKey, 60, 2);
+      expect(res2.allowed).toBe(true);
+      expect(res2.remaining).toBe(0);
+
+      const res3 = await store.incrementAndCheck(testKey, 60, 2);
+      expect(res3.allowed).toBe(false);
+      expect(res3.retryAfterSeconds).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Database Analytics Service", () => {
+    it("getOverview returns structured KPIs without in-memory errors for zero data", async () => {
+      const { analyticsService } = await import("../src/modules/analytics/analytics.service");
+      const fakeUserId = "00000000-0000-0000-0000-000000000000";
+
+      const overview = await analyticsService.getOverview(fakeUserId);
+      expect(overview).toBeDefined();
+      expect(overview.kpi.totalApplications).toBe(0);
+      expect(overview.velocity.benchmarkDaily).toBe(5);
+      expect(overview.hasData).toBe(false);
+    });
+
+    it("getFunnel returns conversion stages with 0% conversion for zero data", async () => {
+      const { analyticsService } = await import("../src/modules/analytics/analytics.service");
+      const fakeUserId = "00000000-0000-0000-0000-000000000000";
+
+      const funnel = await analyticsService.getFunnel(fakeUserId);
+      expect(funnel).toBeDefined();
+      expect(funnel.stages.length).toBe(4);
+      expect(funnel.totalPipeline).toBe(0);
+      expect(funnel.overallConversionRate).toBe(0);
+    });
+  });
 });
