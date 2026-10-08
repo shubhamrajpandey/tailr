@@ -225,6 +225,21 @@ export class CompaniesService {
 
     return toPublicCompany(company);
   }
+
+  /**
+   * Deletes a company entry by ID. Admin only.
+   */
+  async delete(id: string): Promise<void> {
+    const company = await db.query.companies.findFirst({
+      where: eq(companies.id, id),
+    });
+
+    if (!company) {
+      throw new NotFoundError(`Company with ID "${id}" was not found.`);
+    }
+
+    await db.delete(companies).where(eq(companies.id, id));
+  }
 }
 
 export const companiesService = new CompaniesService();

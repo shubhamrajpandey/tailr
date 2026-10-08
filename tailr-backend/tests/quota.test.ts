@@ -61,22 +61,37 @@ describe("AI Rate Limiting & Quota System Tests", () => {
     const dummyUserId = "11111111-1111-1111-1111-111111111111";
     const setHeaders: { headers: Record<string, string> } = { headers: {} };
 
-    // First request passes through cooldown
-    const firstCheck = await assertAiQuota(dummyUserId, "RESUME_TAILOR", setHeaders);
-    expect(firstCheck.userId).toBe(dummyUserId);
+    // Mock checkQuota for pure middleware cooldown testing
+    const originalCheck = quotaService.checkQuota;
+    quotaService.checkQuota = async () => ({
+      allowed: true,
+      used: 0,
+      limit: 2,
+      remaining: 2,
+      resetsAt: new Date(Date.now() + 86400000).toISOString(),
+      resetsInSeconds: 86400,
+    });
 
-    // Immediate second request within 20s must throw TooManyRequestsError (COOLDOWN_ACTIVE)
-    let caughtError: any = null;
     try {
-      await assertAiQuota(dummyUserId, "RESUME_TAILOR", setHeaders);
-    } catch (err) {
-      caughtError = err;
-    }
+      // First request passes through cooldown
+      const firstCheck = await assertAiQuota(dummyUserId, "RESUME_TAILOR", setHeaders);
+      expect(firstCheck.userId).toBe(dummyUserId);
 
-    expect(caughtError).toBeInstanceOf(TooManyRequestsError);
-    expect(caughtError?.statusCode).toBe(429);
-    expect(caughtError?.details?.code).toBe("COOLDOWN_ACTIVE");
-    expect(setHeaders.headers["Retry-After"]).toBeDefined();
+      // Immediate second request within 20s must throw TooManyRequestsError (COOLDOWN_ACTIVE)
+      let caughtError: any = null;
+      try {
+        await assertAiQuota(dummyUserId, "RESUME_TAILOR", setHeaders);
+      } catch (err) {
+        caughtError = err;
+      }
+
+      expect(caughtError).toBeInstanceOf(TooManyRequestsError);
+      expect(caughtError?.statusCode).toBe(429);
+      expect(caughtError?.details?.code).toBe("COOLDOWN_ACTIVE");
+      expect(setHeaders.headers["Retry-After"]).toBeDefined();
+    } finally {
+      quotaService.checkQuota = originalCheck;
+    }
   });
 
   it("assertAiQuota throws UnauthorizedError when userId is missing", async () => {

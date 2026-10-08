@@ -3,6 +3,12 @@ import { t } from "elysia";
 export const UpdateProfileBody = t.Object({
   fullName: t.Optional(t.String({ minLength: 2, maxLength: 255 })),
   email: t.Optional(t.String({ format: "email" })),
+  currentPassword: t.Optional(
+    t.String({ minLength: 1, description: "Required to confirm identity when updating primary login email" })
+  ),
+  otp: t.Optional(
+    t.String({ minLength: 6, maxLength: 6, description: "6-digit OTP code to verify primary email change" })
+  ),
 });
 
 export const ChangePasswordBody = t.Object({

@@ -6,7 +6,7 @@ import { jwt } from "@elysiajs/jwt";
 const sql = postgres(env.DATABASE_URL, { max: 1 });
 
 async function main() {
-  const users = await sql`SELECT id, email, role FROM users WHERE email = 'shubhamrajpandey875@gmail.com';`;
+  const users = await sql`SELECT id, email, role FROM users LIMIT 1;`;
   if (users.length === 0) {
     console.log("No user found");
     return;

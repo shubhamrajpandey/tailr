@@ -108,7 +108,7 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         )
   )
 
-  // ── Admin-only endpoints ─────────────────────────────────────────────────
+  // ── Admin-only endpoints (Standard RESTful on /companies + legacy /admin/companies aliases) ──
   .guard(
     {
       beforeHandle: (ctx: any) => {
@@ -124,8 +124,9 @@ export const companiesRoutes = new Elysia({ prefix: "" })
     },
     (app) =>
       app
+        // Standard REST: POST /companies (Admin)
         .post(
-          "/admin/companies",
+          "/companies",
           (ctx) => companiesController.create(ctx as any),
           {
             body: CreateCompanyBody,
@@ -143,8 +144,9 @@ export const companiesRoutes = new Elysia({ prefix: "" })
             },
           }
         )
+        // Standard REST: PATCH /companies/:id (Admin)
         .patch(
-          "/admin/companies/:id",
+          "/companies/:id",
           (ctx) => companiesController.update(ctx as any),
           {
             params: CompanyIdParam,
@@ -157,6 +159,90 @@ export const companiesRoutes = new Elysia({ prefix: "" })
               security: [{ bearerAuth: [] }],
               responses: {
                 200: { description: "Company updated successfully." },
+                401: { description: "Missing or invalid access token." },
+                403: { description: "Admin role required." },
+                404: { description: "Company not found." },
+              },
+            },
+          }
+        )
+        // Standard REST: DELETE /companies/:id (Admin)
+        .delete(
+          "/companies/:id",
+          (ctx) => companiesController.delete(ctx as any),
+          {
+            params: CompanyIdParam,
+            detail: {
+              tags: ["Companies"],
+              summary: "Delete a company (Admin)",
+              description:
+                "Admin-only. Deletes a company entry from the directory.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "Company deleted successfully." },
+                401: { description: "Missing or invalid access token." },
+                403: { description: "Admin role required." },
+                404: { description: "Company not found." },
+              },
+            },
+          }
+        )
+        // Legacy alias: POST /admin/companies
+        .post(
+          "/admin/companies",
+          (ctx) => companiesController.create(ctx as any),
+          {
+            body: CreateCompanyBody,
+            detail: {
+              tags: ["Companies"],
+              summary: "Create a company (Legacy Admin Alias)",
+              description:
+                "Admin-only. Preserved for backward compatibility.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                201: { description: "Company created successfully." },
+                401: { description: "Missing or invalid access token." },
+                403: { description: "Admin role required." },
+              },
+            },
+          }
+        )
+        // Legacy alias: PATCH /admin/companies/:id
+        .patch(
+          "/admin/companies/:id",
+          (ctx) => companiesController.update(ctx as any),
+          {
+            params: CompanyIdParam,
+            body: UpdateCompanyBody,
+            detail: {
+              tags: ["Companies"],
+              summary: "Update a company (Legacy Admin Alias)",
+              description:
+                "Admin-only. Preserved for backward compatibility.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "Company updated successfully." },
+                401: { description: "Missing or invalid access token." },
+                403: { description: "Admin role required." },
+                404: { description: "Company not found." },
+              },
+            },
+          }
+        )
+        // Legacy alias: DELETE /admin/companies/:id
+        .delete(
+          "/admin/companies/:id",
+          (ctx) => companiesController.delete(ctx as any),
+          {
+            params: CompanyIdParam,
+            detail: {
+              tags: ["Companies"],
+              summary: "Delete a company (Legacy Admin Alias)",
+              description:
+                "Admin-only. Preserved for backward compatibility.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "Company deleted successfully." },
                 401: { description: "Missing or invalid access token." },
                 403: { description: "Admin role required." },
                 404: { description: "Company not found." },

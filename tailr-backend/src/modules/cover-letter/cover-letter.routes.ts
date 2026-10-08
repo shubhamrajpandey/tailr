@@ -41,7 +41,50 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
       return { authUser: null };
     }
   })
-  // 1. Generation endpoint (with strict user quota and cooldown)
+  // 1. Standard Plural Generation endpoint: POST /cover-letters/generate
+  .post(
+    "/cover-letters/generate",
+    (ctx) => coverLetterController.generate(ctx as any),
+    {
+      body: GenerateCoverLetterBody,
+      response: {
+        200: GenerateCoverLetterResponse,
+      },
+      detail: {
+        tags: ["Cover Letters"],
+        summary: "Generate AI-tailored cover letter (Plural REST)",
+        description:
+          "Generates an authentic, high-impact cover letter strictly grounded in the candidate's verified master resume. Enforces user daily quota and cooldown rate limiting.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: "Cover letter generated successfully." },
+          400: { description: "Validation error: Missing or malformed parameters." },
+          401: { description: "Unauthorized: User authentication required." },
+          429: { description: "Rate limit or daily generation quota exceeded." },
+          500: { description: "Internal server error during generation." },
+        },
+      },
+    }
+  )
+  // 1b. Resource generation endpoint: POST /cover-letter-generations
+  .post(
+    "/cover-letter-generations",
+    (ctx) => coverLetterController.generate(ctx as any),
+    {
+      body: GenerateCoverLetterBody,
+      response: {
+        200: GenerateCoverLetterResponse,
+      },
+      detail: {
+        tags: ["Cover Letters"],
+        summary: "Generate AI-tailored cover letter (Resource oriented)",
+        description:
+          "Generates an authentic, high-impact cover letter strictly grounded in the candidate's verified master resume.",
+        security: [{ bearerAuth: [] }],
+      },
+    }
+  )
+  // 1c. Legacy alias: POST /cover-letter/generate
   .post(
     "/cover-letter/generate",
     (ctx) => coverLetterController.generate(ctx as any),
@@ -52,9 +95,9 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
       },
       detail: {
         tags: ["Cover Letters"],
-        summary: "Generate AI-tailored cover letter",
+        summary: "Generate AI-tailored cover letter (Legacy Alias)",
         description:
-          "Generates an authentic, high-impact cover letter strictly grounded in the candidate's verified master resume. Enforces user daily quota and cooldown rate limiting.",
+          "Legacy route preserved for backward compatibility.",
         security: [{ bearerAuth: [] }],
         responses: {
           200: { description: "Cover letter generated successfully." },

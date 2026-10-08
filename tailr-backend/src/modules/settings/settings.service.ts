@@ -1,4 +1,5 @@
-import { eq, and } from "drizzle-orm";
+import crypto from "crypto";
+import { eq, and, or, isNull, gt, desc } from "drizzle-orm";
 import { db } from "../../db/client";
 import {
   users,
@@ -7,10 +8,13 @@ import {
   resumes,
   tailoredResumes,
   coverLetters,
+  otps,
   type User,
   type UserSettingsRow,
 } from "../../db/schema";
 import { NotFoundError, BadRequestError } from "../../middleware/error";
+import { hashToken } from "../../utils/crypto";
+import { env } from "../../config/env";
 import type {
   UpdateProfileInput,
   ChangePasswordInput,
@@ -183,17 +187,69 @@ class SettingsService {
       updates.fullName = input.fullName.trim();
     }
 
-    if (input.email && input.email.trim() && input.email !== user.email) {
-      // Check if email already taken
-      const [existing] = await db
-        .select()
-        .from(users)
-        .where(eq(users.email, input.email.toLowerCase().trim()));
+    if (input.email && input.email.trim()) {
+      const newEmail = input.email.toLowerCase().trim();
+      if (newEmail !== user.email.toLowerCase()) {
+        // Enforce identity verification for primary email modification
+        let isVerified = false;
 
-      if (existing) {
-        throw new BadRequestError("This email address is already registered to another account.");
+        if (input.otp) {
+          // Dev bypass or cryptographic OTP validation
+          if (env.NODE_ENV !== "production" && input.otp === "696969") {
+            isVerified = true;
+          } else {
+            const now = new Date();
+            const activeOtp = await db.query.otps.findFirst({
+              where: and(
+                or(eq(otps.email, newEmail), eq(otps.email, user.email)),
+                isNull(otps.consumedAt),
+                gt(otps.expiresAt, now)
+              ),
+              orderBy: [desc(otps.createdAt)],
+            });
+
+            if (activeOtp) {
+              const inputHashBuffer = Buffer.from(hashToken(input.otp), "hex");
+              const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
+              if (
+                inputHashBuffer.length === storedHashBuffer.length &&
+                crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer)
+              ) {
+                isVerified = true;
+                await db
+                  .update(otps)
+                  .set({ consumedAt: new Date() })
+                  .where(eq(otps.id, activeOtp.id));
+              }
+            }
+          }
+
+          if (!isVerified) {
+            throw new BadRequestError("Invalid or expired OTP verification code for email change.");
+          }
+        } else if (input.currentPassword) {
+          const isPasswordMatch = await Bun.password.verify(input.currentPassword, user.passwordHash);
+          if (!isPasswordMatch) {
+            throw new BadRequestError("Current password verification failed. Please check your password and try again.");
+          }
+          isVerified = true;
+        } else {
+          throw new BadRequestError(
+            "Changing primary account email requires identity confirmation. Provide 'currentPassword' or 'otp' to verify this change."
+          );
+        }
+
+        // Check if new email is already registered to another user
+        const [existing] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, newEmail));
+
+        if (existing && existing.id !== user.id) {
+          throw new BadRequestError("This email address is already registered to another account.");
+        }
+        updates.email = newEmail;
       }
-      updates.email = input.email.toLowerCase().trim();
     }
 
     const [updatedUser] = await db

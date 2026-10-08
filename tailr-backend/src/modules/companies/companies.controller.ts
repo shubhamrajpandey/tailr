@@ -59,6 +59,14 @@ export class CompaniesController {
       data: { company },
     };
   }
+
+  async delete({ params }: { params: { id: string } }) {
+    await companiesService.delete(params.id);
+    return {
+      success: true,
+      message: "Company deleted successfully.",
+    };
+  }
 }
 
 export const companiesController = new CompaniesController();

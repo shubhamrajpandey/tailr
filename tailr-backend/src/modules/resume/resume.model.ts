@@ -6,13 +6,13 @@ import { t } from "elysia";
  */
 
 export const ResumeBasicsSchema = t.Object({
-  fullName: t.String({ minLength: 1, maxLength: 255, examples: ["Shubham Raj Pandey"] }),
-  email: t.Optional(t.String({ maxLength: 255, examples: ["shubhamrajpandey875@gmail.com"] })),
-  phone: t.Optional(t.String({ maxLength: 50, examples: ["+977 9800000000"] })),
-  location: t.Optional(t.String({ maxLength: 255, examples: ["Kathmandu, Nepal"] })),
-  linkedinUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://linkedin.com/in/shubhamrajpandey"] })),
-  githubUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://github.com/shubhamrajpandey"] })),
-  portfolioUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://shubhamrajpandey.com.np"] })),
+  fullName: t.String({ minLength: 1, maxLength: 255, examples: ["Jane Candidate"] }),
+  email: t.Optional(t.String({ maxLength: 255, examples: ["jane.candidate@example.com"] })),
+  phone: t.Optional(t.String({ maxLength: 50, examples: ["+1 (555) 019-2834"] })),
+  location: t.Optional(t.String({ maxLength: 255, examples: ["San Francisco, CA"] })),
+  linkedinUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://linkedin.com/in/janecandidate"] })),
+  githubUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://github.com/janecandidate"] })),
+  portfolioUrl: t.Optional(t.String({ maxLength: 500, examples: ["https://janecandidate.example.com"] })),
 });
 
 export const TechnicalSkillCategorySchema = t.Object({
@@ -27,38 +27,38 @@ export const TechnicalSkillCategorySchema = t.Object({
 });
 
 export const WorkExperienceItemSchema = t.Object({
-  role: t.String({ description: "Job title / role", examples: ["Frontend Developer Intern"] }),
-  company: t.String({ description: "Company or organization name", examples: ["Development Platform HCK"] }),
-  location: t.Optional(t.String({ description: "City, Country or Remote", examples: ["Kathmandu, Nepal"] })),
-  startDate: t.String({ description: "Start date", examples: ["May 2025"] }),
-  endDate: t.String({ description: "End date or 'Present'", examples: ["Dec 2025"] }),
+  role: t.String({ description: "Job title / role", examples: ["Software Engineer"] }),
+  company: t.String({ description: "Company or organization name", examples: ["Acme Cloud Solutions"] }),
+  location: t.Optional(t.String({ description: "City, Country or Remote", examples: ["San Francisco, CA"] })),
+  startDate: t.String({ description: "Start date", examples: ["Jan 2024"] }),
+  endDate: t.String({ description: "End date or 'Present'", examples: ["Present"] }),
   bullets: t.Array(t.String(), {
     description: "Achievement bullets formatted with action verbs and quantifiable impact",
     examples: [
-      "Built and maintained a Next.js academic resource-sharing platform with reusable UI components",
-      "Improved page load performance by optimising component structure and reducing unnecessary re-renders",
+      "Architected and deployed high-performance microservices using TypeScript, Node.js, and PostgreSQL",
+      "Designed real-time webhook ingestion engine handling 50k+ daily events with 99.99% reliability",
     ],
   }),
 });
 
 export const EducationItemSchema = t.Object({
-  institution: t.String({ description: "University or institution name", examples: ["Herald College Kathmandu — University of Wolverhampton"] }),
-  location: t.Optional(t.String({ description: "City, Country", examples: ["Kathmandu, Nepal"] })),
-  degree: t.String({ description: "Degree / certification earned", examples: ["BSc (Hons) Computer Science"] }),
-  startDate: t.Optional(t.String({ description: "Start date", examples: ["Oct 2023"] })),
-  endDate: t.String({ description: "Completion or expected date", examples: ["Dec 2026"] }),
+  institution: t.String({ description: "University or institution name", examples: ["State University of Technology"] }),
+  location: t.Optional(t.String({ description: "City, Country", examples: ["San Francisco, CA"] })),
+  degree: t.String({ description: "Degree / certification earned", examples: ["B.S. in Computer Science"] }),
+  startDate: t.Optional(t.String({ description: "Start date", examples: ["Sep 2018"] })),
+  endDate: t.String({ description: "Completion or expected date", examples: ["May 2022"] }),
 });
 
 export const ProjectItemSchema = t.Object({
-  title: t.String({ description: "Project title", examples: ["BookSansar -- Digital Reading & Book Marketplace"] }),
-  technologies: t.Optional(t.String({ description: "Tech stack used", examples: ["Next.js, Node.js, MongoDB"] })),
-  liveUrl: t.Optional(t.String({ description: "Live demo or GitHub URL", examples: ["https://booksansar.shubhamrajpandey.com.np"] })),
-  year: t.Optional(t.String({ description: "Year completed", examples: ["2026"] })),
+  title: t.String({ description: "Project title", examples: ["FlowMetrics -- Real-Time Analytics Platform"] }),
+  technologies: t.Optional(t.String({ description: "Tech stack used", examples: ["Next.js, TypeScript, PostgreSQL, Redis"] })),
+  liveUrl: t.Optional(t.String({ description: "Live demo or GitHub URL", examples: ["https://demo.flowmetrics.example.com"] })),
+  year: t.Optional(t.String({ description: "Year completed", examples: ["2024"] })),
   bullets: t.Array(t.String(), {
     description: "Project accomplishments and architecture highlights",
     examples: [
-      "Built a full-stack platform for four user roles with JWT role-based authentication and KYC verification workflows",
-      "Integrated eSewa and Khalti payment gateways using webhook-driven callbacks to trigger order updates",
+      "Engineered an interactive analytics dashboard featuring real-time stream aggregation",
+      "Integrated role-based access control (RBAC) and OAuth 2.0 authentication for secure multi-tenant teams",
     ],
   }),
 });
