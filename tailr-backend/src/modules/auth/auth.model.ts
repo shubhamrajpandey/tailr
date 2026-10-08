@@ -11,16 +11,17 @@ export const SignupBody = t.Object({
   }),
   email: t.String({
     format: "email",
-    error: "Please provide a valid email address.",
+    maxLength: 255,
+    error: "Please provide a valid email address (maximum 255 characters).",
   }),
   password: t.String({
     minLength: 8,
-    maxLength: 100,
-    error: "Password must be at least 8 characters long.",
+    maxLength: 128,
+    error: "Password must be between 8 and 128 characters long.",
   }),
   confirmPassword: t.String({
     minLength: 8,
-    maxLength: 100,
+    maxLength: 128,
     error: "Confirm password must match the password.",
   }),
 });
@@ -33,6 +34,7 @@ export type SignupInput = typeof SignupBody.static;
 export const VerifyOtpBody = t.Object({
   email: t.String({
     format: "email",
+    maxLength: 255,
     error: "Please provide a valid email address.",
   }),
   code: t.Optional(
@@ -61,6 +63,7 @@ export type VerifyOtpInput = typeof VerifyOtpBody.static;
 export const ResendOtpBody = t.Object({
   email: t.String({
     format: "email",
+    maxLength: 255,
     error: "Please provide a valid email address.",
   }),
 });
@@ -69,15 +72,18 @@ export type ResendOtpInput = typeof ResendOtpBody.static;
 
 /**
  * Validation schema for User Authentication (Login).
+ * Enforces strict bounded password lengths (8 to 128 chars) to prevent Hash Denial of Service (Argon2id CPU/RAM exhaustion).
  */
 export const LoginBody = t.Object({
   email: t.String({
     format: "email",
+    maxLength: 255,
     error: "Please provide a valid email address.",
   }),
   password: t.String({
-    minLength: 1,
-    error: "Password is required.",
+    minLength: 8,
+    maxLength: 128,
+    error: "Password must be between 8 and 128 characters.",
   }),
 });
 

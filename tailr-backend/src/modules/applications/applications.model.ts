@@ -9,20 +9,30 @@ export const ApplicationStatusEnum = t.Union([
   t.Literal("GHOSTED"),
 ]);
 
+/**
+ * Strict ISO-8601 date validation (e.g. "YYYY-MM-DD" or "YYYY-MM-DDTHH:mm:ssZ").
+ * Allows null and empty string "" for unsetting/clearing dates.
+ */
+export const IsoDateString = t.String({
+  pattern: "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(Z|[+-]\\d{2}:?\\d{2})?)?$",
+  maxLength: 50,
+  error: "Date must be a valid ISO-8601 date format (e.g. YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss.sssZ).",
+});
+
 export const CreateApplicationBody = t.Object({
   companyName: t.String({ minLength: 1, maxLength: 255 }),
   companyWebsite: t.Optional(t.String({ maxLength: 500 })),
   positionTitle: t.String({ minLength: 1, maxLength: 255 }),
-  jobDescriptionRaw: t.Optional(t.String()),
-  positionOpenDate: t.Optional(t.String()),
-  appliedDate: t.Optional(t.String()),
-  deadline: t.Optional(t.String()),
+  jobDescriptionRaw: t.Optional(t.String({ maxLength: 50000 })),
+  positionOpenDate: t.Optional(t.Union([IsoDateString, t.Null(), t.Literal("")])),
+  appliedDate: t.Optional(t.Union([IsoDateString, t.Null(), t.Literal("")])),
+  deadline: t.Optional(t.Union([IsoDateString, t.Null(), t.Literal("")])),
   applied: t.Optional(t.Boolean()),
   status: t.Optional(ApplicationStatusEnum),
   hrName: t.Optional(t.String({ maxLength: 255 })),
   hrLinkedinUrl: t.Optional(t.String({ maxLength: 500 })),
   hrAvatarUrl: t.Optional(t.String({ maxLength: 500 })),
-  resumeVersionId: t.Optional(t.String()),
+  resumeVersionId: t.Optional(t.String({ maxLength: 255 })),
   resumeVersion: t.Optional(t.Any()),
 });
 
@@ -30,8 +40,9 @@ export const UpdateApplicationBody = t.Partial(CreateApplicationBody);
 
 export const ApplicationIdParam = t.Object({
   id: t.String({
-    pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$|^app-",
-    description: "Application UUID or client-generated ID",
+    pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+    error: "Must be a valid UUID v4 format.",
+    description: "Application UUID identifier",
   }),
 });
 

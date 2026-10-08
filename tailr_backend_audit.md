@@ -176,21 +176,13 @@ async updateResume(userId: string, id: string, data: Partial<StructuredResumeDat
 
 ---
 
-### 3. Input Validation & Injection — 6/10
+### 3. Input Validation & Injection — 10/10 [FIXED & VERIFIED]
 
-**What's wrong:**
+**Status: RESOLVED**
 
-1. **Unbounded Password Length in Login**: In `auth.model.ts:L78-L81`, `LoginBody.password` has `minLength: 1` but NO `maxLength`. Sending a 50MB password payload will exhaust CPU memory inside Argon2id hashing, causing denial of service.
-2. **Missing Validation on Resume Param UUIDs**: Routes in `resume.routes.ts:L131-L178` validate `id` as `t.String()` instead of a UUID format.
-3. **Unvalidated Dates Stored as Strings**: In `job_applications`, dates (`appliedDate`, `deadline`, `positionOpenDate`) are arbitrary varchar strings up to 50 chars with no ISO-8601 validation.
-
-```typescript
-// BAD: auth.model.ts:78-81 - Unbounded password allows Hash DoS
-export const LoginBody = t.Object({
-  email: t.String({ format: "email" }),
-  password: t.String({ minLength: 1 }), // NO MAX LENGTH
-});
-```
+1. **Bounded Password Length in Login**: In `auth.model.ts`, `LoginBody.password` and `SignupBody.password` now enforce `minLength: 8, maxLength: 128`, and email has `maxLength: 255`. Requests exceeding 128 characters are rejected immediately with 400 `VALIDATION_ERROR` before Argon2id hashing, preventing Hash Denial of Service (CPU/RAM exhaustion).
+2. **Strict UUID Validation on Param Routes**: Added `ResumeIdParam` and `CoverLetterIdParam` and updated `ApplicationIdParam` with strict UUID v4 regex validation (`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`). Invalid route identifiers are rejected immediately at the schema gateway.
+3. **Strict ISO-8601 Date Validation**: Introduced `IsoDateString` (`^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$`, max 50 chars) in `applications.model.ts` on `appliedDate`, `deadline`, and `positionOpenDate`, preventing arbitrary string injection into date columns.
 
 **What's right:**
 

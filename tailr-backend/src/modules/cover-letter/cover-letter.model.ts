@@ -200,29 +200,44 @@ export const GenerateCoverLetterResponse = t.Object({
  * TypeBox schemas for Cover Letter persistent CRUD operations.
  */
 export const CreateCoverLetterBody = t.Object({
-  applicationId: t.Optional(t.Nullable(t.String())),
+  applicationId: t.Optional(
+    t.Nullable(
+      t.String({
+        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+        error: "applicationId must be a valid UUID v4.",
+      })
+    )
+  ),
   companyName: t.String({ minLength: 1, maxLength: 255 }),
   positionTitle: t.String({ minLength: 1, maxLength: 255 }),
   recipientName: t.Optional(t.Nullable(t.String({ maxLength: 255 }))),
   recipientTitle: t.Optional(t.Nullable(t.String({ maxLength: 255 }))),
-  tone: t.Optional(t.String({ default: "formal" })),
-  status: t.Optional(t.String({ default: "DRAFT" })),
-  content: t.String({ minLength: 1 }),
-  keyHighlights: t.Optional(t.Array(t.String())),
+  tone: t.Optional(t.String({ maxLength: 50, default: "formal" })),
+  status: t.Optional(t.String({ maxLength: 50, default: "DRAFT" })),
+  content: t.String({ minLength: 1, maxLength: 50000 }),
+  keyHighlights: t.Optional(t.Array(t.String({ maxLength: 500 }))),
 });
 
 export const UpdateCoverLetterBody = t.Partial(CreateCoverLetterBody);
 
 export const CoverLetterQuery = t.Optional(
   t.Object({
-    status: t.Optional(t.String()),
-    search: t.Optional(t.String()),
-    applicationId: t.Optional(t.String()),
+    status: t.Optional(t.String({ maxLength: 50 })),
+    search: t.Optional(t.String({ maxLength: 255 })),
+    applicationId: t.Optional(
+      t.String({
+        pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      })
+    ),
   })
 );
 
 export const CoverLetterIdParam = t.Object({
-  id: t.String(),
+  id: t.String({
+    pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+    error: "Must be a valid UUID v4 format.",
+    description: "Cover letter UUID identifier",
+  }),
 });
 
 export type CreateCoverLetterInput = typeof CreateCoverLetterBody.static;

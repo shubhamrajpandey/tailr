@@ -6,6 +6,7 @@ import {
   UploadRawResumeRequestSchema,
   TailorResumeRequestSchema,
   TailorResumeResponseSchema,
+  ResumeIdParam,
 } from "./resume.model";
 import { UnauthorizedError } from "../../middleware/error";
 import { authService } from "../auth/auth.service";
@@ -160,9 +161,7 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
           "/:id",
           (ctx) => resumeController.getResumeById(ctx as any),
           {
-            params: t.Object({
-              id: t.String({ description: "Resume UUID" }),
-            }),
+            params: ResumeIdParam,
             detail: {
               tags: ["Resumes"],
               summary: "Get resume by ID",
@@ -182,9 +181,7 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
           "/:id",
           (ctx) => resumeController.updateResume(ctx as any),
           {
-            params: t.Object({
-              id: t.String({ description: "Resume UUID" }),
-            }),
+            params: ResumeIdParam,
             body: SaveResumeRequestSchema,
             detail: {
               tags: ["Resumes"],
@@ -206,9 +203,7 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
           "/:id",
           (ctx) => resumeController.deleteResume(ctx as any),
           {
-            params: t.Object({
-              id: t.String({ description: "Resume UUID" }),
-            }),
+            params: ResumeIdParam,
             detail: {
               tags: ["Resumes"],
               summary: "Delete resume",
@@ -282,9 +277,7 @@ export const resumeRoutes = new Elysia({ prefix: "/resume" })
           "/tailored/:id",
           (ctx) => resumeController.getTailoredResumeById(ctx as any),
           {
-            params: t.Object({
-              id: t.String({ description: "Tailored resume UUID" }),
-            }),
+            params: ResumeIdParam,
             detail: {
               tags: ["Resumes"],
               summary: "Get tailored resume by ID",

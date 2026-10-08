@@ -52,6 +52,42 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
+  it("POST /auth/login rejects unbounded passwords (> 128 chars) to prevent Hash DoS", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "test@tailr.io",
+          password: "A".repeat(129),
+        }),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("POST /auth/login rejects short passwords (< 8 chars)", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "test@tailr.io",
+          password: "short",
+        }),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("VALIDATION_ERROR");
+  });
+
   it("POST /auth/verify-otp validates 6-digit numeric pattern", async () => {
     const res = await app.handle(
       new Request("http://localhost:3001/auth/verify-otp", {

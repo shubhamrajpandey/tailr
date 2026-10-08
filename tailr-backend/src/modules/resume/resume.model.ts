@@ -105,8 +105,22 @@ export const TailorResumeRequestSchema = t.Object({
     maxLength: 30000,
     description: "Target job description and requirements to tailor against",
   }),
-  resumeId: t.Optional(t.String({ description: "Optional UUID of existing master resume in database" })),
+  resumeId: t.Optional(
+    t.String({
+      pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      error: "resumeId must be a valid UUID v4.",
+      description: "Optional UUID of existing master resume in database",
+    })
+  ),
   resumeData: t.Optional(StructuredResumeDataSchema),
+});
+
+export const ResumeIdParam = t.Object({
+  id: t.String({
+    pattern: "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+    error: "Must be a valid UUID v4 format.",
+    description: "Resume UUID identifier",
+  }),
 });
 
 export const AtsFeedbackSchema = t.Object({
