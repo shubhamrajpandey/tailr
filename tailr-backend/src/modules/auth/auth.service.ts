@@ -124,36 +124,55 @@ export class AuthService {
     const email = input.email.trim().toLowerCase();
     const now = new Date();
 
-    // Find the latest active unconsumed OTP
-    const activeOtp = await db.query.otps.findFirst({
-      where: and(
-        eq(otps.email, email),
-        isNull(otps.consumedAt),
-        gt(otps.expiresAt, now)
-      ),
-      orderBy: [desc(otps.createdAt)],
-    });
+    // ── DEV BYPASS ────────────────────────────────────────────────────────────
+    // Magic code "696969" skips OTP verification in development mode only.
+    // NEVER ships to production — guarded by NODE_ENV check below.
+    // TODO: Remove this block entirely before going live and wire up a real
+    //       transactional email provider (Resend / AWS SES / Nodemailer).
+    const DEV_BYPASS_CODE = "696969";
+    const isDevBypass =
+      env.NODE_ENV !== "production" && code === DEV_BYPASS_CODE;
 
-    if (!activeOtp) {
-      throw new BadRequestError("Verification code is invalid or has expired. Please request a new code.");
+    if (!isDevBypass) {
+      // ── Normal OTP path ─────────────────────────────────────────────────────
+      // Find the latest active unconsumed OTP
+      const activeOtp = await db.query.otps.findFirst({
+        where: and(
+          eq(otps.email, email),
+          isNull(otps.consumedAt),
+          gt(otps.expiresAt, now)
+        ),
+        orderBy: [desc(otps.createdAt)],
+      });
+
+      if (!activeOtp) {
+        throw new BadRequestError("Verification code is invalid or has expired. Please request a new code.");
+      }
+
+      // Constant-time comparison prevents SHA-256 hash timing attacks
+      const inputHashBuffer = Buffer.from(hashToken(code), "hex");
+      const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
+      const hashesMatch =
+        inputHashBuffer.length === storedHashBuffer.length &&
+        crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer);
+
+      if (!hashesMatch) {
+        throw new BadRequestError("Invalid verification code. Please check and try again.");
+      }
+
+      // Mark OTP as consumed (prevent replay attacks)
+      await db
+        .update(otps)
+        .set({ consumedAt: now })
+        .where(eq(otps.id, activeOtp.id));
+    } else {
+      console.warn(
+        `[DEV BYPASS] OTP verification skipped for ${email} using magic code. ` +
+          "Remove this bypass before deploying to production."
+      );
     }
 
-    // Constant-time comparison prevents SHA-256 hash timing attacks
-    const inputHashBuffer = Buffer.from(hashToken(code), "hex");
-    const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
-    const hashesMatch =
-      inputHashBuffer.length === storedHashBuffer.length &&
-      crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer);
 
-    if (!hashesMatch) {
-      throw new BadRequestError("Invalid verification code. Please check and try again.");
-    }
-
-    // Mark OTP as consumed (prevent replay attacks)
-    await db
-      .update(otps)
-      .set({ consumedAt: now })
-      .where(eq(otps.id, activeOtp.id));
 
     // Activate the user account
     const [verifiedUser] = await db
