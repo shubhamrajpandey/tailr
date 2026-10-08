@@ -17,7 +17,7 @@ export const ChangePasswordBody = t.Object({
 });
 
 export const AISettingsSchema = t.Object({
-  model: t.Optional(t.String({ default: "gemini-1.5-flash" })),
+  model: t.Optional(t.String({ default: "gemini-2.5-flash" })),
   tailoringAggressiveness: t.Optional(t.String({ default: "balanced" })),
   defaultCoverLetterTone: t.Optional(t.String({ default: "formal" })),
   strictTruthConstraint: t.Optional(t.Boolean({ default: true })),

@@ -379,7 +379,7 @@ export const userSettings = pgTable(
       .unique()
       .references(() => users.id, { onDelete: "cascade" }),
     // AI Workspace Settings
-    aiModel: varchar("ai_model", { length: 50 }).default("gemini-1.5-flash").notNull(),
+    aiModel: varchar("ai_model", { length: 50 }).default("gemini-2.5-flash").notNull(),
     tailoringAggressiveness: varchar("tailoring_aggressiveness", { length: 50 }).default("balanced").notNull(),
     defaultCoverLetterTone: varchar("default_cover_letter_tone", { length: 50 }).default("formal").notNull(),
     strictTruthConstraint: boolean("strict_truth_constraint").default(true).notNull(),

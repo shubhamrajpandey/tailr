@@ -18,7 +18,7 @@ export interface QuotaCheckResult {
 export async function assertAiQuota(
   userId: string | null | undefined,
   action: QuotaAction,
-  set: { headers: Record<string, string> }
+  set: { headers: Record<string, any>; status?: any }
 ): Promise<QuotaCheckResult> {
   if (!userId) {
     throw new UnauthorizedError("Authentication required. Please log in to generate tailored resumes and cover letters.");

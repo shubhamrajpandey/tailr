@@ -20,7 +20,7 @@ class CoverLetterController {
   }: {
     body: GenerateCoverLetterInput;
     authUser: { id: string; role: string } | null;
-    set: { headers: Record<string, string>; status?: number };
+    set: { headers: Record<string, any>; status?: any };
   }) {
     if (!authUser) {
       throw new UnauthorizedError(
@@ -29,7 +29,7 @@ class CoverLetterController {
     }
 
     // 1. Assert anti-spam cooldown and rolling 24h daily quota
-    const quotaCheck = await assertAiQuota(authUser.id, "COVER_LETTER_GENERATE", set as any);
+    const quotaCheck = await assertAiQuota(authUser.id, "COVER_LETTER_GENERATE", set);
 
     // 2. Execute AI generation
     const result = await coverLetterService.generate(body);
@@ -91,7 +91,7 @@ class CoverLetterController {
   }: {
     authUser: { id: string; role: string };
     body: CreateCoverLetterInput;
-    set: { status: number };
+    set: { status?: any };
   }) {
     const coverLetter = await coverLetterService.create(authUser.id, body);
     set.status = 201;

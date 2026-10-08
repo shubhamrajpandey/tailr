@@ -20,7 +20,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
   // 1. Get Master Resume (Plural Standard: GET /resumes/master)
         .get(
           "/resumes/master",
-          (ctx) => resumeController.getMasterResume(ctx as any),
+          ({ authUser }) => resumeController.getMasterResume({ authUser: authUser! }),
           {
             detail: {
               tags: ["Resumes"],
@@ -38,7 +38,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 1b. Legacy alias: GET /resume/master
         .get(
           "/resume/master",
-          (ctx) => resumeController.getMasterResume(ctx as any),
+          ({ authUser }) => resumeController.getMasterResume({ authUser: authUser! }),
           {
             detail: {
               tags: ["Resumes"],
@@ -51,7 +51,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 2. Save Master Resume (Plural Standard: POST /resumes)
         .post(
           "/resumes",
-          (ctx) => resumeController.saveMasterResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.saveMasterResume({ authUser: authUser!, body, set }),
           {
             body: SaveResumeRequestSchema,
             detail: {
@@ -71,7 +72,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 2b. Legacy alias: POST /resume
         .post(
           "/resume",
-          (ctx) => resumeController.saveMasterResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.saveMasterResume({ authUser: authUser!, body, set }),
           {
             body: SaveResumeRequestSchema,
             detail: {
@@ -85,7 +87,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 3. Upload raw resume (Plural Standard: POST /resumes/upload)
         .post(
           "/resumes/upload",
-          (ctx) => resumeController.uploadRawResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.uploadRawResume({ authUser: authUser!, body, set }),
           {
             body: UploadRawResumeRequestSchema,
             detail: {
@@ -106,7 +109,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 3b. Legacy alias: POST /resume/upload
         .post(
           "/resume/upload",
-          (ctx) => resumeController.uploadRawResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.uploadRawResume({ authUser: authUser!, body, set }),
           {
             body: UploadRawResumeRequestSchema,
             detail: {
@@ -120,7 +124,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 4. List saved resumes (Plural Standard: GET /resumes)
         .get(
           "/resumes",
-          (ctx) => resumeController.listResumes(ctx as any),
+          ({ authUser }) => resumeController.listResumes({ authUser: authUser! }),
           {
             detail: {
               tags: ["Resumes"],
@@ -137,7 +141,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 4b. Legacy alias: GET /resume
         .get(
           "/resume",
-          (ctx) => resumeController.listResumes(ctx as any),
+          ({ authUser }) => resumeController.listResumes({ authUser: authUser! }),
           {
             detail: {
               tags: ["Resumes"],
@@ -150,7 +154,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 5. Get resume by UUID (Plural Standard: GET /resumes/:id)
         .get(
           "/resumes/:id",
-          (ctx) => resumeController.getResumeById(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.getResumeById({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -169,7 +174,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 5b. Legacy alias: GET /resume/:id
         .get(
           "/resume/:id",
-          (ctx) => resumeController.getResumeById(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.getResumeById({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -183,7 +189,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 6. Update resume by UUID (Plural Standard: PUT /resumes/:id)
         .put(
           "/resumes/:id",
-          (ctx) => resumeController.updateResume(ctx as any),
+          ({ authUser, params, body, set }) =>
+            resumeController.updateResume({ authUser: authUser!, params, body, set }),
           {
             params: ResumeIdParam,
             body: SaveResumeRequestSchema,
@@ -204,7 +211,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 6b. Legacy alias: PUT /resume/:id
         .put(
           "/resume/:id",
-          (ctx) => resumeController.updateResume(ctx as any),
+          ({ authUser, params, body, set }) =>
+            resumeController.updateResume({ authUser: authUser!, params, body, set }),
           {
             params: ResumeIdParam,
             body: SaveResumeRequestSchema,
@@ -219,7 +227,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 7. Delete resume by UUID (Plural Standard: DELETE /resumes/:id)
         .delete(
           "/resumes/:id",
-          (ctx) => resumeController.deleteResume(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.deleteResume({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -238,7 +247,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 7b. Legacy alias: DELETE /resume/:id
         .delete(
           "/resume/:id",
-          (ctx) => resumeController.deleteResume(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.deleteResume({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -252,7 +262,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 8. AI-Powered Resume Tailoring (Resource Standard: POST /tailored-resumes)
         .post(
           "/tailored-resumes",
-          (ctx) => resumeController.tailorResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.tailorResume({ authUser: authUser!, body, set }),
           {
             body: TailorResumeRequestSchema,
             response: {
@@ -277,7 +288,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 8b. Plural alias: POST /resumes/tailor
         .post(
           "/resumes/tailor",
-          (ctx) => resumeController.tailorResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.tailorResume({ authUser: authUser!, body, set }),
           {
             body: TailorResumeRequestSchema,
             response: {
@@ -293,7 +305,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 8c. Legacy alias: POST /resume/tailor
         .post(
           "/resume/tailor",
-          (ctx) => resumeController.tailorResume(ctx as any),
+          ({ authUser, body, set }) =>
+            resumeController.tailorResume({ authUser: authUser!, body, set }),
           {
             body: TailorResumeRequestSchema,
             response: {
@@ -310,7 +323,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 9. List tailored resumes (Resource Standard: GET /tailored-resumes)
         .get(
           "/tailored-resumes",
-          (ctx) => resumeController.listTailoredResumes(ctx as any),
+          ({ authUser }) => resumeController.listTailoredResumes({ authUser: authUser! }),
           {
             detail: {
               tags: ["Tailored Resumes"],
@@ -327,7 +340,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 9b. Plural alias: GET /resumes/tailored
         .get(
           "/resumes/tailored",
-          (ctx) => resumeController.listTailoredResumes(ctx as any),
+          ({ authUser }) => resumeController.listTailoredResumes({ authUser: authUser! }),
           {
             detail: {
               tags: ["Tailored Resumes"],
@@ -339,7 +352,7 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 9c. Legacy alias: GET /resume/tailored
         .get(
           "/resume/tailored",
-          (ctx) => resumeController.listTailoredResumes(ctx as any),
+          ({ authUser }) => resumeController.listTailoredResumes({ authUser: authUser! }),
           {
             detail: {
               tags: ["Tailored Resumes"],
@@ -352,7 +365,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 10. Get tailored resume by UUID (Resource Standard: GET /tailored-resumes/:id)
         .get(
           "/tailored-resumes/:id",
-          (ctx) => resumeController.getTailoredResumeById(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.getTailoredResumeById({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -372,7 +386,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 10b. Plural alias: GET /resumes/tailored/:id
         .get(
           "/resumes/tailored/:id",
-          (ctx) => resumeController.getTailoredResumeById(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.getTailoredResumeById({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {
@@ -385,7 +400,8 @@ export const resumeRoutes = new Elysia({ prefix: "" })
         // 10c. Legacy alias: GET /resume/tailored/:id
         .get(
           "/resume/tailored/:id",
-          (ctx) => resumeController.getTailoredResumeById(ctx as any),
+          ({ authUser, params, set }) =>
+            resumeController.getTailoredResumeById({ authUser: authUser!, params, set }),
           {
             params: ResumeIdParam,
             detail: {

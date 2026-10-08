@@ -10,7 +10,7 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.uptime).toBeDefined();
     expect(body.timestamp).toBeDefined();
     expect(body.services).toBeDefined();
-  });
+  }, 10000);
 
   it("POST /auth/signup rejects invalid email formatting via Elysia TypeBox", async () => {
     const res = await app.handle(

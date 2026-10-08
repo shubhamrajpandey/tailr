@@ -18,16 +18,17 @@ export interface AuthUserContext {
  * Utilizes 60s in-memory TTL caching on getUserById to eliminate redundant
  * PostgreSQL round-trips on authenticated requests.
  */
-export const createAuthGuard = (namespace = "default") =>
-  new Elysia({ name: `auth-guard-${namespace}` })
-    .use(
-      jwt({
-        name: "jwtAccess",
-        secret: env.JWT_ACCESS_SECRET,
-        exp: env.JWT_ACCESS_EXPIRY,
-      })
-    )
-    .derive(async ({ headers, jwtAccess }: any) => {
+export const authGuard = new Elysia({ name: "auth-guard" })
+  .use(
+    jwt({
+      name: "jwtAccess",
+      secret: env.JWT_ACCESS_SECRET,
+      exp: env.JWT_ACCESS_EXPIRY,
+    })
+  )
+  .derive(
+    { as: "global" },
+    async ({ headers, jwtAccess }): Promise<{ authUser: AuthUserContext | null }> => {
       const authHeader = headers["authorization"] || headers["Authorization"];
 
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -50,21 +51,21 @@ export const createAuthGuard = (namespace = "default") =>
       } catch {
         return { authUser: null };
       }
-    });
+    }
+  );
 
 /**
- * Creates an authentication guard that strictly enforces valid credentials.
+ * Enforces valid authentication on scoped routes.
  */
-export const createRequireAuth = (namespace = "default") =>
-  new Elysia({ name: `require-auth-${namespace}` })
-    .use(createAuthGuard(namespace))
-    .onBeforeHandle({ as: "scoped" }, (ctx: any) => {
-      if (!ctx.authUser) {
-        throw new UnauthorizedError(
-          "Authentication required. Please provide a valid Bearer token."
-        );
-      }
-    });
+export const requireAuth = new Elysia({ name: "require-auth" })
+  .use(authGuard)
+  .onBeforeHandle({ as: "scoped" }, ({ authUser }) => {
+    if (!authUser) {
+      throw new UnauthorizedError(
+        "Authentication required. Please provide a valid Bearer token."
+      );
+    }
+  });
 
-export const authGuard = createAuthGuard("default");
-export const requireAuth = createRequireAuth("default");
+export const createAuthGuard = (_namespace = "default") => authGuard;
+export const createRequireAuth = (_namespace = "default") => requireAuth;

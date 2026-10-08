@@ -41,7 +41,7 @@ export class ApplicationsController {
   }: {
     authUser: { id: string; role: string };
     body: CreateApplicationInput;
-    set: { status: number };
+    set: { status?: number | string };
   }) {
     const application = await applicationsService.create(authUser.id, body);
     set.status = 201;

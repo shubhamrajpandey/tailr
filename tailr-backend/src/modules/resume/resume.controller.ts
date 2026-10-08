@@ -4,6 +4,7 @@ import {
   SaveResumeRequest,
   UploadRawResumeRequest,
   TailorResumeRequest,
+  StructuredResumeData,
 } from "./resume.model";
 import { assertAiQuota } from "../quota/quota.middleware";
 import { quotaService } from "../quota/quota.service";
@@ -116,6 +117,7 @@ export class ResumeController {
   }: {
     authUser: AuthUserContext;
     params: { id: string };
+    set?: Context["set"];
   }) {
     const record = await resumeService.getResumeById(authUser.id, params.id);
 
@@ -136,6 +138,7 @@ export class ResumeController {
     authUser: AuthUserContext;
     params: { id: string };
     body: SaveResumeRequest;
+    set?: Context["set"];
   }) {
     const updated = await resumeService.updateResume(
       authUser.id,
@@ -160,6 +163,7 @@ export class ResumeController {
   }: {
     authUser: AuthUserContext;
     params: { id: string };
+    set?: Context["set"];
   }) {
     await resumeService.deleteResume(authUser.id, params.id);
 
@@ -182,7 +186,7 @@ export class ResumeController {
     set: Context["set"];
   }) {
     // 1. Enforce authenticated user, anti-spam cooldown, and rolling 24h quota
-    const quotaCheck = await assertAiQuota(authUser.id, "RESUME_TAILOR", set as any);
+    const quotaCheck = await assertAiQuota(authUser.id, "RESUME_TAILOR", set);
 
     // Determine baseline resume to tailor from:
     // 1. Provided directly in payload body.resumeData
@@ -204,10 +208,10 @@ export class ResumeController {
               portfolioUrl: found.portfolioUrl || undefined,
             },
             careerSummary: found.careerSummary || "",
-            technicalSkills: found.technicalSkills as any,
-            workExperience: found.workExperience as any,
-            education: found.education as any,
-            projects: found.projects as any,
+            technicalSkills: found.technicalSkills as StructuredResumeData["technicalSkills"],
+            workExperience: found.workExperience as StructuredResumeData["workExperience"],
+            education: found.education as StructuredResumeData["education"],
+            projects: found.projects as StructuredResumeData["projects"],
           };
         }
       }
@@ -269,6 +273,7 @@ export class ResumeController {
   }: {
     authUser: AuthUserContext;
     params: { id: string };
+    set?: Context["set"];
   }) {
     const record = await resumeService.getTailoredResumeById(authUser.id, params.id);
 

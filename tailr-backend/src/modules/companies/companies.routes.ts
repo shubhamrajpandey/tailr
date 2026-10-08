@@ -27,8 +27,8 @@ export const companiesRoutes = new Elysia({ prefix: "" })
   // ── Public endpoints (any authenticated user) ───────────────────────────
   .guard(
     {
-      beforeHandle: (ctx: any) => {
-        if (!ctx.authUser) {
+      beforeHandle: ({ authUser }: { authUser?: { id: string; role?: string } | null }) => {
+        if (!authUser) {
           throw new UnauthorizedError(
             "Authentication required. Please provide a valid Bearer token."
           );
@@ -37,23 +37,27 @@ export const companiesRoutes = new Elysia({ prefix: "" })
     },
     (app) =>
       app
-        .get("/companies", (ctx) => companiesController.list(ctx as any), {
-          query: CompanyListQuery,
-          detail: {
-            tags: ["Companies"],
-            summary: "List companies",
-            description:
-              "Returns a cursor-paginated list of IT companies. Use `search` for partial name matching or `letter` for A–Z filtering — they are mutually exclusive (search wins). Requires a valid Bearer token.",
-            security: [{ bearerAuth: [] }],
-            responses: {
-              200: { description: "Paginated company list." },
-              401: { description: "Missing or invalid access token." },
+        .get(
+          "/companies",
+          ({ query, set }) => companiesController.list({ query, set }),
+          {
+            query: CompanyListQuery,
+            detail: {
+              tags: ["Companies"],
+              summary: "List companies",
+              description:
+                "Returns a cursor-paginated list of IT companies. Use `search` for partial name matching or `letter` for A–Z filtering — they are mutually exclusive (search wins). Requires a valid Bearer token.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "Paginated company list." },
+                401: { description: "Missing or invalid access token." },
+              },
             },
-          },
-        })
+          }
+        )
         .get(
           "/companies/:id",
-          (ctx) => companiesController.getById(ctx as any),
+          ({ params, set }) => companiesController.getById({ params, set }),
           {
             params: CompanyIdParam,
             detail: {
@@ -75,11 +79,11 @@ export const companiesRoutes = new Elysia({ prefix: "" })
   // ── Admin-only endpoints (Standard RESTful on /companies + legacy /admin/companies aliases) ──
   .guard(
     {
-      beforeHandle: (ctx: any) => {
-        if (!ctx.authUser) {
+      beforeHandle: ({ authUser }: { authUser?: { id: string; role?: string } | null }) => {
+        if (!authUser) {
           throw new UnauthorizedError("Authentication required.");
         }
-        if (ctx.authUser.role !== "admin") {
+        if (authUser.role !== "admin") {
           throw new ForbiddenError(
             "Admin access required. You do not have permission to perform this action."
           );
@@ -91,7 +95,8 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Standard REST: POST /companies (Admin)
         .post(
           "/companies",
-          (ctx) => companiesController.create(ctx as any),
+          ({ body, authUser, set }) =>
+            companiesController.create({ body, authUser: authUser!, set }),
           {
             body: CreateCompanyBody,
             detail: {
@@ -111,7 +116,7 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Standard REST: PATCH /companies/:id (Admin)
         .patch(
           "/companies/:id",
-          (ctx) => companiesController.update(ctx as any),
+          ({ params, body }) => companiesController.update({ params, body }),
           {
             params: CompanyIdParam,
             body: UpdateCompanyBody,
@@ -133,7 +138,7 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Standard REST: DELETE /companies/:id (Admin)
         .delete(
           "/companies/:id",
-          (ctx) => companiesController.delete(ctx as any),
+          ({ params }) => companiesController.delete({ params }),
           {
             params: CompanyIdParam,
             detail: {
@@ -154,7 +159,8 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Legacy alias: POST /admin/companies
         .post(
           "/admin/companies",
-          (ctx) => companiesController.create(ctx as any),
+          ({ body, authUser, set }) =>
+            companiesController.create({ body, authUser: authUser!, set }),
           {
             body: CreateCompanyBody,
             detail: {
@@ -174,7 +180,7 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Legacy alias: PATCH /admin/companies/:id
         .patch(
           "/admin/companies/:id",
-          (ctx) => companiesController.update(ctx as any),
+          ({ params, body }) => companiesController.update({ params, body }),
           {
             params: CompanyIdParam,
             body: UpdateCompanyBody,
@@ -196,7 +202,7 @@ export const companiesRoutes = new Elysia({ prefix: "" })
         // Legacy alias: DELETE /admin/companies/:id
         .delete(
           "/admin/companies/:id",
-          (ctx) => companiesController.delete(ctx as any),
+          ({ params }) => companiesController.delete({ params }),
           {
             params: CompanyIdParam,
             detail: {

@@ -38,35 +38,50 @@ export async function sendOtpEmail({
   }
 
   // ── Production Mode ─────────────────────────────────────────────────────────
-  // Option A: Resend (recommended — zero-config, generous free tier)
-  //   1. Sign up at https://resend.com and get an API key.
-  //   2. Add RESEND_API_KEY to your production .env.
-  //   3. Replace this block with the Resend SDK call below.
-  //
-  // Option B: Nodemailer over SMTP
-  //   1. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM to .env.
-  //   2. Replace this block with a createTransport + sendMail call.
-  //
-  // Until one of the above is configured, the server will throw here in production
-  // so that missing email delivery is caught immediately, not silently swallowed.
-  //
-  // ── Resend integration skeleton (uncomment when ready) ─────────────────────
-  // import { Resend } from "resend";
-  // const resend = new Resend(env.RESEND_API_KEY);
-  // const { error } = await resend.emails.send({
-  //   from: "Tailr Security <noreply@tailr.io>",
-  //   to,
-  //   subject: "Verify Your Tailr Account",
-  //   html: `<p>Hi ${fullName},</p>
-  //          <p>Your 6-digit verification code is: <strong>${otp}</strong></p>
-  //          <p>This code expires in ${expiryText}.</p>`,
-  // });
-  // if (error) throw new Error(`[Mailer] Resend delivery failed: ${error.message}`);
-  // return true;
+  if (env.RESEND_API_KEY) {
+    try {
+      const response = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: env.EMAIL_FROM || "Tailr Security <noreply@tailr.io>",
+          to,
+          subject: "Verify Your Tailr Account",
+          html: `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 24px; color: #1e293b;">
+              <h2 style="color: #0f172a; margin-bottom: 16px;">Verify Your Tailr Account</h2>
+              <p>Hi ${fullName},</p>
+              <p>Your 6-digit verification code is:</p>
+              <div style="background-color: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 24px 0;">
+                <span style="font-size: 32px; font-weight: 700; letter-spacing: 6px; color: #0284c7;">${otp}</span>
+              </div>
+              <p style="color: #64748b; font-size: 14px;">This code will expire in ${expiryText}. If you did not request this verification, please safely ignore this email.</p>
+              <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+              <p style="color: #94a3b8; font-size: 12px; margin: 0;">Tailr AI Career Platform</p>
+            </div>
+          `,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Resend API returned HTTP ${response.status}: ${errorBody}`);
+      }
+
+      return true;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`[Mailer] Transactional delivery error: ${message}`);
+      throw new Error(`Failed to send verification email: ${message}`);
+    }
+  }
 
   throw new Error(
     "[Mailer] Production email delivery is not configured. " +
-      "Set RESEND_API_KEY or SMTP credentials and wire up sendOtpEmail() before deploying."
+      "Set RESEND_API_KEY and wire up production environment credentials."
   );
 }
 

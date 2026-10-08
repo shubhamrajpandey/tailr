@@ -329,13 +329,13 @@ ${JSON.stringify(resumeData, null, 2)}`;
         "Git",
         "Tailwind CSS",
         "Socket.io",
-      ].filter((k) => jdLower.includes(k.toLowerCase()));
+      ].filter((keyword) => jdLower.includes(keyword.toLowerCase()));
 
       atsFeedback = {
         atsScore: Math.min(95, Math.max(78, 70 + detectedKeywords.length * 3)),
         matchedKeywords: detectedKeywords,
         missingKeywords: ["Cloud Architecture", "Unit Testing", "Microservices"].filter(
-          (k) => !jdLower.includes(k.toLowerCase())
+          (keyword) => !jdLower.includes(keyword.toLowerCase())
         ),
         formattingScore: 98,
         strengths: [
@@ -356,49 +356,14 @@ ${JSON.stringify(resumeData, null, 2)}`;
     }
 
     // Preserve candidate basics identity
-    const rawBasics = tailoredData.basics || (tailoredData as any) || resumeData.basics || {};
-    const normFullName =
-      rawBasics.fullName ||
-      (tailoredData as any).fullName ||
-      resumeData.basics?.fullName ||
-      (resumeData as any).fullName ||
-      "Candidate";
-    const normEmail =
-      rawBasics.email ||
-      (tailoredData as any).email ||
-      resumeData.basics?.email ||
-      (resumeData as any).email ||
-      "";
-    const normPhone =
-      rawBasics.phone ||
-      (tailoredData as any).phone ||
-      resumeData.basics?.phone ||
-      (resumeData as any).phone ||
-      "";
-    const normLocation =
-      rawBasics.location ||
-      (tailoredData as any).location ||
-      resumeData.basics?.location ||
-      (resumeData as any).location ||
-      "";
-    const normLinkedin =
-      rawBasics.linkedinUrl ||
-      (tailoredData as any).linkedinUrl ||
-      resumeData.basics?.linkedinUrl ||
-      (resumeData as any).linkedinUrl ||
-      "";
-    const normGithub =
-      rawBasics.githubUrl ||
-      (tailoredData as any).githubUrl ||
-      resumeData.basics?.githubUrl ||
-      (resumeData as any).githubUrl ||
-      "";
-    const normPortfolio =
-      rawBasics.portfolioUrl ||
-      (tailoredData as any).portfolioUrl ||
-      resumeData.basics?.portfolioUrl ||
-      (resumeData as any).portfolioUrl ||
-      "";
+    const rawBasics = tailoredData.basics || resumeData.basics || { fullName: "Candidate" };
+    const normFullName = rawBasics.fullName || resumeData.basics?.fullName || "Candidate";
+    const normEmail = rawBasics.email || resumeData.basics?.email || "";
+    const normPhone = rawBasics.phone || resumeData.basics?.phone || "";
+    const normLocation = rawBasics.location || resumeData.basics?.location || "";
+    const normLinkedin = rawBasics.linkedinUrl || resumeData.basics?.linkedinUrl || "";
+    const normGithub = rawBasics.githubUrl || resumeData.basics?.githubUrl || "";
+    const normPortfolio = rawBasics.portfolioUrl || resumeData.basics?.portfolioUrl || "";
 
     tailoredData = {
       ...tailoredData,
@@ -411,14 +376,7 @@ ${JSON.stringify(resumeData, null, 2)}`;
         githubUrl: normGithub,
         portfolioUrl: normPortfolio,
       },
-      fullName: normFullName,
-      email: normEmail,
-      phone: normPhone,
-      location: normLocation,
-      linkedinUrl: normLinkedin,
-      githubUrl: normGithub,
-      portfolioUrl: normPortfolio,
-    } as any;
+    };
 
     const latexSource = generateLatexFromStructuredResume(tailoredData);
 

@@ -3,6 +3,20 @@ import { generateSecureRandomToken } from "../../utils/crypto";
 import { BadRequestError, UnauthorizedError } from "../../middleware/error";
 import { env } from "../../config/env";
 import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
+import type { AuthUserContext } from "../../middleware/auth-guard";
+
+export interface JwtSigner {
+  sign: (payload: any) => Promise<string>;
+  verify: (jwt?: string) => Promise<any>;
+}
+
+export interface CookieJar {
+  [key: string]: {
+    value?: any;
+    set: (options: Record<string, any>) => void;
+    remove: (options?: Record<string, any>) => void;
+  };
+}
 
 /**
  * Cookie options complying strictly with security standards:
@@ -33,7 +47,6 @@ function getAccessTokenCookieOptions() {
   };
 }
 
-
 export class AuthController {
   async signup({ body }: { body: SignupInput }) {
     const result = await authService.signup(body);
@@ -53,8 +66,8 @@ export class AuthController {
     cookie,
   }: {
     body: VerifyOtpInput;
-    jwtAccess: any;
-    cookie: any;
+    jwtAccess: JwtSigner;
+    cookie: CookieJar;
   }) {
     const otpCode = body.code || body.otp;
     if (!otpCode) {
@@ -119,8 +132,8 @@ export class AuthController {
     cookie,
   }: {
     body: LoginInput;
-    jwtAccess: any;
-    cookie: any;
+    jwtAccess: JwtSigner;
+    cookie: CookieJar;
   }) {
     const user = await authService.login(body);
 
@@ -165,8 +178,8 @@ export class AuthController {
     cookie,
     jwtAccess,
   }: {
-    cookie: any;
-    jwtAccess: any;
+    cookie: CookieJar;
+    jwtAccess: JwtSigner;
   }) {
     const rawRefreshToken = cookie.refreshToken?.value;
     if (!rawRefreshToken) {
@@ -208,7 +221,7 @@ export class AuthController {
     };
   }
 
-  async logout({ cookie }: { cookie: any }) {
+  async logout({ cookie }: { cookie: CookieJar }) {
     const rawRefreshToken = cookie.refreshToken?.value;
     if (rawRefreshToken) {
       await authService.revokeRefreshToken(rawRefreshToken);
@@ -230,7 +243,7 @@ export class AuthController {
     };
   }
 
-  async me({ authUser }: { authUser: any }) {
+  async me({ authUser }: { authUser: AuthUserContext }) {
     return {
       success: true,
       data: {

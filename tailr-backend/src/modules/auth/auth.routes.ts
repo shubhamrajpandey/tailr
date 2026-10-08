@@ -27,7 +27,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   .use(authGuard)
 
   // 1. User Registration -> Triggers 6-Digit OTP Email
-  .post("/signup", (ctx) => authController.signup(ctx as any), {
+  .post("/signup", ({ body }) => authController.signup({ body }), {
     body: SignupBody,
     detail: {
       tags: ["Auth"],
@@ -49,27 +49,32 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   })
 
   // 2. Verify 6-Digit OTP -> Activates Account & Issues JWT + HttpOnly Cookie
-  .post("/verify-otp", (ctx) => authController.verifyOtp(ctx as any), {
-    body: VerifyOtpBody,
-    detail: {
-      tags: ["Auth"],
-      summary: "Verify OTP code & activate account",
-      description:
-        "Verifies the single-use 6-digit OTP code against the SHA-256 hash in PostgreSQL, marks user as verified, issues a short-lived JWT access token, and sets an HttpOnly/Secure refresh cookie.",
-      responses: {
-        200: {
-          description: "Account successfully activated and authenticated.",
-        },
-        400: {
-          description: "Invalid or expired OTP verification code.",
+  .post(
+    "/verify-otp",
+    ({ body, jwtAccess, cookie }) =>
+      authController.verifyOtp({ body, jwtAccess, cookie }),
+    {
+      body: VerifyOtpBody,
+      detail: {
+        tags: ["Auth"],
+        summary: "Verify OTP code & activate account",
+        description:
+          "Verifies the single-use 6-digit OTP code against the SHA-256 hash in PostgreSQL, marks user as verified, issues a short-lived JWT access token, and sets an HttpOnly/Secure refresh cookie.",
+        responses: {
+          200: {
+            description: "Account successfully activated and authenticated.",
+          },
+          400: {
+            description: "Invalid or expired OTP verification code.",
+          },
         },
       },
-    },
-  })
+    }
+  )
 
   // 3. Resend OTP -> Rate-limited cooldown
   .use(otpResendRateLimiter)
-  .post("/resend-otp", (ctx) => authController.resendOtp(ctx as any), {
+  .post("/resend-otp", ({ body }) => authController.resendOtp({ body }), {
     body: ResendOtpBody,
     detail: {
       tags: ["Auth"],
@@ -89,50 +94,59 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
 
   // 4. User Login -> Validates Credentials & Returns JWT + Sets HttpOnly Cookie
   .use(authRateLimiter)
-  .post("/login", (ctx) => authController.login(ctx as any), {
-    body: LoginBody,
-    detail: {
-      tags: ["Auth"],
-      summary: "User credential login",
-      description:
-        "Validates email and password against Bun-native argon2id hash. Enforces account verification. On success, issues a short-lived JWT access token and sets an HttpOnly refresh cookie.",
-      responses: {
-        200: {
-          description: "Login successful.",
-        },
-        401: {
-          description: "Invalid credentials.",
-        },
-        403: {
-          description: "Account unverified (triggers automatic OTP resend).",
-        },
-        429: {
-          description: "Rate limit exceeded.",
+  .post(
+    "/login",
+    ({ body, jwtAccess, cookie }) =>
+      authController.login({ body, jwtAccess, cookie }),
+    {
+      body: LoginBody,
+      detail: {
+        tags: ["Auth"],
+        summary: "User credential login",
+        description:
+          "Validates email and password against Bun-native argon2id hash. Enforces account verification. On success, issues a short-lived JWT access token and sets an HttpOnly refresh cookie.",
+        responses: {
+          200: {
+            description: "Login successful.",
+          },
+          401: {
+            description: "Invalid credentials.",
+          },
+          403: {
+            description: "Account unverified (triggers automatic OTP resend).",
+          },
+          429: {
+            description: "Rate limit exceeded.",
+          },
         },
       },
-    },
-  })
+    }
+  )
 
   // 5. Rotate Access Token using HttpOnly Refresh Cookie
-  .post("/refresh", (ctx) => authController.refresh(ctx as any), {
-    detail: {
-      tags: ["Auth"],
-      summary: "Rotate access and refresh tokens",
-      description:
-        "Reads the HttpOnly refresh token cookie, validates against PostgreSQL, revokes the old token, persists a new refresh token, updates the cookie, and issues a fresh JWT access token.",
-      responses: {
-        200: {
-          description: "Token pair rotated successfully.",
-        },
-        401: {
-          description: "Missing, expired, or revoked refresh token.",
+  .post(
+    "/refresh",
+    ({ cookie, jwtAccess }) => authController.refresh({ cookie, jwtAccess }),
+    {
+      detail: {
+        tags: ["Auth"],
+        summary: "Rotate access and refresh tokens",
+        description:
+          "Reads the HttpOnly refresh token cookie, validates against PostgreSQL, revokes the old token, persists a new refresh token, updates the cookie, and issues a fresh JWT access token.",
+        responses: {
+          200: {
+            description: "Token pair rotated successfully.",
+          },
+          401: {
+            description: "Missing, expired, or revoked refresh token.",
+          },
         },
       },
-    },
-  })
+    }
+  )
 
   // 6. Logout -> Server-side revocation + Cookie clearance
-  .post("/logout", (ctx) => authController.logout(ctx as any), {
+  .post("/logout", ({ cookie }) => authController.logout({ cookie }), {
     detail: {
       tags: ["Auth"],
       summary: "Logout user and revoke session",
@@ -149,8 +163,8 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
   // 7. Protected User Profile (guarded by Bearer token check)
   .guard(
     {
-      beforeHandle: (ctx: any) => {
-        if (!ctx.authUser) {
+      beforeHandle: ({ authUser }: { authUser?: { id: string } | null }) => {
+        if (!authUser) {
           throw new UnauthorizedError(
             "Authentication required. Please provide a valid Bearer token."
           );
@@ -158,7 +172,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
       },
     },
     (app) =>
-      app.get("/me", (ctx) => authController.me(ctx as any), {
+      app.get("/me", ({ authUser }) => authController.me({ authUser: authUser! }), {
         detail: {
           tags: ["Auth"],
           summary: "Get current authenticated user",

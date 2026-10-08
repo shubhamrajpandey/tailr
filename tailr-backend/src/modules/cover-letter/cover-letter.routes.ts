@@ -20,7 +20,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
   // 1. Standard Plural Generation endpoint: POST /cover-letters/generate
   .post(
     "/cover-letters/generate",
-    (ctx) => coverLetterController.generate(ctx as any),
+    ({ body, authUser, set }) =>
+      coverLetterController.generate({ body, authUser, set }),
     {
       body: GenerateCoverLetterBody,
       response: {
@@ -45,7 +46,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
   // 1b. Resource generation endpoint: POST /cover-letter-generations
   .post(
     "/cover-letter-generations",
-    (ctx) => coverLetterController.generate(ctx as any),
+    ({ body, authUser, set }) =>
+      coverLetterController.generate({ body, authUser, set }),
     {
       body: GenerateCoverLetterBody,
       response: {
@@ -63,7 +65,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
   // 1c. Legacy alias: POST /cover-letter/generate
   .post(
     "/cover-letter/generate",
-    (ctx) => coverLetterController.generate(ctx as any),
+    ({ body, authUser, set }) =>
+      coverLetterController.generate({ body, authUser, set }),
     {
       body: GenerateCoverLetterBody,
       response: {
@@ -87,8 +90,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
   )
   .guard(
     {
-      beforeHandle: (ctx: any) => {
-        if (!ctx.authUser) {
+      beforeHandle: ({ authUser }: { authUser?: { id: string } | null }) => {
+        if (!authUser) {
           throw new UnauthorizedError(
             "Authentication required. Please provide a valid Bearer token."
           );
@@ -98,38 +101,49 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
     (app) =>
       app
         // List cover letters
-        .get("/cover-letters", (ctx) => coverLetterController.list(ctx as any), {
-          query: CoverLetterQuery,
-          detail: {
-            tags: ["Cover Letters"],
-            summary: "List user cover letters",
-            description: "Returns all persistent cover letters saved by the authenticated user.",
-            security: [{ bearerAuth: [] }],
-            responses: {
-              200: { description: "List of saved cover letters." },
-              401: { description: "Unauthorized." },
+        .get(
+          "/cover-letters",
+          ({ authUser, query }) =>
+            coverLetterController.list({ authUser: authUser!, query }),
+          {
+            query: CoverLetterQuery,
+            detail: {
+              tags: ["Cover Letters"],
+              summary: "List user cover letters",
+              description: "Returns all persistent cover letters saved by the authenticated user.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "List of saved cover letters." },
+                401: { description: "Unauthorized." },
+              },
             },
-          },
-        })
+          }
+        )
         // Create cover letter
-        .post("/cover-letters", (ctx) => coverLetterController.create(ctx as any), {
-          body: CreateCoverLetterBody,
-          detail: {
-            tags: ["Cover Letters"],
-            summary: "Save new cover letter",
-            description: "Persists a newly drafted or generated cover letter to PostgreSQL.",
-            security: [{ bearerAuth: [] }],
-            responses: {
-              201: { description: "Cover letter saved successfully." },
-              400: { description: "Validation error." },
-              401: { description: "Unauthorized." },
+        .post(
+          "/cover-letters",
+          ({ authUser, body, set }) =>
+            coverLetterController.create({ authUser: authUser!, body, set }),
+          {
+            body: CreateCoverLetterBody,
+            detail: {
+              tags: ["Cover Letters"],
+              summary: "Save new cover letter",
+              description: "Persists a newly drafted or generated cover letter to PostgreSQL.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                201: { description: "Cover letter saved successfully." },
+                400: { description: "Validation error." },
+                401: { description: "Unauthorized." },
+              },
             },
-          },
-        })
+          }
+        )
         // Get single cover letter
         .get(
           "/cover-letters/:id",
-          (ctx) => coverLetterController.getById(ctx as any),
+          ({ authUser, params }) =>
+            coverLetterController.getById({ authUser: authUser!, params }),
           {
             params: CoverLetterIdParam,
             detail: {
@@ -147,7 +161,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
         // Update cover letter
         .put(
           "/cover-letters/:id",
-          (ctx) => coverLetterController.update(ctx as any),
+          ({ authUser, params, body }) =>
+            coverLetterController.update({ authUser: authUser!, params, body }),
           {
             params: CoverLetterIdParam,
             body: UpdateCoverLetterBody,
@@ -166,7 +181,8 @@ export const coverLetterRoutes = new Elysia({ prefix: "" })
         // Delete cover letter
         .delete(
           "/cover-letters/:id",
-          (ctx) => coverLetterController.delete(ctx as any),
+          ({ authUser, params }) =>
+            coverLetterController.delete({ authUser: authUser!, params }),
           {
             params: CoverLetterIdParam,
             detail: {

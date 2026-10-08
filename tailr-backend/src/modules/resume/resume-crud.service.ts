@@ -82,10 +82,10 @@ export class ResumeCrudService {
             portfolioUrl: userResume.portfolioUrl || undefined,
           },
           careerSummary: userResume.careerSummary || "",
-          technicalSkills: (userResume.technicalSkills as any) || [],
-          workExperience: (userResume.workExperience as any) || [],
-          education: (userResume.education as any) || [],
-          projects: (userResume.projects as any) || [],
+          technicalSkills: (userResume.technicalSkills as StructuredResumeData["technicalSkills"]) || [],
+          workExperience: (userResume.workExperience as StructuredResumeData["workExperience"]) || [],
+          education: (userResume.education as StructuredResumeData["education"]) || [],
+          projects: (userResume.projects as StructuredResumeData["projects"]) || [],
         },
       };
     }

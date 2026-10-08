@@ -31,8 +31,7 @@ export class ApplicationsService {
     }
 
     const includeRaw =
-      query?.includeRaw === "true" ||
-      (query as any)?.includeRaw === true;
+      query?.includeRaw === true || query?.includeRaw === "true";
 
     return await db
       .select({

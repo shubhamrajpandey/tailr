@@ -23,6 +23,8 @@ interface EnvConfig {
   DAILY_RESUME_TAILOR_LIMIT: number;
   DAILY_COVER_LETTER_LIMIT: number;
   AI_COOLDOWN_SECONDS: number;
+  RESEND_API_KEY?: string;
+  EMAIL_FROM?: string;
 }
 
 function getEnv(): EnvConfig {
@@ -65,6 +67,8 @@ function getEnv(): EnvConfig {
     DAILY_RESUME_TAILOR_LIMIT: parseInt(process.env.DAILY_RESUME_TAILOR_LIMIT || "2", 10),
     DAILY_COVER_LETTER_LIMIT: parseInt(process.env.DAILY_COVER_LETTER_LIMIT || "2", 10),
     AI_COOLDOWN_SECONDS: parseInt(process.env.AI_COOLDOWN_SECONDS || "20", 10),
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    EMAIL_FROM: process.env.EMAIL_FROM || "Tailr Security <noreply@tailr.io>",
   });
 }
 

@@ -17,7 +17,7 @@ export class CompaniesController {
   }: {
     body: CreateCompanyInput;
     authUser: { id: string; role: string };
-    set: { status: number };
+    set: { status?: number | string };
   }) {
     const company = await companiesService.create(body, authUser.id);
     set.status = 201;
@@ -48,7 +48,7 @@ export class CompaniesController {
     set,
   }: {
     query: CompanyListQueryInput;
-    set: { headers: Record<string, string> };
+    set: { headers: Record<string, any> };
   }) {
     const result = await companiesService.list(query);
     set.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300";
@@ -64,7 +64,7 @@ export class CompaniesController {
     set,
   }: {
     params: { id: string };
-    set: { headers: Record<string, string> };
+    set: { headers: Record<string, any> };
   }) {
     const company = await companiesService.getById(params.id);
     set.headers["Cache-Control"] = "public, max-age=120, stale-while-revalidate=600";

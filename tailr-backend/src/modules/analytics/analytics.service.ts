@@ -75,15 +75,15 @@ export class AnalyticsService {
     }
 
     const totalApplications = apps.length;
-    const appliedApps = apps.filter((a) => a.status !== "WISHLIST");
+    const appliedApps = apps.filter((application) => application.status !== "WISHLIST");
     const totalApplied = appliedApps.length;
 
     // Status counts
-    const interviewCount = appliedApps.filter((a) => a.status === "INTERVIEW").length;
-    const offerCount = appliedApps.filter((a) => a.status === "OFFER").length;
-    const rejectedCount = appliedApps.filter((a) => a.status === "REJECTED").length;
-    const ghostedCount = appliedApps.filter((a) => a.status === "GHOSTED").length;
-    const awaitingCount = appliedApps.filter((a) => a.status === "APPLIED").length;
+    const interviewCount = appliedApps.filter((application) => application.status === "INTERVIEW").length;
+    const offerCount = appliedApps.filter((application) => application.status === "OFFER").length;
+    const rejectedCount = appliedApps.filter((application) => application.status === "REJECTED").length;
+    const ghostedCount = appliedApps.filter((application) => application.status === "GHOSTED").length;
+    const awaitingCount = appliedApps.filter((application) => application.status === "APPLIED").length;
 
     const respondedCount = interviewCount + offerCount + rejectedCount;
     const responseRatePercent =
@@ -202,7 +202,9 @@ export class AnalyticsService {
       Sat: 1,
     };
 
-    const hasLiveWeekData = Object.values(dayCounts).some((d) => d.applied > 0);
+    const hasLiveWeekData = Object.values(dayCounts).some(
+      (dayStat) => dayStat.applied > 0
+    );
 
     const trendData = daysOrder.map((day) => {
       const applied =
