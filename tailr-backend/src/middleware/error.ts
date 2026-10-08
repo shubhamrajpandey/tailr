@@ -59,6 +59,12 @@ export class TooManyRequestsError extends HttpError {
   }
 }
 
+export class PayloadTooLargeError extends HttpError {
+  constructor(message = "Request entity too large", details?: unknown) {
+    super(413, "PAYLOAD_TOO_LARGE", message, details);
+  }
+}
+
 /**
  * Centralized error handler plugin for Elysia.
  * Installed directly on the Elysia app instance via .use(errorHandler)

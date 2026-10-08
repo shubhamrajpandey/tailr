@@ -149,5 +149,45 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.success).toBe(false);
     expect(body.error.code).toBe("UNAUTHORIZED");
   });
+
+  it("applies OWASP security headers on HTTP responses", async () => {
+    const res = await app.handle(new Request("http://localhost:3001/health"));
+    expect(res.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(res.headers.get("x-frame-options")).toBe("DENY");
+    expect(res.headers.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
+  });
+
+  it("rejects payloads exceeding the 10MB limit with 413 PAYLOAD_TOO_LARGE", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/health", {
+        method: "GET",
+        headers: {
+          "content-length": "15000000", // 15MB
+        },
+      })
+    );
+    expect(res.status).toBe(413);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("PAYLOAD_TOO_LARGE");
+  });
+
+  it("enforces strict CORS origin whitelist and blocks unauthorized origins", async () => {
+    // 1. Whitelisted origin receives CORS allow headers
+    const allowedRes = await app.handle(
+      new Request("http://localhost:3001/health", {
+        headers: { origin: "http://localhost:3000" },
+      })
+    );
+    expect(allowedRes.headers.get("access-control-allow-origin")).toBe("http://localhost:3000");
+
+    // 2. Malicious / unauthorized origin does NOT receive CORS allow headers
+    const blockedRes = await app.handle(
+      new Request("http://localhost:3001/health", {
+        headers: { origin: "https://evil-tailr.vercel.app" },
+      })
+    );
+    expect(blockedRes.headers.get("access-control-allow-origin")).toBeNull();
+  });
 });
 

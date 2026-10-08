@@ -4,6 +4,8 @@ import { jwt } from "@elysiajs/jwt";
 import { swagger } from "@elysiajs/swagger";
 import { env } from "./config/env";
 import { errorHandler } from "./middleware/error";
+import { platformSecurity } from "./middleware/security";
+import { globalRateLimiter } from "./middleware/rate-limiter";
 import { authRoutes } from "./modules/auth/auth.routes";
 import { companiesRoutes } from "./modules/companies/companies.routes";
 import { coverLetterRoutes } from "./modules/cover-letter/cover-letter.routes";
@@ -15,28 +17,37 @@ import { quotaRoutes } from "./modules/quota/quota.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
- * Production-ready Elysia server configuration.
+ * Strict origin whitelist for Cross-Origin Resource Sharing.
+ * Eliminates substring wildcard matching (e.g. evil-tailr.vercel.app or attacker-tailr.com).
+ */
+const ALLOWED_ORIGINS = new Set([
+  env.FRONTEND_URL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "https://tailr.io",
+  "https://www.tailr.io",
+]);
+
+/**
+ * Production-hardened Elysia server configuration.
  */
 const app = new Elysia()
   // 1. Centralized JSON Error Handler (registered first to catch all downstream errors)
   .use(errorHandler)
 
-  // 2. Cross-Origin Resource Sharing (CORS) with Cookie Credentials
+  // 2. OWASP Security Headers & 10MB Request Body Limit
+  .use(platformSecurity)
+
+  // 3. Global API Rate Limiter: 300 requests per minute per IP
+  .use(globalRateLimiter)
+
+  // 4. Cross-Origin Resource Sharing (CORS) with strict whitelist and cookie credentials
   .use(
     cors({
       origin: (request: Request): boolean => {
         const origin = request.headers.get("origin");
-        if (!origin) return true;
-        if (
-          origin === env.FRONTEND_URL ||
-          origin === "http://localhost:3000" ||
-          origin === "http://localhost:3001" ||
-          origin.includes("vercel.app") ||
-          origin.includes("tailr")
-        ) {
-          return true;
-        }
-        return false;
+        if (!origin) return false;
+        return ALLOWED_ORIGINS.has(origin);
       },
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -44,17 +55,19 @@ const app = new Elysia()
     })
   )
 
-  // 3. JWT Plugin for Access Tokens
+  // 5. JWT Plugin for Access Tokens
   .use(
     jwt({
       name: "jwtAccess",
       secret: env.JWT_ACCESS_SECRET,
       exp: env.JWT_ACCESS_EXPIRY,
     })
-  )
+  );
 
-  // 4. Interactive OpenAPI / Swagger Documentation at /swagger
-  .use(
+// 6. Interactive OpenAPI / Swagger Documentation (disabled in production unless explicitly enabled)
+const isSwaggerEnabled = env.NODE_ENV !== "production" || process.env.ENABLE_SWAGGER === "true";
+if (isSwaggerEnabled) {
+  app.use(
     swagger({
       path: "/swagger",
       documentation: {
@@ -128,9 +141,11 @@ const app = new Elysia()
         },
       },
     })
-  )
+  );
+}
 
-  // 5. System Health Check Endpoint
+app
+  // 7. System Health Check Endpoint
   .get("/health", async () => {
     const isDbConnected = await checkDatabaseHealth();
     return {
@@ -143,31 +158,31 @@ const app = new Elysia()
     };
   })
 
-  // 6. Mount Authentication Module Routes (/auth/*)
+  // 8. Mount Authentication Module Routes (/auth/*)
   .use(authRoutes)
 
-  // 7. Mount Applications Module Routes (/applications/*)
+  // 9. Mount Applications Module Routes (/applications/*)
   .use(applicationsRoutes)
 
-  // 8. Mount Analytics Module Routes (/analytics/*)
+  // 10. Mount Analytics Module Routes (/analytics/*)
   .use(analyticsRoutes)
 
-  // 9. Mount Companies Directory Routes (/companies, /admin/companies)
+  // 11. Mount Companies Directory Routes (/companies, /admin/companies)
   .use(companiesRoutes)
 
-  // 10. Mount Cover Letter Generation Route (/cover-letter/generate)
+  // 12. Mount Cover Letter Generation Route (/cover-letter/generate)
   .use(coverLetterRoutes)
 
-  // 11. Mount Resume Module Routes (/resume/*)
+  // 13. Mount Resume Module Routes (/resume/*)
   .use(resumeRoutes)
 
-  // 12. Mount User Workspace Settings Routes (/settings/*)
+  // 14. Mount User Workspace Settings Routes (/settings/*)
   .use(settingsRoutes)
 
-  // 13. Mount AI Quota & Rate Limiting Routes (/quota/*)
+  // 15. Mount AI Quota & Rate Limiting Routes (/quota/*)
   .use(quotaRoutes)
 
-  // 14. Bind to Port
+  // 16. Bind to Port
   .listen({
     port: env.PORT,
     hostname: "0.0.0.0",
@@ -176,9 +191,11 @@ const app = new Elysia()
 console.log(
   `🚀 Tailr Platform API Backend is active on http://${app.server?.hostname || "localhost"}:${app.server?.port || env.PORT} (${env.NODE_ENV})`
 );
-console.log(
-  `📖 Interactive Swagger 3.0 Documentation: http://localhost:${app.server?.port || env.PORT}/swagger`
-);
+if (isSwaggerEnabled) {
+  console.log(
+    `📖 Interactive Swagger 3.0 Documentation: http://localhost:${app.server?.port || env.PORT}/swagger`
+  );
+}
 console.log(
   `🩺 Health & Database Status Probe: http://localhost:${app.server?.port || env.PORT}/health`
 );
