@@ -48,6 +48,20 @@ jobs:
   backend-check:
     name: Backend Lint, Security & Test Suite
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: tailr
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
     defaults:
       run:
         working-directory: ./tailr-backend
@@ -70,9 +84,16 @@ jobs:
       - name: Security Vulnerability Scan
         run: bun run scan
 
+      - name: Apply Database Migrations
+        run: bun run db:migrate
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/tailr
+
       - name: Run Backend Unit & Integration Tests
         run: bun test
         env:
           NODE_ENV: test
+          DATABASE_URL: postgres://postgres:postgrespassword@localhost:5432/tailr
           JWT_ACCESS_SECRET: default_dev_access_secret_must_be_32_characters_long!
           JWT_REFRESH_SECRET: default_dev_refresh_secret_must_be_32_characters_long!
