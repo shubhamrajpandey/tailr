@@ -33,6 +33,9 @@ export class ApplicationsService {
     const includeRaw =
       query?.includeRaw === true || query?.includeRaw === "true";
 
+    const limit = Math.min(Number(query?.limit ?? 50), 100);
+    const offset = Math.max(0, Number(query?.offset ?? 0));
+
     return await db
       .select({
         id: jobApplications.id,
@@ -58,7 +61,9 @@ export class ApplicationsService {
       })
       .from(jobApplications)
       .where(and(...conditions))
-      .orderBy(desc(jobApplications.createdAt));
+      .orderBy(desc(jobApplications.createdAt))
+      .limit(limit)
+      .offset(offset);
   }
 
   /**

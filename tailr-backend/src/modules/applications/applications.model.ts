@@ -50,6 +50,8 @@ export const ApplicationQuery = t.Object({
   status: t.Optional(ApplicationStatusEnum),
   search: t.Optional(t.String()),
   includeRaw: t.Optional(t.Union([t.Boolean(), t.String()])),
+  limit: t.Optional(t.Numeric({ minimum: 1, maximum: 100 })),
+  offset: t.Optional(t.Numeric({ minimum: 0 })),
 });
 
 export type CreateApplicationInput = typeof CreateApplicationBody.static;

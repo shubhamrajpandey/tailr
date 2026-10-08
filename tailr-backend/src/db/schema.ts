@@ -297,6 +297,8 @@ export const jobApplications = pgTable(
     index("job_applications_applied_date_idx").on(table.appliedDate),
     index("job_applications_created_at_idx").on(table.createdAt),
     index("job_applications_resume_version_id_idx").on(table.resumeVersionId),
+    index("job_applications_company_trgm_idx").using("gin", sql`${table.companyName} gin_trgm_ops`),
+    index("job_applications_position_trgm_idx").using("gin", sql`${table.positionTitle} gin_trgm_ops`),
   ]
 );
 
