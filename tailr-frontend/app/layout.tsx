@@ -14,12 +14,16 @@ const urbanist = Urbanist({
   variable: "--font-urbanist",
   subsets: ["latin"],
   display: "swap",
+  fallback: ["system-ui", "-apple-system", "sans-serif"],
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
+  fallback: ["ui-monospace", "monospace"],
+  adjustFontFallback: true,
 });
 
 const notoSansDevanagari = Noto_Sans_Devanagari({
@@ -27,6 +31,8 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
+  fallback: ["sans-serif"],
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -70,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 >
                   {children}
                   <Toaster />
-                  <Analytics />
+                  {process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_ENABLED === "true" && <Analytics />}
                   <WebVitals />
                 </ThemeProvider>
               </I18nProvider>

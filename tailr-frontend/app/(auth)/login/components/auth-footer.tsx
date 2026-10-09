@@ -8,7 +8,7 @@ export function AuthFooter() {
 
   return (
     <>
-      <footer className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-500 dark:text-neutral-400 pt-4 border-t border-transparent sm:border-neutral-100 dark:sm:border-white/[0.04]">
+      <footer className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-neutral-600 dark:text-neutral-400 pt-4 border-t border-transparent sm:border-neutral-100 dark:sm:border-white/[0.04]">
         <span>© 2026 Shubham Raj Pandey. All rights reserved.</span>
         <div className="flex items-center gap-1">
           <span>Need help?</span>

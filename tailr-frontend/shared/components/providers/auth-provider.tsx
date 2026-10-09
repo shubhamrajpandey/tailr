@@ -1,10 +1,15 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRefreshQuery } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { setCredentials, clearCredentials } from "@/shared/store/auth-slice";
-import { setSessionCookie, removeAuthCookie } from "@/shared/lib/cookie";
+import {
+  setSessionCookie,
+  removeAuthCookie,
+  getCookie,
+  SESSION_COOKIE_NAME,
+} from "@/shared/lib/cookie";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -26,7 +31,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  const { data, isError, isPending } = useRefreshQuery();
+  // Only attempt silent session refresh if a session indicator cookie exists
+  const [canAttemptRefresh, setCanAttemptRefresh] = useState(false);
+
+  useEffect(() => {
+    const hasSessionCookie = Boolean(getCookie(SESSION_COOKIE_NAME));
+    if (hasSessionCookie) {
+      setCanAttemptRefresh(true);
+    } else {
+      // Fast-path mark bootstrapping complete without network 401 on unauthenticated views
+      dispatch(clearCredentials());
+    }
+  }, [dispatch]);
+
+  const { data, isError, isPending } = useRefreshQuery(canAttemptRefresh);
 
   // 1. On refresh success: populate Redux in-memory credentials and set session indicator
   useEffect(() => {

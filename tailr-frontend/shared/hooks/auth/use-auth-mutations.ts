@@ -223,11 +223,12 @@ export function useLogoutMutation() {
  * - On success: dispatches setCredentials into Redux.
  * - On 401 failure: does NOT dispatch clearCredentials (the interceptor does).
  */
-export function useRefreshQuery() {
+export function useRefreshQuery(enabled = true) {
   return useQuery<RefreshResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.refresh,
     queryFn: () => authApiClient.post<RefreshResponse>("/auth/refresh").then((res) => res.data),
 
+    enabled,
     staleTime: Infinity,
     retry: false,
     refetchOnWindowFocus: false,

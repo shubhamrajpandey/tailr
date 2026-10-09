@@ -47,7 +47,7 @@ export function AuthTestimonialPreview() {
             <div className="font-bold text-sm text-neutral-950 dark:text-white leading-snug">
               Sarah Kim
             </div>
-            <div className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+            <div className="text-xs text-neutral-600 dark:text-neutral-400 font-medium">
               Customer Experience Manager – TechWave Inc.
             </div>
           </div>

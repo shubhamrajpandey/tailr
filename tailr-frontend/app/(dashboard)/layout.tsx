@@ -30,14 +30,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0 overflow-x-clip">
+        <main className="flex-1 flex flex-col min-w-0 overflow-x-clip">
           {/* Fixed Top Navigation Bar */}
           <div className="print:hidden">
             <TopBar />
           </div>
 
           {children}
-        </div>
+        </main>
       </div>
     </ProtectedRoute>
   );

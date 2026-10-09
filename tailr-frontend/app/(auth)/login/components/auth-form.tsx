@@ -96,14 +96,14 @@ export function AuthForm() {
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-950 dark:text-white font-sans">
           Sign In to Continue
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+        <p className="text-sm text-neutral-600 dark:text-neutral-300 font-medium">
           Access all your tools in one place.
         </p>
       </div>
 
       {/* Form-level error */}
       {formError && (
-        <div className="flex items-center gap-2 p-3 text-xs font-medium text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl animate-in fade-in">
+        <div className="flex items-center gap-2 p-3 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl animate-in fade-in">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{formError}</span>
         </div>
@@ -113,11 +113,15 @@ export function AuthForm() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email Field */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+          <label
+            htmlFor="login-email"
+            className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+          >
             Email Address <span className="text-rose-500">*</span>
           </label>
           <Input
             id="login-email"
+            name="email"
             type="email"
             required
             value={email}
@@ -135,11 +139,15 @@ export function AuthForm() {
 
         {/* Password Field */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+          <label
+            htmlFor="login-password"
+            className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+          >
             Password <span className="text-rose-500">*</span>
           </label>
           <Input
             id="login-password"
+            name="password"
             type={showPassword ? "text" : "password"}
             required
             value={password}
@@ -153,8 +161,9 @@ export function AuthForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
+                className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -185,7 +194,7 @@ export function AuthForm() {
           <button
             type="button"
             onClick={handleOpenForgotPassword}
-            className="text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+            className="text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
           >
             Forgot Password?
           </button>
@@ -218,7 +227,9 @@ export function AuthForm() {
           <div className="w-full border-t border-neutral-200 dark:border-white/10" />
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-background px-3 text-neutral-400 font-medium">Or continue with</span>
+          <span className="bg-background px-3 text-neutral-600 dark:text-neutral-400 font-medium">
+            Or continue with
+          </span>
         </div>
       </div>
 
@@ -227,7 +238,7 @@ export function AuthForm() {
 
       {/* Switch to Sign Up Screen */}
       <div className="text-center pt-2">
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="text-xs text-neutral-600 dark:text-neutral-400">
           Don&apos;t have an account?{" "}
           <Link
             href="/signup"
@@ -278,11 +289,15 @@ export function AuthForm() {
           ) : (
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-4 pt-2">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+                <label
+                  htmlFor="forgot-password-email"
+                  className="text-xs font-semibold text-neutral-800 dark:text-neutral-200"
+                >
                   Email Address
                 </label>
                 <Input
                   id="forgot-password-email"
+                  name="forgotEmail"
                   type="email"
                   required
                   value={forgotEmail}

@@ -14,7 +14,10 @@ import {
 
 export function AuthDashboardMockup() {
   return (
-    <div className="w-full bg-white dark:bg-[#101115] rounded-2xl shadow-xl border border-neutral-200/90 dark:border-white/10 overflow-hidden text-[11px] select-none pointer-events-none">
+    <div
+      aria-hidden="true"
+      className="w-full bg-white dark:bg-[#101115] rounded-2xl shadow-xl border border-neutral-200/90 dark:border-white/10 overflow-hidden text-[11px] select-none pointer-events-none"
+    >
       <div className="flex h-[380px]">
         {/* Mockup Left Mini Sidebar */}
         <div className="w-44 shrink-0 bg-neutral-50/70 dark:bg-[#0c0d10] border-r border-neutral-200/70 dark:border-white/[0.06] p-3 flex flex-col justify-between hidden sm:flex">
@@ -96,9 +99,9 @@ export function AuthDashboardMockup() {
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-bold text-neutral-950 dark:text-white flex items-center gap-1.5">
+                <p className="text-sm font-bold text-neutral-950 dark:text-white flex items-center gap-1.5">
                   Hello, Achmad Hakim <span className="text-amber-500">👋</span>
-                </h3>
+                </p>
                 <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
                   Here are the latest insights from your career pipeline.
                 </p>

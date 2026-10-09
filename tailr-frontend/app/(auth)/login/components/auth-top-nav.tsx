@@ -13,6 +13,7 @@ export function AuthTopNav() {
         href="/"
         className="group flex items-center gap-2.5 sm:gap-3 transition-transform active:scale-95"
         title="Tailr"
+        aria-label="Tailr Home"
       >
         <Image
           src="/main_logo.png"

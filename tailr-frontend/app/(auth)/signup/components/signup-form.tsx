@@ -97,10 +97,15 @@ export function SignupForm({
       <form onSubmit={handleSubmit} className="space-y-3.5">
         {/* Field 1: Full Name */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+          <label
+            htmlFor="signup-name"
+            className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+          >
             Full Name <span className="text-rose-500">*</span>
           </label>
           <Input
+            id="signup-name"
+            name="name"
             type="text"
             required
             value={fullName}
@@ -117,10 +122,15 @@ export function SignupForm({
 
         {/* Field 2: Email */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+          <label
+            htmlFor="signup-email"
+            className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+          >
             Email Address <span className="text-rose-500">*</span>
           </label>
           <Input
+            id="signup-email"
+            name="email"
             type="email"
             required
             value={email}
@@ -137,12 +147,19 @@ export function SignupForm({
         {/* Field 3: Password */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+            <label
+              htmlFor="signup-password"
+              className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+            >
               Password <span className="text-rose-500">*</span>
             </label>
-            <span className="text-[11px] text-neutral-400">Min. 8 characters</span>
+            <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+              Min. 8 characters
+            </span>
           </div>
           <Input
+            id="signup-password"
+            name="password"
             type={showPassword ? "text" : "password"}
             required
             value={password}
@@ -156,8 +173,9 @@ export function SignupForm({
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
+                className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showPassword ? "Hide password" : "Show password"}
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -168,10 +186,15 @@ export function SignupForm({
 
         {/* Field 4: Confirm Password */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1">
+          <label
+            htmlFor="signup-confirm-password"
+            className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-1"
+          >
             Confirm Password <span className="text-rose-500">*</span>
           </label>
           <Input
+            id="signup-confirm-password"
+            name="confirmPassword"
             type={showConfirmPassword ? "text" : "password"}
             required
             value={confirmPassword}
@@ -185,8 +208,9 @@ export function SignupForm({
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
+                className="text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors p-1 cursor-pointer"
                 title={showConfirmPassword ? "Hide password" : "Show password"}
+                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>

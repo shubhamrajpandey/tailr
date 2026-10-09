@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <div className="min-h-screen w-full bg-background text-foreground flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <main className="min-h-screen w-full bg-background text-foreground flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
       <div className="w-full max-w-7xl min-h-[calc(100vh-4rem)] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
         {/* Left Column: Top Nav + Centered Flow + Bottom Footer */}
         <div className="flex flex-col justify-between h-full px-2 sm:px-6 py-2">
@@ -33,6 +33,6 @@ export default function SignupPage() {
           <AuthTestimonialPreview />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
