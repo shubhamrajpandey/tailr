@@ -140,7 +140,7 @@ export function ApplicationBoardHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-48 text-xs bg-card border-neutral-200 dark:border-white/[0.08]"
+            className="w-48 text-xs bg-white dark:bg-[#121318] border-neutral-200 dark:border-white/[0.08] shadow-2xl"
           >
             <DropdownMenuLabel className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
               Board Background
