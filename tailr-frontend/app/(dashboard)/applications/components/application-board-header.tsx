@@ -25,7 +25,7 @@ export const BOARD_BG_MAP: Record<BoardBgOption, { label: string; class: string;
   },
   black: {
     label: "Pitch Black",
-    class: "bg-[#000000] text-slate-100",
+    class: "bg-[#090a0c] text-slate-100",
     dot: "bg-black border border-white/20",
   },
   blue: {
@@ -73,6 +73,9 @@ export function ApplicationBoardHeader({
   boardBg,
   onBoardBgChange,
 }: ApplicationBoardHeaderProps) {
+  // Safe resolution for active background option to avoid undefined dot error
+  const activeBg = boardBg && BOARD_BG_MAP[boardBg] ? BOARD_BG_MAP[boardBg] : BOARD_BG_MAP.default;
+
   // Compute stage statistics
   const stats = React.useMemo(() => {
     const total = applications.length;
@@ -89,28 +92,27 @@ export function ApplicationBoardHeader({
   }, [applications]);
 
   return (
-    <header className="px-4 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card/60 backdrop-blur-md border-b border-border/40 select-none">
-      {/* Left: Board Title & View Mode Toggle */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Clean Board Title (No back button, no star emoji) */}
+    <header className="px-4 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card/40 backdrop-blur-md border-b border-neutral-200/60 dark:border-white/[0.06] select-none">
+      {/* Left: Board Title, View Mode Toggle, Background Color Switcher */}
+      <div className="flex flex-wrap items-center gap-2.5">
         <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
           Application Pipeline
         </h1>
 
-        {/* View Mode Toggle (Board vs Table) */}
-        <div className="flex items-center rounded-lg bg-muted/60 p-0.5 border border-border/40">
+        {/* View Mode Toggle */}
+        <div className="flex items-center rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] p-0.5 border border-neutral-200/80 dark:border-white/[0.06]">
           <button
             type="button"
             onClick={() => onViewModeChange("kanban")}
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all duration-150 cursor-pointer",
               viewMode === "kanban"
-                ? "bg-card text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white dark:bg-white/[0.08] text-neutral-900 dark:text-white shadow-2xs"
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
             )}
             title="Kanban Board View"
           >
-            <Kanban className="h-3 w-3 text-primary" />
+            <Kanban className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
             <span>Board</span>
           </button>
           <button
@@ -119,8 +121,8 @@ export function ApplicationBoardHeader({
             className={cn(
               "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-all duration-150 cursor-pointer",
               viewMode === "table"
-                ? "bg-card text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-white dark:bg-white/[0.08] text-neutral-900 dark:text-white shadow-2xs"
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
             )}
             title="Table View"
           >
@@ -131,19 +133,22 @@ export function ApplicationBoardHeader({
 
         {/* Background Color Switcher */}
         <DropdownMenu>
-          <DropdownMenuTrigger className="h-7 px-2.5 rounded-lg bg-muted/60 hover:bg-muted text-xs font-medium text-foreground flex items-center gap-1.5 border border-border/40 transition-colors cursor-pointer">
-            <Palette className="h-3.5 w-3.5 text-muted-foreground" />
+          <DropdownMenuTrigger className="h-8 px-2.5 rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] hover:bg-neutral-200/60 dark:hover:bg-white/[0.06] text-xs font-medium text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5 border border-neutral-200/80 dark:border-white/[0.06] transition-colors cursor-pointer">
+            <Palette className="h-3.5 w-3.5 text-neutral-500 dark:text-neutral-400" />
             <span className="hidden sm:inline">Color</span>
-            <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", BOARD_BG_MAP[boardBg].dot)} />
+            <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", activeBg.dot)} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-48 text-xs bg-card border-border">
+          <DropdownMenuContent
+            align="start"
+            className="w-48 text-xs bg-card border-neutral-200 dark:border-white/[0.08]"
+          >
             <DropdownMenuLabel className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
               Board Background
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator className="bg-neutral-200/60 dark:bg-white/[0.06]" />
             {(Object.keys(BOARD_BG_MAP) as BoardBgOption[]).map((key) => {
               const item = BOARD_BG_MAP[key];
-              const isSelected = boardBg === key;
+              const isSelected = (boardBg || "default") === key;
               return (
                 <DropdownMenuItem
                   key={key}
@@ -154,7 +159,7 @@ export function ApplicationBoardHeader({
                     <span className={cn("h-3 w-3 rounded-full shrink-0", item.dot)} />
                     <span>{item.label}</span>
                   </div>
-                  {isSelected && <Check className="h-3.5 w-3.5 text-primary" />}
+                  {isSelected && <Check className="h-3.5 w-3.5 text-indigo-500" />}
                 </DropdownMenuItem>
               );
             })}
@@ -166,19 +171,19 @@ export function ApplicationBoardHeader({
       <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
         {/* Compact Search Box */}
         <div className="relative flex items-center">
-          <Search className="absolute left-2.5 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search cards..."
-            className="h-8 w-36 sm:w-48 pl-8 pr-7 rounded-lg bg-muted/50 text-xs text-foreground placeholder:text-muted-foreground border border-border/40 focus:outline-none focus:bg-card focus:border-primary/60 focus:w-56 transition-all"
+            className="h-8 w-36 sm:w-48 pl-8 pr-7 rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] text-xs text-foreground placeholder:text-neutral-400 dark:placeholder:text-neutral-500 border border-neutral-200/80 dark:border-white/[0.06] focus:outline-none focus:border-indigo-500/50 focus:w-56 transition-all"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="absolute right-2 text-muted-foreground hover:text-foreground p-0.5"
+              className="absolute right-2 text-neutral-400 hover:text-foreground p-0.5 cursor-pointer"
             >
               <X className="h-3 w-3" />
             </button>
@@ -187,10 +192,10 @@ export function ApplicationBoardHeader({
 
         {/* Metrics Summary Pills */}
         <div className="hidden lg:flex items-center gap-1.5 text-xs">
-          <span className="px-2 py-0.5 rounded-md bg-muted/60 text-muted-foreground font-mono font-medium">
+          <span className="px-2 py-0.5 rounded-md bg-neutral-100/80 dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-400 border border-neutral-200/60 dark:border-white/[0.05] font-mono font-medium">
             Active: {stats.active}
           </span>
-          <span className="px-2 py-0.5 rounded-md bg-muted/60 text-muted-foreground font-mono font-medium">
+          <span className="px-2 py-0.5 rounded-md bg-neutral-100/80 dark:bg-white/[0.03] text-neutral-600 dark:text-neutral-400 border border-neutral-200/60 dark:border-white/[0.05] font-mono font-medium">
             Done: {stats.done}
           </span>
         </div>
@@ -199,9 +204,9 @@ export function ApplicationBoardHeader({
         <button
           type="button"
           onClick={onOpenQuickAdd}
-          className="h-8 px-3 rounded-lg bg-muted/60 hover:bg-muted text-foreground text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-border/40"
+          className="h-8 px-3 rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] hover:bg-neutral-200/60 dark:hover:bg-white/[0.06] text-neutral-700 dark:text-neutral-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-neutral-200/80 dark:border-white/[0.06]"
         >
-          <Plus className="h-3.5 w-3.5 text-primary" />
+          <Plus className="h-3.5 w-3.5 text-indigo-500 dark:text-indigo-400" />
           <span className="hidden sm:inline">Quick Add</span>
         </button>
 
