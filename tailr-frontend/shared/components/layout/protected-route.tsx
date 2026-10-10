@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Lock } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Loader2, Lock } from "lucide-react";
 import { useAppSelector } from "@/shared/store/hooks";
+import { removeAuthCookie } from "@/shared/lib/cookie";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -14,15 +16,8 @@ interface ProtectedRouteProps {
  *
  * AuthProvider (mounted at root layout) already runs useRefreshQuery once
  * on every app boot and hydrates Redux with credentials on success.
- * This component simply reads Redux state and redirects unauthenticated
- * users to /login using Next.js router (not window.location) so that
- * the React Query cache and Redux store are preserved — avoiding the
- * infinite reload loop that window.location.replace causes.
- *
- * Timing:
- * - While AuthProvider's refresh is still in-flight: show loading spinner.
- * - Once settled: if still not authenticated, redirect once to /login.
- * - If authenticated: render children.
+ * This component reads Redux state and redirects unauthenticated
+ * users to /login.
  */
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
@@ -35,7 +30,18 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     // is definitively not authenticated. Use a ref to fire exactly once.
     if (!isBootstrapping && !isAuthenticated && !redirected.current) {
       redirected.current = true;
+      removeAuthCookie();
       router.replace("/login");
+
+      // Robust fallback: if client-side router transition lags in dev mode,
+      // navigate directly after a short timeout so the user is never stuck.
+      const timer = setTimeout(() => {
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+      }, 1500);
+
+      return () => clearTimeout(timer);
     }
   }, [isAuthenticated, isBootstrapping, router]);
 
@@ -73,6 +79,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             <span>Redirecting...</span>
           </div>
+          <Link
+            href="/login"
+            className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors"
+          >
+            <span>Click here if not redirected automatically</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
       </div>
     );

@@ -15,6 +15,19 @@ if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL) {
   }
 }
 
+const isDev = process.env.NODE_ENV !== "production";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+const connectSrcDirectives = [
+  "'self'",
+  "https:",
+  "wss:",
+  apiUrl,
+  isDev ? "http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*" : "",
+]
+  .filter(Boolean)
+  .join(" ");
+
 const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
@@ -25,7 +38,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  connect-src 'self' https: wss:;
+  connect-src ${connectSrcDirectives};
 `
   .replace(/\s{2,}/g, " ")
   .trim();

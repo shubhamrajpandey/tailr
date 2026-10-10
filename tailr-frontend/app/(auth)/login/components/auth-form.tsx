@@ -23,15 +23,31 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/shared/components/ui/dialog";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/shared/store/hooks";
 import { SocialAuthButtons } from "./social-auth-buttons";
 import { useLoginMutation, extractErrorMessage } from "@/shared/hooks/auth/use-auth-mutations";
 
 export function AuthForm() {
+  const router = useRouter();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const isBootstrapping = useAppSelector((state) => state.auth.isBootstrapping);
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = React.useState(true);
   const [formError, setFormError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (isAuthenticated && !isBootstrapping) {
+      const redirect =
+        typeof window !== "undefined"
+          ? new URLSearchParams(window.location.search).get("redirect") || "/dashboard"
+          : "/dashboard";
+      router.replace(redirect);
+    }
+  }, [isAuthenticated, isBootstrapping, router]);
 
   // Forgot password dialog state
   const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);

@@ -5,16 +5,11 @@ import { ROUTES, isProtectedRoute, isAuthRoute } from "./shared/lib/routes";
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Retrieve session cookies.
-  // Access tokens are kept in Redux memory only (never written to document.cookie)
-  // to prevent XSS exfiltration. A lightweight boolean session indicator (tailr_session)
-  // or backend HttpOnly refreshToken signals an active authenticated session.
-  const sessionIndicator =
-    request.cookies.get("tailr_session")?.value ||
-    request.cookies.get("refreshToken")?.value ||
-    request.cookies.get("tailr_access_token")?.value ||
-    request.cookies.get("accessToken")?.value;
-  const hasValidSession = Boolean(sessionIndicator && sessionIndicator.trim().length > 0);
+  // Retrieve the client-managed session indicator cookie.
+  // Access tokens are stored in Redux memory only (never written to document.cookie)
+  // to prevent XSS exfiltration. The lightweight boolean cookie (tailr_session)
+  // is set upon successful auth and removed upon logout or 401 expiration.
+  const hasValidSession = request.cookies.get("tailr_session")?.value === "1";
 
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {
@@ -26,13 +21,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 2. Active session holder accessing /login or /signup -> redirect to /dashboard
-  if (isAuthRoute(pathname) && hasValidSession) {
-    console.info(
-      `[${new Date().toISOString()}] [INFO] [Middleware] Redirecting authenticated request: "${pathname}" -> "${ROUTES.DASHBOARD}"`
-    );
-    return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
-  }
+  // Note: We deliberately do NOT redirect /login or /signup at the Edge Middleware layer.
+  // Edge middleware cannot verify whether backend tokens are still valid or expired in the database.
+  // Redirecting auth routes at the edge causes an infinite redirect loop if a session expires.
+  // Legitimate authenticated users visiting /login are redirected cleanly by client-side auth state.
 
   return NextResponse.next();
 }

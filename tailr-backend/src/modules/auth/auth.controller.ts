@@ -186,39 +186,46 @@ export class AuthController {
       throw new UnauthorizedError("Refresh token cookie is missing or expired. Please sign in.");
     }
 
-    // Rotate refresh token server-side (revokes old token, issues new)
-    const { user, newRefreshToken } = await authService.rotateRefreshToken(rawRefreshToken);
+    try {
+      // Rotate refresh token server-side (revokes old token, issues new)
+      const { user, newRefreshToken } = await authService.rotateRefreshToken(rawRefreshToken);
 
-    // Issue fresh access token
-    const newAccessToken = await jwtAccess.sign({
-      sub: user.id,
-      email: user.email,
-      name: user.fullName,
-      role: user.role,
-    });
+      // Issue fresh access token
+      const newAccessToken = await jwtAccess.sign({
+        sub: user.id,
+        email: user.email,
+        name: user.fullName,
+        role: user.role,
+      });
 
-    // Update cookies with new rotated tokens
-    cookie.refreshToken.set({
-      value: newRefreshToken,
-      ...getRefreshTokenCookieOptions(),
-    });
-    cookie.accessToken.set({
-      value: newAccessToken,
-      ...getAccessTokenCookieOptions(),
-    });
+      // Update cookies with new rotated tokens
+      cookie.refreshToken.set({
+        value: newRefreshToken,
+        ...getRefreshTokenCookieOptions(),
+      });
+      cookie.accessToken.set({
+        value: newAccessToken,
+        ...getAccessTokenCookieOptions(),
+      });
 
-    return {
-      success: true,
-      message: "Access token rotated successfully.",
-      data: {
-        user: {
-          id: user.id,
-          fullName: user.fullName,
-          email: user.email,
+      return {
+        success: true,
+        message: "Access token rotated successfully.",
+        data: {
+          user: {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+          },
+          accessToken: newAccessToken,
         },
-        accessToken: newAccessToken,
-      },
-    };
+      };
+    } catch (err) {
+      // Clear invalid/expired cookies so client doesn't keep resending invalid tokens
+      cookie.refreshToken.remove(getRefreshTokenCookieOptions());
+      cookie.accessToken.remove(getAccessTokenCookieOptions());
+      throw err;
+    }
   }
 
   async logout({ cookie }: { cookie: CookieJar }) {

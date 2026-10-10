@@ -17,8 +17,19 @@ import { useAppSelector } from "@/shared/store/hooks";
  * The OTP code itself lives on the backend — we do NOT generate or store it
  * here. The OTP screen submits to /auth/verify-otp directly.
  */
+import { useRouter } from "next/navigation";
+
 export function SignupFlowContainer() {
+  const router = useRouter();
   const authStep = useAppSelector((state) => state.auth.authStep);
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const isBootstrapping = useAppSelector((state) => state.auth.isBootstrapping);
+
+  React.useEffect(() => {
+    if (isAuthenticated && !isBootstrapping) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, isBootstrapping, router]);
 
   // We track the user's registration data locally to pass the email/name
   // to the OTP screen (for display only — not for verification logic).
