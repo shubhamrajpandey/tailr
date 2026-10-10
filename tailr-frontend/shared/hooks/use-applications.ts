@@ -109,7 +109,7 @@ export function useApplications(options?: UseApplicationsOptions) {
 
   return {
     applications,
-    isLoaded: !isBootstrapping && isFetched,
+    isLoaded: !isBootstrapping && (isFetched || applications.length > 0),
     isLoading: isLoading || isBootstrapping,
     refetch,
     ...crud,

@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Search, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { MobileBottomBar } from "./mobile-bottom-bar";
@@ -54,6 +55,7 @@ function subscribeSidebarCollapsed(callback: () => void) {
 }
 
 export function Sidebar() {
+  const pathname = usePathname();
   const isCollapsed = React.useSyncExternalStore(
     subscribeSidebarCollapsed,
     getSidebarCollapsedSnapshot,
@@ -65,6 +67,10 @@ export function Sidebar() {
     localStorage.setItem(SIDEBAR_COLLAPSE_KEY, (!current).toString());
     window.dispatchEvent(new Event("tailr_sidebar_collapsed_changed"));
   }, []);
+
+  if (pathname?.startsWith("/applications")) {
+    return null;
+  }
 
   return (
     <>

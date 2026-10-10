@@ -126,33 +126,9 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
     },
     {
       title: "Applications",
+      href: ROUTES.APPLICATIONS,
       icon: Briefcase,
-      subItems: [
-        {
-          title: "All Applications",
-          href: ROUTES.APPLICATIONS,
-          badge: totalApplications,
-          isActive: pathname === ROUTES.APPLICATIONS && !currentStatus,
-        },
-        {
-          title: "Active Pipeline",
-          href: `${ROUTES.APPLICATIONS}?status=active`,
-          badge: activePipelineCount,
-          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "active",
-        },
-        {
-          title: "Interview Stage",
-          href: `${ROUTES.APPLICATIONS}?status=interview`,
-          badge: interviewCount,
-          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "interview",
-        },
-        {
-          title: "Offers",
-          href: `${ROUTES.APPLICATIONS}?status=offer`,
-          badge: offerCount,
-          isActive: pathname === ROUTES.APPLICATIONS && currentStatus === "offer",
-        },
-      ],
+      badge: totalApplications > 0 ? totalApplications : undefined,
     },
     {
       title: "Resumes",

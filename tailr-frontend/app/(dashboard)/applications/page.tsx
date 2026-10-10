@@ -1,126 +1,72 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
-import { ApplicationsListTable } from "./components/applications-list-table";
+import { useSearchParams } from "next/navigation";
 import { useApplications } from "@/shared/hooks/use-applications";
-import { Button } from "@/shared/components/ui/button";
-
-const STATUS_TITLES: Record<string, { title: string; desc: string }> = {
-  ACTIVE: {
-    title: "Active Pipeline",
-    desc: "Applications currently in motion (wishlist, applied, interview, and offer stages).",
-  },
-  INTERVIEW: {
-    title: "Interview Stage",
-    desc: "Roles with active interview processes and recruiter screens.",
-  },
-  OFFER: {
-    title: "Received Offers",
-    desc: "Job offers currently extended or under negotiation.",
-  },
-  APPLIED: {
-    title: "Submitted Applications",
-    desc: "Applications formally submitted and waiting on feedback.",
-  },
-  WISHLIST: {
-    title: "Wishlist Roles",
-    desc: "Target roles and companies you are preparing to tailor resumes for.",
-  },
-  REJECTED: {
-    title: "Archived / Rejected",
-    desc: "Positions that have concluded without an offer.",
-  },
-  GHOSTED: {
-    title: "Ghosted Roles",
-    desc: "Applications with no recruiter response after extended follow-up.",
-  },
-};
+import { ApplicationBoardHeader } from "./components/application-board-header";
+import { ApplicationKanbanBoard } from "./components/application-kanban-board";
+import { ApplicationsListTable } from "./components/applications-list-table";
 
 function ApplicationsView() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const rawStatus = searchParams.get("status");
+  const rawStatus = searchParams.get("status")?.toUpperCase();
 
-  const currentStatusFilter = React.useMemo(() => {
-    if (!rawStatus) return "ALL";
-    const upper = rawStatus.toUpperCase();
-    if (
-      ["ACTIVE", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].includes(upper)
-    ) {
-      return upper;
+  const { applications, updateStatus, deleteApplication, createApplication } = useApplications();
+
+  // View state: defaults to modern Kanban board
+  const [viewMode, setViewMode] = React.useState<"kanban" | "table">("kanban");
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const [showConcluded, setShowConcluded] = React.useState(false);
+  const [quickAddOpen, setQuickAddOpen] = React.useState(false);
+
+  // If URL specified status=rejected or status=ghosted, show concluded column
+  React.useEffect(() => {
+    if (rawStatus === "REJECTED" || rawStatus === "GHOSTED") {
+      setShowConcluded(true);
     }
-    return "ALL";
   }, [rawStatus]);
 
-  const { applications, isLoaded, updateStatus, deleteApplication } = useApplications();
-
-  const handleStatusFilterChange = (newStatus: string) => {
-    if (newStatus === "ALL") {
-      router.push("/applications");
-    } else {
-      router.push(`/applications?status=${newStatus.toLowerCase()}`);
-    }
-  };
-
-  const statusMeta =
-    currentStatusFilter !== "ALL"
-      ? STATUS_TITLES[currentStatusFilter] || {
-          title: "Filtered Applications",
-          desc: "Viewing filtered job applications.",
-        }
-      : {
-          title: "Job Applications",
-          desc: "Track and manage every role in your pipeline from initial wishlist to final offer.",
-        };
-
   return (
-    <>
-      {/* Page Top Header Bar */}
-      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-              {statusMeta.title}
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 sm:mt-1.5 font-medium">
-              {statusMeta.desc}
-            </p>
-          </div>
+    <div className="flex-1 flex flex-col min-h-[calc(100vh-3.5rem)] bg-[#0c192c] text-slate-100 overflow-hidden">
+      {/* Top Header & Pipeline Metrics Bar */}
+      <ApplicationBoardHeader
+        applications={applications}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        showConcluded={showConcluded}
+        onToggleShowConcluded={setShowConcluded}
+        onOpenQuickAdd={() => setQuickAddOpen(true)}
+      />
 
-          <div className="flex items-center gap-3">
-            <Link href="/applications/new" className="w-full sm:w-auto">
-              <Button
-                variant="primary"
-                className="w-full sm:w-auto gap-2 font-semibold shadow-sm justify-center h-10"
-              >
-                <Plus className="h-4 w-4" />
-                New Application
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Content Area */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-10 space-y-6">
-        {isLoaded ? (
-          <ApplicationsListTable
+      {/* Main Board Canvas Area */}
+      <main className="flex-1 px-4 sm:px-6 pb-4 flex flex-col min-h-0 overflow-hidden">
+        {viewMode === "kanban" ? (
+          /* Instant Trello Board Canvas */
+          <ApplicationKanbanBoard
             applications={applications}
-            currentStatusFilter={currentStatusFilter}
-            onStatusFilterChange={handleStatusFilterChange}
+            searchQuery={searchQuery}
+            showConcluded={showConcluded}
             onStatusChange={updateStatus}
             onDelete={deleteApplication}
+            onCreateApplication={createApplication}
+            quickAddOpen={quickAddOpen}
+            onQuickAddOpenChange={setQuickAddOpen}
           />
         ) : (
-          <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-8 sm:p-12 text-center text-sm text-neutral-400 shadow-xs">
-            Loading applications...
+          /* Alternate Tabular View */
+          <div className="pt-3 overflow-y-auto">
+            <ApplicationsListTable
+              applications={applications}
+              currentStatusFilter="ALL"
+              onStatusChange={updateStatus}
+              onDelete={deleteApplication}
+            />
           </div>
         )}
       </main>
-    </>
+    </div>
   );
 }
 
@@ -128,8 +74,8 @@ export default function ApplicationsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex min-h-screen bg-background items-center justify-center text-sm text-neutral-400">
-          Loading...
+        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-sm text-slate-400 bg-[#0c192c]">
+          Loading applications pipeline...
         </div>
       }
     >
