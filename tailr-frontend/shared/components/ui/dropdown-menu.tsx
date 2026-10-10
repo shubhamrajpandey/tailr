@@ -79,7 +79,7 @@ function DropdownMenuContent({
   return (
     <div
       className={cn(
-        "absolute z-50 mt-1.5 min-w-[140px] rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#121318] p-1 text-neutral-800 dark:text-neutral-200 shadow-2xl outline-none animate-in fade-in-80 zoom-in-95",
+        "absolute z-[100] mt-1.5 min-w-[140px] rounded-lg border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#111216] p-1 text-neutral-800 dark:text-neutral-200 shadow-2xl outline-none animate-in fade-in-80 zoom-in-95",
         align === "end" ? "right-0" : align === "start" ? "left-0" : "left-1/2 -translate-x-1/2",
         className
       )}

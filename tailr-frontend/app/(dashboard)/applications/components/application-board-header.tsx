@@ -92,7 +92,7 @@ export function ApplicationBoardHeader({
   }, [applications]);
 
   return (
-    <header className="px-4 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card/40 backdrop-blur-md border-b border-neutral-200/60 dark:border-white/[0.06] select-none">
+    <header className="px-4 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card border-b border-neutral-200/60 dark:border-white/[0.06] select-none">
       {/* Left: Board Title, View Mode Toggle, Background Color Switcher */}
       <div className="flex flex-wrap items-center gap-2.5">
         <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
@@ -140,7 +140,7 @@ export function ApplicationBoardHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="start"
-            className="w-48 text-xs bg-white dark:bg-[#121318] border-neutral-200 dark:border-white/[0.08] shadow-2xl"
+            className="w-48 text-xs bg-white dark:bg-[#111216] border border-neutral-200 dark:border-white/[0.08] shadow-2xl"
           >
             <DropdownMenuLabel className="text-[10px] uppercase font-mono tracking-wider text-muted-foreground">
               Board Background
