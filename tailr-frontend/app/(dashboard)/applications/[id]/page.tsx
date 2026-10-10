@@ -43,7 +43,7 @@ export default function ApplicationDetailPage() {
   }
 
   return (
-    <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-32 sm:pb-12 space-y-6 max-w-6xl mx-auto w-full">
+    <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-32 sm:pb-12 space-y-6 w-full">
       {/* Header Banner & Status Bar */}
       <ApplicationDetailHeader
         application={application}
