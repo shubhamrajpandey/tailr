@@ -14,7 +14,7 @@ import { CoverLetterHeader } from "./components/cover-letter-header";
 import { CoverLetterSavedTab } from "./components/cover-letter-saved-tab";
 import { CoverLetterGeneratorTab } from "./components/cover-letter-generator-tab";
 
-export default function CoverLettersPage() {
+function CoverLettersContent() {
   const searchParams = useSearchParams();
   const initialTab =
     searchParams.get("tab") === "generator" || searchParams.get("action") === "new"
@@ -345,5 +345,19 @@ export default function CoverLettersPage() {
       {/* Scroll to Top floating action button */}
       <ScrollToTop threshold={200} />
     </>
+  );
+}
+
+export default function CoverLettersPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-sm text-neutral-400">
+          Loading cover letters...
+        </div>
+      }
+    >
+      <CoverLettersContent />
+    </React.Suspense>
   );
 }

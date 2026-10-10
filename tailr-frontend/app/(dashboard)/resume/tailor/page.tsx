@@ -312,7 +312,7 @@ function TailorWorkspaceForm({ initialApp, masterResume, saveVersion }: TailorWo
   );
 }
 
-export default function ResumeTailorPage() {
+function ResumeTailorContent() {
   const searchParams = useSearchParams();
   const appId = searchParams.get("applicationId");
 
@@ -344,5 +344,22 @@ export default function ResumeTailorPage() {
       masterResume={masterResume}
       saveVersion={saveVersion}
     />
+  );
+}
+
+export default function ResumeTailorPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="flex p-16 items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+            <p className="text-xs font-medium text-neutral-500">Loading tailoring studio...</p>
+          </div>
+        </div>
+      }
+    >
+      <ResumeTailorContent />
+    </React.Suspense>
   );
 }
