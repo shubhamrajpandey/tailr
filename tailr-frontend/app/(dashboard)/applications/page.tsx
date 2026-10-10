@@ -3,9 +3,14 @@
 import * as React from "react";
 import { useSearchParams } from "next/navigation";
 import { useApplications } from "@/shared/hooks/use-applications";
-import { ApplicationBoardHeader } from "./components/application-board-header";
+import {
+  ApplicationBoardHeader,
+  type BoardBgOption,
+  BOARD_BG_MAP,
+} from "./components/application-board-header";
 import { ApplicationKanbanBoard } from "./components/application-kanban-board";
 import { ApplicationsListTable } from "./components/applications-list-table";
+import { cn } from "@/shared/lib/utils";
 
 function ApplicationsView() {
   const searchParams = useSearchParams();
@@ -19,6 +24,26 @@ function ApplicationsView() {
   const [showConcluded, setShowConcluded] = React.useState(false);
   const [quickAddOpen, setQuickAddOpen] = React.useState(false);
 
+  // Background color customization (default matches Tailr theme)
+  const [boardBg, setBoardBg] = React.useState<BoardBgOption>(() => {
+    if (typeof window === "undefined") return "default";
+    try {
+      const stored = localStorage.getItem("tailr_board_bg") as BoardBgOption;
+      return stored && BOARD_BG_MAP[stored] ? stored : "default";
+    } catch {
+      return "default";
+    }
+  });
+
+  const handleBoardBgChange = (nextBg: BoardBgOption) => {
+    setBoardBg(nextBg);
+    try {
+      localStorage.setItem("tailr_board_bg", nextBg);
+    } catch {
+      // Storage unavailable
+    }
+  };
+
   // If URL specified status=rejected or status=ghosted, show concluded column
   React.useEffect(() => {
     if (rawStatus === "REJECTED" || rawStatus === "GHOSTED") {
@@ -26,8 +51,15 @@ function ApplicationsView() {
     }
   }, [rawStatus]);
 
+  const bgConfig = BOARD_BG_MAP[boardBg] || BOARD_BG_MAP.default;
+
   return (
-    <div className="flex-1 flex flex-col min-h-[calc(100vh-3.5rem)] bg-[#0c192c] text-slate-100 overflow-hidden">
+    <div
+      className={cn(
+        "flex-1 flex flex-col min-h-[calc(100vh-3.5rem)] overflow-x-hidden transition-colors duration-200",
+        bgConfig.class
+      )}
+    >
       {/* Top Header & Pipeline Metrics Bar */}
       <ApplicationBoardHeader
         applications={applications}
@@ -38,12 +70,14 @@ function ApplicationsView() {
         showConcluded={showConcluded}
         onToggleShowConcluded={setShowConcluded}
         onOpenQuickAdd={() => setQuickAddOpen(true)}
+        boardBg={boardBg}
+        onBoardBgChange={handleBoardBgChange}
       />
 
-      {/* Main Board Canvas Area */}
-      <main className="flex-1 px-4 sm:px-6 pb-4 flex flex-col min-h-0 overflow-hidden">
+      {/* Main Board Canvas Area — Fixed width, zero horizontal scrollbar */}
+      <main className="flex-1 px-4 sm:px-6 pb-4 flex flex-col min-h-0 overflow-x-hidden">
         {viewMode === "kanban" ? (
-          /* Instant Trello Board Canvas */
+          /* Fixed Grid Kanban Board */
           <ApplicationKanbanBoard
             applications={applications}
             searchQuery={searchQuery}
@@ -55,7 +89,7 @@ function ApplicationsView() {
             onQuickAddOpenChange={setQuickAddOpen}
           />
         ) : (
-          /* Alternate Tabular View */
+          /* Tabular View */
           <div className="pt-3 overflow-y-auto">
             <ApplicationsListTable
               applications={applications}
@@ -74,7 +108,7 @@ export default function ApplicationsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-sm text-slate-400 bg-[#0c192c]">
+        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-sm text-muted-foreground bg-background">
           Loading applications pipeline...
         </div>
       }
