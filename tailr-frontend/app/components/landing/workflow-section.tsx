@@ -19,8 +19,8 @@ export function WorkflowSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* ─── Centered Section Header (Identical to Screenshot) ─── */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-200/80 dark:border-indigo-500/20 mb-3.5 sm:mb-4">
-            <Zap className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200/80 dark:border-purple-500/20 mb-3.5 sm:mb-4">
+            <Zap className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
             <span>Seamless 4-Step Pipeline</span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans leading-[1.15]">
@@ -51,8 +51,8 @@ export function WorkflowSection() {
                 className={cn(
                   "relative rounded-3xl overflow-hidden cursor-pointer select-none border transition-all h-full",
                   isExpanded
-                    ? "flex-[3.4] bg-white dark:bg-[#0c0d12] border-indigo-500/40 dark:border-indigo-500/30 shadow-[0_16px_48px_-12px_rgba(99,102,241,0.18)] dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)]"
-                    : "flex-1 min-w-[130px] xl:min-w-[145px] bg-slate-50/90 dark:bg-[#0f1016]/80 hover:bg-white dark:hover:bg-[#12141c] border-slate-200/90 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-xs"
+                    ? "flex-[4.2] xl:flex-[4.8] bg-white dark:bg-[#0c0d12] border-purple-500/40 dark:border-purple-500/30 shadow-[0_16px_48px_-12px_rgba(168,85,247,0.18)] dark:shadow-[0_20px_50px_-15px_rgba(0,0,0,0.6)]"
+                    : "flex-1 min-w-[85px] lg:min-w-[95px] xl:min-w-[120px] bg-slate-50/90 dark:bg-[#0f1016]/80 hover:bg-white dark:hover:bg-[#12141c] border-slate-200/90 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 shadow-xs"
                 )}
               >
                 {/* Top Subtle Ambient Accent Glow */}
@@ -68,26 +68,25 @@ export function WorkflowSection() {
                 {/* Subtle Decorative concentric circles (matching Pinterest aesthetic) */}
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-xl"
+                  className="pointer-events-none absolute -bottom-10 -left-10 w-44 h-44 rounded-full bg-purple-500/5 dark:bg-purple-500/10 blur-xl"
                 />
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute top-10 right-4 w-28 h-28 rounded-full border border-neutral-200/40 dark:border-white/[0.04] opacity-40"
                 />
 
-                {/* ─── EXPANDED VIEW: Fixed-width 2-column layout that NEVER compresses text during transition ─── */}
+                {/* ─── EXPANDED VIEW: Fully responsive 2-column layout that perfectly fits all screens ─── */}
                 <div
                   className={cn(
-                    "absolute inset-0 p-7 xl:p-8 flex items-stretch z-10 transition-opacity duration-300 overflow-hidden",
+                    "absolute inset-0 p-6 lg:p-6 xl:p-8 flex items-stretch z-10 transition-opacity duration-300 overflow-hidden",
                     isExpanded
                       ? "opacity-100 pointer-events-auto delay-100"
                       : "opacity-0 pointer-events-none"
                   )}
                 >
-                  {/* Fixed width inner canvas: prevents words from wrapping into single-character columns while flex animates */}
-                  <div className="w-[640px] xl:w-[700px] h-full grid grid-cols-12 gap-6 items-stretch shrink-0">
+                  <div className="w-full h-full grid grid-cols-12 gap-5 xl:gap-6 items-stretch min-w-0">
                     {/* Left Column: Details & Benefits */}
-                    <div className="col-span-6 flex flex-col justify-between space-y-3">
+                    <div className="col-span-6 flex flex-col justify-between space-y-3 min-w-0">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
                           <span
@@ -120,7 +119,7 @@ export function WorkflowSection() {
                               key={b}
                               className="flex items-center gap-2 text-xs text-neutral-700 dark:text-neutral-300 font-sans"
                             >
-                              <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                              <Check className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400 shrink-0" />
                               <span>{b}</span>
                             </div>
                           ))}
@@ -133,7 +132,7 @@ export function WorkflowSection() {
                           href="/register"
                           className="group/btn inline-flex items-center gap-2.5"
                         >
-                          <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white group-hover/btn:text-indigo-600 dark:group-hover/btn:text-indigo-400 transition-colors font-sans">
+                          <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white group-hover/btn:text-purple-600 dark:group-hover/btn:text-purple-400 transition-colors font-sans">
                             Read More
                           </span>
                           <div
@@ -153,7 +152,9 @@ export function WorkflowSection() {
                     </div>
 
                     {/* Right Column: High-Fidelity UI Preview Card */}
-                    <div className="col-span-6 flex flex-col justify-center">{step.preview}</div>
+                    <div className="col-span-6 flex flex-col justify-center min-w-0 h-full">
+                      {step.preview}
+                    </div>
                   </div>
                 </div>
 
@@ -214,7 +215,7 @@ export function WorkflowSection() {
                     : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
                 )}
               >
-                <span className="font-mono text-[10px] text-indigo-600 dark:text-indigo-400">
+                <span className="font-mono text-[10px] text-purple-600 dark:text-purple-400">
                   {s.stepNum}
                 </span>
                 <span className="text-[11px] truncate max-w-[70px]">{s.compactTitle}</span>
