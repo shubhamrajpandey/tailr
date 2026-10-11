@@ -37,14 +37,14 @@ export function HeroSection() {
         {/* Top-Left: Mini Bar Chart 3D Card */}
         <div
           aria-hidden="true"
-          className="hidden md:flex items-center justify-center absolute -top-3 left-[18%] lg:left-[24%] xl:left-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-[#15161e] border border-slate-200/90 dark:border-white/10 shadow-lg shadow-slate-200/50 dark:shadow-black/40 rotate-[-6deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
+          className="hidden md:flex items-center justify-center absolute -top-3 left-[18%] lg:left-[24%] xl:left-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-purple-200 dark:bg-[#141220] border-2 border-purple-400/80 dark:border-purple-500/40 shadow-lg shadow-purple-950/20 dark:shadow-black/70 rotate-[-6deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="ATS Resume Matching Analytics"
         >
-          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-indigo-500/10 dark:bg-indigo-400/15">
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-neutral-950 dark:bg-purple-950/80 border border-purple-500/40">
             <div className="flex items-end gap-1 h-4">
-              <span className="w-1.5 h-2.5 bg-emerald-500 rounded-xs shadow-xs shadow-emerald-500/30" />
-              <span className="w-1.5 h-4 bg-rose-500 rounded-xs shadow-xs shadow-rose-500/30" />
-              <span className="w-1.5 h-3 bg-blue-500 rounded-xs shadow-xs shadow-blue-500/30" />
+              <span className="w-1.5 h-2.5 bg-purple-400 rounded-xs shadow-xs shadow-purple-400/50" />
+              <span className="w-1.5 h-4 bg-purple-300 rounded-xs shadow-xs shadow-purple-300/50" />
+              <span className="w-1.5 h-3 bg-purple-400 rounded-xs shadow-xs shadow-purple-400/50" />
             </div>
           </div>
         </div>
@@ -52,33 +52,33 @@ export function HeroSection() {
         {/* Top-Right: Fast AI Tailoring Velocity */}
         <div
           aria-hidden="true"
-          className="hidden md:flex items-center justify-center absolute -top-1 right-[18%] lg:right-[24%] xl:right-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-[#fff7ed] dark:bg-[#1c1816] border border-amber-200/80 dark:border-amber-500/25 shadow-lg shadow-amber-900/5 dark:shadow-black/40 rotate-[8deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
+          className="hidden md:flex items-center justify-center absolute -top-1 right-[18%] lg:right-[24%] xl:right-[22%] w-12 h-12 sm:w-13 sm:h-13 rounded-2xl bg-purple-200 dark:bg-[#141220] border-2 border-purple-400/80 dark:border-purple-500/40 shadow-lg shadow-purple-950/20 dark:shadow-black/70 rotate-[8deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="Fast AI Tailoring Velocity"
         >
-          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-amber-500/10 dark:bg-amber-400/15">
-            <Rocket className="w-4.5 h-4.5 text-amber-600 dark:text-amber-400 stroke-[2.2] -rotate-12" />
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-neutral-950 dark:bg-purple-950/80 border border-purple-500/40">
+            <Rocket className="w-4.5 h-4.5 text-purple-400 stroke-[2.2] -rotate-12" />
           </div>
         </div>
 
         {/* Middle-Left: Target Role Alignment */}
         <div
           aria-hidden="true"
-          className="hidden lg:flex items-center justify-center absolute top-28 left-[6%] xl:left-[4%] w-12 h-12 rounded-2xl bg-[#fef2f2] dark:bg-[#201518] border border-rose-200/80 dark:border-rose-500/25 shadow-lg shadow-rose-950/5 dark:shadow-black/40 rotate-[-12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
+          className="hidden lg:flex items-center justify-center absolute top-28 left-[6%] xl:left-[4%] w-12 h-12 rounded-2xl bg-purple-200 dark:bg-[#141220] border-2 border-purple-400/80 dark:border-purple-500/40 shadow-lg shadow-purple-950/20 dark:shadow-black/70 rotate-[-12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="Target Role Alignment"
         >
-          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-rose-500/10 dark:bg-rose-400/15">
-            <Target className="w-4.5 h-4.5 text-rose-600 dark:text-rose-400 stroke-[2.2]" />
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-neutral-950 dark:bg-purple-950/80 border border-purple-500/40">
+            <Target className="w-4.5 h-4.5 text-purple-400 stroke-[2.2]" />
           </div>
         </div>
 
         {/* Middle-Right: 100% ATS Verified */}
         <div
           aria-hidden="true"
-          className="hidden lg:flex items-center justify-center absolute top-28 right-[6%] xl:right-[4%] w-12 h-12 rounded-2xl bg-[#f0fdf4] dark:bg-[#132018] border border-emerald-200/80 dark:border-emerald-500/25 shadow-lg shadow-emerald-950/5 dark:shadow-black/40 rotate-[12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
+          className="hidden lg:flex items-center justify-center absolute top-28 right-[6%] xl:right-[4%] w-12 h-12 rounded-2xl bg-purple-200 dark:bg-[#141220] border-2 border-purple-400/80 dark:border-purple-500/40 shadow-lg shadow-purple-950/20 dark:shadow-black/70 rotate-[12deg] hover:rotate-0 hover:scale-110 transition-all duration-300"
           title="100% ATS Verified"
         >
-          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-400/15">
-            <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600 dark:text-emerald-400 stroke-[2.3]" />
+          <div className="flex items-center justify-center w-7.5 h-7.5 rounded-xl bg-neutral-950 dark:bg-purple-950/80 border border-purple-500/40">
+            <CheckCircle2 className="w-4.5 h-4.5 text-purple-400 stroke-[2.3]" />
           </div>
         </div>
 
