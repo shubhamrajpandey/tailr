@@ -16,7 +16,12 @@ import { type AxiosError } from "axios";
 import { authApiClient } from "@/shared/lib/auth-api-client";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { clearCredentials, setAuthStep, setCredentials } from "@/shared/store/auth-slice";
-import { setSessionCookie, removeAuthCookie } from "@/shared/lib/cookie";
+import {
+  setSessionCookie,
+  removeAuthCookie,
+  saveStoredAuth,
+  getStoredAuth,
+} from "@/shared/lib/cookie";
 import {
   getErrorMessage,
   type ApiErrorBody,
@@ -103,7 +108,9 @@ export function useVerifyOtpMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      const refreshToken = (data.data as any).refreshToken;
       setSessionCookie();
+      saveStoredAuth(user, accessToken, refreshToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -154,7 +161,9 @@ export function useLoginMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
+      const refreshToken = (data.data as any).refreshToken;
       setSessionCookie();
+      saveStoredAuth(user, accessToken, refreshToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -226,7 +235,15 @@ export function useLogoutMutation() {
 export function useRefreshQuery(enabled = true) {
   return useQuery<RefreshResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.refresh,
-    queryFn: () => authApiClient.post<RefreshResponse>("/auth/refresh").then((res) => res.data),
+    queryFn: () => {
+      const stored = getStoredAuth();
+      const payload = stored?.refreshToken ? { refreshToken: stored.refreshToken } : {};
+      return authApiClient
+        .post<RefreshResponse>("/auth/refresh", payload, {
+          headers: stored?.refreshToken ? { "x-refresh-token": stored.refreshToken } : undefined,
+        })
+        .then((res) => res.data);
+    },
 
     enabled,
     staleTime: Infinity,

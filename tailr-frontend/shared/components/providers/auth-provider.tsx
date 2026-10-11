@@ -9,6 +9,9 @@ import {
   removeAuthCookie,
   getCookie,
   SESSION_COOKIE_NAME,
+  getStoredAuth,
+  isTokenValid,
+  saveStoredAuth,
 } from "@/shared/lib/cookie";
 
 interface AuthProviderProps {
@@ -31,11 +34,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  // Only attempt silent session refresh if a session indicator cookie exists
+  // Only attempt silent session refresh if a session indicator cookie or stored refresh credential exists
   const [canAttemptRefresh, setCanAttemptRefresh] = useState(false);
 
   useEffect(() => {
-    const hasSessionCookie = Boolean(getCookie(SESSION_COOKIE_NAME));
+    // 1. Instant hydration: if a valid, unexpired token exists in storage, hydrate Redux immediately
+    const stored = getStoredAuth();
+    if (stored?.user && stored?.accessToken && isTokenValid(stored.accessToken)) {
+      setSessionCookie();
+      dispatch(
+        setCredentials({
+          user: stored.user,
+          accessToken: stored.accessToken,
+        })
+      );
+      return;
+    }
+
+    const hasSessionCookie =
+      Boolean(getCookie(SESSION_COOKIE_NAME)) || Boolean(stored?.refreshToken);
     if (hasSessionCookie) {
       setCanAttemptRefresh(true);
     } else {
@@ -46,10 +63,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const { data, isError, isPending } = useRefreshQuery(canAttemptRefresh);
 
-  // 1. On refresh success: populate Redux in-memory credentials and set session indicator
+  // 1. On refresh success: populate Redux in-memory credentials, storage fallback, and session indicator
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
       setSessionCookie();
+      const refreshToken = (data.data as any).refreshToken;
+      saveStoredAuth(data.data.user, data.data.accessToken, refreshToken);
       dispatch(
         setCredentials({
           user: data.data.user,
@@ -59,9 +78,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, [data, dispatch]);
 
-  // 2. On refresh failure: mark bootstrapping complete and clear credentials
+  // 2. On refresh failure: mark bootstrapping complete and clear credentials only if no valid session remains
   useEffect(() => {
     if (isError && !isPending) {
+      const stored = getStoredAuth();
+      if (stored?.user && stored?.accessToken && isTokenValid(stored.accessToken)) {
+        dispatch(
+          setCredentials({
+            user: stored.user,
+            accessToken: stored.accessToken,
+          })
+        );
+        return;
+      }
+
       // Do NOT destroy an active session if user logged in concurrently while refresh was in-flight
       if (!isAuthenticated) {
         removeAuthCookie();

@@ -1,42 +1,52 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { User } from "@/shared/types/auth";
+import { getStoredAuth, isTokenValid, clearStoredAuth } from "@/shared/lib/cookie";
 
 // ─── State Shape ────────────────────────────────────────────────────────────────
 
-/**
- * Redux owns ONLY client-side auth state:
- * - The authenticated user object
- * - The in-memory access token (NEVER persisted to localStorage)
- * - isAuthenticated convenience flag
- * - authStep for signup/OTP flow UI coordination
- *
- * TanStack Query owns server state (pending, fetching, cache).
- * No createAsyncThunk here — Redux only receives successful mutation results.
- */
 export type AuthStep = "signup" | "otp" | "done";
 
 interface AuthState {
   user: User | null;
-  /** Short-lived JWT. Kept in memory only — never localStorage/sessionStorage. */
+  /** Short-lived JWT. Kept in memory only — backed by resilient storage fallback. */
   accessToken: string | null;
   isAuthenticated: boolean;
   /** Tracks which step the signup flow is on for UI coordination. */
   authStep: AuthStep;
   /**
-   * True while AuthProvider's initial /auth/refresh call is in-flight.
+   * True while AuthProvider's initial session verification is in-flight.
    * ProtectedRoute waits for this to be false before deciding to redirect.
-   * Starts true on every hard refresh (Redux resets to initialState).
    */
   isBootstrapping: boolean;
 }
 
-const initialState: AuthState = {
-  user: null,
-  accessToken: null,
-  isAuthenticated: false,
-  authStep: "signup",
-  isBootstrapping: true,
-};
+function getInitialAuthState(): AuthState {
+  if (typeof window !== "undefined") {
+    try {
+      const stored = getStoredAuth();
+      if (stored?.user && stored?.accessToken && isTokenValid(stored.accessToken)) {
+        return {
+          user: stored.user,
+          accessToken: stored.accessToken,
+          isAuthenticated: true,
+          authStep: "done",
+          isBootstrapping: false,
+        };
+      }
+    } catch {
+      // Storage unavailable or invalid
+    }
+  }
+  return {
+    user: null,
+    accessToken: null,
+    isAuthenticated: false,
+    authStep: "signup",
+    isBootstrapping: true,
+  };
+}
+
+const initialState: AuthState = getInitialAuthState();
 
 // ─── Slice ──────────────────────────────────────────────────────────────────────
 
@@ -66,6 +76,7 @@ export const authSlice = createSlice({
       state.isAuthenticated = false;
       state.authStep = "signup";
       state.isBootstrapping = false;
+      clearStoredAuth();
     },
 
     /**

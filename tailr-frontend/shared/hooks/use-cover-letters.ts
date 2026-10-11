@@ -103,7 +103,7 @@ export function useCoverLetters() {
 
   // Synchronize cover letters with PostgreSQL backend
   const syncCoverLetters = React.useCallback(async () => {
-    if (isBootstrapping) return;
+    if (isBootstrapping || !isAuthenticated) return;
 
     await Promise.resolve();
     setIsLoading(true);
@@ -134,7 +134,7 @@ export function useCoverLetters() {
       setIsLoading(false);
       setIsLoaded(true);
     }
-  }, [isBootstrapping, persist]);
+  }, [isBootstrapping, isAuthenticated, persist]);
 
   React.useEffect(() => {
     syncCoverLetters();

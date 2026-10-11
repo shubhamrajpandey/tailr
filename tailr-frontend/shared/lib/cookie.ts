@@ -44,11 +44,63 @@ export function getCookie(name: string): string | null {
   return null;
 }
 
+export const STORAGE_AUTH_KEY = "tailr_auth_session_v1";
+
 /**
- * Purges client-side residual auth cookies on logout.
+ * Persists session credentials to client storage for resilient cross-route and page-reload hydration.
+ * Serves as an unforgeable fallback when cross-origin HttpOnly cookies are blocked by modern browsers.
+ */
+export function saveStoredAuth(user: User, accessToken: string, refreshToken?: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const payload = JSON.stringify({ user, accessToken, refreshToken });
+    sessionStorage.setItem(STORAGE_AUTH_KEY, payload);
+    localStorage.setItem(STORAGE_AUTH_KEY, payload);
+  } catch (err) {
+    console.warn("[cookie] Failed to persist auth session to storage:", err);
+  }
+}
+
+/**
+ * Retrieves cached session credentials from client storage if unexpired or refreshable.
+ */
+export function getStoredAuth(): { user: User; accessToken: string; refreshToken?: string } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(STORAGE_AUTH_KEY) || localStorage.getItem(STORAGE_AUTH_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.accessToken && parsed.user) {
+      if (isTokenValid(parsed.accessToken) || parsed.refreshToken) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.warn("[cookie] Failed to read stored auth session:", err);
+  }
+  return null;
+}
+
+/**
+ * Removes cached credentials from client storage.
+ */
+export function clearStoredAuth(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(STORAGE_AUTH_KEY);
+    localStorage.removeItem(STORAGE_AUTH_KEY);
+  } catch (err) {
+    console.warn("[cookie] Failed to clear stored auth:", err);
+  }
+}
+
+/**
+ * Purges client-side residual auth cookies and cached storage on logout.
  */
 export function removeAuthCookie(): void {
   if (typeof document === "undefined") return;
+
+  clearStoredAuth();
 
   // Clear session indicator and any legacy client-set cookies
   document.cookie = `${SESSION_COOKIE_NAME}=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax`;

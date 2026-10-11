@@ -111,6 +111,7 @@ export class AuthController {
           role: user.role,
         },
         accessToken,
+        refreshToken: rawRefreshToken,
       },
     };
   }
@@ -170,20 +171,28 @@ export class AuthController {
           role: user.role,
         },
         accessToken,
+        refreshToken: rawRefreshToken,
       },
     };
   }
 
   async refresh({
     cookie,
+    body,
+    headers,
     jwtAccess,
   }: {
     cookie: CookieJar;
+    body?: { refreshToken?: string };
+    headers?: Record<string, string | undefined>;
     jwtAccess: JwtSigner;
   }) {
-    const rawRefreshToken = cookie.refreshToken?.value;
+    const rawRefreshToken =
+      cookie.refreshToken?.value ||
+      body?.refreshToken ||
+      headers?.["x-refresh-token"];
     if (!rawRefreshToken) {
-      throw new UnauthorizedError("Refresh token cookie is missing or expired. Please sign in.");
+      throw new UnauthorizedError("Refresh token cookie or credential is missing or expired. Please sign in.");
     }
 
     try {
@@ -218,6 +227,7 @@ export class AuthController {
             email: user.email,
           },
           accessToken: newAccessToken,
+          refreshToken: newRefreshToken,
         },
       };
     } catch (err) {

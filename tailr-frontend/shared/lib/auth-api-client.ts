@@ -23,7 +23,7 @@ import axios, {
 import { store } from "@/shared/store";
 import { clearCredentials, setCredentials } from "@/shared/store/auth-slice";
 import type { RefreshResponse } from "@/shared/types/auth";
-import { removeAuthCookie, isTokenValid } from "./cookie";
+import { removeAuthCookie, isTokenValid, getStoredAuth, saveStoredAuth } from "./cookie";
 import { logger } from "@/shared/lib/logger";
 
 // ─── Concurrent Refresh Queuing (Mutex Pattern) ────────────────────────────────
@@ -77,15 +77,21 @@ export const authApiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 15_000,
+  timeout: 45_000, // 45 seconds to gracefully handle serverless backend wakeups and cold starts
 });
 
 // ─── Request Interceptor ────────────────────────────────────────────────────────
-// Attaches the access token from Redux memory as a Bearer header.
+// Attaches the access token from Redux memory or unexpired client storage fallback.
 
 authApiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = store.getState().auth.accessToken;
+    let token = store.getState().auth.accessToken;
+    if (!token) {
+      const stored = getStoredAuth();
+      if (stored?.accessToken && isTokenValid(stored.accessToken)) {
+        token = stored.accessToken;
+      }
+    }
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -141,10 +147,17 @@ authApiClient.interceptors.response.use(
 
     try {
       // POST /auth/refresh — browser sends the HttpOnly cookie automatically.
-      const { data } = await authApiClient.post<RefreshResponse>("/auth/refresh");
+      // Additionally send stored refreshToken in payload/headers as fallback when cross-origin cookies are blocked.
+      const stored = getStoredAuth();
+      const refreshPayload = stored?.refreshToken ? { refreshToken: stored.refreshToken } : {};
+      const { data } = await authApiClient.post<RefreshResponse>("/auth/refresh", refreshPayload, {
+        headers: stored?.refreshToken ? { "x-refresh-token": stored.refreshToken } : undefined,
+      });
       const { user, accessToken: newToken } = data.data;
+      const newRefreshToken = (data.data as any).refreshToken || stored?.refreshToken;
 
-      // Hydrate Redux with the new token in memory.
+      // Hydrate storage and Redux memory
+      saveStoredAuth(user, newToken, newRefreshToken);
       store.dispatch(setCredentials({ user, accessToken: newToken }));
 
       // Retry all queued requests with the new token.

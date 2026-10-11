@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { authApiClient } from "@/shared/lib/auth-api-client";
+import { useAppSelector } from "@/shared/store/hooks";
 import type { UserQuotaStatus, QuotaDetail } from "@/shared/types/quota";
 
 const DEFAULT_QUOTA_DETAIL: QuotaDetail = {
@@ -60,6 +61,7 @@ export function formatResetTime(resetsInSeconds: number, resetsAt: string | null
  */
 export function useAiQuota() {
   const queryClient = useQueryClient();
+  const { isAuthenticated, isBootstrapping } = useAppSelector((state) => state.auth);
 
   const [resumeCooldown, setResumeCooldown] = React.useState<number>(0);
   const [coverLetterCooldown, setCoverLetterCooldown] = React.useState<number>(0);
@@ -95,6 +97,7 @@ export function useAiQuota() {
         return DEFAULT_QUOTA_STATUS;
       }
     },
+    enabled: isAuthenticated && !isBootstrapping,
     staleTime: 30 * 1000, // 30 seconds
     refetchOnWindowFocus: true,
   });

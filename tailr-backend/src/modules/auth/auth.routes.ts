@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, t } from "elysia";
 import { jwt } from "@elysiajs/jwt";
 import { authController } from "./auth.controller";
 import {
@@ -123,11 +123,22 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     }
   )
 
-  // 5. Rotate Access Token using HttpOnly Refresh Cookie
+  // 5. Rotate Access Token using HttpOnly Refresh Cookie or Request Body / Header
   .post(
     "/refresh",
-    ({ cookie, jwtAccess }) => authController.refresh({ cookie, jwtAccess }),
+    ({ cookie, body, headers, jwtAccess }) =>
+      authController.refresh({
+        cookie,
+        body: body as { refreshToken?: string } | undefined,
+        headers: headers as Record<string, string | undefined>,
+        jwtAccess,
+      }),
     {
+      body: t.Optional(
+        t.Object({
+          refreshToken: t.Optional(t.String()),
+        })
+      ),
       detail: {
         tags: ["Auth"],
         summary: "Rotate access and refresh tokens",

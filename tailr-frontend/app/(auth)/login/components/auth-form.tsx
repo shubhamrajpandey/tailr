@@ -49,6 +49,20 @@ export function AuthForm() {
     }
   }, [isAuthenticated, isBootstrapping, router]);
 
+  // Proactively warm up backend container and DB connection pool while user enters credentials
+  React.useEffect(() => {
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
+    try {
+      fetch(`${apiUrl}/health`, { method: "GET", credentials: "omit" }).catch(() => {
+        // Non-blocking silent pre-warm
+      });
+    } catch {
+      // Ignore background warmup failures
+    }
+  }, []);
+
   // Forgot password dialog state
   const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);
   const [forgotEmail, setForgotEmail] = React.useState("");

@@ -15,8 +15,8 @@ const isSslRequired =
 
 const queryClient = postgres(env.DATABASE_URL, {
   max: env.NODE_ENV === "production" ? 20 : 10,
-  idle_timeout: 20,
-  connect_timeout: 15,
+  idle_timeout: 120, // 2 minutes to keep connections warm and avoid frequent reconnection overhead
+  connect_timeout: 30, // 30 seconds to accommodate serverless Neon database cold wakeups
   prepare: false, // Prevents prepared statement collisions on PgBouncer / Neon poolers
   ssl: isSslRequired ? "require" : undefined,
   onnotice: () => {}, // Suppress noisy notices in production

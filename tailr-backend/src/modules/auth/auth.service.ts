@@ -269,6 +269,19 @@ export class AuthService {
       );
     }
 
+    // Pre-warm user cache to eliminate DB round-trip on immediate follow-up requests (e.g. /applications)
+    userCache.set(user.id, {
+      data: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        createdAt: user.createdAt.toISOString(),
+      },
+      expiresAt: Date.now() + USER_CACHE_TTL_MS,
+    });
+
     return user;
   }
 
