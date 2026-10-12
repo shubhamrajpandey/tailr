@@ -143,27 +143,43 @@ export class CompaniesService {
    */
   async list(query: CompanyListQueryInput): Promise<{
     data: PublicCompany[];
-    pageInfo: { hasMore: boolean; nextCursor: string | null };
+    pageInfo: {
+      total: number;
+      page: number;
+      totalPages: number;
+      limit: number;
+      hasMore: boolean;
+      nextCursor: string | null;
+    };
   }> {
     const cacheKey = `companies:list:${JSON.stringify(query)}`;
     const cached = globalCache.get<{
       data: PublicCompany[];
-      pageInfo: { hasMore: boolean; nextCursor: string | null };
+      pageInfo: {
+        total: number;
+        page: number;
+        totalPages: number;
+        limit: number;
+        hasMore: boolean;
+        nextCursor: string | null;
+      };
     }>(cacheKey);
     if (cached) return cached;
 
-    const limit = Math.min(query.limit ?? 50, 100);
+    const limit = Math.min(Math.max(1, query.limit ?? 20), 100);
     const decoded = query.cursor ? decodeCursor(query.cursor) : null;
+    const isPageMode = typeof query.page !== "undefined" || !query.cursor;
+    const pageNum = Math.max(1, query.page ?? 1);
 
-    // Build WHERE conditions
-    const conditions: ReturnType<typeof sql>[] = [];
+    // Build WHERE conditions (without cursor, for total count & base query)
+    const baseConditions: ReturnType<typeof sql>[] = [];
 
     const search = query.search?.trim();
     const letter = query.letter?.toUpperCase();
 
     if (search) {
       // Case-insensitive match on name, sector, location, or tech stack
-      conditions.push(
+      baseConditions.push(
         or(
           ilike(companies.name, `%${search}%`),
           ilike(companies.sector, `%${search}%`),
@@ -173,7 +189,7 @@ export class CompaniesService {
       );
     } else if (letter) {
       // Name starts with the given letter (server-side, case-insensitive)
-      conditions.push(
+      baseConditions.push(
         or(
           ilike(companies.name, `${letter}%`),
           ilike(companies.name, `${letter.toLowerCase()}%`)
@@ -181,17 +197,32 @@ export class CompaniesService {
       );
     }
 
-    if (query.sector?.trim()) {
-      conditions.push(ilike(companies.sector, `%${query.sector.trim()}%`));
+    if (query.sector?.trim() && query.sector !== "All") {
+      baseConditions.push(ilike(companies.sector, `%${query.sector.trim()}%`));
     }
 
     if (query.tech?.trim()) {
-      conditions.push(sql`${query.tech.trim()} = ANY(${companies.techStack})`);
+      baseConditions.push(sql`${query.tech.trim()} = ANY(${companies.techStack})`);
     }
 
-    // Cursor condition: rows before the current cursor position
-    if (decoded) {
-      conditions.push(
+    const baseWhere = baseConditions.length > 0 ? and(...baseConditions) : undefined;
+
+    // 1. Compute total matching rows for pagination info
+    const [countResult] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(companies)
+      .where(baseWhere);
+    const total = Number(countResult?.count ?? 0);
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+
+    let pageRows: Company[] = [];
+    let hasMore = false;
+    let nextCursor: string | null = null;
+
+    if (!isPageMode && decoded) {
+      // Cursor-based condition
+      const cursorConditions = [...baseConditions];
+      cursorConditions.push(
         or(
           lt(companies.createdAt, decoded.createdAt),
           and(
@@ -200,23 +231,42 @@ export class CompaniesService {
           )
         ) as ReturnType<typeof sql>
       );
+
+      const rows = await db
+        .select()
+        .from(companies)
+        .where(and(...cursorConditions))
+        .orderBy(desc(companies.createdAt), desc(companies.id))
+        .limit(limit + 1);
+
+      hasMore = rows.length > limit;
+      pageRows = hasMore ? rows.slice(0, limit) : rows;
+      nextCursor = hasMore && pageRows.length > 0 ? encodeCursor(pageRows[pageRows.length - 1]) : null;
+    } else {
+      // Offset/Page-based condition (default)
+      const offset = (pageNum - 1) * limit;
+      const rows = await db
+        .select()
+        .from(companies)
+        .where(baseWhere)
+        .orderBy(desc(companies.createdAt), desc(companies.id))
+        .limit(limit)
+        .offset(offset);
+
+      pageRows = rows;
+      hasMore = pageNum < totalPages;
+      nextCursor = hasMore && pageRows.length > 0 ? encodeCursor(pageRows[pageRows.length - 1]) : null;
     }
 
-    const rows = await db
-      .select()
-      .from(companies)
-      .where(conditions.length > 0 ? and(...conditions) : undefined)
-      .orderBy(desc(companies.createdAt), desc(companies.id))
-      .limit(limit + 1);
-
-    const hasMore = rows.length > limit;
-    const page = hasMore ? rows.slice(0, limit) : rows;
-
     const result = {
-      data: page.map(toPublicCompany),
+      data: pageRows.map(toPublicCompany),
       pageInfo: {
+        total,
+        page: pageNum,
+        totalPages,
+        limit,
         hasMore,
-        nextCursor: hasMore ? encodeCursor(page[page.length - 1]) : null,
+        nextCursor,
       },
     };
 

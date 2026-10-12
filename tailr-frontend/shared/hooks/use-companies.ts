@@ -114,6 +114,65 @@ export function useCompanyDetailQuery(id: string | null) {
   });
 }
 
+export interface UseCompaniesPaginatedQueryOptions {
+  search: string;
+  letter: string;
+  sector?: string;
+  page: number;
+  limit?: number;
+}
+
+/**
+ * Standard page-based paginated companies list.
+ *
+ * - Returns exact total count, page, totalPages, limit, hasMore
+ * - Smooth transitions via placeholderData
+ */
+export function useCompaniesPaginatedQuery({
+  search,
+  letter,
+  sector,
+  page,
+  limit = 10,
+}: UseCompaniesPaginatedQueryOptions) {
+  const debouncedSearch = useDebounce(search, 300);
+  const effectiveLetter = debouncedSearch.trim() ? "" : letter;
+
+  return useQuery<CompanyListResponse, Error>({
+    queryKey: [
+      ...companyKeys.lists(),
+      "paginated",
+      {
+        search: debouncedSearch,
+        letter: effectiveLetter,
+        sector: sector ?? "",
+        page,
+        limit,
+      },
+    ] as const,
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (debouncedSearch.trim()) {
+        params.set("search", debouncedSearch.trim());
+      } else if (effectiveLetter) {
+        params.set("letter", effectiveLetter);
+      }
+      if (sector?.trim() && sector !== "All") {
+        params.set("sector", sector.trim());
+      }
+      params.set("page", String(page));
+      params.set("limit", String(limit));
+
+      const { data } = await authApiClient.get<CompanyListResponse>(
+        `/companies?${params.toString()}`
+      );
+      return data;
+    },
+    placeholderData: (previousData) => previousData,
+    staleTime: 60_000,
+  });
+}
+
 /**
  * Flattens all loaded pages into a single array of companies.
  */

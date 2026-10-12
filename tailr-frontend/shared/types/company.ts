@@ -23,6 +23,10 @@ export interface Company {
 export interface CompanyPageInfo {
   hasMore: boolean;
   nextCursor: string | null;
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
 }
 
 export interface CompanyListResponse {

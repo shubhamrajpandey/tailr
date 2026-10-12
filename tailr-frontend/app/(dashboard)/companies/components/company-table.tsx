@@ -30,6 +30,7 @@ export type SortDirection = "asc" | "desc";
 interface CompanyTableProps {
   companies: Company[];
   isLoading?: boolean;
+  totalCount?: number;
   selectedCompanyId?: string | null;
   onSelectCompany: (company: Company) => void;
   onResetFilters?: () => void;
@@ -38,6 +39,7 @@ interface CompanyTableProps {
 export function CompanyTable({
   companies,
   isLoading,
+  totalCount,
   selectedCompanyId,
   onSelectCompany,
   onResetFilters,
@@ -97,7 +99,8 @@ export function CompanyTable({
       {/* Mobile Controls: View Switcher (Cards vs Table) */}
       <div className="md:hidden flex items-center justify-between pb-1 pt-0.5">
         <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400">
-          Showing {sortedCompanies.length} companies
+          Showing {sortedCompanies.length}
+          {typeof totalCount === "number" ? ` of ${totalCount}` : ""} companies
         </span>
         <div className="inline-flex items-center rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-100 dark:bg-white/[0.04] p-0.5 text-xs">
           <button

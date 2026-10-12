@@ -173,6 +173,12 @@ export const CompanyListQuery = t.Object({
   sector: t.Optional(t.String()),
   tech: t.Optional(t.String()),
   cursor: t.Optional(t.String()),
+  page: t.Optional(
+    t.Numeric({
+      minimum: 1,
+      error: "page must be an integer >= 1.",
+    })
+  ),
   limit: t.Optional(
     t.Numeric({
       minimum: 1,

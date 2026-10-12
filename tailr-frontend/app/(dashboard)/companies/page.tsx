@@ -3,12 +3,13 @@
 import * as React from "react";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
-import { useCompaniesQuery, flattenCompanyPages } from "@/shared/hooks/use-companies";
+import { useCompaniesPaginatedQuery } from "@/shared/hooks/use-companies";
 import type { Company } from "@/shared/types/company";
 import { CompanySearch } from "./components/company-search";
 import { CompanyTable } from "./components/company-table";
+import { CompanyPagination } from "./components/company-pagination";
 import { CompanyDetailDialog } from "./components/company-detail-dialog";
-import { RotateCcw, Loader2 } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
@@ -25,44 +26,53 @@ const SECTORS = [
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 export default function CompaniesPage() {
-  // ── Filter state ────────────────────────────────────────────────────────
+  // ── Filter & pagination state ──────────────────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [selectedLetter, setSelectedLetter] = React.useState<string>("");
   const [selectedSector, setSelectedSector] = React.useState<string>("All");
+  const [page, setPage] = React.useState<number>(1);
+  const [limit, setLimit] = React.useState<number>(10);
 
   const handleSearchChange = React.useCallback((value: string) => {
     setSearchQuery(value);
     if (value.trim()) setSelectedLetter("");
+    setPage(1);
   }, []);
 
   const handleLetterSelect = React.useCallback((letter: string) => {
     setSelectedLetter((prev) => (prev === letter ? "" : letter));
     if (letter) setSearchQuery("");
+    setPage(1);
   }, []);
 
   const handleSectorSelect = React.useCallback((sector: string) => {
     setSelectedSector(sector);
+    setPage(1);
   }, []);
 
   const handleResetFilters = React.useCallback(() => {
     setSearchQuery("");
     setSelectedLetter("");
     setSelectedSector("All");
+    setPage(1);
   }, []);
 
   const hasActiveFilters =
     Boolean(searchQuery.trim()) || Boolean(selectedLetter) || selectedSector !== "All";
 
   // ── Data fetching ────────────────────────────────────────────────────────
-  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = useCompaniesQuery({
+  const { data, isLoading, isFetching } = useCompaniesPaginatedQuery({
     search: searchQuery,
     letter: selectedLetter,
     sector: selectedSector,
+    page,
+    limit,
   });
 
-  const companiesList = React.useMemo(() => {
-    return flattenCompanyPages(data);
-  }, [data]);
+  const companiesList = data?.data ?? [];
+  const totalItems = data?.pageInfo?.total ?? 0;
+  const totalPages = data?.pageInfo?.totalPages ?? 1;
+  const currentPage = data?.pageInfo?.page ?? page;
 
   // ── Detail dialog state ─────────────────────────────────────────────────
   const [selectedCompany, setSelectedCompany] = React.useState<Company | null>(null);
@@ -94,8 +104,7 @@ export default function CompaniesPage() {
                   dot={false}
                   className="font-semibold text-xs border border-neutral-200 dark:border-white/10"
                 >
-                  {companiesList.length}
-                  {hasNextPage ? "+" : ""} listed
+                  {totalItems} listed
                 </Badge>
               )}
             </div>
@@ -197,32 +206,28 @@ export default function CompaniesPage() {
             <CompanyTable
               companies={companiesList}
               isLoading={isLoading}
+              totalCount={totalItems}
               selectedCompanyId={selectedCompany?.id}
               onSelectCompany={handleSelectCompany}
               onResetFilters={handleResetFilters}
             />
 
-            {/* Load More Button */}
-            {hasNextPage && (
-              <div className="flex justify-center pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
-                  className="gap-2 text-xs"
-                >
-                  {isFetchingNextPage ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Loading more companies…</span>
-                    </>
-                  ) : (
-                    <span>Load More Companies</span>
-                  )}
-                </Button>
-              </div>
-            )}
+            {/* Pagination Controls */}
+            <CompanyPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              limit={limit}
+              onPageChange={(nextPage) => {
+                setPage(nextPage);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              onLimitChange={(newLimit) => {
+                setLimit(newLimit);
+                setPage(1);
+              }}
+              disabled={isLoading || isFetching}
+            />
           </div>
 
           {/* Sticky Vertical Alphabet Index Rail (Desktop) */}
