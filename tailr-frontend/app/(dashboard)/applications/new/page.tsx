@@ -27,7 +27,7 @@ export default function NewApplicationPage() {
   return (
     <>
       {/* Page Top Header Bar */}
-      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3 max-w-4xl mx-auto w-full">
+      <header className="px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col gap-3 w-full max-w-full">
         <div className="flex items-start sm:items-center gap-3">
           <Link
             href="/applications"
@@ -48,7 +48,7 @@ export default function NewApplicationPage() {
       </header>
 
       {/* Content Area with Form */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-12 w-full max-w-4xl mx-auto">
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-32 sm:pb-12 w-full max-w-full">
         <ApplicationForm
           mode="create"
           isSubmitting={isSubmitting}
