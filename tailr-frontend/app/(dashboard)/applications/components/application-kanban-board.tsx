@@ -70,6 +70,8 @@ export function ApplicationKanbanBoard({
 }: ApplicationKanbanBoardProps) {
   const [draggedId, setDraggedId] = React.useState<string | null>(null);
   const [quickAddStatus, setQuickAddStatus] = React.useState<ApplicationStatus>("WISHLIST");
+  const [activeMobileColumnId, setActiveMobileColumnId] = React.useState<string>("WISHLIST");
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Filter applications by search query
   const filteredApplications = React.useMemo(() => {
@@ -148,14 +150,92 @@ export function ApplicationKanbanBoard({
       : []),
   ];
 
+  // Mobile scroll tracking to keep active tab pill in sync
+  const handleContainerScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container || window.innerWidth >= 768) return;
+
+    const containerLeft = container.scrollLeft;
+    const containerCenter = containerLeft + container.clientWidth / 2;
+    let closestId = allColumns[0]?.id;
+    let minDistance = Infinity;
+
+    for (const col of allColumns) {
+      const el = document.getElementById(`kanban-col-${col.id}`);
+      if (el) {
+        const colCenter = el.offsetLeft + el.offsetWidth / 2;
+        const distance = Math.abs(containerCenter - colCenter);
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestId = col.id;
+        }
+      }
+    }
+
+    if (closestId && closestId !== activeMobileColumnId) {
+      setActiveMobileColumnId(closestId);
+    }
+  };
+
+  const scrollToColumn = (colId: string) => {
+    setActiveMobileColumnId(colId);
+    const target = document.getElementById(`kanban-col-${colId}`);
+    if (target && scrollContainerRef.current) {
+      target.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  };
+
   return (
     <>
-      {/* Fixed Layout: Zero horizontal scrollbar, evenly divided columns */}
-      <div className="flex-1 w-full min-w-0 pt-3 pb-2 overflow-x-hidden select-none flex flex-col min-h-0">
+      {/* Mobile Stage Selector Tabs (< md) */}
+      <div className="md:hidden flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2 shrink-0 select-none">
+        {allColumns.map((col) => {
+          const apps = col.id === "CONCLUDED" ? grouped.CONCLUDED || [] : grouped[col.status] || [];
+          const count = apps.length;
+          const isActive = activeMobileColumnId === col.id;
+
+          return (
+            <button
+              key={col.id}
+              type="button"
+              onClick={() => scrollToColumn(col.id)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap shrink-0 transition-all duration-150 cursor-pointer active:scale-95",
+                isActive
+                  ? "bg-indigo-600 text-white shadow-xs shadow-indigo-500/20"
+                  : "bg-card text-muted-foreground hover:text-foreground border border-neutral-200/80 dark:border-white/10"
+              )}
+            >
+              <span>{col.title}</span>
+              <span
+                className={cn(
+                  "text-[10px] font-mono px-1.5 py-0.5 rounded-full leading-none",
+                  isActive
+                    ? "bg-white/25 text-white font-bold"
+                    : "bg-neutral-200/80 dark:bg-white/10 text-neutral-600 dark:text-neutral-400"
+                )}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Kanban Columns: Horizontal Swipe Carousel on Mobile, Responsive Grid on Desktop */}
+      <div className="flex-1 w-full min-w-0 pt-1 pb-2 select-none flex flex-col min-h-0">
         <div
+          ref={scrollContainerRef}
+          onScroll={handleContainerScroll}
           className={cn(
-            "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full flex-1 min-h-0",
-            showConcluded ? "xl:grid-cols-6" : "xl:grid-cols-5"
+            "flex md:grid overflow-x-auto md:overflow-x-visible snap-x snap-mandatory md:snap-none gap-3.5 w-full flex-1 min-h-0 no-scrollbar pb-28 md:pb-2 scroll-px-4 md:scroll-px-0",
+            showConcluded
+              ? "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6"
+              : "md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
           )}
         >
           {allColumns.map((col) => {
@@ -163,19 +243,24 @@ export function ApplicationKanbanBoard({
               col.id === "CONCLUDED" ? grouped.CONCLUDED || [] : grouped[col.status] || [];
 
             return (
-              <ApplicationKanbanColumn
+              <div
                 key={col.id}
-                status={col.status}
-                title={col.title}
-                description={col.description}
-                applications={apps}
-                onStatusChange={onStatusChange}
-                onDelete={onDelete}
-                onQuickAdd={handleOpenQuickAddForStatus}
-                onCreateCardInline={handleCreateCardInline}
-                draggedId={draggedId}
-                setDraggedId={setDraggedId}
-              />
+                id={`kanban-col-${col.id}`}
+                className="w-[calc(100vw-2.5rem)] max-w-[360px] md:max-w-none shrink-0 snap-center md:w-auto md:shrink md:snap-align-none flex flex-col h-[calc(100dvh-230px)] md:h-auto"
+              >
+                <ApplicationKanbanColumn
+                  status={col.status}
+                  title={col.title}
+                  description={col.description}
+                  applications={apps}
+                  onStatusChange={onStatusChange}
+                  onDelete={onDelete}
+                  onQuickAdd={handleOpenQuickAddForStatus}
+                  onCreateCardInline={handleCreateCardInline}
+                  draggedId={draggedId}
+                  setDraggedId={setDraggedId}
+                />
+              </div>
             );
           })}
         </div>

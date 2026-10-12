@@ -56,7 +56,7 @@ function ApplicationsView() {
   return (
     <div
       className={cn(
-        "flex-1 flex flex-col min-h-[calc(100vh-3.5rem)] overflow-x-hidden transition-colors duration-200",
+        "flex-1 flex flex-col min-h-[calc(100vh-3.5rem)] transition-colors duration-200 overflow-hidden",
         bgConfig.class
       )}
     >
@@ -74,8 +74,8 @@ function ApplicationsView() {
         onBoardBgChange={handleBoardBgChange}
       />
 
-      {/* Main Board Canvas Area — Fixed width, zero horizontal scrollbar */}
-      <main className="flex-1 px-4 sm:px-6 pb-4 flex flex-col min-h-0 overflow-x-hidden">
+      {/* Main Board Canvas Area */}
+      <main className="flex-1 px-3 sm:px-6 pb-2 md:pb-4 flex flex-col min-h-0 overflow-hidden">
         {viewMode === "kanban" ? (
           /* Fixed Grid Kanban Board */
           <ApplicationKanbanBoard

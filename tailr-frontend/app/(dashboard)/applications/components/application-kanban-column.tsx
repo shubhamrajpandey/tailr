@@ -99,7 +99,7 @@ export function ApplicationKanbanColumn({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={cn(
-        "flex flex-col w-full min-w-0 rounded-xl bg-card border border-neutral-200/80 dark:border-white/[0.06] p-2.5 shadow-2xs select-none transition-all duration-150 flex-1 max-h-[calc(100vh-140px)]",
+        "flex flex-col w-full min-w-0 rounded-xl bg-card border border-neutral-200/80 dark:border-white/[0.06] p-2.5 shadow-2xs select-none transition-all duration-150 flex-1 h-full md:max-h-[calc(100vh-140px)]",
         isDragOver && "ring-2 ring-indigo-500/50 bg-indigo-500/[0.02]"
       )}
     >

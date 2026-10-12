@@ -93,10 +93,10 @@ export function ApplicationBoardHeader({
   }, [applications]);
 
   return (
-    <header className="px-4 sm:px-6 py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card border-b border-neutral-200/60 dark:border-white/[0.06] select-none">
+    <header className="px-3 sm:px-6 py-2 sm:py-2.5 flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3 bg-card border-b border-neutral-200/60 dark:border-white/[0.06] select-none">
       {/* Left: Board Title, View Mode Toggle, Background Color Switcher */}
-      <div className="flex flex-wrap items-center gap-2.5">
-        <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight font-sans">
+      <div className="flex items-center justify-between sm:justify-start flex-wrap gap-2 sm:gap-2.5">
+        <h1 className="text-sm sm:text-base md:text-lg font-bold text-foreground tracking-tight font-sans">
           Application Pipeline
         </h1>
 
@@ -169,16 +169,16 @@ export function ApplicationBoardHeader({
       </div>
 
       {/* Right: Quick Search, Metric Pills, Actions */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+      <div className="flex items-center justify-between sm:justify-end flex-wrap gap-2 sm:gap-2.5">
         {/* Compact Search Box */}
-        <div className="relative flex items-center">
+        <div className="relative flex-1 sm:flex-initial flex items-center min-w-[120px]">
           <Search className="absolute left-2.5 h-3.5 w-3.5 text-neutral-400 dark:text-neutral-500 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search cards..."
-            className="h-8 w-36 sm:w-48 pl-8 pr-7 rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] text-xs text-foreground placeholder:text-neutral-400 dark:placeholder:text-neutral-500 border border-neutral-200/80 dark:border-white/[0.06] focus:outline-none focus:border-indigo-500/50 focus:w-56 transition-all"
+            className="h-8 w-full sm:w-48 pl-8 pr-7 rounded-lg bg-neutral-100/80 dark:bg-white/[0.03] text-xs text-foreground placeholder:text-neutral-400 dark:placeholder:text-neutral-500 border border-neutral-200/80 dark:border-white/[0.06] focus:outline-none focus:border-indigo-500/50 sm:focus:w-56 transition-all"
           />
           {searchQuery && (
             <button
