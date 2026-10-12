@@ -197,10 +197,6 @@ export class CompaniesService {
       );
     }
 
-    if (query.sector?.trim() && query.sector !== "All") {
-      baseConditions.push(ilike(companies.sector, `%${query.sector.trim()}%`));
-    }
-
     if (query.tech?.trim()) {
       baseConditions.push(sql`${query.tech.trim()} = ANY(${companies.techStack})`);
     }

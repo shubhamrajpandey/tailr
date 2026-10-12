@@ -170,7 +170,6 @@ export const CompanyListQuery = t.Object({
       error: "letter must be a single A–Z character.",
     })
   ),
-  sector: t.Optional(t.String()),
   tech: t.Optional(t.String()),
   cursor: t.Optional(t.String()),
   page: t.Optional(

@@ -13,23 +13,12 @@ import { RotateCcw } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
-const SECTORS = [
-  "All",
-  "Healthcare Technology",
-  "Software Services & AI",
-  "Health Analytics & FinTech",
-  "Enterprise Software & Cloud",
-  "AI Data & Managed Operations",
-  "FinTech & Banking Solutions",
-];
-
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 export default function CompaniesPage() {
   // ── Filter & pagination state ──────────────────────────────────────────
   const [searchQuery, setSearchQuery] = React.useState<string>("");
   const [selectedLetter, setSelectedLetter] = React.useState<string>("");
-  const [selectedSector, setSelectedSector] = React.useState<string>("All");
   const [page, setPage] = React.useState<number>(1);
   const [limit, setLimit] = React.useState<number>(10);
 
@@ -45,26 +34,18 @@ export default function CompaniesPage() {
     setPage(1);
   }, []);
 
-  const handleSectorSelect = React.useCallback((sector: string) => {
-    setSelectedSector(sector);
-    setPage(1);
-  }, []);
-
   const handleResetFilters = React.useCallback(() => {
     setSearchQuery("");
     setSelectedLetter("");
-    setSelectedSector("All");
     setPage(1);
   }, []);
 
-  const hasActiveFilters =
-    Boolean(searchQuery.trim()) || Boolean(selectedLetter) || selectedSector !== "All";
+  const hasActiveFilters = Boolean(searchQuery.trim()) || Boolean(selectedLetter);
 
   // ── Data fetching ────────────────────────────────────────────────────────
   const { data, isLoading, isFetching } = useCompaniesPaginatedQuery({
     search: searchQuery,
     letter: selectedLetter,
-    sector: selectedSector,
     page,
     limit,
   });
@@ -140,28 +121,6 @@ export default function CompaniesPage() {
                 <span>Reset Filters</span>
               </Button>
             )}
-          </div>
-
-          {/* Sector filter pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
-            {SECTORS.map((sector) => {
-              const isActive = selectedSector === sector;
-              return (
-                <button
-                  key={sector}
-                  type="button"
-                  onClick={() => handleSectorSelect(sector)}
-                  className={cn(
-                    "px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors border select-none shrink-0",
-                    isActive
-                      ? "bg-indigo-600 text-white border-indigo-600 shadow-2xs"
-                      : "bg-white dark:bg-white/5 text-neutral-600 dark:text-neutral-300 border-neutral-200/80 dark:border-white/10 hover:border-neutral-300 dark:hover:border-neutral-700"
-                  )}
-                >
-                  {sector}
-                </button>
-              );
-            })}
           </div>
 
           {/* Mobile Alphabet quick-jump horizontal bar */}

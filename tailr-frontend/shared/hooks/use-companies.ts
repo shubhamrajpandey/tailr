@@ -21,7 +21,6 @@ export const companyKeys = {
 async function fetchCompanies(
   search: string,
   letter: string,
-  sector: string | undefined,
   pageParam: string | null
 ): Promise<CompanyListResponse> {
   const params = new URLSearchParams();
@@ -31,10 +30,6 @@ async function fetchCompanies(
     params.set("search", search.trim());
   } else if (letter) {
     params.set("letter", letter);
-  }
-
-  if (sector?.trim() && sector !== "All") {
-    params.set("sector", sector.trim());
   }
 
   if (pageParam) {
@@ -58,8 +53,6 @@ interface UseCompaniesQueryOptions {
   search: string;
   /** A single A–Z character for alphabetical filtering */
   letter: string;
-  /** Optional sector filter */
-  sector?: string;
 }
 
 /**
@@ -69,7 +62,7 @@ interface UseCompaniesQueryOptions {
  * - `search` and `letter` are mutually exclusive; search wins.
  * - Returns TanStack Query `useInfiniteQuery` result.
  */
-export function useCompaniesQuery({ search, letter, sector }: UseCompaniesQueryOptions) {
+export function useCompaniesQuery({ search, letter }: UseCompaniesQueryOptions) {
   const debouncedSearch = useDebounce(search, 300);
 
   // While search has chars, letter is ignored (matches API spec)
@@ -79,10 +72,7 @@ export function useCompaniesQuery({ search, letter, sector }: UseCompaniesQueryO
     CompanyListResponse,
     Error,
     InfiniteData<CompanyListResponse>,
-    readonly [
-      ...(readonly ["companies", "list"]),
-      { search?: string; letter?: string; sector?: string },
-    ],
+    readonly [...(readonly ["companies", "list"]), { search?: string; letter?: string }],
     string | null
   >({
     queryKey: [
@@ -90,11 +80,9 @@ export function useCompaniesQuery({ search, letter, sector }: UseCompaniesQueryO
       {
         search: debouncedSearch,
         letter: effectiveLetter,
-        sector: sector ?? "",
       },
     ] as const,
-    queryFn: ({ pageParam }) =>
-      fetchCompanies(debouncedSearch, effectiveLetter, sector, pageParam ?? null),
+    queryFn: ({ pageParam }) => fetchCompanies(debouncedSearch, effectiveLetter, pageParam ?? null),
     initialPageParam: null,
     getNextPageParam: (lastPage) =>
       lastPage.pageInfo.hasMore ? lastPage.pageInfo.nextCursor : undefined,
@@ -117,7 +105,6 @@ export function useCompanyDetailQuery(id: string | null) {
 export interface UseCompaniesPaginatedQueryOptions {
   search: string;
   letter: string;
-  sector?: string;
   page: number;
   limit?: number;
 }
@@ -131,7 +118,6 @@ export interface UseCompaniesPaginatedQueryOptions {
 export function useCompaniesPaginatedQuery({
   search,
   letter,
-  sector,
   page,
   limit = 10,
 }: UseCompaniesPaginatedQueryOptions) {
@@ -145,7 +131,6 @@ export function useCompaniesPaginatedQuery({
       {
         search: debouncedSearch,
         letter: effectiveLetter,
-        sector: sector ?? "",
         page,
         limit,
       },
@@ -156,9 +141,6 @@ export function useCompaniesPaginatedQuery({
         params.set("search", debouncedSearch.trim());
       } else if (effectiveLetter) {
         params.set("letter", effectiveLetter);
-      }
-      if (sector?.trim() && sector !== "All") {
-        params.set("sector", sector.trim());
       }
       params.set("page", String(page));
       params.set("limit", String(limit));
