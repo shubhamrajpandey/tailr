@@ -98,7 +98,7 @@ export default function CompaniesPage() {
       </header>
 
       {/* Content */}
-      <main className="px-4 sm:px-6 lg:px-8 pb-24 sm:pb-12 flex-1 space-y-4">
+      <main className="px-4 sm:px-6 lg:px-8 pb-44 sm:pb-16 flex-1 space-y-4">
         {/* Controls: Search + Sector Filters */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">

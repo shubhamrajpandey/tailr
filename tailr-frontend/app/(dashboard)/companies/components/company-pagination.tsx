@@ -93,13 +93,13 @@ export function CompanyPagination({
       </div>
 
       {/* Right side: Page Navigation Buttons */}
-      <div className="flex items-center gap-1.5 w-full sm:w-auto justify-center sm:justify-end">
+      <div className="flex items-center gap-1 sm:gap-1.5 w-full sm:w-auto justify-center sm:justify-end overflow-x-auto no-scrollbar py-0.5">
         {/* First Page */}
         <button
           type="button"
           onClick={() => onPageChange(1)}
           disabled={disabled || currentPage <= 1}
-          className="h-8 w-8 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.02] flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          className="hidden xs:flex h-8 w-8 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.02] items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           title="First Page"
           aria-label="First page"
         >
@@ -134,6 +134,8 @@ export function CompanyPagination({
 
             const pageNum = Number(p);
             const isActive = pageNum === currentPage;
+            const isFarFromActive =
+              Math.abs(pageNum - currentPage) > 1 && pageNum !== 1 && pageNum !== totalPages;
 
             return (
               <button
@@ -143,7 +145,8 @@ export function CompanyPagination({
                 disabled={disabled}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                  "min-w-8 h-8 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer items-center justify-center",
+                  isFarFromActive ? "hidden sm:inline-flex" : "inline-flex",
                   isActive
                     ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-950 shadow-xs font-bold"
                     : "border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.02] text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/[0.06] hover:text-neutral-950 dark:hover:text-white"
@@ -172,7 +175,7 @@ export function CompanyPagination({
           type="button"
           onClick={() => onPageChange(totalPages)}
           disabled={disabled || currentPage >= totalPages}
-          className="h-8 w-8 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.02] flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          className="hidden xs:flex h-8 w-8 rounded-lg border border-neutral-200 dark:border-white/10 bg-neutral-50 dark:bg-white/[0.02] items-center justify-center text-neutral-600 dark:text-neutral-300 hover:text-neutral-950 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           title="Last Page"
           aria-label="Last page"
         >
