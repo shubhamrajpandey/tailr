@@ -215,17 +215,18 @@ export default function DashboardPage() {
       {/* DESKTOP VIEW (>= lg): Side-by-Side 8/12 Chart + 4/12 Activity Feed */}
       <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch">
         {/* Left 65% Column (8/12 grid cols) */}
-        <div className="lg:col-span-8 flex flex-col">
+        <div className="lg:col-span-8 flex flex-col h-full">
           <ApplicationVolumeChart
             data={trendData}
             totalWeekly={applications.length}
             weeklyDelta={weeklyDelta}
+            className="h-full"
           />
         </div>
 
         {/* Right 35% Column (4/12 grid cols): Activity Feed Panel */}
-        <div className="lg:col-span-4 flex flex-col">
-          <ActivityFeed activities={activities} />
+        <div className="lg:col-span-4 flex flex-col h-full min-h-0">
+          <ActivityFeed activities={activities} className="h-full" />
         </div>
       </div>
 

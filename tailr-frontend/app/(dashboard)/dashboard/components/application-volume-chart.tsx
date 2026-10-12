@@ -26,6 +26,7 @@ interface ApplicationVolumeChartProps {
   data: VolumeTrendPoint[];
   totalWeekly: number;
   weeklyDelta: string;
+  className?: string;
 }
 
 interface CustomTooltipProps {
@@ -59,6 +60,7 @@ export function ApplicationVolumeChart({
   data,
   totalWeekly,
   weeklyDelta,
+  className,
 }: ApplicationVolumeChartProps) {
   const [range, setRange] = React.useState("Last week");
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
@@ -67,9 +69,14 @@ export function ApplicationVolumeChart({
   const peakVal = Math.max(...data.map((d) => d.applications));
 
   return (
-    <div className="rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs flex flex-col justify-between">
+    <div
+      className={cn(
+        "rounded-xl border border-neutral-200 dark:border-white/[0.08] bg-white dark:bg-[#111216]/90 p-4 sm:p-5 transition-all duration-200 hover:border-neutral-300 dark:hover:border-white/[0.12] shadow-xs flex flex-col h-full",
+        className
+      )}
+    >
       {/* Chart Card Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/[0.06] shrink-0">
             <BarChart2 className="h-4 w-4 text-neutral-500 dark:text-neutral-400" />
@@ -116,7 +123,7 @@ export function ApplicationVolumeChart({
       </div>
 
       {/* Headline Metric Above the Chart */}
-      <div className="mt-4 sm:mt-5 flex flex-wrap items-baseline gap-2.5 sm:gap-3">
+      <div className="mt-4 sm:mt-5 flex flex-wrap items-baseline gap-2.5 sm:gap-3 shrink-0">
         <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans leading-none">
           {totalWeekly}
         </div>
@@ -130,7 +137,7 @@ export function ApplicationVolumeChart({
       </div>
 
       {/* Main Bar Chart */}
-      <div className="mt-4 h-48 sm:h-52 w-full">
+      <div className="mt-4 flex-1 min-h-[190px] w-full relative">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
