@@ -116,7 +116,7 @@ export function MasterResumeHeader({
       </header>
 
       {/* Mobile Quick Jump Navigation Bar (< lg) */}
-      <div className="sticky top-14 z-20 px-4 sm:px-6 py-2 bg-background/95 backdrop-blur-md border-b border-neutral-200/60 dark:border-white/[0.05] flex items-center justify-between gap-2 lg:hidden select-none">
+      <div className="sticky top-14 z-30 w-full px-4 sm:px-6 py-2 bg-background/95 backdrop-blur-md border-b border-neutral-200/60 dark:border-white/[0.05] shadow-xs flex items-center justify-between gap-2 lg:hidden select-none">
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 min-w-0">
           <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider shrink-0 mr-0.5">
             Jump:
