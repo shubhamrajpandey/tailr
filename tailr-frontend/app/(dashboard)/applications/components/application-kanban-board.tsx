@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { Application, ApplicationStatus } from "@/shared/types/application";
 import type { ApplicationFormValues } from "@/shared/lib/validations/application";
+import { cn } from "@/shared/lib/utils";
 import { ApplicationKanbanColumn } from "./application-kanban-column";
 import { ApplicationQuickAddDialog } from "./application-quick-add-dialog";
 
@@ -36,6 +37,12 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
     status: "APPLIED",
     title: "Doing",
     description: "Submitted applications in progress",
+  },
+  {
+    id: "NO_RESPONSE",
+    status: "NO_RESPONSE",
+    title: "No Response",
+    description: "Awaiting recruiter response",
   },
   {
     id: "INTERVIEW",
@@ -83,6 +90,7 @@ export function ApplicationKanbanBoard({
     const map: Record<string, Application[]> = {
       WISHLIST: [],
       APPLIED: [],
+      NO_RESPONSE: [],
       INTERVIEW: [],
       OFFER: [],
       CONCLUDED: [],
@@ -144,7 +152,12 @@ export function ApplicationKanbanBoard({
     <>
       {/* Fixed Layout: Zero horizontal scrollbar, evenly divided columns */}
       <div className="flex-1 w-full min-w-0 pt-3 pb-2 overflow-x-hidden select-none flex flex-col min-h-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5 w-full flex-1 min-h-0">
+        <div
+          className={cn(
+            "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 w-full flex-1 min-h-0",
+            showConcluded ? "xl:grid-cols-6" : "xl:grid-cols-5"
+          )}
+        >
           {allColumns.map((col) => {
             const apps =
               col.id === "CONCLUDED" ? grouped.CONCLUDED || [] : grouped[col.status] || [];

@@ -3,6 +3,7 @@ import { t } from "elysia";
 export const ApplicationStatusEnum = t.Union([
   t.Literal("WISHLIST"),
   t.Literal("APPLIED"),
+  t.Literal("NO_RESPONSE"),
   t.Literal("INTERVIEW"),
   t.Literal("OFFER"),
   t.Literal("REJECTED"),

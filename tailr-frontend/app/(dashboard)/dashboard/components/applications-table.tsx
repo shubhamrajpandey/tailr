@@ -176,21 +176,32 @@ export function ApplicationsTable({
                 <ChevronDown className="h-3 w-3 text-neutral-400" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
-                {["ALL", "WISHLIST", "APPLIED", "INTERVIEW", "OFFER", "REJECTED", "GHOSTED"].map(
-                  (status) => (
-                    <DropdownMenuItem
-                      key={status}
-                      onClick={() => setStatusFilter(status)}
-                      className={
-                        statusFilter === status
-                          ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                          : ""
-                      }
-                    >
-                      {status === "ALL" ? "All Stages" : status}
-                    </DropdownMenuItem>
-                  )
-                )}
+                {[
+                  "ALL",
+                  "WISHLIST",
+                  "APPLIED",
+                  "NO_RESPONSE",
+                  "INTERVIEW",
+                  "OFFER",
+                  "REJECTED",
+                  "GHOSTED",
+                ].map((status) => (
+                  <DropdownMenuItem
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={
+                      statusFilter === status
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                        : ""
+                    }
+                  >
+                    {status === "ALL"
+                      ? "All Stages"
+                      : status === "NO_RESPONSE"
+                        ? "No Response"
+                        : status}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
 

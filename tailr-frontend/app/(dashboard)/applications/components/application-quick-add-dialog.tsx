@@ -27,6 +27,7 @@ interface ApplicationQuickAddDialogProps {
 const STAGE_OPTIONS: Array<{ value: ApplicationStatus; label: string }> = [
   { value: "WISHLIST", label: "Wishlist" },
   { value: "APPLIED", label: "Applied" },
+  { value: "NO_RESPONSE", label: "No Response" },
   { value: "INTERVIEW", label: "Interview Stage" },
   { value: "OFFER", label: "Offer Received" },
   { value: "REJECTED", label: "Concluded / Rejected" },

@@ -160,8 +160,12 @@ export function ApplicationsListRow({
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "NO_RESPONSE")}>
+              <span className="h-2 w-2 rounded-full bg-amber-500 mr-1" />
+              <span>Mark as No Response</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "INTERVIEW")}>
-              <span className="h-2 w-2 rounded-full bg-amber-400 mr-1" />
+              <span className="h-2 w-2 rounded-full bg-indigo-500 mr-1" />
               <span>Move to Interview</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange?.(app.id, "OFFER")}>

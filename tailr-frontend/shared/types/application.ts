@@ -1,5 +1,5 @@
 export type ApplicationStatus =
-  "WISHLIST" | "APPLIED" | "INTERVIEW" | "OFFER" | "REJECTED" | "GHOSTED";
+  "WISHLIST" | "APPLIED" | "NO_RESPONSE" | "INTERVIEW" | "OFFER" | "REJECTED" | "GHOSTED";
 
 export interface ResumeVersion {
   id: string;

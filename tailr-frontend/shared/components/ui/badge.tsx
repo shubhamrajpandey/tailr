@@ -23,6 +23,8 @@ const badgeVariants = cva(
         rejected: "border-rose-500/25 bg-rose-500/10 text-rose-700 dark:text-rose-300 font-medium",
         ghosted:
           "border-slate-500/25 bg-slate-500/10 text-slate-700 dark:text-slate-400 font-medium",
+        no_response:
+          "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300 font-medium",
         // AI Tailoring Change & Source Types
         rephrase:
           "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300 font-semibold",
@@ -52,6 +54,7 @@ export type BadgeVariant =
   | "offer"
   | "rejected"
   | "ghosted"
+  | "no_response"
   | "rephrase"
   | "reorder"
   | "emphasize"
@@ -72,6 +75,7 @@ function Badge({ className, variant, dot = true, children, ...props }: BadgeProp
     offer: "bg-emerald-500 dark:bg-emerald-400",
     rejected: "bg-rose-500 dark:bg-rose-400",
     ghosted: "bg-slate-500 dark:bg-slate-500",
+    no_response: "bg-amber-500 dark:bg-amber-400",
     rephrase: "bg-amber-500 dark:bg-amber-400",
     reorder: "bg-indigo-500 dark:bg-indigo-400",
     emphasize: "bg-emerald-500 dark:bg-emerald-400",

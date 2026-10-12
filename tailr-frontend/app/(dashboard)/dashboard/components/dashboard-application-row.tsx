@@ -31,6 +31,7 @@ import { formatDate } from "@/shared/lib/utils";
 const statusVariantMap: Record<ApplicationStatus, BadgeVariant> = {
   WISHLIST: "wishlist",
   APPLIED: "applied",
+  NO_RESPONSE: "no_response",
   INTERVIEW: "interview",
   OFFER: "offer",
   REJECTED: "rejected",
@@ -40,6 +41,7 @@ const statusVariantMap: Record<ApplicationStatus, BadgeVariant> = {
 const ALL_STATUSES: Array<{ label: string; value: ApplicationStatus; icon: React.ElementType }> = [
   { label: "Wishlist", value: "WISHLIST", icon: Clock },
   { label: "Applied", value: "APPLIED", icon: Send },
+  { label: "No Response", value: "NO_RESPONSE", icon: Clock },
   { label: "Interview", value: "INTERVIEW", icon: CheckCircle2 },
   { label: "Offer", value: "OFFER", icon: Sparkles },
   { label: "Rejected", value: "REJECTED", icon: XCircle },

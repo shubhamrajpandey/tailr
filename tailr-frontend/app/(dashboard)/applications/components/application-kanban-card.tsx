@@ -40,6 +40,7 @@ const NEXT_STAGE_MAP: Partial<
 > = {
   WISHLIST: { stage: "APPLIED", label: "Apply →" },
   APPLIED: { stage: "INTERVIEW", label: "Interview →" },
+  NO_RESPONSE: { stage: "INTERVIEW", label: "Interview →" },
   INTERVIEW: { stage: "OFFER", label: "Offer →" },
 };
 
@@ -122,6 +123,13 @@ export function ApplicationKanbanCard({
               className="hover:bg-neutral-100 dark:hover:bg-white/5 cursor-pointer"
             >
               Doing (Applied)
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onStatusChange(application.id, "NO_RESPONSE")}
+              disabled={application.status === "NO_RESPONSE"}
+              className="hover:bg-neutral-100 dark:hover:bg-white/5 cursor-pointer"
+            >
+              No Response
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onStatusChange(application.id, "INTERVIEW")}

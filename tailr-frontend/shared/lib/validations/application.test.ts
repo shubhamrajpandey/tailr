@@ -60,4 +60,12 @@ describe("applicationFormSchema validation", () => {
     });
     expect(result.success).toBe(true);
   });
+
+  it("successfully parses application with NO_RESPONSE status", () => {
+    const result = applicationFormSchema.safeParse({
+      ...validData,
+      status: "NO_RESPONSE",
+    });
+    expect(result.success).toBe(true);
+  });
 });

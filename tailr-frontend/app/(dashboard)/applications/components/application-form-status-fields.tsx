@@ -51,6 +51,7 @@ export function ApplicationFormStatusFields({
           >
             <option value="WISHLIST">Wishlist (Planning to apply)</option>
             <option value="APPLIED">Applied (Application submitted)</option>
+            <option value="NO_RESPONSE">No Response (Awaiting reply)</option>
             <option value="INTERVIEW">Interview (Interview scheduled)</option>
             <option value="OFFER">Offer (Offer received)</option>
             <option value="REJECTED">Rejected (Not moving forward)</option>

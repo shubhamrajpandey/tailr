@@ -30,6 +30,7 @@ interface ApplicationDetailHeaderProps {
 const ALL_STATUSES: ApplicationStatus[] = [
   "WISHLIST",
   "APPLIED",
+  "NO_RESPONSE",
   "INTERVIEW",
   "OFFER",
   "REJECTED",

@@ -12,6 +12,7 @@ interface ApplicationStatusBadgeProps {
 const statusVariantMap: Record<ApplicationStatus, BadgeVariant> = {
   WISHLIST: "wishlist",
   APPLIED: "applied",
+  NO_RESPONSE: "no_response",
   INTERVIEW: "interview",
   OFFER: "offer",
   REJECTED: "rejected",
@@ -21,6 +22,7 @@ const statusVariantMap: Record<ApplicationStatus, BadgeVariant> = {
 const statusLabelMap: Record<ApplicationStatus, string> = {
   WISHLIST: "Wishlist",
   APPLIED: "Applied",
+  NO_RESPONSE: "No Response",
   INTERVIEW: "Interview",
   OFFER: "Offer",
   REJECTED: "Rejected",

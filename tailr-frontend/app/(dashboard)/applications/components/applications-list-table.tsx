@@ -41,6 +41,7 @@ const FILTER_OPTIONS: Array<{ key: string; label: string }> = [
   { key: "ACTIVE", label: "Active Pipeline" },
   { key: "WISHLIST", label: "Wishlist" },
   { key: "APPLIED", label: "Applied" },
+  { key: "NO_RESPONSE", label: "No Response" },
   { key: "INTERVIEW", label: "Interview Stage" },
   { key: "OFFER", label: "Offers" },
   { key: "REJECTED", label: "Rejected" },

@@ -21,6 +21,7 @@ export class AnalyticsService {
           offerCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'OFFER')::int`,
           rejectedCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'REJECTED')::int`,
           ghostedCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'GHOSTED')::int`,
+          noResponseCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'NO_RESPONSE')::int`,
           awaitingCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'APPLIED')::int`,
           respondedCount: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED'))::int`,
           avgDaysToResponse: sql<number>`coalesce(
@@ -68,6 +69,7 @@ export class AnalyticsService {
       const offerCount = overviewAgg.offerCount;
       const rejectedCount = overviewAgg.rejectedCount;
       const ghostedCount = overviewAgg.ghostedCount;
+      const noResponseCount = overviewAgg.noResponseCount;
       const awaitingCount = overviewAgg.awaitingCount;
       const respondedCount = overviewAgg.respondedCount;
 
@@ -110,6 +112,14 @@ export class AnalyticsService {
           count: awaitingCount,
           percentage: totalApplied > 0 ? Math.round((awaitingCount / totalApplied) * 100) : 0,
           colorClass: "bg-indigo-300 dark:bg-indigo-500/60 text-indigo-600 dark:text-indigo-400",
+          badgeVariant: "ai_tailored",
+        },
+        {
+          status: "NO_RESPONSE",
+          label: "No Response",
+          count: noResponseCount,
+          percentage: totalApplied > 0 ? Math.round((noResponseCount / totalApplied) * 100) : 0,
+          colorClass: "bg-indigo-200 dark:bg-indigo-700/50 text-indigo-500 dark:text-indigo-400",
           badgeVariant: "ai_tailored",
         },
         {

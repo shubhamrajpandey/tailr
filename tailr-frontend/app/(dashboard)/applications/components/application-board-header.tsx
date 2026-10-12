@@ -81,14 +81,15 @@ export function ApplicationBoardHeader({
     const total = applications.length;
     const todo = applications.filter((a) => a.status === "WISHLIST").length;
     const doing = applications.filter((a) => a.status === "APPLIED").length;
+    const noResponse = applications.filter((a) => a.status === "NO_RESPONSE").length;
     const interview = applications.filter((a) => a.status === "INTERVIEW").length;
     const done = applications.filter((a) => a.status === "OFFER").length;
     const concluded = applications.filter(
       (a) => a.status === "REJECTED" || a.status === "GHOSTED"
     ).length;
-    const active = todo + doing + interview + done;
+    const active = todo + doing + noResponse + interview + done;
 
-    return { total, active, todo, doing, interview, done, concluded };
+    return { total, active, todo, doing, noResponse, interview, done, concluded };
   }, [applications]);
 
   return (
