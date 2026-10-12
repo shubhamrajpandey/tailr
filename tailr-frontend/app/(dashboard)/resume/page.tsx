@@ -66,7 +66,8 @@ function MasterResumeEditor({
     const timer = setTimeout(() => {
       setFormData((prev) => {
         const mapped = mapDbResumeToResumeData(dbData, prev);
-        updateMasterResume(mapped);
+        // Schedule parent update on next tick so it does not update a different component while rendering
+        setTimeout(() => updateMasterResume(mapped), 0);
         return mapped;
       });
     }, 0);

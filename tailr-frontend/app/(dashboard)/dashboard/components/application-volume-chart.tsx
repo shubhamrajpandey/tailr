@@ -138,7 +138,7 @@ export function ApplicationVolumeChart({
 
       {/* Main Bar Chart */}
       <div className="mt-4 flex-1 min-h-[190px] w-full relative">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={190}>
           <BarChart
             data={data}
             margin={{ top: 20, right: 8, left: -24, bottom: 0 }}

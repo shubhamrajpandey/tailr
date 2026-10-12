@@ -20,33 +20,13 @@ interface AuthState {
   isBootstrapping: boolean;
 }
 
-function getInitialAuthState(): AuthState {
-  if (typeof window !== "undefined") {
-    try {
-      const stored = getStoredAuth();
-      if (stored?.user && stored?.accessToken && isTokenValid(stored.accessToken)) {
-        return {
-          user: stored.user,
-          accessToken: stored.accessToken,
-          isAuthenticated: true,
-          authStep: "done",
-          isBootstrapping: false,
-        };
-      }
-    } catch {
-      // Storage unavailable or invalid
-    }
-  }
-  return {
-    user: null,
-    accessToken: null,
-    isAuthenticated: false,
-    authStep: "signup",
-    isBootstrapping: true,
-  };
-}
-
-const initialState: AuthState = getInitialAuthState();
+const initialState: AuthState = {
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
+  authStep: "signup",
+  isBootstrapping: true,
+};
 
 // ─── Slice ──────────────────────────────────────────────────────────────────────
 

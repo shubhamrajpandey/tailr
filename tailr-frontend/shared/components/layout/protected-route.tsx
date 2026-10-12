@@ -45,22 +45,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
   }, [isAuthenticated, isBootstrapping, router]);
 
-  // While we are waiting for AuthProvider to finish the silent refresh
-  if (isBootstrapping) {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
-            Loading your workspace...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Refresh settled but not authenticated — show distinct authentication card while redirecting
-  if (!isAuthenticated) {
+  if (!isBootstrapping && !isAuthenticated) {
     return (
       <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
         <div className="max-w-sm w-full p-6 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm flex flex-col items-center text-center gap-3 animate-in fade-in duration-200">
