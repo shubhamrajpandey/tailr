@@ -20,8 +20,8 @@ export function setSessionCookie(): void {
   if (typeof document === "undefined") return;
   const isSecure = window.location.protocol === "https:";
   const secureFlag = isSecure ? "; Secure" : "";
-  // 7-day session indicator
-  document.cookie = `${SESSION_COOKIE_NAME}=1; path=/; max-age=604800; SameSite=Lax${secureFlag}`;
+  // 30-day session indicator
+  document.cookie = `${SESSION_COOKIE_NAME}=1; path=/; max-age=2592000; SameSite=Lax${secureFlag}`;
 }
 
 /**

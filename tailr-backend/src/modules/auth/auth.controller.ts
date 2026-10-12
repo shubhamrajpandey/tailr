@@ -30,7 +30,7 @@ function getRefreshTokenCookieOptions() {
     secure: isProd,
     sameSite: (isProd ? "none" : "lax") as "none" | "lax",
     path: "/",
-    maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
     domain: env.COOKIE_DOMAIN || undefined,
   };
 }
@@ -42,7 +42,7 @@ function getAccessTokenCookieOptions() {
     secure: isProd,
     sameSite: (isProd ? "none" : "lax") as "none" | "lax",
     path: "/",
-    maxAge: 7 * 24 * 60 * 60, // 7 days
+    maxAge: 30 * 24 * 60 * 60, // 30 days
     domain: env.COOKIE_DOMAIN || undefined,
   };
 }
