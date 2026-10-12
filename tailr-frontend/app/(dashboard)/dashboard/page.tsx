@@ -133,9 +133,9 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stat Cards: Touch-Friendly Snap Carousel on Mobile with Clean Left Margin, 3-Col Grid on Desktop */}
-      <div className="flex overflow-x-auto snap-x snap-mandatory gap-3.5 pb-2 pt-0.5 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible no-scrollbar">
-        <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
+      {/* Stat Cards: Full-Width Snap Carousel on Mobile, 3-Col Grid on Desktop */}
+      <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-2 pt-0.5 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible no-scrollbar">
+        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
           <StatCard
             label="Total Applications"
             value={stats.totalApplications}
@@ -146,7 +146,7 @@ export default function DashboardPage() {
             sparklineData={[3, 5, 8, 12, 10, 16, 20]}
           />
         </div>
-        <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
+        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
           <StatCard
             label="Response Rate"
             value={`${stats.responseRate}%`}
@@ -157,7 +157,7 @@ export default function DashboardPage() {
             sparklineData={[15, 20, 18, 25, 22, 28, 30]}
           />
         </div>
-        <div className="w-[270px] sm:w-auto shrink-0 snap-start flex flex-col">
+        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
           <StatCard
             label="Interview Conversion"
             value={`${stats.interviewConversion}%`}
