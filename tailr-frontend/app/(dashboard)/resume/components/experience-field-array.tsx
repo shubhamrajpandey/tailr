@@ -11,6 +11,7 @@ import {
   Calendar,
   MapPin,
   ListPlus,
+  Sparkles,
 } from "lucide-react";
 import { ResumeExperience } from "@/shared/types/resume";
 import { Button } from "@/shared/components/ui/button";
@@ -22,6 +23,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/shared/components/ui/accordion";
+import { EnhanceBulletModal } from "./enhance-bullet-modal";
 
 interface ExperienceFieldArrayProps {
   experience: ResumeExperience[];
@@ -29,6 +31,14 @@ interface ExperienceFieldArrayProps {
 }
 
 export function ExperienceFieldArray({ experience, onChange }: ExperienceFieldArrayProps) {
+  const [activeEnhance, setActiveEnhance] = React.useState<{
+    expIdx: number;
+    bulletIdx: number;
+    bullet: string;
+    role: string;
+    company: string;
+  } | null>(null);
+
   const addExperience = () => {
     const newExp: ResumeExperience = {
       id: `exp-${Date.now()}`,
@@ -259,7 +269,7 @@ export function ExperienceFieldArray({ experience, onChange }: ExperienceFieldAr
 
                     <div className="space-y-2">
                       {exp.bullets.map((bullet, bIdx) => (
-                        <div key={bIdx} className="flex items-start gap-2">
+                        <div key={bIdx} className="flex items-start gap-1.5 sm:gap-2">
                           <span className="text-xs text-neutral-400 mt-2.5 font-mono select-none">
                             •
                           </span>
@@ -267,13 +277,30 @@ export function ExperienceFieldArray({ experience, onChange }: ExperienceFieldAr
                             value={bullet}
                             onChange={(e) => updateBullet(expIdx, bIdx, e.target.value)}
                             placeholder="Quantified accomplishment e.g. Reduced LCP from 3.8s to 1.1s by architecting..."
-                            className="text-xs"
+                            className="text-xs flex-1"
                           />
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setActiveEnhance({
+                                expIdx,
+                                bulletIdx: bIdx,
+                                bullet,
+                                role: exp.title,
+                                company: exp.company,
+                              })
+                            }
+                            disabled={!bullet || bullet.trim().length < 3}
+                            title="Enhance bullet with AI (STAR Formula)"
+                            className="p-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 rounded hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer shrink-0"
+                          >
+                            <Sparkles className="h-3.5 w-3.5" />
+                          </button>
                           <button
                             type="button"
                             onClick={() => removeBullet(expIdx, bIdx)}
                             title="Remove bullet"
-                            className="p-2 text-neutral-400 hover:text-rose-600 rounded hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                            className="p-2 text-neutral-400 hover:text-rose-600 rounded hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -325,6 +352,21 @@ export function ExperienceFieldArray({ experience, onChange }: ExperienceFieldAr
             </AccordionItem>
           ))}
         </Accordion>
+      )}
+
+      {/* AI Bullet Enhancement Modal */}
+      {activeEnhance && (
+        <EnhanceBulletModal
+          isOpen={Boolean(activeEnhance)}
+          onClose={() => setActiveEnhance(null)}
+          originalBullet={activeEnhance.bullet}
+          role={activeEnhance.role}
+          company={activeEnhance.company}
+          onApply={(enhancedText) => {
+            updateBullet(activeEnhance.expIdx, activeEnhance.bulletIdx, enhancedText);
+            setActiveEnhance(null);
+          }}
+        />
       )}
     </div>
   );

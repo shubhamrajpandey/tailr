@@ -75,6 +75,12 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
   const currentStatus = searchParams.get("status")?.toLowerCase() || null;
   const { applications } = useApplications();
 
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const isApplicationsRoute = pathname.startsWith("/applications");
   const isResumeRoute = pathname.startsWith("/resume") || pathname.startsWith("/resumes");
 
@@ -128,7 +134,7 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
       title: "Applications",
       href: ROUTES.APPLICATIONS,
       icon: Briefcase,
-      badge: totalApplications > 0 ? totalApplications : undefined,
+      badge: isMounted && totalApplications > 0 ? totalApplications : undefined,
     },
     {
       title: "Resumes",

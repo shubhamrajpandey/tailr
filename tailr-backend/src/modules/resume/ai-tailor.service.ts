@@ -405,6 +405,111 @@ ${JSON.stringify(resumeData, null, 2)}`;
       provider,
     };
   }
+
+  /**
+   * Enhances a single resume bullet point into 3 impactful ATS-optimized variants
+   * using the Google/STAR formula (Action Verb + Context + Quantified Metric/Outcome).
+   */
+  async enhanceBulletPoint(
+    bullet: string,
+    role?: string,
+    company?: string
+  ): Promise<{ suggestions: string[]; provider: string }> {
+    const client = this.getClient();
+
+    const prompt = `You are an elite executive career coach and technical resume strategist.
+Improve this resume bullet point into 3 high-impact, professional variants following the Google XYZ / STAR formula:
+"Accomplished [X] as measured by [Y], by doing [Z]"
+
+CONTEXT:
+Role: ${role || "Software Engineer / Professional"}
+Company: ${company || "Technology Company"}
+ORIGINAL BULLET: "${bullet}"
+
+Generate exactly 3 distinct variants:
+1. "impact": Metric and outcome-focused with realistic quantified metrics (percentage, latency, scale, efficiency, revenue).
+2. "technical": Action-driven and architecture-focused emphasizing technical precision and design excellence.
+3. "concise": Razor-sharp, concise single-line executive bullet point.
+
+Return JSON in this format:
+{
+  "suggestions": [
+    "Impact variant...",
+    "Technical variant...",
+    "Concise variant..."
+  ]
+}
+Respond ONLY with valid JSON.`;
+
+    if (client) {
+      try {
+        const { result: response } = await this.executeWithModelTimeout(client, (model) =>
+          client.models.generateContent({
+            model,
+            contents: prompt,
+            config: {
+              responseMimeType: "application/json",
+              temperature: 0.3,
+            },
+          })
+        );
+
+        if (response.text?.trim()) {
+          const parsed = JSON.parse(response.text.trim());
+          if (Array.isArray(parsed.suggestions) && parsed.suggestions.length > 0) {
+            return {
+              suggestions: parsed.suggestions.map((s: string) => s.replace(/^[-•*]\s*/, "").trim()),
+              provider: "gemini-2.5-flash",
+            };
+          }
+        }
+      } catch (err: any) {
+        console.warn(
+          `[AiTailorService] Gemini bullet enhancement failed (${err?.message?.slice(0, 100)}). Trying Groq...`
+        );
+      }
+    }
+
+    // Groq Fallback
+    if (env.GROQ_API_KEY) {
+      try {
+        const groqResult = await callGroqChatCompletion({
+          apiKey: env.GROQ_API_KEY,
+          messages: [
+            { role: "system", content: "You are an expert resume writer. Output JSON only." },
+            { role: "user", content: prompt },
+          ],
+          jsonMode: true,
+        });
+
+        if (groqResult?.content?.trim()) {
+          const cleaned = groqResult.content.replace(/^```json/m, "").replace(/```$/m, "").trim();
+          const parsed = JSON.parse(cleaned);
+          if (Array.isArray(parsed.suggestions) && parsed.suggestions.length > 0) {
+            return {
+              suggestions: parsed.suggestions.map((s: string) => s.replace(/^[-•*]\s*/, "").trim()),
+              provider: groqResult.model,
+            };
+          }
+        }
+      } catch (err) {
+        console.warn("[AiTailorService] Groq bullet enhance fallback failed:", err);
+      }
+    }
+
+    // Algorithmic fallback if AI is offline
+    const actionVerbs = ["Spearheaded", "Architected", "Engineered", "Optimized", "Delivered"];
+    const verb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
+    const cleanOriginal = bullet.replace(/^[-•*]\s*/, "").trim();
+    return {
+      suggestions: [
+        `${verb} ${cleanOriginal.replace(/^(built|worked on|made|helped with|responsible for)\s+/i, "")}, boosting team delivery speed and performance metrics by 25%.`,
+        `Engineered scalable systems for ${cleanOriginal.toLowerCase()}, establishing modular code quality standards and eliminating edge-case bottlenecks.`,
+        `Led initiatives to ${cleanOriginal.toLowerCase()}, delivering high-reliability outcomes across production environments.`,
+      ],
+      provider: "algorithmic-fallback",
+    };
+  }
 }
 
 export const aiTailorService = new AiTailorService();

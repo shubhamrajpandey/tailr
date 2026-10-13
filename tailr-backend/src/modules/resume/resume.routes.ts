@@ -6,6 +6,7 @@ import {
   UploadRawResumeRequestSchema,
   TailorResumeRequestSchema,
   TailorResumeResponseSchema,
+  EnhanceBulletRequestSchema,
   ResumeIdParam,
 } from "./resume.model";
 import { createRequireAuth } from "../../middleware/auth-guard";
@@ -407,6 +408,42 @@ export const resumeRoutes = new Elysia({ prefix: "" })
             detail: {
               tags: ["Tailored Resumes"],
               summary: "Get tailored resume by ID (Legacy Alias)",
+              security: [{ bearerAuth: [] }],
+            },
+          }
+        )
+
+        // 11. Enhance single bullet point (Plural Standard: POST /resumes/enhance-bullet)
+        .post(
+          "/resumes/enhance-bullet",
+          ({ authUser, body }) =>
+            resumeController.enhanceBulletPoint({ authUser: authUser!, body }),
+          {
+            body: EnhanceBulletRequestSchema,
+            detail: {
+              tags: ["Resumes"],
+              summary: "Enhance bullet point with AI STAR formula (Plural REST)",
+              description:
+                "Rewrites a single resume bullet point into 3 high-impact, quantified, action-oriented variants using Google XYZ / STAR formula.",
+              security: [{ bearerAuth: [] }],
+              responses: {
+                200: { description: "Bullet enhancement variants generated." },
+                400: { description: "Invalid bullet point input." },
+                401: { description: "Unauthorized." },
+              },
+            },
+          }
+        )
+        // 11b. Legacy alias: POST /resume/enhance-bullet
+        .post(
+          "/resume/enhance-bullet",
+          ({ authUser, body }) =>
+            resumeController.enhanceBulletPoint({ authUser: authUser!, body }),
+          {
+            body: EnhanceBulletRequestSchema,
+            detail: {
+              tags: ["Resumes"],
+              summary: "Enhance bullet point with AI STAR formula (Legacy Alias)",
               security: [{ bearerAuth: [] }],
             },
           }

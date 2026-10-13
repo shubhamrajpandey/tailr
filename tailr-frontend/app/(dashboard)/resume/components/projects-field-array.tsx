@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { FolderGit2, Plus, Trash2, ArrowUp, ArrowDown, Globe, ListPlus, X } from "lucide-react";
+import {
+  FolderGit2,
+  Plus,
+  Trash2,
+  ArrowUp,
+  ArrowDown,
+  Globe,
+  ListPlus,
+  X,
+  Sparkles,
+} from "lucide-react";
 import { ResumeProject } from "@/shared/types/resume";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -12,6 +22,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/shared/components/ui/accordion";
+import { EnhanceBulletModal } from "./enhance-bullet-modal";
 
 interface ProjectsFieldArrayProps {
   projects: ResumeProject[];
@@ -20,6 +31,12 @@ interface ProjectsFieldArrayProps {
 
 export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayProps) {
   const [techInput, setTechInput] = React.useState<Record<string, string>>({});
+  const [activeEnhance, setActiveEnhance] = React.useState<{
+    pIdx: number;
+    bulletIdx: number;
+    bullet: string;
+    title: string;
+  } | null>(null);
 
   const addProject = () => {
     const newProj: ResumeProject = {
@@ -271,7 +288,7 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
 
                     <div className="space-y-2">
                       {proj.bullets.map((bullet, bIdx) => (
-                        <div key={bIdx} className="flex items-start gap-2">
+                        <div key={bIdx} className="flex items-start gap-1.5 sm:gap-2">
                           <span className="text-xs text-neutral-400 mt-2.5 font-mono select-none">
                             •
                           </span>
@@ -279,12 +296,28 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
                             value={bullet}
                             onChange={(e) => updateBullet(pIdx, bIdx, e.target.value)}
                             placeholder="Architectural accomplishment e.g. Designed AST AST comparison viewer..."
-                            className="text-xs"
+                            className="text-xs flex-1"
                           />
                           <button
                             type="button"
+                            onClick={() =>
+                              setActiveEnhance({
+                                pIdx,
+                                bulletIdx: bIdx,
+                                bullet,
+                                title: proj.name,
+                              })
+                            }
+                            disabled={!bullet || bullet.trim().length < 3}
+                            title="Enhance bullet with AI (STAR Formula)"
+                            className="p-2 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 rounded hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer shrink-0"
+                          >
+                            <Sparkles className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => removeBullet(pIdx, bIdx)}
-                            className="p-2 text-neutral-400 hover:text-rose-600 rounded hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                            className="p-2 text-neutral-400 hover:text-rose-600 rounded hover:bg-neutral-100 dark:hover:bg-white/5 transition-colors cursor-pointer shrink-0"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
@@ -336,6 +369,21 @@ export function ProjectsFieldArray({ projects, onChange }: ProjectsFieldArrayPro
             </AccordionItem>
           ))}
         </Accordion>
+      )}
+
+      {/* AI Bullet Enhancement Modal */}
+      {activeEnhance && (
+        <EnhanceBulletModal
+          isOpen={Boolean(activeEnhance)}
+          onClose={() => setActiveEnhance(null)}
+          originalBullet={activeEnhance.bullet}
+          role={activeEnhance.title}
+          company="Project Accomplishment"
+          onApply={(enhancedText) => {
+            updateBullet(activeEnhance.pIdx, activeEnhance.bulletIdx, enhancedText);
+            setActiveEnhance(null);
+          }}
+        />
       )}
     </div>
   );

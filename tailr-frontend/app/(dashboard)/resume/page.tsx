@@ -1,12 +1,25 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, User, Code2, Briefcase, FolderGit2, GraduationCap, Award } from "lucide-react";
+import {
+  Sparkles,
+  User,
+  Code2,
+  Briefcase,
+  FolderGit2,
+  GraduationCap,
+  Award,
+  Eye,
+  Printer,
+  Edit3,
+  Columns2,
+} from "lucide-react";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
 import { ResumeExportData } from "@/shared/utils/resume-export-helpers";
+import { Button } from "@/shared/components/ui/button";
 import { BasicsSectionForm } from "./components/basics-section-form";
 import { SummarySectionForm } from "./components/summary-section-form";
 import { ExperienceFieldArray } from "./components/experience-field-array";
@@ -15,7 +28,13 @@ import { ProjectsFieldArray } from "./components/projects-field-array";
 import { EducationFieldArray } from "./components/education-field-array";
 import { CertificationsFieldArray } from "./components/certifications-field-array";
 import { ResumeUploadModal } from "./components/resume-upload-modal";
-import { MasterResumeHeader, ResumeSectionItem } from "./components/master-resume-header";
+import {
+  MasterResumeHeader,
+  ResumeSectionItem,
+  ResumeViewMode,
+} from "./components/master-resume-header";
+import { FloatingSaveDock } from "./components/floating-save-dock";
+import { ResumePreviewDocument } from "./components/resume-preview-document";
 import { mapDbResumeToResumeData } from "./lib/map-db-resume";
 
 const RESUME_SECTIONS: ResumeSectionItem[] = [
@@ -43,6 +62,8 @@ function MasterResumeEditor({
   const [isSaved, setIsSaved] = React.useState(false);
   const [isDirty, setIsDirty] = React.useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState<ResumeViewMode>("editor");
+  const [activeSectionId, setActiveSectionId] = React.useState<string>("section-basics");
 
   const {
     masterResumeData: dbData,
@@ -66,7 +87,6 @@ function MasterResumeEditor({
     const timer = setTimeout(() => {
       setFormData((prev) => {
         const mapped = mapDbResumeToResumeData(dbData, prev);
-        // Schedule parent update on next tick so it does not update a different component while rendering
         setTimeout(() => updateMasterResume(mapped), 0);
         return mapped;
       });
@@ -74,6 +94,25 @@ function MasterResumeEditor({
 
     return () => clearTimeout(timer);
   }, [dbData, resumeId, isDirty, updateMasterResume]);
+
+  // ScrollSpy to highlight the active section in the sticky jump bar
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 180;
+      for (let i = RESUME_SECTIONS.length - 1; i >= 0; i--) {
+        const sectionId = RESUME_SECTIONS[i].id;
+        const el = document.getElementById(sectionId);
+        if (el && el.offsetTop <= scrollPosition) {
+          setActiveSectionId(sectionId);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleUpdate = (patch: Partial<ResumeData>) => {
     setFormData((prev) => ({
@@ -90,7 +129,6 @@ function MasterResumeEditor({
     setIsSaved(true);
 
     try {
-      // Sync to PostgreSQL DB adhering to backend StructuredResumeDataSchema
       await saveMasterResume({
         title: "Master Resume",
         resumeData: {
@@ -173,11 +211,77 @@ function MasterResumeEditor({
     }
   };
 
+  // Section Form Blocks
+  const renderFormSections = () => (
+    <div className="space-y-5 sm:space-y-6">
+      {/* Basics Section */}
+      <section id="section-basics" className="scroll-mt-32">
+        <BasicsSectionForm
+          basics={formData.basics}
+          onChange={(basics) => handleUpdate({ basics })}
+        />
+      </section>
+
+      {/* Professional Summary Section */}
+      <section id="section-summary" className="scroll-mt-32">
+        <SummarySectionForm
+          summary={formData.summary}
+          onChange={(summary) => handleUpdate({ summary })}
+        />
+      </section>
+
+      {/* Technical Skills Section */}
+      <section id="section-skills" className="scroll-mt-32">
+        <SkillsSectionForm
+          skills={formData.skills}
+          onChange={(skills) => handleUpdate({ skills })}
+        />
+      </section>
+
+      {/* Work Experience Section */}
+      <section id="section-experience" className="scroll-mt-32">
+        <ExperienceFieldArray
+          experience={formData.experience}
+          onChange={(experience) => handleUpdate({ experience })}
+        />
+      </section>
+
+      {/* Projects Section */}
+      <section id="section-projects" className="scroll-mt-32">
+        <ProjectsFieldArray
+          projects={formData.projects}
+          onChange={(projects) => handleUpdate({ projects })}
+        />
+      </section>
+
+      {/* Education Section */}
+      <section id="section-education" className="scroll-mt-32">
+        <EducationFieldArray
+          education={formData.education}
+          onChange={(education) => handleUpdate({ education })}
+        />
+      </section>
+
+      {/* Certifications & Achievements Section */}
+      <section id="section-certifications" className="scroll-mt-32">
+        <CertificationsFieldArray
+          certifications={formData.certifications || []}
+          achievements={formData.achievements || []}
+          onCertificationsChange={(certifications) => handleUpdate({ certifications })}
+          onAchievementsChange={(achievements) => handleUpdate({ achievements })}
+        />
+      </section>
+    </div>
+  );
+
   return (
     <>
-      {/* Header and Mobile Navigation */}
+      {/* Header and Mobile/Desktop Quick-Jump Navigation */}
       <MasterResumeHeader
         sections={RESUME_SECTIONS}
+        activeSectionId={activeSectionId}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         onUploadClick={() => setIsUploadModalOpen(true)}
         onReset={handleReset}
         onSave={handleSave}
@@ -186,66 +290,119 @@ function MasterResumeEditor({
         isSaved={isSaved}
       />
 
-      {/* Content Canvas */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-32 sm:pb-12 space-y-5 sm:space-y-6 w-full">
-        {/* Basics Section */}
-        <section id="section-basics" className="scroll-mt-28">
-          <BasicsSectionForm
-            basics={formData.basics}
-            onChange={(basics) => handleUpdate({ basics })}
-          />
-        </section>
+      {/* Main Workspace Body */}
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-32 sm:pb-16 w-full">
+        {/* MODE 1: Standard Full Editor */}
+        {viewMode === "editor" && renderFormSections()}
 
-        {/* Professional Summary Section */}
-        <section id="section-summary" className="scroll-mt-28">
-          <SummarySectionForm
-            summary={formData.summary}
-            onChange={(summary) => handleUpdate({ summary })}
-          />
-        </section>
+        {/* MODE 2: Split View (Editor on Left, Live ATS Preview on Right) */}
+        {viewMode === "split" && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Left Column: Form Editor */}
+            <div className="lg:col-span-7 xl:col-span-6">{renderFormSections()}</div>
 
-        {/* Technical Skills Section */}
-        <section id="section-skills" className="scroll-mt-28">
-          <SkillsSectionForm
-            skills={formData.skills}
-            onChange={(skills) => handleUpdate({ skills })}
-          />
-        </section>
+            {/* Right Column: Live ATS Resume Preview */}
+            <div className="hidden lg:block lg:col-span-5 xl:col-span-6 sticky top-28 self-start max-h-[calc(100vh-8.5rem)] overflow-y-auto no-scrollbar rounded-xl border border-neutral-200 dark:border-white/10 bg-neutral-100/60 dark:bg-[#0c0d11] p-4 shadow-sm">
+              <div className="flex items-center justify-between pb-3 mb-3 border-b border-neutral-200 dark:border-white/10">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                    <Eye className="h-3.5 w-3.5" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-neutral-900 dark:text-white">
+                      Live ATS Preview
+                    </h3>
+                    <p className="text-[10px] text-neutral-500">Real-time updates as you edit</p>
+                  </div>
+                </div>
 
-        {/* Work Experience Section */}
-        <section id="section-experience" className="scroll-mt-28">
-          <ExperienceFieldArray
-            experience={formData.experience}
-            onChange={(experience) => handleUpdate({ experience })}
-          />
-        </section>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-white/10 transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <Printer className="h-3 w-3" />
+                    <span>Print / PDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setViewMode("preview")}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500 transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <Eye className="h-3 w-3" />
+                    <span>Expand</span>
+                  </button>
+                </div>
+              </div>
 
-        {/* Projects Section */}
-        <section id="section-projects" className="scroll-mt-28">
-          <ProjectsFieldArray
-            projects={formData.projects}
-            onChange={(projects) => handleUpdate({ projects })}
-          />
-        </section>
+              {/* Live Preview Document */}
+              <div className="transform scale-[0.88] origin-top">
+                <ResumePreviewDocument resume={formData} />
+              </div>
+            </div>
+          </div>
+        )}
 
-        {/* Education Section */}
-        <section id="section-education" className="scroll-mt-28">
-          <EducationFieldArray
-            education={formData.education}
-            onChange={(education) => handleUpdate({ education })}
-          />
-        </section>
+        {/* MODE 3: Full Document Preview */}
+        {viewMode === "preview" && (
+          <div className="max-w-4xl mx-auto space-y-4">
+            <div className="flex items-center justify-between bg-white dark:bg-[#121318] border border-neutral-200 dark:border-white/10 p-3 sm:p-4 rounded-xl shadow-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
+                  <Eye className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-neutral-950 dark:text-white">
+                    ATS Canonical Resume Preview
+                  </h3>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Standard 1-column single/multi-page format recognized by automated ATS
+                    screeners.
+                  </p>
+                </div>
+              </div>
 
-        {/* Certifications & Achievements Section */}
-        <section id="section-certifications" className="scroll-mt-28">
-          <CertificationsFieldArray
-            certifications={formData.certifications || []}
-            achievements={formData.achievements || []}
-            onCertificationsChange={(certifications) => handleUpdate({ certifications })}
-            onAchievementsChange={(achievements) => handleUpdate({ achievements })}
-          />
-        </section>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setViewMode("editor")}
+                  className="gap-1.5 text-xs font-semibold"
+                >
+                  <Edit3 className="h-3.5 w-3.5" />
+                  <span>Back to Editor</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={() => window.print()}
+                  className="gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white"
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                  <span>Print / Export PDF</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* Document Sheet */}
+            <ResumePreviewDocument resume={formData} />
+          </div>
+        )}
       </main>
+
+      {/* Floating Sticky Save Dock (Appears when scrolled down) */}
+      <FloatingSaveDock
+        isDirty={isDirty}
+        isSaved={isSaved}
+        isDbSaving={isDbSaving}
+        onSave={handleSave}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
 
       {/* Upload & Parse Modal */}
       <ResumeUploadModal
@@ -256,7 +413,7 @@ function MasterResumeEditor({
       />
 
       {/* Scroll To Top Component */}
-      <ScrollToTop threshold={200} />
+      <ScrollToTop threshold={300} />
     </>
   );
 }

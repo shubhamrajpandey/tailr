@@ -80,6 +80,10 @@ export class ResumeService {
   ) {
     return this.ai.tailorResume(request, resumeData, userId);
   }
+
+  async enhanceBulletPoint(bullet: string, role?: string, company?: string) {
+    return this.ai.enhanceBulletPoint(bullet, role, company);
+  }
 }
 
 export const resumeService = new ResumeService();

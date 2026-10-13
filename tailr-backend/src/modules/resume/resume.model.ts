@@ -151,6 +151,19 @@ export const TailorResumeResponseSchema = t.Object({
   }),
 });
 
+export const EnhanceBulletRequestSchema = t.Object({
+  bullet: t.String({ minLength: 3, maxLength: 2000, description: "Raw bullet point text to improve" }),
+  role: t.Optional(t.String({ maxLength: 255 })),
+  company: t.Optional(t.String({ maxLength: 255 })),
+});
+
+export const EnhanceBulletResponseSchema = t.Object({
+  success: t.Boolean(),
+  original: t.String(),
+  suggestions: t.Array(t.String()),
+  provider: t.String(),
+});
+
 export type ResumeBasics = typeof ResumeBasicsSchema.static;
 export type TechnicalSkillCategory = typeof TechnicalSkillCategorySchema.static;
 export type WorkExperienceItem = typeof WorkExperienceItemSchema.static;
@@ -161,3 +174,5 @@ export type SaveResumeRequest = typeof SaveResumeRequestSchema.static;
 export type UploadRawResumeRequest = typeof UploadRawResumeRequestSchema.static;
 export type TailorResumeRequest = typeof TailorResumeRequestSchema.static;
 export type AtsFeedback = typeof AtsFeedbackSchema.static;
+export type EnhanceBulletRequest = typeof EnhanceBulletRequestSchema.static;
+export type EnhanceBulletResponse = typeof EnhanceBulletResponseSchema.static;

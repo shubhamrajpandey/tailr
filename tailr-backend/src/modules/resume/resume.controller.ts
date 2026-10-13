@@ -282,6 +282,29 @@ export class ResumeController {
       data: record,
     };
   }
+
+  /**
+   * Enhance a single bullet point using AI / STAR methodology.
+   */
+  async enhanceBulletPoint({
+    body,
+  }: {
+    authUser: AuthUserContext;
+    body: { bullet: string; role?: string; company?: string };
+  }) {
+    const result = await resumeService.enhanceBulletPoint(
+      body.bullet,
+      body.role,
+      body.company
+    );
+
+    return {
+      success: true,
+      original: body.bullet,
+      suggestions: result.suggestions,
+      provider: result.provider,
+    };
+  }
 }
 
 export const resumeController = new ResumeController();
