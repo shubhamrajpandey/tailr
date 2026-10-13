@@ -65,7 +65,6 @@ export function FloatingSaveDock({
         onReset={onReset || (() => {})}
         onSave={onSave}
         saveText="Save Resume"
-        resetText="Reset"
       />
     );
   }

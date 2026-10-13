@@ -23,7 +23,7 @@ import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
 import { ResumeExportData } from "@/shared/utils/resume-export-helpers";
 import { Button } from "@/shared/components/ui/button";
-import { Dialog, DialogContent } from "@/shared/components/ui/dialog";
+import { ResetConfirmationModal } from "@/shared/components/ui/reset-confirmation-modal";
 import { BasicsSectionForm } from "./components/basics-section-form";
 import { SummarySectionForm } from "./components/summary-section-form";
 import { ExperienceFieldArray } from "./components/experience-field-array";
@@ -199,22 +199,7 @@ function MasterResumeEditor({
   };
 
   const handleReset = () => {
-    // If on mobile (screen width < 640), open the bottom-sheet dialog sliding up from bottom
-    if (typeof window !== "undefined" && window.innerWidth < 640) {
-      setIsResetDialogOpen(true);
-      return;
-    }
-
-    // On desktop: discard unsaved edits or reset directly without opening modal
-    if (isDirty) {
-      handleDiscard();
-    } else {
-      resetToDefault();
-      setFormData(INITIAL_MASTER_RESUME);
-      hydratedResumeIdRef.current = null;
-      setIsDirty(false);
-      setIsSaved(false);
-    }
+    setIsResetDialogOpen(true);
   };
 
   const handleConfirmReset = () => {
@@ -494,50 +479,16 @@ function MasterResumeEditor({
         isUploading={isUploading}
       />
 
-      {/* Mobile-Only Bottom Sheet Dialog (Slides up from the bottom on mobile screens) */}
-      <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <DialogContent
-          position="bottom"
-          className="sm:hidden w-full rounded-t-3xl border-t border-neutral-200 dark:border-white/10 p-6 pb-10 bg-white/95 dark:bg-[#121318]/95 backdrop-blur-2xl shadow-2xl space-y-4"
-        >
-          {/* Drag Handle Bar */}
-          <div className="mx-auto w-12 h-1.5 rounded-full bg-neutral-300 dark:bg-neutral-700 -mt-2 mb-2" />
-
-          <div className="flex items-start gap-3.5">
-            <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 shrink-0">
-              <RotateCcw className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-neutral-950 dark:text-white">
-                Reset Master Resume
-              </h3>
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1 leading-relaxed">
-                Are you sure you want to reset the Master Resume to the initial default profile? Any
-                unsaved edits will be discarded.
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col-reverse gap-2 pt-2">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => setIsResetDialogOpen(false)}
-              className="text-xs h-10 px-4 cursor-pointer w-full justify-center"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              onClick={handleConfirmReset}
-              className="text-xs h-10 px-4 bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-xs cursor-pointer w-full justify-center"
-            >
-              Reset to Default
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Responsive Reset Confirmation: Mobile Bottom Sheet + Desktop Glassy Floating Dock */}
+      <ResetConfirmationModal
+        isOpen={isResetDialogOpen}
+        onClose={() => setIsResetDialogOpen(false)}
+        onConfirm={handleConfirmReset}
+        title="Reset Master Resume"
+        description="Are you sure you want to reset the Master Resume to the initial default profile? Any unsaved edits will be discarded."
+        confirmText="Reset to Default"
+        cancelText="Cancel"
+      />
     </>
   );
 }
