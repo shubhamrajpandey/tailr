@@ -4,6 +4,8 @@
  * and LaTeX (.tex) download and copy.
  */
 
+import { getResumeFontCss } from "./resume-font";
+
 export interface ResumeExportData {
   id?: string;
   fullName?: string;
@@ -94,7 +96,7 @@ export async function copyLatexToClipboard(latexSource: string): Promise<boolean
  * Prints an isolated, pixel-perfect ATS resume rendered to match LaTeX standard article 11pt
  * layout (margins 0.5in, horizontal rules, small-caps section headings, tabular headings).
  */
-export function printAtsResumeDirectly(data: ResumeExportData) {
+export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: string) {
   if (typeof window === "undefined") return;
 
   const email = data.email || data.basics?.email;
@@ -213,7 +215,7 @@ export function printAtsResumeDirectly(data: ResumeExportData) {
       print-color-adjust: exact;
     }
     body {
-      font-family: "Calibri", "Carlito", "Liberation Sans", "Helvetica Neue", Arial, sans-serif;
+      font-family: ${getResumeFontCss(fontFamily)};
       font-size: 10pt;
       line-height: 1.35;
       color: #111111;

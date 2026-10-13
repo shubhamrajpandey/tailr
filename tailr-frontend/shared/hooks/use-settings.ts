@@ -155,6 +155,8 @@ export function useSettings() {
               remoteSettings.ai?.strictTruthConstraint ?? current.ai.strictTruthConstraint,
           },
           resume: {
+            fontFamily:
+              remoteSettings.resume?.fontFamily || current.resume.fontFamily || "times_new_roman",
             defaultTemplate:
               remoteSettings.resume?.defaultTemplate || current.resume.defaultTemplate,
             includeContactHeader:

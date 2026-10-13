@@ -3,20 +3,32 @@
 import * as React from "react";
 import { ResumeData } from "@/shared/types/resume";
 import { Globe, Mail, Phone, MapPin, Code2, Link2 } from "lucide-react";
+import { useSettings } from "@/shared/hooks/use-settings";
+import { getResumeFontCss } from "@/shared/utils/resume-font";
 
 interface ResumePreviewDocumentProps {
   resume: ResumeData;
   className?: string;
+  fontFamily?: string;
 }
 
-export function ResumePreviewDocument({ resume, className = "" }: ResumePreviewDocumentProps) {
+export function ResumePreviewDocument({
+  resume,
+  className = "",
+  fontFamily,
+}: ResumePreviewDocumentProps) {
+  const { settings } = useSettings();
+  const activeFont = fontFamily || settings.resume.fontFamily || "times_new_roman";
+  const fontCss = getResumeFontCss(activeFont);
+
   const { basics, summary, experience, skills, projects, education, certifications, achievements } =
     resume;
 
   return (
     <div
       id="printable-resume-document"
-      className={`bg-white text-neutral-900 font-sans p-8 sm:p-12 max-w-4xl mx-auto rounded-xl shadow-lg border border-neutral-200 dark:border-white/10 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:text-black ${className}`}
+      style={{ fontFamily: fontCss }}
+      className={`bg-white text-neutral-900 p-8 sm:p-12 max-w-4xl mx-auto rounded-xl shadow-lg border border-neutral-200 dark:border-white/10 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:text-black ${className}`}
     >
       {/* 1. Header & Contact Information */}
       <header className="text-center pb-6 border-b border-neutral-300 print:border-black/40 space-y-2">

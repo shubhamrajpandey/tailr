@@ -6,6 +6,8 @@ export type CoverLetterToneSetting = "formal" | "conversational" | "concise";
 
 export type ResumeTemplate = "modern_minimalist" | "executive_classic" | "technical_single_column";
 
+export type ResumeFontFamily = "times_new_roman" | "calibri" | "arial" | "garamond" | "georgia";
+
 export type PageMargin = "compact" | "normal" | "spacious";
 
 export type PaperSize = "letter" | "a4";
@@ -28,6 +30,7 @@ export interface AISettings {
 }
 
 export interface ResumeSettings {
+  fontFamily?: ResumeFontFamily;
   defaultTemplate: ResumeTemplate;
   includeContactHeader: boolean;
   includeLinkedIn: boolean;
@@ -84,6 +87,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
     strictTruthConstraint: true,
   },
   resume: {
+    fontFamily: "times_new_roman",
     defaultTemplate: "modern_minimalist",
     includeContactHeader: true,
     includeLinkedIn: true,

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, Printer, Layout, Save, CheckCircle2, Check } from "lucide-react";
+import { FileText, Printer, Layout, Save, CheckCircle2, Check, Type, Sparkles } from "lucide-react";
 import { Select } from "@/shared/components/ui/select";
 import { Switch } from "@/shared/components/ui/switch";
 import { Button } from "@/shared/components/ui/button";
@@ -11,6 +11,8 @@ import { SettingsSection } from "./settings-section";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { resumeSettingsSchema, ResumeSettingsValues } from "@/shared/lib/validations/settings";
 import { cn } from "@/shared/lib/utils";
+import { RESUME_FONT_LIST, getResumeFontCss } from "@/shared/utils/resume-font";
+import { ResumeFontFamily } from "@/shared/types/settings";
 
 const TEMPLATE_OPTIONS = [
   {
@@ -49,6 +51,7 @@ export function ResumeSettings() {
   } = useForm<ResumeSettingsValues>({
     resolver: zodResolver(resumeSettingsSchema),
     values: {
+      fontFamily: (settings.resume.fontFamily as ResumeFontFamily) || "times_new_roman",
       defaultTemplate: settings.resume.defaultTemplate,
       includeContactHeader: settings.resume.includeContactHeader,
       includeLinkedIn: settings.resume.includeLinkedIn,
@@ -57,6 +60,7 @@ export function ResumeSettings() {
     },
   });
 
+  const selectedFont = useWatch({ control, name: "fontFamily" }) || "times_new_roman";
   const selectedTemplate = useWatch({ control, name: "defaultTemplate" });
   const includeContactHeader = useWatch({
     control,
@@ -66,7 +70,7 @@ export function ResumeSettings() {
 
   const onSubmit = async (values: ResumeSettingsValues) => {
     updateResume(values);
-    setFeedback("Resume export & template defaults saved.");
+    setFeedback("Resume typography & template defaults saved.");
     setTimeout(() => {
       setFeedback(null);
     }, 3500);
@@ -123,6 +127,82 @@ export function ResumeSettings() {
                 </button>
               );
             })}
+          </div>
+
+          {/* ATS Resume Typography & Font Family */}
+          <div className="border-t border-neutral-200 dark:border-white/5 pt-6 space-y-4">
+            <div className="space-y-1">
+              <div className="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-1.5">
+                <Type className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                Resume Typography & ATS Font Format
+              </div>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Times New Roman is the formal industry standard for ATS parsers and Ivy League
+                resume formats. You can choose an alternative ATS-safe font below.
+              </p>
+            </div>
+
+            {/* Font Options Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+              {RESUME_FONT_LIST.map((font) => {
+                const isSelected = selectedFont === font.id;
+                return (
+                  <button
+                    key={font.id}
+                    type="button"
+                    onClick={() => setValue("fontFamily", font.id)}
+                    className={cn(
+                      "relative flex flex-col justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer group",
+                      isSelected
+                        ? "border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/25 dark:border-indigo-500 shadow-xs ring-1 ring-indigo-500/20"
+                        : "border-neutral-200 dark:border-white/10 hover:border-neutral-300 dark:hover:border-white/20 bg-white dark:bg-neutral-900/30"
+                    )}
+                  >
+                    <div className="space-y-2.5 w-full">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-white/[0.06] text-neutral-600 dark:text-neutral-400">
+                            {font.category}
+                          </span>
+                          {font.recommended && (
+                            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 px-1.5 py-0.5 rounded">
+                              Default ATS
+                            </span>
+                          )}
+                        </div>
+                        {isSelected && (
+                          <span className="h-5 w-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="text-sm font-bold text-neutral-900 dark:text-white">
+                          {font.name}
+                        </div>
+                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400 line-clamp-2 mt-0.5">
+                          {font.description}
+                        </p>
+                      </div>
+
+                      {/* Live Specimen Preview */}
+                      <div
+                        style={{ fontFamily: font.cssFamily }}
+                        className="p-2.5 rounded-lg bg-neutral-50 dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/[0.06] text-neutral-900 dark:text-neutral-100"
+                      >
+                        <div className="text-xs font-bold leading-tight">
+                          John Doe &bull; Senior Engineer
+                        </div>
+                        <div className="text-[11px] text-neutral-600 dark:text-neutral-300 leading-normal mt-0.5">
+                          Architected scalable services boosting throughput by 42%.
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Export Toggles */}

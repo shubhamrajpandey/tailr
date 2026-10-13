@@ -34,7 +34,16 @@ export const aiSettingsSchema = z.object({
 
 export type AISettingsValues = z.infer<typeof aiSettingsSchema>;
 
+export const resumeFontFamilySchema = z.enum([
+  "times_new_roman",
+  "calibri",
+  "arial",
+  "garamond",
+  "georgia",
+]);
+
 export const resumeSettingsSchema = z.object({
+  fontFamily: resumeFontFamilySchema,
   defaultTemplate: z.enum(["modern_minimalist", "executive_classic", "technical_single_column"]),
   includeContactHeader: z.boolean(),
   includeLinkedIn: z.boolean(),

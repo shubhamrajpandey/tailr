@@ -24,6 +24,7 @@ export const AISettingsSchema = t.Object({
 });
 
 export const ResumeSettingsSchema = t.Object({
+  fontFamily: t.Optional(t.String({ default: "times_new_roman" })),
   defaultTemplate: t.Optional(t.String({ default: "modern_minimalist" })),
   includeContactHeader: t.Optional(t.Boolean({ default: true })),
   includeLinkedIn: t.Optional(t.Boolean({ default: true })),

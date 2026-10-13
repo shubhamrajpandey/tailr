@@ -12,6 +12,8 @@ import {
 } from "@/shared/utils/resume-export-helpers";
 import { cn } from "@/shared/lib/utils";
 import { AtsFeedbackDiagnostics } from "./ats-feedback-diagnostics";
+import { useSettings } from "@/shared/hooks/use-settings";
+import { getResumeFontCss } from "@/shared/utils/resume-font";
 
 interface AtsTailoredResultStationProps {
   result: TailoredResumeResult;
@@ -31,6 +33,9 @@ export function AtsTailoredResultStation({
   const [viewMode, setViewMode] = React.useState<"preview" | "latex">("preview");
   const [copiedLatex, setCopiedLatex] = React.useState(false);
   const [savedSuccess, setSavedSuccess] = React.useState(false);
+
+  const { settings } = useSettings();
+  const fontCss = getResumeFontCss(settings.resume.fontFamily || "times_new_roman");
 
   const { atsScore, atsFeedback, tailoredData, latexSource } = result;
   const rawBasics = tailoredData.basics;
@@ -55,7 +60,7 @@ export function AtsTailoredResultStation({
   };
 
   const handleDownloadPdf = () => {
-    printAtsResumeDirectly(tailoredData);
+    printAtsResumeDirectly(tailoredData, settings.resume.fontFamily);
   };
 
   const handleSave = () => {
@@ -217,7 +222,10 @@ export function AtsTailoredResultStation({
         <div className="p-2 sm:p-6 lg:p-10">
           {viewMode === "preview" ? (
             /* Rendered Clean ATS Resume */
-            <div className="max-w-4xl mx-auto bg-white text-neutral-900 p-4 sm:p-8 lg:p-12 rounded-xl shadow-xs border border-neutral-200 font-sans space-y-4 sm:space-y-5 overflow-x-auto">
+            <div
+              style={{ fontFamily: fontCss }}
+              className="max-w-4xl mx-auto bg-white text-neutral-900 p-4 sm:p-8 lg:p-12 rounded-xl shadow-xs border border-neutral-200 space-y-4 sm:space-y-5 overflow-x-auto"
+            >
               {/* Header */}
               <div className="text-center pb-4 border-b border-neutral-900 space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight uppercase text-neutral-950">
