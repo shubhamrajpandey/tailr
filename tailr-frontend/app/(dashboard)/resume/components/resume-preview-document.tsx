@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { ResumeData } from "@/shared/types/resume";
-import { Globe, Mail, Phone, MapPin, Code2, Link2 } from "lucide-react";
 import { useSettings } from "@/shared/hooks/use-settings";
 import { getResumeFontCss } from "@/shared/utils/resume-font";
 
@@ -10,6 +9,15 @@ interface ResumePreviewDocumentProps {
   resume: ResumeData;
   className?: string;
   fontFamily?: string;
+}
+
+function formatExternalUrl(url?: string): string {
+  if (!url) return "#";
+  const trimmed = url.trim();
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+  return `https://${trimmed}`;
 }
 
 export function ResumePreviewDocument({
@@ -24,99 +32,106 @@ export function ResumePreviewDocument({
   const { basics, summary, experience, skills, projects, education, certifications, achievements } =
     resume;
 
+  // Build unified single-line contact items
+  const contactItems: React.ReactNode[] = [];
+  if (basics.location) {
+    contactItems.push(<span key="loc">{basics.location}</span>);
+  }
+  if (basics.phone) {
+    contactItems.push(
+      <a
+        key="phone"
+        href={`tel:${basics.phone.replace(/[^\d+]/g, "")}`}
+        className="hover:underline text-inherit"
+      >
+        {basics.phone}
+      </a>
+    );
+  }
+  if (basics.email) {
+    contactItems.push(
+      <a
+        key="email"
+        href={`mailto:${basics.email}`}
+        className="hover:underline text-inherit font-medium"
+      >
+        {basics.email}
+      </a>
+    );
+  }
+  if (basics.linkedin) {
+    contactItems.push(
+      <a
+        key="linkedin"
+        href={formatExternalUrl(basics.linkedin)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-neutral-900 print:text-black font-medium"
+      >
+        LinkedIn
+      </a>
+    );
+  }
+  if (basics.github) {
+    contactItems.push(
+      <a
+        key="github"
+        href={formatExternalUrl(basics.github)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-neutral-900 print:text-black font-medium"
+      >
+        GitHub
+      </a>
+    );
+  }
+  if (basics.portfolio) {
+    contactItems.push(
+      <a
+        key="portfolio"
+        href={formatExternalUrl(basics.portfolio)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:underline text-neutral-900 print:text-black font-medium"
+      >
+        Portfolio
+      </a>
+    );
+  }
+
   return (
     <div
       id="printable-resume-document"
       style={{ fontFamily: fontCss }}
-      className={`bg-white text-neutral-900 p-8 sm:p-12 max-w-4xl mx-auto rounded-xl shadow-lg border border-neutral-200 dark:border-white/10 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:text-black ${className}`}
+      className={`bg-white text-neutral-900 p-6 sm:p-8 max-w-4xl mx-auto rounded-xl shadow-lg border border-neutral-200 dark:border-white/10 print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:text-black ${className}`}
     >
-      {/* 1. Header & Contact Information */}
-      <header className="text-center pb-6 border-b border-neutral-300 print:border-black/40 space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 print:text-black">
+      {/* 1. Header & Contact Information (Clean 1-line, no bottom divider) */}
+      <header className="text-center pb-2 space-y-1">
+        <h1 className="text-2xl sm:text-[26px] font-bold tracking-tight text-neutral-950 print:text-black leading-tight">
           {basics.name}
         </h1>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-neutral-700 print:text-black">
-          {basics.location && (
-            <span className="flex items-center gap-1">
-              <MapPin className="h-3 w-3 print:hidden" />
-              {basics.location}
-            </span>
-          )}
-          {basics.email && (
-            <>
-              <span className="text-neutral-400 print:text-black">•</span>
-              <a
-                href={`mailto:${basics.email}`}
-                className="hover:underline flex items-center gap-1 text-neutral-800 print:text-black font-medium"
-              >
-                <Mail className="h-3 w-3 print:hidden" />
-                {basics.email}
-              </a>
-            </>
-          )}
-          {basics.phone && (
-            <>
-              <span className="text-neutral-400 print:text-black">•</span>
-              <span className="flex items-center gap-1">
-                <Phone className="h-3 w-3 print:hidden" />
-                {basics.phone}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Web Profiles */}
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-neutral-600 print:text-black pt-0.5">
-          {basics.linkedin && (
-            <a
-              href={basics.linkedin}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:underline flex items-center gap-1"
-            >
-              <Link2 className="h-3 w-3 print:hidden" />
-              {basics.linkedin.replace(/^https?:\/\/(www\.)?/, "")}
-            </a>
-          )}
-          {basics.github && (
-            <>
-              <span className="text-neutral-400 print:text-black">•</span>
-              <a
-                href={basics.github}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:underline flex items-center gap-1"
-              >
-                <Code2 className="h-3 w-3 print:hidden" />
-                {basics.github.replace(/^https?:\/\/(www\.)?/, "")}
-              </a>
-            </>
-          )}
-          {basics.portfolio && (
-            <>
-              <span className="text-neutral-400 print:text-black">•</span>
-              <a
-                href={basics.portfolio}
-                target="_blank"
-                rel="noreferrer"
-                className="hover:underline flex items-center gap-1 font-semibold text-indigo-700 print:text-black"
-              >
-                <Globe className="h-3 w-3 print:hidden" />
-                {basics.portfolio.replace(/^https?:\/\/(www\.)?/, "")}
-              </a>
-            </>
-          )}
-        </div>
+        {contactItems.length > 0 && (
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[11px] sm:text-xs text-neutral-700 print:text-black pt-0.5">
+            {contactItems.map((item, idx) => (
+              <React.Fragment key={idx}>
+                {idx > 0 && (
+                  <span className="text-neutral-400 print:text-neutral-600 select-none">•</span>
+                )}
+                {item}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* 2. Professional Summary */}
       {summary && (
-        <section className="pt-5 space-y-1.5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Professional Summary
           </h2>
-          <p className="text-xs leading-relaxed text-neutral-800 print:text-black text-justify">
+          <p className="text-[11px] sm:text-[11.5px] leading-normal text-neutral-800 print:text-black text-justify">
             {summary}
           </p>
         </section>
@@ -124,11 +139,11 @@ export function ResumePreviewDocument({
 
       {/* 3. Technical Skills Matrix */}
       {skills && (
-        <section className="pt-5 space-y-1.5">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Technical Skills & Competencies
           </h2>
-          <div className="text-xs space-y-1 text-neutral-800 print:text-black">
+          <div className="text-[11px] sm:text-[11.5px] space-y-0.5 text-neutral-800 print:text-black leading-snug">
             {skills.languages.length > 0 && (
               <div>
                 <strong className="font-semibold text-neutral-950 print:text-black">
@@ -167,37 +182,37 @@ export function ResumePreviewDocument({
 
       {/* 4. Work Experience */}
       {experience.length > 0 && (
-        <section className="pt-5 space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1.5">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Work Experience
           </h2>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {experience.map((exp) => (
-              <div key={exp.id} className="space-y-1">
+              <div key={exp.id} className="space-y-0.5">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="font-bold text-xs text-neutral-950 print:text-black">
+                    <span className="font-bold text-[11.5px] sm:text-xs text-neutral-950 print:text-black">
                       {exp.title}
                     </span>
                     <span className="text-neutral-500 print:text-black"> — </span>
-                    <span className="font-semibold text-xs text-neutral-800 print:text-black">
+                    <span className="font-semibold text-[11.5px] sm:text-xs text-neutral-800 print:text-black">
                       {exp.company}
                     </span>
                     {exp.location && (
-                      <span className="text-[11px] text-neutral-500 print:text-black italic ml-1">
+                      <span className="text-[10.5px] sm:text-[11px] text-neutral-500 print:text-black italic ml-1">
                         ({exp.location})
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] font-mono text-neutral-600 print:text-black">
+                  <span className="text-[10.5px] sm:text-[11px] font-mono text-neutral-600 print:text-black">
                     {exp.startDate} – {exp.current ? "Present" : exp.endDate}
                   </span>
                 </div>
 
-                <ul className="list-disc list-outside ml-4 space-y-1 text-xs text-neutral-800 print:text-black">
+                <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] sm:text-[11.5px] text-neutral-800 print:text-black">
                   {exp.bullets.map((bullet, bIdx) => (
-                    <li key={bIdx} className="leading-relaxed">
+                    <li key={bIdx} className="leading-snug">
                       {bullet}
                     </li>
                   ))}
@@ -210,45 +225,47 @@ export function ResumePreviewDocument({
 
       {/* 5. Key Projects */}
       {projects.length > 0 && (
-        <section className="pt-5 space-y-3">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1.5">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Key Projects & Open Source
           </h2>
 
-          <div className="space-y-2.5">
+          <div className="space-y-1.5">
             {projects.map((proj) => (
               <div key={proj.id} className="space-y-0.5">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="font-bold text-xs text-neutral-950 print:text-black">
+                    <span className="font-bold text-[11.5px] sm:text-xs text-neutral-950 print:text-black">
                       {proj.name}
                     </span>
                     {proj.tech.length > 0 && (
-                      <span className="text-[11px] font-mono text-neutral-500 print:text-black ml-1.5">
+                      <span className="text-[10.5px] sm:text-[11px] font-mono text-neutral-500 print:text-black ml-1.5">
                         [{proj.tech.join(", ")}]
                       </span>
                     )}
                   </div>
                   {proj.link && (
                     <a
-                      href={proj.link}
+                      href={formatExternalUrl(proj.link)}
                       target="_blank"
-                      rel="noreferrer"
-                      className="text-[11px] text-indigo-700 print:text-black hover:underline"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-neutral-800 print:text-black hover:underline font-medium"
                     >
-                      {proj.link.replace(/^https?:\/\/(www\.)?/, "")}
+                      {proj.link.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                     </a>
                   )}
                 </div>
 
-                <p className="text-xs text-neutral-700 print:text-black italic">
-                  {proj.description}
-                </p>
+                {proj.description && (
+                  <p className="text-[11px] sm:text-[11.5px] text-neutral-700 print:text-black italic leading-snug">
+                    {proj.description}
+                  </p>
+                )}
 
                 {proj.bullets.length > 0 && (
-                  <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-800 print:text-black pt-0.5">
+                  <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] sm:text-[11.5px] text-neutral-800 print:text-black pt-0.5">
                     {proj.bullets.map((bullet, bIdx) => (
-                      <li key={bIdx} className="leading-relaxed">
+                      <li key={bIdx} className="leading-snug">
                         {bullet}
                       </li>
                     ))}
@@ -262,36 +279,36 @@ export function ResumePreviewDocument({
 
       {/* 6. Education */}
       {education.length > 0 && (
-        <section className="pt-5 space-y-2">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Education
           </h2>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {education.map((edu) => (
               <div key={edu.id} className="space-y-0.5">
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="font-bold text-xs text-neutral-950 print:text-black">
+                    <span className="font-bold text-[11.5px] sm:text-xs text-neutral-950 print:text-black">
                       {edu.degree} in {edu.fieldOfStudy}
                     </span>
                     <span className="text-neutral-500 print:text-black"> — </span>
-                    <span className="font-semibold text-xs text-neutral-800 print:text-black">
+                    <span className="font-semibold text-[11.5px] sm:text-xs text-neutral-800 print:text-black">
                       {edu.institution}
                     </span>
                     {edu.gpa && (
-                      <span className="text-[11px] text-neutral-500 print:text-black ml-1">
+                      <span className="text-[10.5px] sm:text-[11px] text-neutral-500 print:text-black ml-1">
                         (GPA: {edu.gpa})
                       </span>
                     )}
                   </div>
-                  <span className="text-[11px] font-mono text-neutral-600 print:text-black">
+                  <span className="text-[10.5px] sm:text-[11px] font-mono text-neutral-600 print:text-black">
                     {edu.startDate} – {edu.endDate}
                   </span>
                 </div>
 
                 {edu.highlights && edu.highlights.length > 0 && (
-                  <ul className="list-disc list-outside ml-4 space-y-0.5 text-xs text-neutral-700 print:text-black">
+                  <ul className="list-disc list-outside ml-4 space-y-0.5 text-[11px] text-neutral-700 print:text-black">
                     {edu.highlights.map((h, hIdx) => (
                       <li key={hIdx}>{h}</li>
                     ))}
@@ -305,12 +322,12 @@ export function ResumePreviewDocument({
 
       {/* 7. Certifications & Honors */}
       {(certifications.length > 0 || achievements.length > 0) && (
-        <section className="pt-5 space-y-2">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-200 print:border-black/30 pb-1">
+        <section className="pt-2 sm:pt-2.5 space-y-1">
+          <h2 className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-neutral-900 print:text-black border-b border-neutral-900 print:border-black pb-0.5">
             Certifications & Honors
           </h2>
 
-          <div className="text-xs space-y-1 text-neutral-800 print:text-black">
+          <div className="text-[11px] sm:text-[11.5px] space-y-0.5 text-neutral-800 print:text-black leading-snug">
             {certifications.map((c) => (
               <div key={c.id} className="flex items-baseline justify-between">
                 <span>
@@ -319,7 +336,7 @@ export function ResumePreviewDocument({
                   </strong>{" "}
                   — {c.issuer}
                 </span>
-                <span className="text-[11px] font-mono text-neutral-500 print:text-black">
+                <span className="text-[10.5px] sm:text-[11px] font-mono text-neutral-500 print:text-black">
                   {c.date}
                 </span>
               </div>
@@ -334,7 +351,7 @@ export function ResumePreviewDocument({
                   {a.description}
                 </span>
                 {a.date && (
-                  <span className="text-[11px] font-mono text-neutral-500 print:text-black">
+                  <span className="text-[10.5px] sm:text-[11px] font-mono text-neutral-500 print:text-black">
                     {a.date}
                   </span>
                 )}

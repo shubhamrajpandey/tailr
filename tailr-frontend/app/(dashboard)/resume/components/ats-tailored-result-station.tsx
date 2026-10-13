@@ -41,6 +41,7 @@ export function AtsTailoredResultStation({
   const rawBasics = tailoredData.basics;
   const candidateName = rawBasics?.fullName || tailoredData.fullName || "Candidate";
   const candidateEmail = rawBasics?.email || tailoredData.email;
+  const candidatePhone = rawBasics?.phone || tailoredData.phone;
   const candidateLinkedin = rawBasics?.linkedinUrl || tailoredData.linkedinUrl;
   const candidateGithub = rawBasics?.githubUrl || tailoredData.githubUrl;
   const candidatePortfolio = rawBasics?.portfolioUrl || tailoredData.portfolioUrl;
@@ -226,45 +227,89 @@ export function AtsTailoredResultStation({
               style={{ fontFamily: fontCss }}
               className="max-w-4xl mx-auto bg-white text-neutral-900 p-4 sm:p-8 lg:p-12 rounded-xl shadow-xs border border-neutral-200 space-y-4 sm:space-y-5 overflow-x-auto"
             >
-              {/* Header */}
-              <div className="text-center pb-4 border-b border-neutral-900 space-y-1">
+              {/* Header (No divider line, unified 1-line contacts) */}
+              <div className="text-center pb-2 space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight uppercase text-neutral-950">
                   {candidateName}
                 </h1>
-                <div className="text-xs text-neutral-700 flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                <div className="text-xs text-neutral-700 flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5">
+                  {candidateLocation && <span>{candidateLocation}</span>}
+                  {candidatePhone && (
+                    <>
+                      {candidateLocation && <span className="text-neutral-400">•</span>}
+                      <a
+                        href={`tel:${candidatePhone.replace(/[^\d+]/g, "")}`}
+                        className="hover:underline text-inherit"
+                      >
+                        {candidatePhone}
+                      </a>
+                    </>
+                  )}
                   {candidateEmail && (
-                    <a href={`mailto:${candidateEmail}`} className="hover:underline">
-                      {candidateEmail}
-                    </a>
+                    <>
+                      {(candidateLocation || candidatePhone) && (
+                        <span className="text-neutral-400">•</span>
+                      )}
+                      <a
+                        href={`mailto:${candidateEmail}`}
+                        className="hover:underline text-inherit font-medium"
+                      >
+                        {candidateEmail}
+                      </a>
+                    </>
                   )}
                   {candidateLinkedin && (
                     <>
-                      <span>•</span>
-                      <a href={candidateLinkedin} className="hover:underline text-indigo-600">
+                      <span className="text-neutral-400">•</span>
+                      <a
+                        href={
+                          candidateLinkedin.startsWith("http://") ||
+                          candidateLinkedin.startsWith("https://")
+                            ? candidateLinkedin
+                            : `https://${candidateLinkedin}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-neutral-900 font-medium"
+                      >
                         LinkedIn
                       </a>
                     </>
                   )}
                   {candidateGithub && (
                     <>
-                      <span>•</span>
-                      <a href={candidateGithub} className="hover:underline text-indigo-600">
+                      <span className="text-neutral-400">•</span>
+                      <a
+                        href={
+                          candidateGithub.startsWith("http://") ||
+                          candidateGithub.startsWith("https://")
+                            ? candidateGithub
+                            : `https://${candidateGithub}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-neutral-900 font-medium"
+                      >
                         GitHub
                       </a>
                     </>
                   )}
                   {candidatePortfolio && (
                     <>
-                      <span>•</span>
-                      <a href={candidatePortfolio} className="hover:underline text-indigo-600">
+                      <span className="text-neutral-400">•</span>
+                      <a
+                        href={
+                          candidatePortfolio.startsWith("http://") ||
+                          candidatePortfolio.startsWith("https://")
+                            ? candidatePortfolio
+                            : `https://${candidatePortfolio}`
+                        }
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline text-neutral-900 font-medium"
+                      >
                         Portfolio
                       </a>
-                    </>
-                  )}
-                  {candidateLocation && (
-                    <>
-                      <span>•</span>
-                      <span>{candidateLocation}</span>
                     </>
                   )}
                 </div>
