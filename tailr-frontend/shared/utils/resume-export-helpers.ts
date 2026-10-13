@@ -203,11 +203,11 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
 <html>
 <head>
   <meta charset="utf-8">
-  <title>${fullName} - ATS Resume</title>
+  <title></title>
   <style>
     @page {
       size: letter portrait;
-      margin: 0.5in 0.5in 0.5in 0.5in;
+      margin: 0 !important; /* Completely eliminates browser headers and footers */
     }
     * {
       box-sizing: border-box;
@@ -221,7 +221,7 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
       color: #111111;
       background: #ffffff;
       margin: 0;
-      padding: 0;
+      padding: 0.35in 0.45in;
     }
     h1.name {
       text-align: center;

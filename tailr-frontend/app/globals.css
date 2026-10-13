@@ -95,12 +95,14 @@ body {
 @media print {
   @page {
     size: letter portrait;
-    margin: 0.3in;
+    margin: 0 !important; /* Eliminates browser date, time, title, URL, and page number */
   }
 
   body {
     background: #ffffff !important;
     color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Hide entire dashboard shell, navbars, sidebars, buttons */
@@ -121,10 +123,11 @@ body {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
-    padding: 0 !important;
+    padding: 0.35in 0.45in !important;
     border: none !important;
     box-shadow: none !important;
     background: #ffffff !important;
     color: #000000 !important;
+    box-sizing: border-box !important;
   }
 }

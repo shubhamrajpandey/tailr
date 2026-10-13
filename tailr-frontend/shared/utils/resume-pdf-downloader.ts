@@ -27,14 +27,21 @@ export async function downloadResumePdf(options: DownloadPdfOptions = {}): Promi
   try {
     // Dynamic import to prevent SSR issues in Next.js
     const html2pdfModule = await import("html2pdf.js");
-    const html2pdf = html2pdfModule.default;
+    const html2pdf =
+      typeof html2pdfModule === "function"
+        ? html2pdfModule
+        : (html2pdfModule as any).default || html2pdfModule;
+
+    if (typeof html2pdf !== "function") {
+      throw new Error("html2pdf is not callable");
+    }
 
     const opt = {
       margin: [0.3, 0.35, 0.3, 0.35] as [number, number, number, number],
       filename: safeFilename,
       image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: {
-        scale: 2.2,
+        scale: 2,
         useCORS: true,
         letterRendering: true,
         backgroundColor: "#ffffff",
@@ -65,6 +72,7 @@ export async function downloadResumePdf(options: DownloadPdfOptions = {}): Promi
 /**
  * Opens an isolated print dialog that exclusively prints the resume document
  * without dashboard sidebars, headers, background panels, or buttons.
+ * Uses zero margin @page rule to completely strip browser headers (date/time) and footers (URL/page#).
  */
 export function printIsolatedResume(elementId: string = "printable-resume-document") {
   if (typeof window === "undefined") return;
@@ -104,12 +112,12 @@ export function printIsolatedResume(elementId: string = "printable-resume-docume
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Resume</title>
+  <title></title>
   ${styleTags}
   <style>
     @page {
       size: letter portrait;
-      margin: 0.4in 0.4in 0.4in 0.4in;
+      margin: 0 !important; /* Completely eliminates browser headers (date, time, title) and footers (URL, page#) */
     }
     *, *::before, *::after {
       box-sizing: border-box;
@@ -126,12 +134,13 @@ export function printIsolatedResume(elementId: string = "printable-resume-docume
     #printable-resume-document {
       width: 100% !important;
       max-width: 100% !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      margin: 0 auto !important;
+      padding: 0.35in 0.45in !important;
       border: none !important;
       box-shadow: none !important;
       background: #ffffff !important;
       color: #000000 !important;
+      box-sizing: border-box !important;
     }
   </style>
 </head>
