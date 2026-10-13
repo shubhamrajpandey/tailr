@@ -13,14 +13,17 @@ import {
   Columns2,
   LayoutList,
   Eye,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { UnsavedChangesBar } from "@/shared/components/ui/unsaved-changes-bar";
 
 export interface FloatingSaveDockProps {
   isDirty: boolean;
   isSaved: boolean;
   isDbSaving: boolean;
   onSave: () => void;
+  onReset?: () => void;
   viewMode: "editor" | "split" | "preview";
   onViewModeChange: (mode: "editor" | "split" | "preview") => void;
   threshold?: number;
@@ -31,6 +34,7 @@ export function FloatingSaveDock({
   isSaved,
   isDbSaving,
   onSave,
+  onReset,
   viewMode,
   onViewModeChange,
   threshold = 240,
@@ -51,6 +55,20 @@ export function FloatingSaveDock({
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // If there are unsaved edits, always display the reusable UnsavedChangesBar component
+  if (isDirty) {
+    return (
+      <UnsavedChangesBar
+        isDirty={isDirty}
+        isSubmitting={isDbSaving}
+        onReset={onReset || (() => {})}
+        onSave={onSave}
+        saveText="Save Resume"
+        resetText="Reset"
+      />
+    );
+  }
 
   if (!isVisible) return null;
 
