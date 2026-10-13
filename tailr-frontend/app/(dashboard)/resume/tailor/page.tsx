@@ -198,9 +198,9 @@ function TailorWorkspaceForm({ initialApp, masterResume, saveVersion }: TailorWo
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
                 AI Resume Tailoring Studio
               </h1>
-              <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
+              {/* <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/20">
                 ATS Optimized & LaTeX
-              </span>
+              </span> */}
             </div>
             <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-normal leading-relaxed">
               Tailor your master resume to match target job keywords with zero hallucination.
@@ -244,7 +244,7 @@ function TailorWorkspaceForm({ initialApp, masterResume, saveVersion }: TailorWo
       </header>
 
       {/* Content Canvas with Mobile Bottom Navigation Clearance */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 space-y-6 sm:space-y-8 w-full max-w-7xl mx-auto">
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 space-y-6 sm:space-y-8 w-full max-w-full">
         {/* Step 1: Input Job Description & Target Role */}
         <TailoringPromptInput
           jobDescription={jobDescription}
