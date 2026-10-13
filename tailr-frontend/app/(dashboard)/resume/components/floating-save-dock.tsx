@@ -60,7 +60,7 @@ export function FloatingSaveDock({
       aria-label="Sticky actions dock"
       className="fixed bottom-6 inset-x-0 mx-auto w-fit max-w-[95vw] z-40 animate-in fade-in slide-in-from-bottom-5 duration-300"
     >
-      <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 rounded-full bg-neutral-950/90 dark:bg-[#121318]/95 backdrop-blur-xl border border-neutral-800 dark:border-white/15 text-white shadow-2xl shadow-black/40">
+      <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 rounded-full bg-neutral-950/70 dark:bg-[#0c0d12]/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 dark:border-white/15 text-white shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08),inset_0_1px_0_0_rgba(255,255,255,0.2)] transition-all duration-300 hover:shadow-[0_24px_60px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.12),inset_0_1px_0_0_rgba(255,255,255,0.25)]">
         {/* Status Indicator */}
         <div className="flex items-center gap-1.5 text-xs font-medium pl-1 pr-1.5">
           {isDbSaving ? (
@@ -79,21 +79,23 @@ export function FloatingSaveDock({
               <span>Unsaved edits</span>
             </span>
           ) : (
-            <span className="text-neutral-400 text-[11px] hidden md:inline">Master Resume</span>
+            <span className="text-neutral-300 text-[11px] hidden md:inline font-medium">
+              Master Resume
+            </span>
           )}
         </div>
 
-        <div className="h-4 w-px bg-white/15" />
+        <div className="h-4 w-px bg-white/20" />
 
         {/* View Switcher on Desktop */}
-        <div className="hidden lg:flex items-center gap-0.5 bg-white/5 rounded-full p-0.5 border border-white/10">
+        <div className="hidden lg:flex items-center gap-0.5 bg-white/10 backdrop-blur-md rounded-full p-0.5 border border-white/15">
           <button
             type="button"
             onClick={() => onViewModeChange("editor")}
-            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-colors ${
+            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-all ${
               viewMode === "editor"
-                ? "bg-indigo-600 text-white font-semibold"
-                : "text-neutral-400 hover:text-white"
+                ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                : "text-neutral-300 hover:text-white hover:bg-white/10"
             }`}
             title="Form Editor View"
           >
@@ -103,10 +105,10 @@ export function FloatingSaveDock({
           <button
             type="button"
             onClick={() => onViewModeChange("split")}
-            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-colors ${
+            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-all ${
               viewMode === "split"
-                ? "bg-indigo-600 text-white font-semibold"
-                : "text-neutral-400 hover:text-white"
+                ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                : "text-neutral-300 hover:text-white hover:bg-white/10"
             }`}
             title="Split Form + Live Preview"
           >
@@ -116,10 +118,10 @@ export function FloatingSaveDock({
           <button
             type="button"
             onClick={() => onViewModeChange("preview")}
-            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-colors ${
+            className={`px-2 py-1 rounded-full text-[11px] font-medium flex items-center gap-1 transition-all ${
               viewMode === "preview"
-                ? "bg-indigo-600 text-white font-semibold"
-                : "text-neutral-400 hover:text-white"
+                ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                : "text-neutral-300 hover:text-white hover:bg-white/10"
             }`}
             title="Document Preview"
           >
@@ -134,10 +136,10 @@ export function FloatingSaveDock({
           onClick={onSave}
           disabled={isDbSaving}
           size="sm"
-          className={`h-7.5 px-3 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+          className={`h-7.5 px-3 rounded-full text-xs font-semibold cursor-pointer transition-all active:scale-95 ${
             isDirty
-              ? "bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-sm shadow-indigo-500/30"
-              : "bg-white/10 hover:bg-white/15 text-neutral-200"
+              ? "bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 text-white shadow-md shadow-indigo-500/30 border border-indigo-400/30"
+              : "bg-white/10 hover:bg-white/20 text-neutral-100 border border-white/15"
           }`}
         >
           {isDbSaving ? (
@@ -163,7 +165,7 @@ export function FloatingSaveDock({
           <Button
             type="button"
             size="sm"
-            className="h-7.5 px-3 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-sm border-0 cursor-pointer flex items-center gap-1"
+            className="h-7.5 px-3 rounded-full text-xs font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white shadow-md shadow-indigo-600/25 border border-white/20 cursor-pointer flex items-center gap-1 active:scale-95 transition-all"
           >
             <Sparkles className="h-3 w-3" />
             <span className="hidden sm:inline">Tailor for Job</span>
@@ -175,7 +177,7 @@ export function FloatingSaveDock({
         <button
           type="button"
           onClick={scrollToTop}
-          className="p-1.5 rounded-full hover:bg-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer"
+          className="p-1.5 rounded-full hover:bg-white/15 text-neutral-300 hover:text-white transition-colors cursor-pointer active:scale-95"
           title="Scroll to Top"
           aria-label="Scroll to top"
         >

@@ -14,7 +14,6 @@ import {
   Edit3,
   Columns2,
 } from "lucide-react";
-import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
@@ -213,7 +212,7 @@ function MasterResumeEditor({
 
   // Section Form Blocks
   const renderFormSections = () => (
-    <div className="space-y-5 sm:space-y-6">
+    <div className="space-y-5 sm:space-y-6 pb-10">
       {/* Basics Section */}
       <section id="section-basics" className="scroll-mt-32">
         <BasicsSectionForm
@@ -291,7 +290,7 @@ function MasterResumeEditor({
       />
 
       {/* Main Workspace Body */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-32 sm:pb-16 w-full">
+      <main className="flex-1 px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-48 sm:pb-44 lg:pb-48 w-full">
         {/* MODE 1: Standard Full Editor */}
         {viewMode === "editor" && renderFormSections()}
 
@@ -411,9 +410,6 @@ function MasterResumeEditor({
         onUpload={handleUploadRaw}
         isUploading={isUploading}
       />
-
-      {/* Scroll To Top Component */}
-      <ScrollToTop threshold={300} />
     </>
   );
 }
