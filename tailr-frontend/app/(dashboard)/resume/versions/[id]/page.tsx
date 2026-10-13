@@ -13,7 +13,10 @@ import {
   Edit2,
   GitCommit,
   FileText,
+  Download,
+  Loader2,
 } from "lucide-react";
+import { downloadResumePdf, printIsolatedResume } from "@/shared/utils/resume-pdf-downloader";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { Input } from "@/shared/components/ui/input";
@@ -45,8 +48,22 @@ export default function ResumeVersionDetailPage() {
     }
   };
 
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (!version) return;
+    setIsDownloadingPdf(true);
+    const candidateName = version.resumeData?.basics?.name || version.label || "Resume_Version";
+    const filename = `${candidateName.trim().replace(/\s+/g, "_")}_Resume.pdf`;
+    try {
+      await downloadResumePdf({ filename, elementId: "printable-resume-document" });
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
   const handlePrint = () => {
-    window.print();
+    printIsolatedResume("printable-resume-document");
   };
 
   const handleDelete = () => {
@@ -139,15 +156,37 @@ export default function ResumeVersionDetailPage() {
           </div>
 
           {/* Action Bar */}
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <Button
               type="button"
               onClick={handlePrint}
-              variant="primary"
-              className="gap-2 font-bold shadow-xs bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white border-0"
+              variant="secondary"
+              size="sm"
+              className="gap-1.5 font-semibold"
             >
               <Printer className="h-4 w-4" />
-              Export PDF
+              Print
+            </Button>
+
+            <Button
+              type="button"
+              onClick={handleDownloadPdf}
+              disabled={isDownloadingPdf}
+              variant="primary"
+              size="sm"
+              className="gap-1.5 font-bold shadow-xs bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer"
+            >
+              {isDownloadingPdf ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  Download PDF
+                </>
+              )}
             </Button>
 
             <Link href={`/resume/tailor?applicationId=${version.applicationId || ""}`}>

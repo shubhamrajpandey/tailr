@@ -90,3 +90,41 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Print styles: Isolate #printable-resume-document and hide all dashboard chrome */
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 0.4in;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* Hide entire dashboard shell, navbars, sidebars, buttons */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Exclusively reveal resume canvas */
+  #printable-resume-document,
+  #printable-resume-document * {
+    visibility: visible;
+  }
+
+  #printable-resume-document {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}

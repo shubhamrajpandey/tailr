@@ -13,7 +13,10 @@ import {
   Printer,
   Edit3,
   Columns2,
+  Download,
+  Loader2,
 } from "lucide-react";
+import { downloadResumePdf, printIsolatedResume } from "@/shared/utils/resume-pdf-downloader";
 import { useMasterResume, INITIAL_MASTER_RESUME } from "@/shared/hooks/use-master-resume";
 import { useMasterResumeFromDb } from "@/shared/hooks/use-resume-api";
 import { ResumeData, MasterResume } from "@/shared/types/resume";
@@ -63,6 +66,22 @@ function MasterResumeEditor({
   const [isUploadModalOpen, setIsUploadModalOpen] = React.useState(false);
   const [viewMode, setViewMode] = React.useState<ResumeViewMode>("editor");
   const [activeSectionId, setActiveSectionId] = React.useState<string>("section-basics");
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+
+  const handleDownloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    const candidateName = formData.basics?.name || "Master_Resume";
+    const filename = `${candidateName.trim().replace(/\s+/g, "_")}_Resume.pdf`;
+    try {
+      await downloadResumePdf({ filename, elementId: "printable-resume-document" });
+    } finally {
+      setIsDownloadingPdf(false);
+    }
+  };
+
+  const handlePrint = () => {
+    printIsolatedResume("printable-resume-document");
+  };
 
   const {
     masterResumeData: dbData,
@@ -318,11 +337,25 @@ function MasterResumeEditor({
                 <div className="flex items-center gap-1.5">
                   <button
                     type="button"
-                    onClick={() => window.print()}
+                    onClick={handleDownloadPdf}
+                    disabled={isDownloadingPdf}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-white/10 transition-colors shadow-2xs cursor-pointer text-indigo-600 dark:text-indigo-400"
+                    title="Download clean PDF file"
+                  >
+                    {isDownloadingPdf ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Download className="h-3 w-3" />
+                    )}
+                    <span>PDF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handlePrint}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white dark:bg-white/5 border border-neutral-200 dark:border-white/10 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-white/10 transition-colors shadow-2xs cursor-pointer"
                   >
                     <Printer className="h-3 w-3" />
-                    <span>Print / PDF</span>
+                    <span>Print</span>
                   </button>
                   <button
                     type="button"
@@ -376,13 +409,34 @@ function MasterResumeEditor({
 
                 <Button
                   type="button"
-                  variant="primary"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => window.print()}
-                  className="gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white"
+                  onClick={handlePrint}
+                  className="gap-1.5 text-xs font-semibold"
                 >
                   <Printer className="h-3.5 w-3.5" />
-                  <span>Print / Export PDF</span>
+                  <span>Print</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  disabled={isDownloadingPdf}
+                  onClick={handleDownloadPdf}
+                  className="gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs cursor-pointer"
+                >
+                  {isDownloadingPdf ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Generating PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-3.5 w-3.5" />
+                      <span>Download PDF</span>
+                    </>
+                  )}
                 </Button>
               </div>
             </div>
