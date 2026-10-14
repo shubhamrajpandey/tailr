@@ -8,6 +8,8 @@ import { isUuidV4 } from "@/shared/lib/utils";
 
 const COVER_LETTERS_STORAGE_KEY = "tailr_cover_letters_v2";
 
+const EMPTY_COVER_LETTERS: CoverLetter[] = [];
+
 /**
  * Module-level memory cache for useSyncExternalStore reference stability.
  * Scope: Client-side module lifetime.
@@ -17,7 +19,7 @@ let cachedRawCoverLettersJson: string | null = null;
 let cachedCoverLettersSnapshot: CoverLetter[] | null = null;
 
 function getCoverLettersSnapshot(): CoverLetter[] {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") return EMPTY_COVER_LETTERS;
   try {
     // Purge legacy mock storage key if present
     if (localStorage.getItem("tailr_cover_letters_v1")) {
@@ -26,7 +28,7 @@ function getCoverLettersSnapshot(): CoverLetter[] {
 
     const raw = localStorage.getItem(COVER_LETTERS_STORAGE_KEY);
     if (!raw) {
-      return [];
+      return EMPTY_COVER_LETTERS;
     }
     if (raw === cachedRawCoverLettersJson && cachedCoverLettersSnapshot) {
       return cachedCoverLettersSnapshot;
@@ -40,11 +42,11 @@ function getCoverLettersSnapshot(): CoverLetter[] {
   } catch (err) {
     console.warn("[useCoverLetters] Failed to parse cached cover letters from localStorage:", err);
   }
-  return [];
+  return EMPTY_COVER_LETTERS;
 }
 
 function getServerCoverLettersSnapshot(): CoverLetter[] {
-  return [];
+  return EMPTY_COVER_LETTERS;
 }
 
 function subscribeCoverLetters(callback: () => void) {

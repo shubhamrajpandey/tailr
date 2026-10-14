@@ -6,6 +6,8 @@ import { logger } from "@/shared/lib/logger";
 
 export const APPLICATIONS_STORAGE_KEY = "tailr_applications_v2";
 
+const EMPTY_APPLICATIONS: Application[] = [];
+
 /**
  * Module-level memory cache for useSyncExternalStore reference stability.
  * Scope: Client-side module lifetime.
@@ -20,12 +22,12 @@ let cachedRawApplicationsJson: string | null = null;
  */
 export function getApplicationsSnapshot(): Application[] {
   if (typeof window === "undefined") {
-    return [];
+    return EMPTY_APPLICATIONS;
   }
   try {
     const raw = localStorage.getItem(APPLICATIONS_STORAGE_KEY);
     if (!raw) {
-      return [];
+      return EMPTY_APPLICATIONS;
     }
     if (raw === cachedRawApplicationsJson && cachedApplicationsSnapshot) {
       return cachedApplicationsSnapshot;
@@ -44,14 +46,14 @@ export function getApplicationsSnapshot(): Application[] {
       { storageKey: APPLICATIONS_STORAGE_KEY }
     );
   }
-  return [];
+  return EMPTY_APPLICATIONS;
 }
 
 /**
  * Server snapshot getter for useSyncExternalStore SSR hydration consistency.
  */
 export function getServerApplicationsSnapshot(): Application[] {
-  return [];
+  return EMPTY_APPLICATIONS;
 }
 
 /**

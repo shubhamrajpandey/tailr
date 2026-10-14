@@ -13,6 +13,7 @@ import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 import { CoverLetterHeader } from "./components/cover-letter-header";
 import { CoverLetterSavedTab } from "./components/cover-letter-saved-tab";
 import { CoverLetterGeneratorTab } from "./components/cover-letter-generator-tab";
+import { toast } from "@/shared/lib/toast";
 
 function CoverLettersContent() {
   const searchParams = useSearchParams();
@@ -46,6 +47,7 @@ function CoverLettersContent() {
   // Mode & Selection State for Generator
   const [selectedApplicationId, setSelectedApplicationId] = React.useState<string>(preselectAppId);
   const [isManualMode, setIsManualMode] = React.useState<boolean>(false);
+  const [highlightErrors, setHighlightErrors] = React.useState<boolean>(false);
 
   // Job Details State
   const [jobDetails, setJobDetails] = React.useState<CoverLetterJobDetails>({
@@ -126,7 +128,13 @@ function CoverLettersContent() {
   };
 
   const handleUpdateJobDetails = (updated: Partial<CoverLetterJobDetails>) => {
-    setJobDetails((prev) => ({ ...prev, ...updated }));
+    setJobDetails((prev) => {
+      const next = { ...prev, ...updated };
+      if (next.companyName.trim() && next.positionTitle.trim()) {
+        setHighlightErrors(false);
+      }
+      return next;
+    });
   };
 
   const handleUpdatePreferences = (updated: Partial<CoverLetterPreferences>) => {
@@ -146,9 +154,15 @@ function CoverLettersContent() {
 
   const handleGenerate = () => {
     if (!isFormValid) {
-      alert("Please specify a company name and position title.");
+      setHighlightErrors(true);
+      toast.error(
+        "Missing required fields",
+        "Please provide a company name and target position to generate your letter."
+      );
       return;
     }
+
+    setHighlightErrors(false);
 
     // 1. Guard against client-side cooldown
     if (isCoverLetterInCooldown) {
@@ -186,11 +200,15 @@ function CoverLettersContent() {
           setDraftContent(data.content);
           setKeyHighlights(data.keyHighlights);
           setSavedCoverLetterId(null);
+          toast.success(
+            "Cover letter synthesized",
+            "Tailored from your verified resume credentials."
+          );
           setTimeout(() => {
             document
               .getElementById("generated-letter-workspace")
               ?.scrollIntoView({ behavior: "smooth" });
-          }, 150);
+          }, 100);
         },
         onError: (err: unknown) => {
           const errorObj = err as {
@@ -214,6 +232,11 @@ function CoverLettersContent() {
 
             setQuotaDialogMsg(errorObj.message || "Daily quota limit reached.");
             setQuotaDialogOpen(true);
+          } else {
+            toast.error(
+              "Generation failed",
+              errorObj?.message || "Could not generate cover letter. Please try again."
+            );
           }
         },
       }
@@ -228,7 +251,7 @@ function CoverLettersContent() {
     setSaveSuccessMessage(null);
 
     // Provide responsive feedback with smooth buffer
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 250));
 
     try {
       const payloadData = {
@@ -260,11 +283,15 @@ function CoverLettersContent() {
       }
 
       setSavedStatus(letterStatus);
-      setSaveSuccessMessage(
-        `Cover letter for ${jobDetails.positionTitle.trim() || "Target Role"} at ${jobDetails.companyName.trim() || "Company"} saved as ${letterStatus === "FINAL" ? "Final" : "Draft"}!`
+      const msg = `Cover letter saved as ${letterStatus === "FINAL" ? "Final" : "Draft"}!`;
+      setSaveSuccessMessage(msg);
+      toast.success(
+        "Cover letter saved",
+        `Saved as ${letterStatus === "FINAL" ? "Final" : "Draft"} for ${jobDetails.positionTitle.trim()} at ${jobDetails.companyName.trim()}`
       );
     } catch (err) {
       console.error("Failed to save cover letter", err);
+      toast.error("Save failed", "Failed to save cover letter. Please try again.");
     } finally {
       setIsSaving(false);
       setActiveSaveTarget(null);
@@ -287,7 +314,7 @@ function CoverLettersContent() {
       />
 
       {/* Content Area */}
-      <main className="px-4 sm:px-6 lg:px-10 py-4 sm:py-6 pb-32 sm:pb-12 flex-1 space-y-6">
+      <main className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-28 sm:pb-12 flex-1 space-y-6">
         {activeTab === "letters" ? (
           <CoverLetterSavedTab
             coverLetters={coverLetters}
@@ -309,6 +336,7 @@ function CoverLettersContent() {
             stageMessage={stageMessage}
             mutationError={mutationError}
             isFormValid={isFormValid}
+            highlightErrors={highlightErrors}
             saveSuccessMessage={saveSuccessMessage}
             isSaving={isSaving}
             activeSaveTarget={activeSaveTarget}
@@ -352,7 +380,7 @@ export default function CoverLettersPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-sm text-neutral-400">
+        <div className="flex-1 flex items-center justify-center min-h-[50vh] text-xs text-neutral-400">
           Loading cover letters...
         </div>
       }
