@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Printer, Copy, Check, Download, Code2, Eye, Save } from "lucide-react";
+import { Printer, Copy, Check, Download, Code2, Eye, Save, Loader2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { TailoredResumeResult } from "@/shared/hooks/use-resume-api";
 import {
   printAtsResumeDirectly,
+  downloadAtsResumePdf,
   downloadResumeAsTex,
   copyLatexToClipboard,
 } from "@/shared/utils/resume-export-helpers";
@@ -55,13 +56,25 @@ export function AtsTailoredResultStation({
     }
   };
 
+  const [isDownloadingPdf, setIsDownloadingPdf] = React.useState(false);
+
   const handleDownloadTex = () => {
     const filename = `Resume_${companyName}_${positionTitle}.tex`.replace(/[^a-zA-Z0-9_-]/g, "_");
     downloadResumeAsTex(latexSource, filename);
   };
 
-  const handleDownloadPdf = () => {
+  const handlePrint = () => {
     printAtsResumeDirectly(tailoredData, settings.resume.fontFamily);
+  };
+
+  const handleDownloadPdf = async () => {
+    setIsDownloadingPdf(true);
+    const filename = `Resume_${companyName}_${positionTitle}.pdf`.replace(/[^a-zA-Z0-9_-]/g, "_");
+    try {
+      await downloadAtsResumePdf(tailoredData, filename, settings.resume.fontFamily);
+    } finally {
+      setIsDownloadingPdf(false);
+    }
   };
 
   const handleSave = () => {
@@ -124,12 +137,33 @@ export function AtsTailoredResultStation({
           <div className="w-full lg:w-auto grid grid-cols-2 sm:flex sm:items-center gap-2">
             <Button
               type="button"
+              variant="secondary"
+              onClick={handlePrint}
+              className="h-10 sm:h-9 gap-1.5 cursor-pointer text-xs justify-center"
+              title="Print resume or Save to PDF via system print dialog"
+            >
+              <Printer className="h-3.5 w-3.5" />
+              <span>Print</span>
+            </Button>
+
+            <Button
+              type="button"
               variant="primary"
               onClick={handleDownloadPdf}
+              disabled={isDownloadingPdf}
               className="col-span-2 sm:col-span-1 h-10 sm:h-9 gap-2 font-bold bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs cursor-pointer justify-center"
             >
-              <Printer className="h-4 w-4" />
-              <span>Download PDF</span>
+              {isDownloadingPdf ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Downloading...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  <span>Download PDF</span>
+                </>
+              )}
             </Button>
 
             <Button

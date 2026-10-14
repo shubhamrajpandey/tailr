@@ -5,6 +5,7 @@
  */
 
 import { getResumeFontCss } from "./resume-font";
+import { downloadResumePdf } from "./resume-pdf-downloader";
 
 export interface ResumeExportData {
   id?: string;
@@ -93,12 +94,9 @@ export async function copyLatexToClipboard(latexSource: string): Promise<boolean
 }
 
 /**
- * Prints an isolated, pixel-perfect ATS resume rendered to match LaTeX standard article 11pt
- * layout (margins 0.5in, horizontal rules, small-caps section headings, tabular headings).
+ * Builds the standalone HTML string for the ATS resume document.
  */
-export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: string) {
-  if (typeof window === "undefined") return;
-
+export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string): string {
   const email = data.email || data.basics?.email;
   const linkedinUrl = data.linkedinUrl || data.basics?.linkedinUrl;
   const githubUrl = data.githubUrl || data.basics?.githubUrl;
@@ -198,7 +196,7 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
     })
     .join("");
 
-  const printDocument = `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -310,6 +308,17 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
 </body>
 </html>
   `.trim();
+}
+
+/**
+ * Prints an isolated, pixel-perfect ATS resume rendered to match LaTeX standard article 11pt
+ * layout (margins 0.5in, horizontal rules, small-caps section headings, tabular headings).
+ * Opens the system print dialog.
+ */
+export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: string) {
+  if (typeof window === "undefined") return;
+
+  const printDocument = buildAtsResumeHtml(data, fontFamily);
 
   const iframe = document.createElement("iframe");
   iframe.style.position = "fixed";
@@ -339,4 +348,20 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
       }
     }, 1500);
   }, 350);
+}
+
+/**
+ * Directly downloads the ATS tailored resume as a clean PDF file using html2canvas-pro and jsPDF.
+ * Does NOT trigger the browser print dialog.
+ */
+export async function downloadAtsResumePdf(
+  data: ResumeExportData,
+  filename = "Resume_ATS.pdf",
+  fontFamily?: string
+): Promise<boolean> {
+  const htmlContent = buildAtsResumeHtml(data, fontFamily);
+  return downloadResumePdf({
+    filename,
+    htmlContent,
+  });
 }
