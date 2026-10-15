@@ -9,6 +9,7 @@ import { MobileBottomBar } from "./mobile-bottom-bar";
 import { SidebarNav, SidebarNavFallback } from "./sidebar-nav";
 import { SidebarQuotaDisplay } from "./sidebar-quota-display";
 import { SidebarUserMenu } from "./sidebar-user-menu";
+import { CommandPalette } from "./command-palette";
 /**
  * Sidebar Navigation Layout Component
  *
@@ -121,28 +122,30 @@ export function Sidebar() {
           )}
         </div>
 
-        {/* Quick Search */}
+        {/* Quick Search Trigger */}
         <div className={cn("pt-3 pb-2", isCollapsed ? "px-2" : "px-3")}>
           {!isCollapsed ? (
-            <div className="relative flex items-center bg-neutral-50 dark:bg-white/[0.03] border border-neutral-200 dark:border-white/[0.07] rounded-lg px-3 py-2 text-sm text-neutral-800 dark:text-neutral-300 focus-within:border-indigo-500/60 focus-within:bg-white dark:focus-within:bg-white/[0.05] transition-all">
-              <Search className="h-4 w-4 mr-2.5 shrink-0 text-neutral-400" />
-              <input
-                type="text"
-                placeholder="Search anything"
-                aria-label="Search applications and resumes"
-                className="w-full bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none"
-              />
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("tailr_open_search"))}
+              className="w-full relative flex items-center bg-neutral-50 dark:bg-white/[0.03] border border-neutral-200 dark:border-white/[0.07] rounded-lg px-3 py-2 text-sm text-neutral-800 dark:text-neutral-300 hover:border-indigo-500/60 hover:bg-white dark:hover:bg-white/[0.05] transition-all cursor-pointer text-left group shadow-2xs"
+              aria-label="Open command palette search (⌘K or Ctrl+K)"
+            >
+              <Search className="h-4 w-4 mr-2.5 shrink-0 text-neutral-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
+              <span className="flex-1 text-sm text-neutral-400 dark:text-neutral-500 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 transition-colors">
+                Search anything...
+              </span>
               <kbd className="text-xs font-mono bg-neutral-200/70 dark:bg-white/[0.06] text-neutral-700 dark:text-neutral-300 px-2 py-0.5 rounded border border-neutral-300 dark:border-white/10 shrink-0">
                 ⌘K
               </kbd>
-            </div>
+            </button>
           ) : (
             <button
               type="button"
-              onClick={toggleCollapse}
-              title="Search anything (⌘K)"
+              onClick={() => window.dispatchEvent(new CustomEvent("tailr_open_search"))}
+              title="Search anything (⌘K or Ctrl+K)"
               aria-label="Search applications and resumes"
-              className="w-10 h-10 mx-auto flex items-center justify-center rounded-lg border border-neutral-200 dark:border-white/[0.07] text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              className="w-10 h-10 mx-auto flex items-center justify-center rounded-lg border border-neutral-200 dark:border-white/[0.07] text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
             >
               <Search className="h-4 w-4" />
             </button>
@@ -163,6 +166,9 @@ export function Sidebar() {
 
       {/* Mobile Bottom Bar for touch devices */}
       <MobileBottomBar />
+
+      {/* Global Command Palette and Unified Search */}
+      <CommandPalette />
     </>
   );
 }

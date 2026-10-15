@@ -16,6 +16,7 @@ import { applicationsRoutes } from "./modules/applications/applications.routes";
 import { analyticsRoutes } from "./modules/analytics/analytics.routes";
 import { settingsRoutes } from "./modules/settings/settings.routes";
 import { quotaRoutes } from "./modules/quota/quota.routes";
+import { searchRoutes } from "./modules/search/search.routes";
 import { checkDatabaseHealth } from "./db/client";
 
 /**
@@ -212,7 +213,10 @@ app
   .use(settingsRoutes)
 
   // 15. Mount AI Quota & Rate Limiting Routes (/quota/*)
-  .use(quotaRoutes);
+  .use(quotaRoutes)
+
+  // 16. Mount Global Search Routes (/search/*)
+  .use(searchRoutes);
 
 // 16. Bind to Port conditionally (Prevents port collisions & server starts during test runner execution)
 const isTestEnv = env.NODE_ENV === "test" || Boolean(process.env.BUN_TEST);

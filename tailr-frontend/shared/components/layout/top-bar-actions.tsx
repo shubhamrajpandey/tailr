@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, LogOut, Loader2, Settings, BarChart3 } from "lucide-react";
+import { ChevronDown, LogOut, Loader2, Settings, BarChart3, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -33,6 +33,21 @@ export function TopBarActions() {
 
   return (
     <div className="hidden sm:inline-flex items-center gap-2 sm:gap-2.5">
+      {/* Quick Search Button */}
+      <button
+        type="button"
+        onClick={() => window.dispatchEvent(new CustomEvent("tailr_open_search"))}
+        className="h-8 px-2.5 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.08] text-neutral-500 hover:text-neutral-900 dark:hover:text-white inline-flex items-center gap-1.5 text-xs transition-colors cursor-pointer shadow-2xs"
+        title="Search applications, resumes & pages (⌘K or Ctrl+K)"
+        aria-label="Open search command palette"
+      >
+        <Search className="h-3.5 w-3.5 text-neutral-400" />
+        <span className="hidden md:inline text-neutral-400">Search</span>
+        <kbd className="text-[10px] font-mono bg-neutral-200/70 dark:bg-white/[0.06] text-neutral-600 dark:text-neutral-400 px-1.5 py-0.5 rounded border border-neutral-300 dark:border-white/10">
+          ⌘K
+        </kbd>
+      </button>
+
       {/* Theme Toggle Button */}
       <ThemeToggle />
 
