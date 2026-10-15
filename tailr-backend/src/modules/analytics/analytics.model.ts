@@ -8,7 +8,7 @@ export const KpiStatsSchema = t.Object({
   responseRateDelta: t.String(),
   interviewCount: t.Number(),
   interviewRatePercent: t.Number(),
-  avgDaysToResponse: t.Number(),
+  avgDaysToResponse: t.Nullable(t.Number()),
   avgDaysDelta: t.String(),
   sparklines: t.Object({
     totalApplications: t.Array(t.Number()),

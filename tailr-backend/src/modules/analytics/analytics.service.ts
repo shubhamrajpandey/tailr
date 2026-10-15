@@ -24,15 +24,17 @@ export class AnalyticsService {
           noResponseCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'NO_RESPONSE')::int`,
           awaitingCount: sql<number>`count(*) filter (where ${jobApplications.status} = 'APPLIED')::int`,
           respondedCount: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED'))::int`,
-          avgDaysToResponse: sql<number>`coalesce(
+          avgDaysToResponse: sql<number | null>`
             avg(
               greatest(
                 1,
                 round(extract(epoch from (${jobApplications.updatedAt} - coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}))) / 86400)
               )
-            ) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED')),
-            4.5
-          )::float`,
+            ) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED'))::float`,
+          appliedLast30: sql<number>`count(*) filter (where ${jobApplications.status} != 'WISHLIST' and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) >= now() - interval '30 days')::int`,
+          respondedLast30: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED') and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) >= now() - interval '30 days')::int`,
+          appliedPrior30: sql<number>`count(*) filter (where ${jobApplications.status} != 'WISHLIST' and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) >= now() - interval '60 days' and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) < now() - interval '30 days')::int`,
+          respondedPrior30: sql<number>`count(*) filter (where ${jobApplications.status} in ('INTERVIEW', 'OFFER', 'REJECTED') and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) >= now() - interval '60 days' and coalesce(nullif(${jobApplications.appliedDate}, '')::timestamp, ${jobApplications.createdAt}) < now() - interval '30 days')::int`,
         })
         .from(jobApplications)
         .where(eq(jobApplications.userId, userId));
@@ -78,9 +80,31 @@ export class AnalyticsService {
       const interviewSecuredTotal = interviewCount + offerCount;
       const interviewRatePercent =
         totalApplied > 0 ? Math.round((interviewSecuredTotal / totalApplied) * 100) : 0;
-      const avgDaysToResponse = Number((overviewAgg.avgDaysToResponse || 4.5).toFixed(1));
+      const avgDaysToResponse =
+        overviewAgg.avgDaysToResponse != null
+          ? Number(overviewAgg.avgDaysToResponse.toFixed(1))
+          : null;
 
-      // Outcome Breakdown
+      // Real delta comparisons
+      let responseRateDelta = `${respondedCount} of ${totalApplied} responded`;
+      if (overviewAgg.appliedPrior30 > 0) {
+        const rateLast30 =
+          overviewAgg.appliedLast30 > 0
+            ? Math.round((overviewAgg.respondedLast30 / overviewAgg.appliedLast30) * 100)
+            : 0;
+        const ratePrior30 = Math.round(
+          (overviewAgg.respondedPrior30 / overviewAgg.appliedPrior30) * 100
+        );
+        const diff = rateLast30 - ratePrior30;
+        responseRateDelta = `${diff >= 0 ? `+${diff}%` : `${diff}%`} vs last month`;
+      }
+
+      const avgDaysDelta =
+        avgDaysToResponse !== null
+          ? `${respondedCount} response${respondedCount === 1 ? "" : "s"} tracked`
+          : "Awaiting responses";
+
+      // Outcome Breakdown from real application statuses
       const breakdown = [
         {
           status: "INTERVIEW",
@@ -132,7 +156,7 @@ export class AnalyticsService {
         },
       ].filter((item) => item.count > 0);
 
-      // Weekly Trend Data mapping
+      // Weekly Trend Data mapping - purely real numbers, 0 for days without submissions
       const daysOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
       const dayMap = new Map<number, { appliedCount: number; responseCount: number }>();
       dayDistributionRows.forEach((row) => {
@@ -142,24 +166,9 @@ export class AnalyticsService {
         });
       });
 
-      const baselineDistribution: Record<string, number> = {
-        Sun: 1,
-        Mon: 3,
-        Tue: 5,
-        Wed: 2,
-        Thu: 4,
-        Fri: 3,
-        Sat: 1,
-      };
-
-      const hasLiveWeekData = dayDistributionRows.length > 0;
-
       const trendData = daysOrder.map((day, index) => {
         const stats = dayMap.get(index);
-        const applied =
-          hasLiveWeekData && stats && stats.appliedCount > 0
-            ? stats.appliedCount
-            : baselineDistribution[day];
+        const applied = stats ? stats.appliedCount : 0;
         const responded = stats ? stats.responseCount : 0;
         const rate = applied > 0 ? Math.round((responded / applied) * 100) : 0;
         return {
@@ -173,26 +182,32 @@ export class AnalyticsService {
       const totalVelocity = trendData.reduce((acc, curr) => acc + curr.appliedCount, 0);
       const averagePerDay = Number((totalVelocity / 7).toFixed(1));
 
+      // Real sparklines reflecting user's weekly distribution
+      const appCounts = trendData.map((d) => d.appliedCount);
+      const respRates = trendData.map((d) => d.responseRate);
+      const intCounts = trendData.map((d) => (d.appliedCount > 0 && d.responseCount > 0 ? d.responseCount : 0));
+      const avgTimes = trendData.map(() => (avgDaysToResponse !== null ? avgDaysToResponse : 0));
+
       return {
         kpi: {
           totalApplications,
           totalApplied,
           respondedCount,
           responseRatePercent,
-          responseRateDelta: "+12% vs last month",
+          responseRateDelta,
           interviewCount: interviewSecuredTotal,
           interviewRatePercent,
           avgDaysToResponse,
-          avgDaysDelta: "-1.4 days faster",
+          avgDaysDelta,
           sparklines: {
-            totalApplications: [5, 8, 12, 10, 15, 18, totalApplications],
-            responseRate: [40, 50, 45, 60, responseRatePercent],
-            interviewRate: [1, 2, 2, 3, 4, interviewSecuredTotal],
-            avgResponseTime: [7, 6.5, 6.0, 5.5, 5.0, avgDaysToResponse],
+            totalApplications: appCounts,
+            responseRate: respRates,
+            interviewRate: intCounts,
+            avgResponseTime: avgTimes,
           },
         },
         velocity: {
-          averagePerDay: averagePerDay > 0 ? averagePerDay : 2.1,
+          averagePerDay,
           benchmarkDaily: 5,
           trendData,
         },
@@ -201,10 +216,10 @@ export class AnalyticsService {
           breakdown,
         },
         aiOptimization: {
-          totalTailoredResumes: Math.max(totalTailoredResumes, 5),
-          acceptedAsIsRate: 85,
+          totalTailoredResumes,
+          acceptedAsIsRate: totalTailoredResumes > 0 ? 100 : 0,
           avgVersionsPerApplication: Number(
-            (totalApplications > 0 ? (totalTailoredResumes || 7) / totalApplications : 1).toFixed(1)
+            (totalApplications > 0 ? totalTailoredResumes / totalApplications : 0).toFixed(1)
           ),
         },
         hasData: true,
@@ -313,16 +328,16 @@ export class AnalyticsService {
         totalApplied: 0,
         respondedCount: 0,
         responseRatePercent: 0,
-        responseRateDelta: "+0% vs last month",
+        responseRateDelta: "0 of 0 responded",
         interviewCount: 0,
         interviewRatePercent: 0,
-        avgDaysToResponse: 0,
-        avgDaysDelta: "0 days",
+        avgDaysToResponse: null,
+        avgDaysDelta: "Awaiting responses",
         sparklines: {
-          totalApplications: [0, 0, 0, 0, 0],
-          responseRate: [0, 0, 0, 0, 0],
-          interviewRate: [0, 0, 0, 0, 0],
-          avgResponseTime: [0, 0, 0, 0, 0],
+          totalApplications: [0, 0, 0, 0, 0, 0, 0],
+          responseRate: [0, 0, 0, 0, 0, 0, 0],
+          interviewRate: [0, 0, 0, 0, 0, 0, 0],
+          avgResponseTime: [0, 0, 0, 0, 0, 0, 0],
         },
       },
       velocity: {

@@ -57,9 +57,14 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
 
   const maxVal = React.useMemo(() => {
-    if (data.length === 0) return 5;
-    return Math.max(...data.map((d) => d.appliedCount));
+    if (data.length === 0) return 0;
+    return Math.max(0, ...data.map((d) => d.appliedCount));
   }, [data]);
+
+  const yDomainMax = React.useMemo(() => {
+    if (maxVal <= 3) return 4;
+    return Math.ceil(maxVal * 1.25);
+  }, [maxVal]);
 
   const avgVal = React.useMemo(() => {
     if (data.length === 0) return 0;
@@ -112,13 +117,15 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
               </linearGradient>
             </defs>
 
-            {/* Subtle dashed horizontal reference line at y = 5 */}
-            <ReferenceLine
-              y={5}
-              stroke="currentColor"
-              strokeDasharray="4 4"
-              className="stroke-neutral-300 dark:stroke-white/10"
-            />
+            {/* Subtle dashed horizontal reference line at average when > 0 */}
+            {avgVal > 0 && (
+              <ReferenceLine
+                y={avgVal}
+                stroke="currentColor"
+                strokeDasharray="4 4"
+                className="stroke-neutral-300 dark:stroke-white/10"
+              />
+            )}
 
             <XAxis
               dataKey="period"
@@ -134,8 +141,7 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
               tickLine={false}
               tick={{ fill: "currentColor", fontSize: 11, fontWeight: 500 }}
               className="text-neutral-400 dark:text-neutral-500 font-sans"
-              domain={[0, 8]}
-              ticks={[0, 2, 4, 6, 8]}
+              domain={[0, yDomainMax]}
               allowDecimals={false}
             />
 
@@ -147,7 +153,9 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
             <Bar dataKey="appliedCount" radius={[6, 6, 0, 0]} maxBarSize={44}>
               {data.map((item, index) => {
                 const isHighlighted =
-                  hoveredIndex !== null ? hoveredIndex === index : item.appliedCount === maxVal;
+                  hoveredIndex !== null
+                    ? hoveredIndex === index
+                    : maxVal > 0 && item.appliedCount === maxVal;
 
                 return (
                   <Cell

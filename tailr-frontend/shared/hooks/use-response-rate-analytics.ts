@@ -52,29 +52,25 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
       const velocity = backendOverview.velocity;
       const outcomes = backendOverview.outcomes;
 
-      const respondedOutcomes = outcomes.breakdown.filter((item: OutcomeBreakdownItem) =>
-        ["INTERVIEW", "OFFER", "REJECTED"].includes(item.status)
-      );
-
       return {
         totalApplications: kpi.totalApplications,
         totalApplied: kpi.totalApplied,
         respondedCount: kpi.respondedCount,
         responseRatePercent: kpi.responseRatePercent,
-        responseRateDelta: kpi.responseRateDelta || "+12% vs last month",
-        interviewCount: kpi.interviewCount ?? 3,
-        interviewRatePercent: kpi.interviewRatePercent ?? 43,
-        avgDaysToResponse: kpi.avgDaysToResponse,
-        avgDaysDelta: kpi.avgDaysDelta || "-1.4 days faster",
+        responseRateDelta:
+          kpi.responseRateDelta || `${kpi.respondedCount} of ${kpi.totalApplied} responded`,
+        interviewCount: kpi.interviewCount ?? 0,
+        interviewRatePercent: kpi.interviewRatePercent ?? 0,
+        avgDaysToResponse: kpi.avgDaysToResponse ?? null,
+        avgDaysDelta:
+          kpi.avgDaysDelta ||
+          (kpi.avgDaysToResponse != null
+            ? `${kpi.respondedCount} responses tracked`
+            : "Awaiting responses"),
         trendData: velocity.trendData,
-        outcomeBreakdown: respondedOutcomes.length > 0 ? respondedOutcomes : outcomes.breakdown,
-        sparklineResponseRates: kpi.sparklines?.responseRate || [
-          40,
-          50,
-          45,
-          60,
-          kpi.responseRatePercent,
-        ],
+        outcomeBreakdown: outcomes.breakdown || [],
+        sparklineResponseRates: kpi.sparklines?.responseRate || [0, 0, 0, 0, 0, 0, 0],
+        sparklines: kpi.sparklines,
         hasData: true,
       };
     }
@@ -85,14 +81,28 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         totalApplied: 0,
         respondedCount: 0,
         responseRatePercent: 0,
-        responseRateDelta: "+0%",
+        responseRateDelta: "0 of 0 responded",
         interviewCount: 0,
         interviewRatePercent: 0,
-        avgDaysToResponse: 0,
-        avgDaysDelta: "0 days",
-        trendData: [],
+        avgDaysToResponse: null,
+        avgDaysDelta: "Awaiting responses",
+        trendData: [
+          { period: "Sun", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Mon", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Tue", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Wed", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Thu", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Fri", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Sat", appliedCount: 0, responseCount: 0, responseRate: 0 },
+        ],
         outcomeBreakdown: [],
-        sparklineResponseRates: [0, 0, 0, 0, 0],
+        sparklineResponseRates: [0, 0, 0, 0, 0, 0, 0],
+        sparklines: {
+          totalApplications: [0, 0, 0, 0, 0, 0, 0],
+          responseRate: [0, 0, 0, 0, 0, 0, 0],
+          interviewRate: [0, 0, 0, 0, 0, 0, 0],
+          avgResponseTime: [0, 0, 0, 0, 0, 0, 0],
+        },
         hasData: false,
       };
     }
@@ -107,15 +117,29 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         totalApplied: 0,
         respondedCount: 0,
         responseRatePercent: 0,
-        responseRateDelta: "+0%",
+        responseRateDelta: "0 of 0 responded",
         interviewCount: 0,
         interviewRatePercent: 0,
-        avgDaysToResponse: 0,
-        avgDaysDelta: "0 days",
-        trendData: [],
+        avgDaysToResponse: null,
+        avgDaysDelta: "Awaiting responses",
+        trendData: [
+          { period: "Sun", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Mon", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Tue", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Wed", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Thu", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Fri", appliedCount: 0, responseCount: 0, responseRate: 0 },
+          { period: "Sat", appliedCount: 0, responseCount: 0, responseRate: 0 },
+        ],
         outcomeBreakdown: [],
-        sparklineResponseRates: [0, 0, 0, 0, 0],
-        hasData: false,
+        sparklineResponseRates: [0, 0, 0, 0, 0, 0, 0],
+        sparklines: {
+          totalApplications: [0, 0, 0, 0, 0, 0, 0],
+          responseRate: [0, 0, 0, 0, 0, 0, 0],
+          interviewRate: [0, 0, 0, 0, 0, 0, 0],
+          avgResponseTime: [0, 0, 0, 0, 0, 0, 0],
+        },
+        hasData: applications.length > 0,
       };
     }
 
@@ -123,6 +147,9 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
     const interviewCount = appliedApps.filter((a) => a.status === "INTERVIEW").length;
     const offerCount = appliedApps.filter((a) => a.status === "OFFER").length;
     const rejectedCount = appliedApps.filter((a) => a.status === "REJECTED").length;
+    const awaitingCount = appliedApps.filter((a) => a.status === "APPLIED").length;
+    const noResponseCount = appliedApps.filter((a) => a.status === "NO_RESPONSE").length;
+    const ghostedCount = appliedApps.filter((a) => a.status === "GHOSTED").length;
 
     const respondedCount = interviewCount + offerCount + rejectedCount;
     const responseRatePercent = Math.round((respondedCount / totalApplied) * 100);
@@ -150,9 +177,14 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
     const avgDaysToResponse =
       respondedWithDatesCount > 0
         ? Number((totalElapsedDays / respondedWithDatesCount).toFixed(1))
-        : 4.5;
+        : null;
 
-    // 4. Outcome Breakdown (Focus on responded outcome stages matching the canonical distribution)
+    const avgDaysDelta =
+      avgDaysToResponse !== null
+        ? `${respondedWithDatesCount} response${respondedWithDatesCount === 1 ? "" : "s"} tracked`
+        : "Awaiting responses";
+
+    // 4. Outcome Breakdown (Real categories from application records)
     const outcomeBreakdown: OutcomeBreakdownItem[] = [
       {
         status: "INTERVIEW",
@@ -160,7 +192,7 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         count: interviewCount,
         percentage: Math.round((interviewCount / totalApplied) * 100),
         badgeVariant: "ai_tailored" as const,
-        colorClass: "bg-[#6366f1] text-indigo-700 dark:text-indigo-300",
+        colorClass: "bg-indigo-600 text-indigo-700 dark:text-indigo-300",
       },
       {
         status: "OFFER",
@@ -168,7 +200,7 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         count: offerCount,
         percentage: Math.round((offerCount / totalApplied) * 100),
         badgeVariant: "ai_tailored" as const,
-        colorClass: "bg-[#818cf8] text-indigo-700 dark:text-indigo-300",
+        colorClass: "bg-indigo-500 text-indigo-700 dark:text-indigo-300",
       },
       {
         status: "REJECTED",
@@ -176,11 +208,35 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
         count: rejectedCount,
         percentage: Math.round((rejectedCount / totalApplied) * 100),
         badgeVariant: "ai_tailored" as const,
-        colorClass: "bg-[#a5b4fc] text-indigo-600 dark:text-indigo-400",
+        colorClass: "bg-indigo-400 text-indigo-600 dark:text-indigo-400",
+      },
+      {
+        status: "APPLIED",
+        label: "Awaiting Feedback",
+        count: awaitingCount,
+        percentage: Math.round((awaitingCount / totalApplied) * 100),
+        badgeVariant: "ai_tailored" as const,
+        colorClass: "bg-indigo-300 dark:bg-indigo-500/60 text-indigo-600 dark:text-indigo-400",
+      },
+      {
+        status: "NO_RESPONSE",
+        label: "No Response",
+        count: noResponseCount,
+        percentage: Math.round((noResponseCount / totalApplied) * 100),
+        badgeVariant: "ai_tailored" as const,
+        colorClass: "bg-indigo-200 dark:bg-indigo-700/50 text-indigo-500 dark:text-indigo-400",
+      },
+      {
+        status: "GHOSTED",
+        label: "Ghosted / No Reply",
+        count: ghostedCount,
+        percentage: Math.round((ghostedCount / totalApplied) * 100),
+        badgeVariant: "ai_tailored" as const,
+        colorClass: "bg-indigo-200 dark:bg-indigo-700/50 text-indigo-500 dark:text-indigo-400",
       },
     ].filter((item) => item.count > 0);
 
-    // 5. Daily Activity Trend Data (Sun - Sat)
+    // 5. Daily Activity Trend Data (Sun - Sat) - Purely real numbers without dummy baseline
     const daysOrder = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const dayCounts: Record<string, { applied: number; responded: number }> = {
       Sun: { applied: 0, responded: 0 },
@@ -204,23 +260,8 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
       }
     });
 
-    const baselineDistribution: Record<string, number> = {
-      Sun: 1,
-      Mon: 1,
-      Tue: 4,
-      Wed: 1,
-      Thu: 4,
-      Fri: 3,
-      Sat: 1,
-    };
-
-    const hasLiveWeekData = Object.values(dayCounts).some((d) => d.applied > 0);
-
     const trendData: ResponseTrendPoint[] = daysOrder.map((day) => {
-      const applied =
-        hasLiveWeekData && dayCounts[day].applied > 0
-          ? dayCounts[day].applied
-          : baselineDistribution[day];
+      const applied = dayCounts[day].applied;
       const responded = dayCounts[day].responded;
       const rate = applied > 0 ? Math.round((responded / applied) * 100) : 0;
       return {
@@ -231,25 +272,36 @@ export function useResponseRateAnalytics(): ResponseRateAnalytics {
       };
     });
 
-    const sparklineResponseRates = [40, 50, 45, 60, 57];
-
     const interviewSecuredTotal = interviewCount + offerCount;
     const interviewRatePercent =
       totalApplied > 0 ? Math.round((interviewSecuredTotal / totalApplied) * 100) : 0;
+
+    const appCounts = trendData.map((d) => d.appliedCount);
+    const respRates = trendData.map((d) => d.responseRate);
+    const intCounts = trendData.map((d) =>
+      d.appliedCount > 0 && d.responseCount > 0 ? d.responseCount : 0
+    );
+    const avgTimes = trendData.map(() => (avgDaysToResponse !== null ? avgDaysToResponse : 0));
 
     return {
       totalApplications: applications.length,
       totalApplied,
       respondedCount,
       responseRatePercent,
-      responseRateDelta: "+12% vs last month",
+      responseRateDelta: `${respondedCount} of ${totalApplied} responded`,
       interviewCount: interviewSecuredTotal,
       interviewRatePercent,
       avgDaysToResponse,
-      avgDaysDelta: "-1.4 days faster",
+      avgDaysDelta,
       trendData,
       outcomeBreakdown,
-      sparklineResponseRates,
+      sparklineResponseRates: respRates,
+      sparklines: {
+        totalApplications: appCounts,
+        responseRate: respRates,
+        interviewRate: intCounts,
+        avgResponseTime: avgTimes,
+      },
       hasData: true,
     };
   }, [applications, isLoaded, backendOverview]);

@@ -64,7 +64,17 @@ function AnalyticsDashboard() {
                 direction="up"
                 icon={Send}
                 sparklineColor="indigo"
-                sparklineData={[5, 8, 12, 10, 15, 18, responseAnalytics.totalApplications]}
+                sparklineData={
+                  responseAnalytics.sparklines?.totalApplications || [
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    responseAnalytics.totalApplications,
+                  ]
+                }
               />
             </div>
 
@@ -77,9 +87,8 @@ function AnalyticsDashboard() {
                 icon={Percent}
                 sparklineColor="indigo"
                 sparklineData={
-                  responseAnalytics.sparklineResponseRates.length > 0
-                    ? responseAnalytics.sparklineResponseRates
-                    : [40, 50, 45, 60, responseAnalytics.responseRatePercent]
+                  responseAnalytics.sparklines?.responseRate ||
+                  responseAnalytics.sparklineResponseRates || [0, 0, 0, 0, 0, 0, 0]
                 }
               />
             </div>
@@ -92,19 +101,30 @@ function AnalyticsDashboard() {
                 direction="up"
                 icon={Users}
                 sparklineColor="indigo"
-                sparklineData={[1, 2, 2, 3, 4, interviewCount]}
+                sparklineData={
+                  responseAnalytics.sparklines?.interviewRate || [0, 0, 0, 0, 0, 0, interviewCount]
+                }
               />
             </div>
 
             <div className="w-[260px] sm:w-auto shrink-0 snap-start flex flex-col">
               <StatCard
                 label="Avg. Response Time"
-                value={`${responseAnalytics.avgDaysToResponse}d`}
+                value={
+                  responseAnalytics.avgDaysToResponse != null
+                    ? `${responseAnalytics.avgDaysToResponse}d`
+                    : "—"
+                }
                 delta={responseAnalytics.avgDaysDelta}
                 direction="up"
                 icon={Clock}
                 sparklineColor="indigo"
-                sparklineData={[7, 6.5, 6.0, 5.5, 5.0, responseAnalytics.avgDaysToResponse]}
+                sparklineData={
+                  responseAnalytics.sparklines?.avgResponseTime || [
+                    responseAnalytics.avgDaysToResponse ?? 0,
+                    responseAnalytics.avgDaysToResponse ?? 0,
+                  ]
+                }
               />
             </div>
           </div>

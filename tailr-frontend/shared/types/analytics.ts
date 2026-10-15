@@ -24,11 +24,17 @@ export interface ResponseRateAnalytics {
   responseRateDelta: string;
   interviewCount: number;
   interviewRatePercent: number;
-  avgDaysToResponse: number;
+  avgDaysToResponse: number | null;
   avgDaysDelta: string;
   trendData: ResponseTrendPoint[];
   outcomeBreakdown: OutcomeBreakdownItem[];
   sparklineResponseRates: number[];
+  sparklines?: {
+    totalApplications: number[];
+    responseRate: number[];
+    interviewRate: number[];
+    avgResponseTime: number[];
+  };
   hasData: boolean;
 }
 
