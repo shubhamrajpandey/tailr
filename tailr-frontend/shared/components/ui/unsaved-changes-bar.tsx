@@ -40,7 +40,7 @@ export function UnsavedChangesBar({
       role="region"
       aria-label="Unsaved changes bar"
       className={cn(
-        "fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-fit max-w-[94vw]",
+        "fixed bottom-[102px] lg:bottom-6 left-1/2 -translate-x-1/2 z-50 w-fit max-w-[94vw]",
         "animate-in slide-in-from-bottom-5 fade-in duration-300 ease-out",
         className
       )}

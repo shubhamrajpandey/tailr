@@ -65,6 +65,7 @@ export function FloatingSaveDock({
         onReset={onReset || (() => {})}
         onSave={onSave}
         saveText="Save Resume"
+        className="bottom-[102px] lg:bottom-6"
       />
     );
   }
@@ -75,7 +76,7 @@ export function FloatingSaveDock({
     <div
       role="region"
       aria-label="Sticky actions dock"
-      className="fixed bottom-6 inset-x-0 mx-auto w-fit max-w-[95vw] z-40 animate-in fade-in slide-in-from-bottom-5 duration-300"
+      className="fixed bottom-[102px] lg:bottom-6 inset-x-0 mx-auto w-fit max-w-[95vw] z-40 animate-in fade-in slide-in-from-bottom-5 duration-300"
     >
       <div className="flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 rounded-full bg-neutral-950/70 dark:bg-[#0c0d12]/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/20 dark:border-white/15 text-white shadow-[0_20px_50px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.08),inset_0_1px_0_0_rgba(255,255,255,0.2)] transition-all duration-300 hover:shadow-[0_24px_60px_rgba(0,0,0,0.45),0_0_0_1px_rgba(255,255,255,0.12),inset_0_1px_0_0_rgba(255,255,255,0.25)]">
         {/* Status Indicator */}

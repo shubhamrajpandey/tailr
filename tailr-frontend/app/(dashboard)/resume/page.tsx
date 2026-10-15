@@ -244,7 +244,7 @@ function MasterResumeEditor({
 
   // Section Form Blocks
   const renderFormSections = () => (
-    <div className="space-y-5 sm:space-y-6 pb-10">
+    <div className="space-y-5 sm:space-y-6 pb-44 lg:pb-16">
       {/* Basics Section */}
       <section id="section-basics" className="scroll-mt-32">
         <BasicsSectionForm
