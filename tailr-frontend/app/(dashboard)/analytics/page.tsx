@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Send, Percent, Clock, Sparkles, Users, ArrowRight, TrendingUp } from "lucide-react";
 import { StatCard } from "@/shared/components/ui/stat-card";
 import { Button } from "@/shared/components/ui/button";
@@ -12,10 +13,39 @@ import { useTailoringAnalytics } from "@/shared/hooks/use-tailoring-analytics";
 import { ResponseTrendChart } from "./components/response-trend-chart";
 import { OutcomeBreakdownCard } from "./components/outcome-breakdown-card";
 
+function AnalyticsDashboardSkeleton() {
+  return (
+    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-pulse">
+      <div className="h-8 w-48 bg-neutral-200/60 dark:bg-white/10 rounded-lg" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="h-28 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200/60 dark:border-white/10"
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-72 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200/60 dark:border-white/10" />
+        <div className="h-72 rounded-xl bg-neutral-100 dark:bg-white/5 border border-neutral-200/60 dark:border-white/10" />
+      </div>
+    </div>
+  );
+}
+
 function AnalyticsDashboard() {
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const responseAnalytics = useResponseRateAnalytics();
   const funnelAnalytics = useConversionFunnel();
   const tailoringAnalytics = useTailoringAnalytics();
+
+  if (!mounted) {
+    return <AnalyticsDashboardSkeleton />;
+  }
 
   const interviewStage = funnelAnalytics.stages.find((stage) => stage.id === "interview");
   const interviewCount = responseAnalytics.interviewCount ?? interviewStage?.count ?? 0;
@@ -189,16 +219,11 @@ function AnalyticsDashboard() {
   );
 }
 
+const DynamicAnalyticsDashboard = dynamic(() => Promise.resolve(AnalyticsDashboard), {
+  ssr: false,
+  loading: () => <AnalyticsDashboardSkeleton />,
+});
+
 export default function AnalyticsPage() {
-  return (
-    <React.Suspense
-      fallback={
-        <div className="flex p-12 items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
-        </div>
-      }
-    >
-      <AnalyticsDashboard />
-    </React.Suspense>
-  );
+  return <DynamicAnalyticsDashboard />;
 }

@@ -10,7 +10,6 @@ import {
   LogOut,
   Loader2,
   Settings,
-  BookOpen,
   BarChart3,
   ChevronRight,
   X,
@@ -199,18 +198,6 @@ export function TopBarMobileMenu() {
                   <div className="flex items-center gap-3">
                     <Settings className="h-4.5 w-4.5 text-neutral-500 dark:text-neutral-400" />
                     <span>Account Settings</span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 text-neutral-400 opacity-60" />
-                </Link>
-
-                <Link
-                  href="/docs"
-                  onClick={() => setIsMobileProfileOpen(false)}
-                  className="flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-semibold text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-white/5 active:scale-98 transition-all cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="h-4.5 w-4.5 text-neutral-500 dark:text-neutral-400" />
-                    <span>Documentation</span>
                   </div>
                   <ChevronRight className="h-4 w-4 text-neutral-400 opacity-60" />
                 </Link>

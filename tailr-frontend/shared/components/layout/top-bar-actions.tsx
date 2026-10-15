@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, LogOut, Loader2, Settings, BookOpen, BarChart3 } from "lucide-react";
+import { ChevronDown, LogOut, Loader2, Settings, BarChart3 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -72,12 +72,6 @@ export function TopBarActions() {
             <DropdownMenuItem className="gap-2 text-xs cursor-pointer">
               <Settings className="h-3.5 w-3.5 text-neutral-500" />
               <span>Account Settings</span>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/docs">
-            <DropdownMenuItem className="gap-2 text-xs cursor-pointer">
-              <BookOpen className="h-3.5 w-3.5" />
-              <span>Documentation</span>
             </DropdownMenuItem>
           </Link>
           <DropdownMenuSeparator />

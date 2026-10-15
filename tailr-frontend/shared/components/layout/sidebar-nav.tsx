@@ -12,7 +12,6 @@ import {
   ChevronDown,
   BarChart3,
   Mail,
-  BookOpen,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { useApplications } from "@/shared/hooks/use-applications";
@@ -46,11 +45,6 @@ const supportNavItems: NavItem[] = [
     title: "Settings",
     href: ROUTES.SETTINGS,
     icon: Settings,
-  },
-  {
-    title: "Docs",
-    href: ROUTES.DOCS,
-    icon: BookOpen,
   },
 ];
 

@@ -33,7 +33,6 @@ export const ROUTES = {
   ANALYTICS: "/analytics",
   COMPANIES: "/companies",
   SETTINGS: "/settings",
-  DOCS: "/docs",
 } as const;
 
 /**
@@ -53,7 +52,6 @@ export const PROTECTED_ROUTE_PREFIXES: readonly string[] = [
   ROUTES.SETTINGS,
   ROUTES.COMPANIES,
   ROUTES.COVER_LETTER,
-  ROUTES.DOCS,
 ];
 
 /**

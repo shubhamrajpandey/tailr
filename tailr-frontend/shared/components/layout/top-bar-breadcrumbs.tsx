@@ -47,7 +47,6 @@ export const BREADCRUMB_MAP: Record<string, BreadcrumbItem[]> = {
   [ROUTES.ANALYTICS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Analytics" }],
   [ROUTES.COMPANIES]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Companies" }],
   [ROUTES.SETTINGS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Settings" }],
-  [ROUTES.DOCS]: [{ label: "Overview", href: ROUTES.DASHBOARD }, { label: "Documentation" }],
 };
 
 interface DynamicBreadcrumbPattern {

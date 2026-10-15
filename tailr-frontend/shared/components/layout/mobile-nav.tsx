@@ -14,7 +14,6 @@ import {
   Building2,
   BarChart3,
   Settings,
-  BookOpen,
   LogOut,
   Sparkles,
   ChevronRight,
@@ -77,7 +76,6 @@ export function MobileNav({ className }: MobileNavProps) {
     { title: "IT Companies", href: "/companies", icon: Building2 },
     { title: "Analytics", href: "/analytics", icon: BarChart3 },
     { title: "Settings", href: "/settings", icon: Settings },
-    { title: "Documentation", href: "/docs", icon: BookOpen },
   ];
 
   return (

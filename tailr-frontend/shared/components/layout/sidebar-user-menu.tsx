@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Settings, BookOpen, LogOut, Loader2, MoreVertical } from "lucide-react";
+import { Settings, LogOut, Loader2, MoreVertical } from "lucide-react";
 import { Avatar } from "@/shared/components/ui/avatar";
 import { useLogoutMutation } from "@/shared/hooks/auth/use-auth-mutations";
 import { useAppSelector } from "@/shared/store/hooks";
@@ -70,12 +70,6 @@ export function SidebarUserMenu({ isCollapsed }: SidebarUserMenuProps) {
                 <DropdownMenuItem className="gap-2 cursor-pointer">
                   <Settings className="h-4 w-4" />
                   <span>Settings</span>
-                </DropdownMenuItem>
-              </Link>
-              <Link href="/docs">
-                <DropdownMenuItem className="gap-2 cursor-pointer">
-                  <BookOpen className="h-4 w-4" />
-                  <span>Documentation</span>
                 </DropdownMenuItem>
               </Link>
               <DropdownMenuSeparator />

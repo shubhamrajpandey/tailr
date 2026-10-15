@@ -88,10 +88,10 @@ export function LandingFooter() {
             <ul className="space-y-2 text-xs">
               <li>
                 <Link
-                  href="/docs"
+                  href="/support"
                   className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                 >
-                  Documentation
+                  Help & Support
                 </Link>
               </li>
               <li>
