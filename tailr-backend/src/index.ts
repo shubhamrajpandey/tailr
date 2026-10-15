@@ -38,6 +38,7 @@ export const ALLOWED_ORIGINS = new Set([
   "https://tailr.io",
   "https://www.tailr.io",
   "https://tailr-swart.vercel.app",
+  "https://tailr.shubhamrajpandey.com.np",
   ...configuredExtraOrigins,
 ]);
 
