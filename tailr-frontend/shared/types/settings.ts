@@ -20,6 +20,15 @@ export type ApplicationSortOrder =
 export interface AccountSettings {
   name: string;
   email: string;
+  headline?: string;
+  phone?: string;
+  location?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+  bio?: string;
+  avatarGradient?: string;
+  avatarUrl?: string;
 }
 
 export interface AISettings {
@@ -79,6 +88,15 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
   account: {
     name: "",
     email: "",
+    headline: "",
+    phone: "",
+    location: "",
+    linkedinUrl: "",
+    githubUrl: "",
+    portfolioUrl: "",
+    bio: "",
+    avatarGradient: "indigo",
+    avatarUrl: "",
   },
   ai: {
     model: "gemini-1.5-flash",

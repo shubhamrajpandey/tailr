@@ -142,6 +142,7 @@ export function useSettings() {
         const current = getUserSettingsSnapshot();
         const merged: UserSettings = {
           account: {
+            ...current.account,
             name: remoteSettings.account?.name || user?.fullName || current.account.name,
             email: remoteSettings.account?.email || user?.email || current.account.email,
           },
@@ -214,6 +215,7 @@ export function useSettings() {
         ...current,
         account: {
           ...current.account,
+          ...values,
           name: values.name ?? current.account.name,
           email: values.email ?? current.account.email,
         },
@@ -417,6 +419,27 @@ export function useSettings() {
     [dispatch]
   );
 
+  const resetSectionDefaults = React.useCallback(
+    async (
+      section: "ai" | "resume" | "applications" | "appearance" | "privacy" | "notifications"
+    ) => {
+      const current = getUserSettingsSnapshot();
+      const next: UserSettings = {
+        ...current,
+        [section]: DEFAULT_USER_SETTINGS[section],
+      };
+      persist(next);
+      try {
+        await authApiClient.put("/settings", {
+          [section]: DEFAULT_USER_SETTINGS[section],
+        });
+      } catch (err) {
+        console.warn(`[useSettings] Failed to reset ${section} settings on backend:`, err);
+      }
+    },
+    [persist]
+  );
+
   const resetToDefaults = React.useCallback(async () => {
     persist(DEFAULT_USER_SETTINGS);
     try {
@@ -447,5 +470,6 @@ export function useSettings() {
     exportData,
     deleteAccount,
     resetToDefaults,
+    resetSectionDefaults,
   };
 }
