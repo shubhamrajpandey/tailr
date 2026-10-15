@@ -12,6 +12,7 @@ import { hashToken, generateSecureRandomToken } from "../../utils/crypto";
 import { generateNumericOtp } from "../../utils/otp";
 import { sendOtpEmail } from "../../utils/mailer";
 import { env } from "../../config/env";
+import { redis } from "../../config/redis";
 import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
 
 export class AuthService {
@@ -269,9 +270,10 @@ export class AuthService {
       );
     }
 
-    // Pre-warm user cache to eliminate DB round-trip on immediate follow-up requests (e.g. /applications)
-    userCache.set(user.id, {
-      data: {
+    // Pre-warm user cache in Redis to eliminate DB round-trip on immediate follow-up requests (e.g. /applications)
+    await redis.set(
+      `session:user:${user.id}`,
+      {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
@@ -279,8 +281,8 @@ export class AuthService {
         isVerified: user.isVerified,
         createdAt: user.createdAt.toISOString(),
       },
-      expiresAt: Date.now() + USER_CACHE_TTL_MS,
-    });
+      { ex: 300 }
+    );
 
     return user;
   }
@@ -356,11 +358,13 @@ export class AuthService {
   }
 
   /**
-   * Revokes a refresh token in the database upon logout.
+   * Revokes a refresh token in Redis cache and database upon logout.
    */
   async revokeRefreshToken(rawRefreshToken: string) {
     if (!rawRefreshToken) return;
     const tokenHash = hashToken(rawRefreshToken);
+    // Cache revoked status in Redis for 30 days (matching refresh token expiry)
+    await redis.set(`revoked:token:${tokenHash}`, "1", { ex: 30 * 86400 });
     await db
       .update(refreshTokens)
       .set({ revokedAt: new Date() })
@@ -369,14 +373,18 @@ export class AuthService {
 
   /**
    * Fetches user profile by ID excluding sensitive hash.
-   * Cached in memory with a 60-second TTL to eliminate database roundtrips on repeated requests.
+   * Cached in Upstash Redis with a 300-second (5 min) TTL to eliminate database roundtrips.
    */
   async getUserById(id: string) {
-    const cached = userCache.get(id);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.data;
+    const cacheKey = `session:user:${id}`;
+
+    // 1. Check Redis session cache first
+    const cached = await redis.get<CachedUser["data"]>(cacheKey);
+    if (cached) {
+      return cached;
     }
 
+    // 2. Cache miss: Query PostgreSQL
     const user = await db.query.users.findFirst({
       where: eq(users.id, id),
     });
@@ -394,10 +402,8 @@ export class AuthService {
       createdAt: user.createdAt.toISOString(),
     };
 
-    userCache.set(id, {
-      data: result,
-      expiresAt: Date.now() + USER_CACHE_TTL_MS,
-    });
+    // 3. Cache in Redis with 5-minute TTL (300 seconds)
+    await redis.set(cacheKey, result, { ex: 300 });
 
     return result;
   }
@@ -412,14 +418,10 @@ interface CachedUser {
     isVerified: boolean;
     createdAt: string;
   };
-  expiresAt: number;
 }
 
-const userCache = new Map<string, CachedUser>();
-const USER_CACHE_TTL_MS = 60 * 1000;
-
-export function invalidateUserCache(userId: string) {
-  userCache.delete(userId);
+export async function invalidateUserCache(userId: string) {
+  await redis.del(`session:user:${userId}`);
 }
 
 export const authService = new AuthService();

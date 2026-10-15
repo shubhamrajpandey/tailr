@@ -18,6 +18,7 @@ import { settingsRoutes } from "./modules/settings/settings.routes";
 import { quotaRoutes } from "./modules/quota/quota.routes";
 import { searchRoutes } from "./modules/search/search.routes";
 import { checkDatabaseHealth } from "./db/client";
+import { redis } from "./config/redis";
 
 /**
  * Strict origin whitelist for Cross-Origin Resource Sharing.
@@ -181,12 +182,16 @@ app
   // 7. System Health Check Endpoint
   .get("/health", async () => {
     const isDbConnected = await checkDatabaseHealth();
+    const redisHealth = await redis.checkHealth();
+    const isHealthy = isDbConnected && redisHealth.status === "connected";
     return {
-      status: isDbConnected ? "healthy" : "degraded",
+      status: isHealthy ? "healthy" : isDbConnected ? "degraded" : "unhealthy",
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       services: {
         database: isDbConnected ? "connected" : "disconnected",
+        redis: redisHealth.status,
+        ...(redisHealth.latencyMs !== undefined ? { redisLatencyMs: redisHealth.latencyMs } : {}),
       },
     };
   })

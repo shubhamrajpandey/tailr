@@ -2,6 +2,7 @@ import { and, eq, gte, asc, sql } from "drizzle-orm";
 import { db } from "../../db/client";
 import { aiUsageLogs, tailoredResumes, coverLetters } from "../../db/schema";
 import { env } from "../../config/env";
+import { redis } from "../../config/redis";
 import type { QuotaAction, QuotaDetail, UserQuotaStatus } from "./quota.model";
 
 export class QuotaService {
@@ -25,9 +26,20 @@ export class QuotaService {
     userId: string,
     action: QuotaAction
   ): Promise<{ used: number; oldestCreatedAt: Date | null }> {
+    const cacheKey = `quota:rolling:${userId}:${action}`;
+
+    // 1. Check Redis cache first to eliminate database polling
+    const cached = await redis.get<{ used: number; oldestCreatedAt: string | null }>(cacheKey);
+    if (cached) {
+      return {
+        used: cached.used,
+        oldestCreatedAt: cached.oldestCreatedAt ? new Date(cached.oldestCreatedAt) : null,
+      };
+    }
+
     const windowStart = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    // 1. Primary check in ai_usage_logs
+    // 2. Query ai_usage_logs
     const logs = await db
       .select({ createdAt: aiUsageLogs.createdAt })
       .from(aiUsageLogs)
@@ -41,10 +53,16 @@ export class QuotaService {
       .orderBy(asc(aiUsageLogs.createdAt));
 
     if (logs.length > 0) {
-      return {
+      const result = {
         used: logs.length,
         oldestCreatedAt: logs[0].createdAt,
       };
+      await redis.set(
+        cacheKey,
+        { used: result.used, oldestCreatedAt: result.oldestCreatedAt?.toISOString() ?? null },
+        { ex: 60 }
+      );
+      return result;
     }
 
     // 2. Backward compatibility fallback: if ai_usage_logs has no records yet today,
@@ -133,6 +151,8 @@ export class QuotaService {
         action,
         metadata,
       });
+      // Invalidate quota cache in Redis immediately
+      await redis.del(`quota:rolling:${userId}:${action}`);
     } catch (err) {
       console.error(`[QuotaService] Failed to record AI usage log for user ${userId}:`, err);
     }

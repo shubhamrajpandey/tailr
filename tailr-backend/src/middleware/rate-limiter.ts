@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { TooManyRequestsError } from "./error";
+import { redis } from "../config/redis";
 
 export interface RateLimiterOptions {
   windowSeconds: number;
@@ -71,25 +72,47 @@ export class MemoryRateLimiterStore implements RateLimiterStore {
 }
 
 /**
- * Distributed multi-instance rate limiter store supporting Upstash Redis REST or Redis.
- * Falls back transparently to MemoryRateLimiterStore if Redis is unavailable or unconfigured.
+ * Distributed multi-instance rate limiter store powered by Upstash Redis REST.
+ * Guarantees synchronized rate limits across autoscaling containers and serverless instances.
+ * Falls back transparently to MemoryRateLimiterStore if Redis is unavailable or disconnected.
  */
 export class DistributedRateLimiterStore implements RateLimiterStore {
   private memoryFallback = new MemoryRateLimiterStore();
-  private redisUrl?: string;
 
-  constructor() {
-    this.redisUrl = process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL;
-  }
-
-  async incrementAndCheck(key: string, windowSeconds: number, maxRequests: number): Promise<RateLimitResult> {
-    // If no distributed cache configured, use in-memory store
-    if (!this.redisUrl) {
+  async incrementAndCheck(
+    key: string,
+    windowSeconds: number,
+    maxRequests: number
+  ): Promise<RateLimitResult> {
+    if (!redis.isConnected) {
       return this.memoryFallback.incrementAndCheck(key, windowSeconds, maxRequests);
     }
 
-    // Upstash REST / Redis HTTP integration can be invoked here; fallback to memory for resilience
-    return this.memoryFallback.incrementAndCheck(key, windowSeconds, maxRequests);
+    try {
+      const redisKey = `ratelimit:${key}`;
+      const current = await redis.incr(redisKey);
+
+      if (current === 1) {
+        await redis.expire(redisKey, windowSeconds);
+      }
+
+      let ttl = await redis.ttl(redisKey);
+      if (ttl < 0) {
+        await redis.expire(redisKey, windowSeconds);
+        ttl = windowSeconds;
+      }
+
+      const allowed = current <= maxRequests;
+      return {
+        allowed,
+        current,
+        remaining: Math.max(0, maxRequests - current),
+        retryAfterSeconds: allowed ? 0 : Math.max(1, ttl),
+      };
+    } catch (err) {
+      // Graceful degradation: never fail user requests due to temporary network cache errors
+      return this.memoryFallback.incrementAndCheck(key, windowSeconds, maxRequests);
+    }
   }
 }
 

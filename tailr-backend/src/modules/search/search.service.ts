@@ -1,5 +1,6 @@
 import { eq, and, desc, ilike, or } from "drizzle-orm";
 import { db } from "../../db/client";
+import { redis } from "../../config/redis";
 import {
   jobApplications,
   tailoredResumes,
@@ -167,6 +168,13 @@ export class SearchService {
     // Escape special wildcard characters for safe ILIKE matching
     const sanitizedPattern = `%${rawQuery.replace(/[%_\\]/g, "\\$&")}%`;
     const lowerQuery = rawQuery.toLowerCase();
+    const cacheKey = `search:${userId}:${encodeURIComponent(lowerQuery)}:${perCategoryLimit}`;
+
+    // Absorbs rapid bursts and debounced queries from hitting 5 DB tables
+    const cachedResponse = await redis.get<GlobalSearchResponse>(cacheKey);
+    if (cachedResponse) {
+      return cachedResponse;
+    }
 
     // 1. Run parallel queries across all relevant database tables
     const [
@@ -362,7 +370,7 @@ export class SearchService {
       companiesResults.length +
       navigationResults.length;
 
-    return {
+    const response: GlobalSearchResponse = {
       query: rawQuery,
       results: {
         applications: applicationsResults,
@@ -373,6 +381,11 @@ export class SearchService {
       },
       totalCount,
     };
+
+    // Cache in Redis for 30s to absorb debounced/rapid typing bursts
+    await redis.set(cacheKey, response, { ex: 30 });
+
+    return response;
   }
 }
 
