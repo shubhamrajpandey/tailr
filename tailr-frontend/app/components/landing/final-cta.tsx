@@ -43,7 +43,7 @@ export function FinalCta() {
 
             {/* Primary CTA */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="w-full sm:w-auto">
+              <Link href="/signup" className="w-full sm:w-auto">
                 <Button
                   variant="primary"
                   size="lg"
@@ -62,7 +62,7 @@ export function FinalCta() {
                 <span>No credit card required</span>
               </span>
               <span className="hidden sm:inline text-neutral-600">•</span>
-              <span>3 free tailored resumes / month</span>
+              <span>1 free tailored resumes / day</span>
             </div>
           </div>
         </div>

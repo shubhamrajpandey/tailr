@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <div className="relative min-h-screen bg-background text-foreground font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors overflow-x-hidden">
+    <div className="relative min-h-screen bg-background text-foreground font-sans selection:bg-indigo-500/30 selection:text-indigo-200 transition-colors overflow-x-clip">
       {/* ─── Top Perspective Ceiling Wireframe Grid (Lighter, Softer & Ambient) ─── */}
       <div
         aria-hidden="true"
