@@ -56,42 +56,42 @@ export const WORKFLOW_STEPS: StepItem[] = [
       dot: "bg-purple-500",
     },
     preview: (
-      <div className="w-full h-full p-4 rounded-2xl bg-white dark:bg-[#12141c] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col justify-between font-mono text-xs">
+      <div className="w-full h-full p-4 rounded-2xl bg-neutral-50/80 dark:bg-[#12141c] border border-neutral-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between font-mono text-xs">
         <div className="space-y-3">
-          <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-200/70 dark:border-white/5">
+          <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-neutral-200/70 dark:border-white/5">
             <div className="flex items-center gap-2 min-w-0">
-              <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse shrink-0" />
-              <span className="text-xs font-bold text-neutral-900 dark:text-white font-sans truncate">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-semibold text-neutral-900 dark:text-white font-sans truncate">
                 master_ledger.json
               </span>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-500/20 shrink-0">
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shrink-0 font-sans">
               100% Ready
             </span>
           </div>
 
           <div className="space-y-2 text-[11px]">
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-2">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 flex items-center justify-between gap-2">
               <span className="text-neutral-600 dark:text-neutral-400 font-sans truncate">
                 Verified Bullets
               </span>
-              <span className="font-bold text-neutral-900 dark:text-white shrink-0">
+              <span className="font-bold text-neutral-900 dark:text-white shrink-0 font-mono">
                 16 Bullets
               </span>
             </div>
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-2">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 flex items-center justify-between gap-2">
               <span className="text-neutral-600 dark:text-neutral-400 font-sans truncate">
                 Core Tech Skills
               </span>
-              <span className="font-bold text-neutral-900 dark:text-white shrink-0">
+              <span className="font-bold text-neutral-900 dark:text-white shrink-0 font-mono">
                 18 Proficiencies
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded-xl bg-purple-50/50 dark:bg-purple-500/5 border border-purple-100 dark:border-purple-500/15 space-y-1">
-            <div className="text-[10px] font-bold text-purple-700 dark:text-purple-300 font-sans flex items-center gap-1.5">
-              <Sparkles className="w-3 h-3 text-purple-500 shrink-0" />
+          <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 space-y-1">
+            <div className="text-[10px] font-semibold text-neutral-800 dark:text-neutral-200 font-sans flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-neutral-500 dark:text-neutral-400 shrink-0" />
               <span className="truncate">Active Target Permutations</span>
             </div>
             <p className="text-[10px] text-neutral-500 dark:text-neutral-400 font-sans truncate">
@@ -100,12 +100,14 @@ export const WORKFLOW_STEPS: StepItem[] = [
           </div>
         </div>
 
-        <div className="pt-3 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-2 text-[11px] text-purple-600 dark:text-purple-400 font-sans font-semibold">
+        <div className="pt-2.5 border-t border-neutral-200/70 dark:border-white/5 flex items-center justify-between gap-2 text-[11px] text-neutral-600 dark:text-neutral-400 font-sans font-medium">
           <span className="flex items-center gap-1.5 min-w-0">
-            <CheckCircle2 className="w-3.5 h-3.5 text-purple-500 shrink-0" />
-            <span className="truncate">Zero Fabrication Guard</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            <span className="truncate text-neutral-700 dark:text-neutral-300">
+              Zero Fabrication Guard
+            </span>
           </span>
-          <span className="text-neutral-400 text-[10px] shrink-0">v2.4.0</span>
+          <span className="text-neutral-400 text-[10px] shrink-0 font-mono">v2.4.0</span>
         </div>
       </div>
     ),
@@ -134,31 +136,33 @@ export const WORKFLOW_STEPS: StepItem[] = [
       dot: "bg-purple-500",
     },
     preview: (
-      <div className="w-full h-full p-4 rounded-2xl bg-white dark:bg-[#12141c] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col justify-between font-mono text-xs">
+      <div className="w-full h-full p-4 rounded-2xl bg-neutral-50/80 dark:bg-[#12141c] border border-neutral-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between font-mono text-xs">
         <div className="space-y-3">
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/70 dark:border-white/5">
+          <div className="flex items-center justify-between pb-2.5 border-b border-neutral-200/70 dark:border-white/5">
             <div className="flex items-center gap-2 truncate">
-              <span className="w-2 h-2 rounded-full bg-purple-500" />
-              <span className="text-xs font-bold text-neutral-900 dark:text-white font-sans truncate">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-semibold text-neutral-900 dark:text-white font-sans truncate">
                 Stripe • Staff Frontend Eng
               </span>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-500/20 shrink-0">
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-neutral-200/70 dark:bg-white/10 text-neutral-700 dark:text-neutral-300 border border-neutral-300/60 dark:border-white/10 shrink-0 font-sans">
               Greenhouse
             </span>
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-sans text-neutral-500 dark:text-neutral-400">
+            <div className="flex items-center justify-between text-[11px] font-sans text-neutral-600 dark:text-neutral-400">
               <span>Extracted Keywords</span>
-              <span className="text-purple-600 dark:text-purple-400 font-bold">12 Detected</span>
+              <span className="text-neutral-900 dark:text-white font-mono font-semibold">
+                12 Detected
+              </span>
             </div>
             <div className="flex flex-wrap gap-1.5 pt-1">
               {["React 19", "Design Tokens", "Web Performance", "TypeScript 5", "CI/CD"].map(
                 (kw) => (
                   <span
                     key={kw}
-                    className="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 text-[10px] font-semibold border border-purple-200/60 dark:border-purple-500/20 font-sans"
+                    className="px-2 py-0.5 rounded-md bg-white dark:bg-white/[0.05] text-neutral-700 dark:text-neutral-300 text-[10px] font-medium border border-neutral-200/80 dark:border-white/10 font-sans"
                   >
                     +{kw}
                   </span>
@@ -167,18 +171,20 @@ export const WORKFLOW_STEPS: StepItem[] = [
             </div>
           </div>
 
-          <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 text-[10px] text-neutral-600 dark:text-neutral-400 font-sans flex items-center justify-between">
+          <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 text-[10px] text-neutral-600 dark:text-neutral-400 font-sans flex items-center justify-between">
             <span>Parser Status</span>
-            <span className="text-purple-600 dark:text-purple-400 font-bold">100% Extracted</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-mono font-semibold">
+              100% Extracted
+            </span>
           </div>
         </div>
 
-        <div className="pt-3 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[11px] text-purple-600 dark:text-purple-400 font-sans font-semibold">
+        <div className="pt-2.5 border-t border-neutral-200/70 dark:border-white/5 flex items-center justify-between text-[11px] text-neutral-600 dark:text-neutral-400 font-sans font-medium">
           <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-purple-500" />
-            <span>Greenhouse AST Ready</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-neutral-700 dark:text-neutral-300">Greenhouse AST Ready</span>
           </span>
-          <span className="text-neutral-400 text-[10px]">3.1s parse</span>
+          <span className="text-neutral-400 text-[10px] font-mono">3.1s parse</span>
         </div>
       </div>
     ),
@@ -207,32 +213,30 @@ export const WORKFLOW_STEPS: StepItem[] = [
       dot: "bg-purple-500",
     },
     preview: (
-      <div className="w-full h-full p-4 rounded-2xl bg-white dark:bg-[#12141c] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col justify-between font-mono text-xs">
+      <div className="w-full h-full p-4 rounded-2xl bg-neutral-50/80 dark:bg-[#12141c] border border-neutral-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between font-mono text-xs">
         <div className="space-y-2.5">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-200/70 dark:border-white/5">
+          <div className="flex items-center justify-between pb-2 border-b border-neutral-200/70 dark:border-white/5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-              <span className="text-xs font-bold text-neutral-900 dark:text-white font-sans">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-semibold text-neutral-900 dark:text-white font-sans">
                 diff_optimizer.tsx
               </span>
             </div>
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0 font-mono">
               <span className="text-[10px] text-neutral-400 line-through">64%</span>
-              <span className="text-purple-600 dark:text-purple-400 font-bold text-[11px]">
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">
                 → 96% Match
               </span>
             </div>
           </div>
 
           <div className="space-y-1.5 text-[10px] font-sans">
-            <div className="p-2 rounded-lg bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200/80 dark:border-white/10 text-neutral-600 dark:text-neutral-400">
-              <span className="font-bold font-mono text-neutral-500 dark:text-neutral-400">
-                BEFORE:
-              </span>{" "}
-              Built frontend dashboard with React components.
+            <div className="p-2.5 rounded-lg bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 text-neutral-500 dark:text-neutral-400">
+              <span className="font-bold font-mono text-neutral-400">BEFORE:</span> Built frontend
+              dashboard with React components.
             </div>
-            <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-500/10 border border-purple-200/80 dark:border-purple-500/25 text-purple-900 dark:text-purple-200">
-              <span className="font-bold font-mono text-purple-600 dark:text-purple-400">
+            <div className="p-2.5 rounded-lg bg-emerald-500/[0.04] dark:bg-emerald-500/[0.05] border border-emerald-500/20 dark:border-emerald-500/25 text-neutral-800 dark:text-neutral-200">
+              <span className="font-bold font-mono text-emerald-600 dark:text-emerald-400">
                 AFTER:
               </span>{" "}
               Architected Next.js 15 enterprise dashboard with 98 Lighthouse score, reducing LCP by
@@ -241,12 +245,14 @@ export const WORKFLOW_STEPS: StepItem[] = [
           </div>
         </div>
 
-        <div className="pt-2.5 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[11px] text-purple-600 dark:text-purple-400 font-sans font-semibold">
+        <div className="pt-2 border-t border-neutral-200/70 dark:border-white/5 flex items-center justify-between text-[11px] text-neutral-600 dark:text-neutral-400 font-sans font-medium">
           <span className="flex items-center gap-1.5">
-            <Check className="w-3.5 h-3.5 text-purple-500" />
-            <span>Semantic Alignment Complete</span>
+            <Check className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-neutral-700 dark:text-neutral-300">
+              Semantic Alignment Complete
+            </span>
           </span>
-          <span className="text-purple-600 dark:text-purple-400 text-[10px] font-mono font-bold">
+          <span className="text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold">
             +32% Boost
           </span>
         </div>
@@ -277,53 +283,55 @@ export const WORKFLOW_STEPS: StepItem[] = [
       dot: "bg-purple-500",
     },
     preview: (
-      <div className="w-full h-full p-4 rounded-2xl bg-white dark:bg-[#12141c] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col justify-between font-mono text-xs">
+      <div className="w-full h-full p-4 rounded-2xl bg-neutral-50/80 dark:bg-[#12141c] border border-neutral-200/90 dark:border-white/10 shadow-xs flex flex-col justify-between font-mono text-xs">
         <div className="space-y-3">
-          <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/70 dark:border-white/5">
+          <div className="flex items-center justify-between pb-2.5 border-b border-neutral-200/70 dark:border-white/5">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-purple-500" />
-              <span className="text-xs font-bold text-neutral-900 dark:text-white font-sans">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+              <span className="text-xs font-semibold text-neutral-900 dark:text-white font-sans">
                 Export & CRM Sync
               </span>
             </div>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-500/20">
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-sans">
               ATS Valid
             </span>
           </div>
 
           <div className="space-y-2 text-[11px]">
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-2 truncate">
-                <FileText className="w-3.5 h-3.5 text-purple-500 shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-neutral-500 dark:text-neutral-400 shrink-0" />
                 <span className="text-neutral-800 dark:text-neutral-200 font-sans truncate">
                   Resume_Stripe_Tailored.pdf
                 </span>
               </div>
-              <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold shrink-0">
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-semibold shrink-0">
                 100% Parsed
               </span>
             </div>
 
-            <div className="p-2 rounded-xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/5 flex items-center justify-between">
-              <span className="text-neutral-500 dark:text-neutral-400 font-sans">CRM Column</span>
-              <span className="text-[10px] px-2 py-0.5 rounded font-bold bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 border border-purple-200/60 dark:border-purple-500/20 font-sans">
+            <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 flex items-center justify-between">
+              <span className="text-neutral-600 dark:text-neutral-400 font-sans">CRM Column</span>
+              <span className="text-[10px] px-2 py-0.5 rounded font-medium bg-neutral-200/70 dark:bg-white/10 text-neutral-700 dark:text-neutral-300 border border-neutral-300/60 dark:border-white/10 font-sans">
                 Interview Stage
               </span>
             </div>
           </div>
 
-          <div className="p-2 rounded-xl bg-purple-50/50 dark:bg-purple-500/5 border border-purple-100 dark:border-purple-500/15 text-[10px] text-purple-800 dark:text-purple-300 font-sans flex items-center justify-between">
+          <div className="p-2.5 rounded-xl bg-white dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5 text-[10px] text-neutral-600 dark:text-neutral-400 font-sans flex items-center justify-between">
             <span>Application Logged</span>
-            <span className="font-bold text-purple-600 dark:text-purple-400">Live Synced ✓</span>
+            <span className="font-semibold text-neutral-900 dark:text-white font-mono">
+              Live Synced ✓
+            </span>
           </div>
         </div>
 
-        <div className="pt-3 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between text-[11px] text-purple-600 dark:text-purple-400 font-sans font-semibold">
+        <div className="pt-2.5 border-t border-neutral-200/70 dark:border-white/5 flex items-center justify-between text-[11px] text-neutral-600 dark:text-neutral-400 font-sans font-medium">
           <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-purple-500" />
-            <span>Kanban Auto-Created</span>
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="text-neutral-700 dark:text-neutral-300">Kanban Auto-Created</span>
           </span>
-          <span className="text-neutral-400 text-[10px]">Zero Effort</span>
+          <span className="text-neutral-400 text-[10px] font-mono">Zero Effort</span>
         </div>
       </div>
     ),
