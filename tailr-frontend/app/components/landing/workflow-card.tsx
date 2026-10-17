@@ -15,17 +15,21 @@ export interface WorkflowCardProps {
     y: MotionValue<number> | number;
     scale: MotionValue<number> | number;
     opacity: MotionValue<number> | number;
+    contentOpacity?: MotionValue<number> | number;
+    dimOpacity?: MotionValue<number> | number;
   };
 }
 
 export function WorkflowCard({ step, index, style, isMobile = false }: WorkflowCardProps) {
+  const { contentOpacity = 1, dimOpacity = 0, ...cardMotionStyle } = style || {};
+
   return (
     <motion.div
       style={
         isMobile
           ? undefined
           : {
-              ...style,
+              ...cardMotionStyle,
               zIndex: 10 + index * 10,
             }
       }
@@ -47,7 +51,20 @@ export function WorkflowCard({ step, index, style, isMobile = false }: WorkflowC
         )}
       />
 
-      <div className="relative p-6 sm:p-8 lg:p-9 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch min-h-[420px] sm:min-h-[460px] md:min-h-[470px]">
+      {/* Dimming overlay for inactive stacked background cards */}
+      {!isMobile && (
+        <motion.div
+          aria-hidden="true"
+          style={{ opacity: dimOpacity }}
+          className="pointer-events-none absolute inset-0 bg-neutral-950/40 rounded-[inherit] z-10"
+        />
+      )}
+
+      {/* Inner Content: Fades to 0 when card is covered in the stack to prevent any text clutter or overlap */}
+      <motion.div
+        style={isMobile ? undefined : { opacity: contentOpacity }}
+        className="relative p-6 sm:p-8 lg:p-9 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch min-h-[420px] sm:min-h-[460px] md:min-h-[470px]"
+      >
         {/* Left Column: Step Info & Narrative */}
         <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
           <div className="space-y-3">
@@ -115,7 +132,7 @@ export function WorkflowCard({ step, index, style, isMobile = false }: WorkflowC
         <div className="lg:col-span-6 flex flex-col justify-center min-w-0 h-full">
           {step.preview}
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
