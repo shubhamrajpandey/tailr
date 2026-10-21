@@ -136,7 +136,27 @@ export const errorHandler = (app: Elysia) =>
       };
     }
 
-    // 5. Unhandled internal server errors
+    // 5. PostgreSQL connection / network failures (e.g. ECONNREFUSED)
+    const errAny = error as any;
+    if (
+      errAny?.code === "ECONNREFUSED" ||
+      errAny?.cause?.code === "ECONNREFUSED" ||
+      errAny?.message?.includes("ECONNREFUSED") ||
+      errAny?.message?.includes("connect ECONNREFUSED")
+    ) {
+      logger.error("Database connection refused - PostgreSQL service unreachable", { code }, error);
+      set.status = 503;
+      return {
+        success: false,
+        error: {
+          code: "DATABASE_UNAVAILABLE",
+          message: "Database service is currently unreachable. Ensure PostgreSQL is active on port 5432.",
+        },
+        timestamp,
+      };
+    }
+
+    // 6. Unhandled internal server errors
     logger.error("Unhandled Server Error", { code }, error);
     set.status = 500;
     return {

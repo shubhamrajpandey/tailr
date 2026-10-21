@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: tailr
     ports:
       - "5432:5432"
@@ -28,7 +28,7 @@ services:
     environment:
       PORT: 3001
       NODE_ENV: production
-      DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/tailr
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/tailr
       JWT_ACCESS_SECRET: default_dev_access_secret_must_be_32_characters_long!
       JWT_REFRESH_SECRET: default_dev_refresh_secret_must_be_32_characters_long!
       FRONTEND_URL: http://localhost:3000

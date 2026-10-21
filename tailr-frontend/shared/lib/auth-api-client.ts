@@ -114,9 +114,14 @@ authApiClient.interceptors.response.use(
 
     const is401 = error.response?.status === 401;
     const isRefreshEndpoint = originalRequest.url?.includes("/auth/refresh");
+    const isAuthEndpoint =
+      originalRequest.url?.includes("/auth/login") ||
+      originalRequest.url?.includes("/auth/signup") ||
+      originalRequest.url?.includes("/auth/verify-otp") ||
+      originalRequest.url?.includes("/auth/resend-otp");
     const alreadyRetried = originalRequest._retried === true;
 
-    if (!is401 || alreadyRetried || isRefreshEndpoint) {
+    if (!is401 || alreadyRetried || isRefreshEndpoint || isAuthEndpoint) {
       if (is401 && isRefreshEndpoint) {
         // Stale refresh attempt failed: only clear credentials if user is NOT currently authenticated
         const currentToken = store.getState().auth.accessToken;
@@ -190,7 +195,7 @@ authApiClient.interceptors.response.use(
         store.dispatch(clearCredentials());
         refreshSubscribers = [];
 
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined" && window.location.pathname !== "/login") {
           window.location.replace("/login");
         }
       } else {

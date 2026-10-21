@@ -24,12 +24,14 @@ import {
   DialogFooter,
 } from "@/shared/components/ui/dialog";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/shared/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
+import { setAuthStep } from "@/shared/store/auth-slice";
 import { SocialAuthButtons } from "./social-auth-buttons";
 import { useLoginMutation, extractErrorMessage } from "@/shared/hooks/auth/use-auth-mutations";
 
 export function AuthForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const isBootstrapping = useAppSelector((state) => state.auth.isBootstrapping);
 
@@ -38,6 +40,7 @@ export function AuthForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = React.useState(true);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [unverifiedEmail, setUnverifiedEmail] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     if (isAuthenticated && !isBootstrapping) {
@@ -74,6 +77,7 @@ export function AuthForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+    setUnverifiedEmail(null);
 
     if (!email.trim()) {
       setFormError("Please enter your email address.");
@@ -88,6 +92,11 @@ export function AuthForm() {
       { email: email.trim().toLowerCase(), password },
       {
         onError: (error) => {
+          const errAny = error as any;
+          const isUnverified = errAny?.response?.data?.error?.details?.unverified;
+          if (isUnverified) {
+            setUnverifiedEmail(email.trim().toLowerCase());
+          }
           setFormError(extractErrorMessage(error));
         },
       }
@@ -133,9 +142,25 @@ export function AuthForm() {
 
       {/* Form-level error */}
       {formError && (
-        <div className="flex items-center gap-2 p-3 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl animate-in fade-in">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          <span>{formError}</span>
+        <div className="flex flex-col gap-2.5 p-3 text-xs font-medium text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl animate-in fade-in">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{formError}</span>
+          </div>
+          {unverifiedEmail && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                dispatch(setAuthStep("otp"));
+                router.push(`/signup`);
+              }}
+              className="mt-1 h-8 text-xs font-semibold bg-white dark:bg-neutral-900 border-rose-300 dark:border-rose-800 text-rose-700 dark:text-rose-300 hover:bg-rose-100 dark:hover:bg-rose-950/60 cursor-pointer"
+            >
+              Verify Email (Enter OTP)
+            </Button>
+          )}
         </div>
       )}
 

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Zap } from "lucide-react";
 import { useReducedMotion, useScroll, useTransform } from "motion/react";
+import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 import { WORKFLOW_STEPS } from "./workflow-steps-data";
 import { WorkflowCard } from "./workflow-card";
 
@@ -131,10 +132,12 @@ export function WorkflowSection() {
         <div className="relative z-10 flex h-auto w-full max-w-7xl flex-col justify-start gap-6 sm:gap-7 py-0 md:h-full md:justify-center md:gap-8 lg:gap-10">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-200/80 dark:border-purple-500/20 mb-2.5">
-              <Zap className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
-              <span>Seamless 4-Step Pipeline</span>
-            </div>
+            <RotatingBorderBadge
+              icon={<Zap className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />}
+              wrapperClassName="mb-2.5"
+            >
+              Seamless 4-Step Pipeline
+            </RotatingBorderBadge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-tight">
               From Job Description to Tailored PDF in 4 Steps
             </h2>

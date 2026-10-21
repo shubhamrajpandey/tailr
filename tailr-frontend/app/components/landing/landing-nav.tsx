@@ -4,8 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Menu, X } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { ThemeToggle } from "@/shared/components/ui/theme-toggle";
+import { Button, PillGlowButton } from "@/shared/components/ui/button";
 import { useAppSelector } from "@/shared/store/hooks";
 import { cn } from "@/shared/lib/utils";
 
@@ -70,17 +69,12 @@ export function LandingNav() {
 
         {/* Right Action Buttons */}
         <div className="hidden sm:flex items-center gap-4 lg:gap-6">
-          <ThemeToggle />
           {authUser ? (
             <Link href="/dashboard">
-              <Button
-                variant="primary"
-                size="sm"
-                className="gap-2 bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white shadow-md shadow-indigo-500/20 border border-indigo-400/30 rounded-xl px-4 lg:px-5 py-2.5 text-sm font-semibold"
-              >
+              <PillGlowButton size="default">
                 <span>Dashboard</span>
                 <ArrowRight className="h-4 w-4" />
-              </Button>
+              </PillGlowButton>
             </Link>
           ) : (
             <>
@@ -91,12 +85,9 @@ export function LandingNav() {
                 Log In
               </Link>
               <Link href="/register">
-                <button
-                  type="button"
-                  className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white shadow-md shadow-indigo-500/20 border border-indigo-400/30 rounded-xl px-4 lg:px-5 py-2 lg:py-2.5 text-sm lg:text-base font-semibold transition-all cursor-pointer"
-                >
-                  Sign Up (Free)
-                </button>
+                <PillGlowButton size="default">
+                  <span>Sign Up (Free)</span>
+                </PillGlowButton>
               </Link>
             </>
           )}
@@ -104,7 +95,6 @@ export function LandingNav() {
 
         {/* Mobile Hamburger Toggle */}
         <div className="flex sm:hidden items-center gap-1.5">
-          <ThemeToggle />
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -156,14 +146,10 @@ export function LandingNav() {
                   </Button>
                 </Link>
                 <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                  <Button
-                    variant="primary"
-                    size="default"
-                    className="w-full gap-1.5 h-11 text-sm font-semibold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white"
-                  >
+                  <PillGlowButton size="lg" className="w-full" wrapperClassName="w-full">
                     <span>Sign Up (Free)</span>
                     <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  </PillGlowButton>
                 </Link>
               </>
             )}

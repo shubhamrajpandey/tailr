@@ -95,3 +95,4 @@ function Badge({ className, variant, dot = true, children, ...props }: BadgeProp
 }
 
 export { Badge, badgeVariants };
+export { RotatingBorderBadge, RotatingBadge } from "./rotating-badge";

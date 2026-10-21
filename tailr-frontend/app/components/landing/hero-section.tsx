@@ -3,6 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Rocket, Target } from "lucide-react";
+import { PillGlowButton } from "@/shared/components/ui/button";
+import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 import { HeroPreviewCard } from "./hero-preview-card";
 
 export function HeroSection() {
@@ -24,7 +26,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative pt-24 pb-0 sm:pt-36 sm:pb-20 overflow-hidden select-none">
+    <section className="relative pt-24 pb-0 sm:pt-36 sm:pb-0 overflow-hidden select-none">
       {/* ─── Soft Ambient Radial Glow ─── */}
       <div
         aria-hidden="true"
@@ -82,16 +84,18 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* ─── 4. Top Announcement Pill ─── */}
-        <div className="inline-flex items-center gap-2 sm:gap-2.5 pl-1.5 pr-3 sm:pr-4 py-1.5 rounded-full text-xs font-medium border border-slate-200/90 dark:border-white/10 bg-white/90 dark:bg-white/[0.04] shadow-xs hover:border-slate-300 dark:hover:border-white/20 transition-all cursor-pointer mb-6 sm:mb-8 group backdrop-blur-xs max-w-full">
-          <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-2xs shrink-0">
-            Tailr AI
-          </span>
-          <span className="text-neutral-700 dark:text-neutral-300 font-medium truncate text-[11px] sm:text-xs">
-            Tailor Smarter, Together
-          </span>
-          <ArrowRight className="h-3.5 w-3.5 text-neutral-400 group-hover:translate-x-0.5 transition-transform shrink-0" />
-        </div>
+        {/* ─── 4. Top Announcement Pill with Rotating Theme Border Beam ─── */}
+        <RotatingBorderBadge
+          badge={
+            <span className="px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-neutral-950 text-white dark:bg-white dark:text-neutral-950 shadow-2xs shrink-0">
+              Tailr AI
+            </span>
+          }
+          arrow
+          wrapperClassName="mb-6 sm:mb-8"
+        >
+          Tailor Smarter, Together
+        </RotatingBorderBadge>
 
         {/* ─── 5. Headline ─── */}
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.12] sm:leading-[1.08] font-sans break-words">
@@ -108,12 +112,10 @@ export function HeroSection() {
         {/* ─── 7. CTA Buttons ─── */}
         <div className="mt-7 sm:mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full max-w-xs sm:max-w-none mx-auto">
           <Link href="/register" className="w-full sm:w-auto">
-            <button
-              type="button"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-11 px-6 rounded-xl text-sm font-bold bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white shadow-md shadow-indigo-500/25 border border-indigo-400/30 transition-all active:scale-[0.98] cursor-pointer"
-            >
+            <PillGlowButton size="lg" className="w-full sm:w-auto font-bold gap-2">
               <span>Try It Free</span>
-            </button>
+              <ArrowRight className="h-4 w-4" />
+            </PillGlowButton>
           </Link>
 
           <a
@@ -141,7 +143,7 @@ export function HeroSection() {
       {/* ─── 9. Perspective Floor Wireframe Grid below Mockup (Matches BrightHub Reference & Screenshot 1) ─── */}
       <div
         aria-hidden="true"
-        className="pointer-events-none relative -mt-1 sm:-mt-2 -mb-2 sm:-mb-6 w-full h-[70px] sm:h-[300px] overflow-hidden select-none z-0 [mask-image:radial-gradient(ellipse_58%_82%_at_50%_0%,black_40%,transparent_82%)]"
+        className="pointer-events-none relative -mt-1 sm:-mt-2 -mb-4 sm:-mb-8 w-full h-[70px] sm:h-[150px] overflow-hidden select-none z-0 [mask-image:radial-gradient(ellipse_58%_82%_at_50%_0%,black_40%,transparent_82%)]"
       >
         {/* Soft Purple/Indigo Horizon Glow directly beneath the card bottom rim */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[650px] sm:w-[850px] h-[60px] sm:h-[90px] bg-gradient-to-b from-indigo-500/25 via-purple-500/15 to-transparent blur-[30px] sm:blur-[40px] rounded-full pointer-events-none" />

@@ -91,6 +91,59 @@ body {
   scrollbar-width: none;
 }
 
+/* Custom pill glow buttons (Linear / Vizurio style with glowing rim) */
+.btn-pill-glow {
+  position: relative;
+  z-index: 10;
+  border-radius: 9999px;
+  background-color: #050508;
+  color: #ffffff;
+  border: 1px solid transparent;
+  background-image:
+    linear-gradient(#050508, #050508),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.14) 35%, rgba(168, 85, 247, 0.75) 70%, rgba(129, 140, 248, 1) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: inset -1px 0 2px rgba(168, 85, 247, 0.35);
+}
+
+.btn-pill-glow-green {
+  position: relative;
+  z-index: 10;
+  border-radius: 9999px;
+  background-color: #050508;
+  color: #ffffff;
+  border: 1px solid transparent;
+  background-image:
+    linear-gradient(#050508, #050508),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.14) 35%, rgba(74, 222, 128, 0.75) 70%, rgba(34, 197, 94, 1) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: inset -1px 0 2px rgba(74, 222, 128, 0.35);
+}
+
+/* Rotating border beam animation (GPU-composited centered spin) */
+@keyframes spin-centered {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.animate-spin-centered {
+  animation: spin-centered 4s linear infinite;
+}
+
+.animate-spin-centered-slow {
+  animation: spin-centered 6s linear infinite;
+}
+
+.animate-spin-centered-fast {
+  animation: spin-centered 2.5s linear infinite;
+}
+
 /* Print styles: Isolate #printable-resume-document and hide all dashboard chrome */
 @media print {
   @page {

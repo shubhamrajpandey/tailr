@@ -13,6 +13,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 
 /**
  * PricingSection:
@@ -123,9 +124,9 @@ export function PricingSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
         {/* Section Heading - Natural & Understated */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-neutral-600 dark:text-neutral-400 bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200/80 dark:border-white/10 mb-3">
-            <span>Public Beta</span>
-          </div>
+          <RotatingBorderBadge wrapperClassName="mb-3">
+            Public Beta
+          </RotatingBorderBadge>
           <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
             Tailr is free while in beta.
           </h2>

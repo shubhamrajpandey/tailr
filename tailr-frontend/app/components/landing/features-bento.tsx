@@ -14,6 +14,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 
 // ─── 3D Scroll-Driven Flip Card Component ───────────────────────────────────────
 
@@ -210,14 +211,16 @@ function ScrollFlipCard({
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="pt-2 sm:pt-16 pb-14 sm:pb-28 relative">
+    <section id="features" className="pt-0 sm:pt-4 pb-14 sm:pb-24 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-neutral-100 dark:bg-white/[0.05] text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-white/10 mb-3 sm:mb-4">
-            <Layers className="h-3.5 w-3.5 text-neutral-500" />
-            <span>Core Capabilities</span>
-          </div>
+          <RotatingBorderBadge
+            icon={<Layers className="h-3.5 w-3.5 text-neutral-500" />}
+            wrapperClassName="mb-3 sm:mb-4"
+          >
+            Core Capabilities
+          </RotatingBorderBadge>
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
             Engineered for Precision & Callbacks
           </h2>

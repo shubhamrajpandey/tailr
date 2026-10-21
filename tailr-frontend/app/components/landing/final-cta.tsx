@@ -3,7 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
+import { Button, PillGlowButton } from "@/shared/components/ui/button";
+import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 
 export function FinalCta() {
   return (
@@ -25,10 +26,12 @@ export function FinalCta() {
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-4">
             {/* Pill Badge */}
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/25">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Start In Seconds</span>
-            </div>
+            <RotatingBorderBadge
+              icon={<Sparkles className="h-3.5 w-3.5 text-indigo-400" />}
+              wrapperClassName="mb-1"
+            >
+              Start In Seconds
+            </RotatingBorderBadge>
 
             {/* Headline */}
             <h2 className="text-2xl sm:text-3xl md:text-[38px] font-extrabold tracking-tight text-white leading-tight">
@@ -43,15 +46,14 @@ export function FinalCta() {
 
             {/* Primary CTA */}
             <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/signup" className="w-full sm:w-auto">
-                <Button
-                  variant="primary"
+              <Link href="/register" className="w-full sm:w-auto">
+                <PillGlowButton
                   size="lg"
-                  className="w-full sm:w-auto h-11 sm:h-12 px-7 sm:px-8 text-sm font-bold gap-2 shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white rounded-xl"
+                  className="w-full sm:w-auto font-bold gap-2"
                 >
                   <span>Start Tailoring Free</span>
                   <ArrowRight className="h-4 w-4" />
-                </Button>
+                </PillGlowButton>
               </Link>
             </div>
 
