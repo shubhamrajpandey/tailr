@@ -144,6 +144,43 @@ body {
   animation: spin-centered 2.5s linear infinite;
 }
 
+/* Shimmer beam sweep and pulsing ambient glow animations */
+@keyframes sweep-beam {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.9;
+  }
+  75% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+.animate-sweep-beam {
+  animation: sweep-beam 7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s ease-in-out infinite;
+}
+
 /* Print styles: Isolate #printable-resume-document and hide all dashboard chrome */
 @media print {
   @page {
