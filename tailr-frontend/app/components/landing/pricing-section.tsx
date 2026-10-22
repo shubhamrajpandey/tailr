@@ -239,7 +239,7 @@ export function PricingSection() {
             </div>
           </div>
         ) : (
-          /* Natural, Hand-Crafted Free Beta Card with Interactive Animations */
+          /* Natural, Hand-Crafted Free Beta Card with Deep Midnight-Blue Technical Matrix (Matches Ready to Accelerate CTA) */
           <motion.div
             ref={cardRef}
             onMouseMove={handleMouseMove}
@@ -249,23 +249,23 @@ export function PricingSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="relative rounded-[24px] sm:rounded-[32px] border border-neutral-200/90 dark:border-white/[0.08] bg-white dark:bg-[#090a0f] shadow-lg dark:shadow-[0_25px_60px_rgba(0,0,0,0.6)] overflow-hidden transition-all duration-300 group/card select-none"
+            className="relative rounded-[24px] sm:rounded-[32px] border border-neutral-800/80 dark:border-white/10 bg-[#07080c] shadow-2xl shadow-indigo-950/25 dark:shadow-[0_25px_60px_rgba(0,0,0,0.7)] overflow-hidden transition-all duration-300 group/card select-none"
           >
             {/* Top Rim Shimmer Line */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"
+              className="pointer-events-none absolute inset-x-0 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent"
             />
-            {/* Sweeping Shimmer Beam across top rim */}
+            {/* Sweeping Shimmer Light Beam across top rim */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute top-0 left-0 w-1/3 h-[2px] bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-sweep-beam blur-[1px]"
+              className="pointer-events-none absolute top-0 left-0 w-1/3 h-[2px] bg-gradient-to-r from-transparent via-purple-300 to-transparent animate-sweep-beam blur-[1px]"
             />
 
             {/* High-Tech Technical Plus/Cross Grid Matrix (revealed on hover) */}
             <svg
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 w-full h-full text-neutral-950/[0.03] dark:text-white/[0.04] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black_35%,transparent_85%)] select-none"
+              className="pointer-events-none absolute inset-0 w-full h-full text-white/[0.04] dark:text-white/[0.06] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black_35%,transparent_85%)] select-none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
@@ -298,53 +298,63 @@ export function PricingSection() {
               <rect width="100%" height="100%" fill="url(#pricing-plus-grid)" />
             </svg>
 
-            {/* Interactive Mouse-Following Spotlight */}
+            {/* Interactive Mouse-Following Spotlight (Blue/Indigo glow) */}
             <div
               aria-hidden="true"
               className="pointer-events-none absolute -inset-px rounded-[24px] sm:rounded-[32px] transition-opacity duration-300"
               style={{
                 opacity: isHovered ? 1 : 0,
-                background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.14), transparent 70%)`,
+                background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(99, 102, 241, 0.18), transparent 70%)`,
               }}
             />
 
-            {/* Ambient Breathing Background Glow */}
+            {/* Deep Ambient Breathing Glow in Tailr's Electric Indigo / Blue */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -top-24 -left-24 w-[480px] h-[360px] bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-transparent rounded-full blur-[100px] animate-pulse-slow -z-0"
+              className="pointer-events-none absolute -top-24 -left-24 w-[500px] h-[360px] bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-transparent rounded-full blur-[100px] animate-pulse-slow -z-0"
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute -bottom-24 -right-24 w-[420px] h-[300px] bg-gradient-to-l from-purple-500/10 via-indigo-500/10 to-transparent rounded-full blur-[100px] animate-pulse-slow -z-0"
+              className="pointer-events-none absolute -bottom-24 -right-24 w-[450px] h-[300px] bg-gradient-to-l from-indigo-500/20 via-purple-500/20 to-transparent rounded-full blur-[100px] animate-pulse-slow -z-0"
+            />
+
+            {/* Floating Subtle Ambient Sparkle Nodes */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute top-6 left-[20%] w-1.5 h-1.5 rounded-full bg-indigo-400/60 blur-[1px] animate-pulse duration-[3000ms]"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-6 right-[15%] w-1.5 h-1.5 rounded-full bg-purple-400/60 blur-[1px] animate-pulse duration-[4200ms]"
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 p-6 sm:p-9 lg:p-11 items-stretch relative z-10">
               {/* Left Column: Clear & Grounded Beta Summary */}
-              <div className="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-neutral-100 dark:border-white/[0.06] pb-8 lg:pb-0 lg:pr-8">
+              <div className="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/[0.08] pb-8 lg:pb-0 lg:pr-8">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 mb-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-400" />
                     </span>
                     <span>Access Tier</span>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-extrabold text-neutral-950 dark:text-white mt-1 tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 tracking-tight">
                     Full Platform Access
                   </h3>
 
                   <div className="mt-4 flex items-baseline gap-2.5">
-                    <span className="text-4xl sm:text-5xl font-extrabold text-neutral-950 dark:text-white tracking-tight">
+                    <span className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
                       $0
                     </span>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       free while in beta
                     </span>
                   </div>
 
-                  <p className="mt-4 text-xs sm:text-[13.5px] text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                  <p className="mt-4 text-xs sm:text-[13.5px] text-neutral-400 leading-relaxed">
                     Create an account to start tailoring resumes for specific job descriptions
                     immediately. No billing info required.
                   </p>
@@ -363,21 +373,21 @@ export function PricingSection() {
                   </div>
                 </div>
 
-                <div className="mt-6 pt-5 border-t border-neutral-100 dark:border-white/[0.06]">
-                  <div className="flex flex-col gap-2.5 text-xs text-neutral-500 dark:text-neutral-400">
+                <div className="mt-6 pt-5 border-t border-white/[0.08]">
+                  <div className="flex flex-col gap-2.5 text-xs text-neutral-400">
                     <div className="flex items-center gap-2 group/check">
-                      <div className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover/check:scale-110">
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover/check:scale-110">
                         <Check className="h-3 w-3" />
                       </div>
-                      <span className="group-hover/check:text-neutral-900 dark:group-hover/check:text-neutral-200 transition-colors">
+                      <span className="group-hover/check:text-white transition-colors">
                         No credit card required
                       </span>
                     </div>
                     <div className="flex items-center gap-2 group/check">
-                      <div className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover/check:scale-110">
+                      <div className="w-4 h-4 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 transition-transform duration-200 group-hover/check:scale-110">
                         <Check className="h-3 w-3" />
                       </div>
-                      <span className="group-hover/check:text-neutral-900 dark:group-hover/check:text-neutral-200 transition-colors">
+                      <span className="group-hover/check:text-white transition-colors">
                         Instant account setup in 30 seconds
                       </span>
                     </div>
@@ -388,14 +398,14 @@ export function PricingSection() {
               {/* Right Column: Clean, Structured Capabilities */}
               <div className="lg:col-span-8 flex flex-col justify-center">
                 <div className="mb-5 flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                  <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider flex items-center gap-2">
                     <span>What you get right now</span>
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                     </span>
                   </h4>
-                  <span className="text-[11px] font-mono font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20 hidden sm:inline-flex items-center gap-1">
+                  <span className="text-[11px] font-mono font-medium text-indigo-300 bg-indigo-500/15 px-2.5 py-0.5 rounded-full border border-indigo-500/30 hidden sm:inline-flex items-center gap-1">
                     <span>6 core modules unlocked</span>
                   </span>
                 </div>
@@ -410,23 +420,23 @@ export function PricingSection() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-20px" }}
                         transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
-                        className="group/item relative p-4 sm:p-4.5 rounded-xl border border-neutral-200/70 dark:border-white/[0.06] bg-neutral-50/70 dark:bg-white/[0.02] hover:bg-white dark:hover:bg-white/[0.05] hover:border-indigo-500/40 dark:hover:border-indigo-500/40 hover:shadow-lg hover:shadow-indigo-500/5 dark:hover:shadow-[0_8px_24px_rgba(99,102,241,0.08)] hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+                        className="group/item relative p-4 sm:p-4.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-default"
                       >
                         {/* Subtle top edge glow on card hover */}
                         <div
                           aria-hidden="true"
-                          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/0 to-transparent group-hover/item:via-indigo-400/60 transition-all duration-300"
+                          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-500/0 to-transparent group-hover/item:via-indigo-400/70 transition-all duration-300"
                         />
 
                         <div className="flex items-center gap-2.5 mb-1.5">
-                          <div className="w-7 h-7 rounded-lg bg-neutral-100 dark:bg-white/[0.06] text-neutral-700 dark:text-neutral-300 group-hover/item:bg-indigo-500/15 group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400 group-hover/item:scale-110 flex items-center justify-center transition-all duration-200 shrink-0 shadow-2xs group-hover/item:shadow-[0_0_12px_rgba(99,102,241,0.25)]">
+                          <div className="w-7 h-7 rounded-lg bg-white/[0.06] text-neutral-300 group-hover/item:bg-indigo-500/20 group-hover/item:text-indigo-300 group-hover/item:scale-110 flex items-center justify-center transition-all duration-200 shrink-0 shadow-2xs group-hover/item:shadow-[0_0_12px_rgba(99,102,241,0.3)]">
                             <Icon className="h-4 w-4 transition-transform duration-200 group-hover/item:scale-105" />
                           </div>
-                          <h5 className="text-xs sm:text-[13.5px] font-semibold text-neutral-900 dark:text-white leading-tight group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-300 transition-colors">
+                          <h5 className="text-xs sm:text-[13.5px] font-semibold text-white leading-tight group-hover/item:text-indigo-300 transition-colors">
                             {item.title}
                           </h5>
                         </div>
-                        <p className="text-[12px] sm:text-[12.5px] text-neutral-600 dark:text-neutral-400 leading-relaxed pl-9.5">
+                        <p className="text-[12px] sm:text-[12.5px] text-neutral-400 leading-relaxed pl-9.5">
                           {item.description}
                         </p>
                       </motion.div>
