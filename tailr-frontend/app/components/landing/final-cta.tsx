@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { PillGlowButton } from "@/shared/components/ui/button";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 
 export function FinalCta() {
   const cardRef = React.useRef<HTMLDivElement>(null);
@@ -111,21 +113,29 @@ export function FinalCta() {
 
           {/* Card Content (Typography & Hierarchy matching Screenshot) */}
           <div className="relative z-10 max-w-2xl mx-auto">
-            {/* Primary Headline */}
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-[1.15] font-sans">
-              Ready to Accelerate Your Career Search?
-            </h2>
+            {/* Primary Headline with 3D Folding Text Animation */}
+            <div className="flex justify-center">
+              <FoldingText
+                text="Ready to Accelerate Your Career Search?"
+                highlightWords={["Accelerate", "Career", "Search?"]}
+                as="h2"
+                className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-[1.15] font-sans"
+              />
+            </div>
 
             {/* Colored Theme Subheadline (Inspired by "Innovate Faster, Build Smarter") */}
             <p className="mt-2 text-xs sm:text-sm md:text-base font-semibold bg-gradient-to-r from-indigo-400 via-purple-300 to-violet-400 bg-clip-text text-transparent">
               Tailor Smarter, Land Faster
             </p>
 
-            {/* Descriptive Body */}
-            <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-neutral-400 max-w-xl mx-auto leading-relaxed font-normal">
-              Stop spending hours manually tailoring bullet points. Upload your master resume once,
-              tailor for every role in 10 seconds, and watch your callback rate climb.
-            </p>
+            {/* Descriptive Body with Cinematic Blur-Slide Animation */}
+            <div className="flex justify-center">
+              <AnimatedDescription
+                text="Stop spending hours manually tailoring bullet points. Upload your master resume once, tailor for every role in 10 seconds, and watch your callback rate climb."
+                className="mt-2.5 sm:mt-3 text-xs sm:text-sm text-neutral-400 max-w-xl mx-auto leading-relaxed font-normal text-center"
+                delay={0.3}
+              />
+            </div>
 
             {/* Centered Glowing Pill CTA Button */}
             <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">

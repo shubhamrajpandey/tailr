@@ -4,6 +4,8 @@ import * as React from "react";
 import { Zap } from "lucide-react";
 import { useReducedMotion, useScroll, useTransform } from "motion/react";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 import { WORKFLOW_STEPS } from "./workflow-steps-data";
 import { WorkflowCard } from "./workflow-card";
 
@@ -138,13 +140,21 @@ export function WorkflowSection() {
             >
               Seamless 4-Step Pipeline
             </RotatingBorderBadge>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-tight">
-              From Job Description to Tailored PDF in 4 Steps
-            </h2>
-            <p className="mt-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed">
-              A battle-tested workflow designed to eliminate hours of manual resume editing and
-              maximize interview callback rates.
-            </p>
+            <div className="flex justify-center">
+              <FoldingText
+                text="From Job Description to Tailored PDF in 4 Steps"
+                highlightWords={["Tailored", "PDF", "4", "Steps"]}
+                as="h2"
+                className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-tight"
+              />
+            </div>
+            <div className="flex justify-center">
+              <AnimatedDescription
+                text="A battle-tested workflow designed to eliminate hours of manual resume editing and maximize interview callback rates."
+                className="mt-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed text-center"
+                delay={0.35}
+              />
+            </div>
           </div>
 
           {/* Stacking Cards Box */}

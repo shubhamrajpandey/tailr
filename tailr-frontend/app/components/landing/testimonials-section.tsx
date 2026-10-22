@@ -4,6 +4,8 @@ import * as React from "react";
 import Image from "next/image";
 import { Star, Users, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 import { cn } from "@/shared/lib/utils";
 
 interface Testimonial {
@@ -162,12 +164,21 @@ export function TestimonialsSection() {
           >
             Social Proof
           </RotatingBorderBadge>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
-            Loved by Fast-Growing Tech Talent
-          </h2>
-          <p className="mt-2.5 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto">
-            See how top engineers, designers, and managers multiply their interview invitations with Tailr.
-          </p>
+          <div className="flex justify-center">
+            <FoldingText
+              text="Loved by Fast-Growing Tech Talent"
+              highlightWords={["Fast-Growing", "Tech", "Talent"]}
+              as="h2"
+              className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white"
+            />
+          </div>
+          <div className="flex justify-center">
+            <AnimatedDescription
+              text="See how top engineers, designers, and managers multiply their interview invitations with Tailr."
+              className="mt-2.5 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto text-center"
+              delay={0.3}
+            />
+          </div>
         </div>
 
         {/* 3D Showcase Stage: Center Active Card + Left/Right Tilted Previews */}

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 import { cn } from "@/shared/lib/utils";
 
 interface FaqItem {
@@ -70,12 +72,21 @@ export function FaqSection() {
           >
             Got Questions?
           </RotatingBorderBadge>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-3 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed">
-            Everything you need to know about the platform, deterministic AI tailoring, and ATS compliance.
-          </p>
+          <div className="flex justify-center">
+            <FoldingText
+              text="Frequently Asked Questions"
+              highlightWords={["Frequently", "Questions"]}
+              as="h2"
+              className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white"
+            />
+          </div>
+          <div className="flex justify-center">
+            <AnimatedDescription
+              text="Everything you need to know about the platform, deterministic AI tailoring, and ATS compliance."
+              className="mt-3 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-xl mx-auto leading-relaxed text-center"
+              delay={0.3}
+            />
+          </div>
         </div>
 
         {/* Accordion List with Smooth Physics-Based Height Animation */}

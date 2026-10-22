@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight } from "lucide-react";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 import { cn } from "@/shared/lib/utils";
 
 // ─── TARGET ROLE PERMUTATIONS FOR THE REAL RESUME ───────────────────────────────
@@ -464,19 +466,21 @@ export function FeaturesBento() {
               </div>
             </div>
 
-            {/* Bold Headline: Vizurio / Tailr Typography */}
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] font-sans">
-              <span className="text-indigo-400 block">Tailr:</span>
-              <span className="block mt-1">Design smarter.</span>
-              <span className="block mt-1">Sell Faster.</span>
-            </h2>
+            {/* Bold Headline: 3D Folding Text Animation */}
+            <FoldingText
+              lines={["Tailr:", "Design smarter.", "Sell Faster."]}
+              highlightWords={["Tailr:", "smarter.", "Faster."]}
+              align="left"
+              as="h2"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] font-sans"
+            />
 
-            {/* Subtitle / Paragraph */}
-            <p className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-xl font-normal">
-              Customize, visualize, and preview your career profile in real-time with our
-              Visualization Tool. Experience stunning live AST diffs, smart keyword automation,
-              zero hallucinations, and print-ready ATS output — all in one seamless platform.
-            </p>
+            {/* Subtitle / Paragraph with Cinematic Blur-Slide Animation */}
+            <AnimatedDescription
+              text="Customize, visualize, and preview your career profile in real-time with our Visualization Tool. Experience stunning live AST diffs, smart keyword automation, zero hallucinations, and print-ready ATS output — all in one seamless platform."
+              className="text-sm sm:text-base text-neutral-300 leading-relaxed max-w-xl font-normal"
+              delay={0.35}
+            />
 
             {/* Glowing Pill Button (Linear / Tailr Signature Purple-Indigo Glow) */}
             <div className="pt-2">

@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { Button, PillGlowButton } from "@/shared/components/ui/button";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
+import { FoldingText } from "@/shared/components/ui/folding-text";
+import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 
 /**
  * PricingSection:
@@ -140,13 +142,21 @@ export function PricingSection() {
           <RotatingBorderBadge wrapperClassName="mb-3">
             Public Beta
           </RotatingBorderBadge>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white">
-            Tailr is free while in beta.
-          </h2>
-          <p className="mt-3 text-xs sm:text-sm md:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            We&apos;re actively improving the platform alongside job seekers. All features are open
-            and free to use today—no credit card or subscription required.
-          </p>
+          <div className="flex justify-center">
+            <FoldingText
+              text="Tailr is free while in beta."
+              highlightWords={["free", "beta."]}
+              as="h2"
+              className="text-2xl sm:text-4xl font-extrabold tracking-tight text-neutral-950 dark:text-white"
+            />
+          </div>
+          <div className="flex justify-center">
+            <AnimatedDescription
+              text="We're actively improving the platform alongside job seekers. All features are open and free to use today—no credit card or subscription required."
+              className="mt-3 text-xs sm:text-sm md:text-base text-neutral-600 dark:text-neutral-400 leading-relaxed text-center"
+              delay={0.3}
+            />
+          </div>
         </div>
 
         {ENABLE_PAID_PRICING ? (
