@@ -2,70 +2,20 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import {
   ArrowRight,
-  ShieldCheck,
-  Sparkles,
-  Check,
-  Database,
-  GitCompare,
-  FileCheck2,
-  CheckCircle2,
-  Layers,
-  Terminal,
   Maximize2,
   Crop,
   RotateCw,
   Move,
-  FileText,
-  Zap,
   AlignLeft,
   AlignCenter,
   AlignRight,
-  MousePointer,
-  RotateCcw,
   FlipHorizontal,
   FlipVertical,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
-
-// ─── 4 CORE PLATFORM PILLARS ───────────────────────────────────────────────────
-
-const PLATFORM_PILLARS = [
-  {
-    num: "01",
-    title: "Master Resume Architecture",
-    description:
-      "Single source of truth for your entire career history. Dynamically compile tailored permutations without desyncing records.",
-    icon: Database,
-    badge: "Graph Vault",
-  },
-  {
-    num: "02",
-    title: "Zero-Hallucination AI",
-    description:
-      "Deterministic AST boundaries prevent unearned titles or fake metrics. Every bullet point must resolve to verified truth.",
-    icon: ShieldCheck,
-    badge: "Strict AST",
-  },
-  {
-    num: "03",
-    title: "Diff & Semantic Auditor",
-    description:
-      "Transform passive task lists into high-impact Google XYZ statements with real-time before/after side-by-side transparency.",
-    icon: GitCompare,
-    badge: "+56% Signal",
-  },
-  {
-    num: "04",
-    title: "Native ATS PDF Compiler",
-    description:
-      "Engineered specifically to bypass parsing traps in Greenhouse, Workday, and Lever. Pure single-column linear hierarchies.",
-    icon: FileCheck2,
-    badge: "100% Parsed",
-  },
-];
 
 // ─── MAIN COMPONENT ─────────────────────────────────────────────────────────────
 
@@ -97,7 +47,7 @@ export function FeaturesBento() {
       {/* Ambient background soft glow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[400px] bg-emerald-500/[0.03] rounded-full blur-[140px] z-0"
+        className="pointer-events-none absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[400px] bg-indigo-500/[0.05] rounded-full blur-[140px] z-0"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
@@ -105,10 +55,10 @@ export function FeaturesBento() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* ─── LEFT COLUMN: Visual Product Display & Floating Customizer ─── */}
           <div className="lg:col-span-7 relative flex items-center justify-center min-h-[460px] sm:min-h-[520px] py-4">
-            {/* Ambient emerald backlight behind documents */}
+            {/* Ambient indigo/purple backlight behind documents */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute w-72 h-72 sm:w-96 sm:h-96 bg-emerald-500/10 rounded-full blur-3xl -z-10"
+              className="pointer-events-none absolute w-72 h-72 sm:w-96 sm:h-96 bg-indigo-500/15 rounded-full blur-3xl -z-10"
             />
 
             {/* Document 1: Dark Metallic Master Ledger (Angled Left, Back) */}
@@ -140,7 +90,7 @@ export function FeaturesBento() {
                       MASTER_GRAPH
                     </span>
                   </div>
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                 </div>
 
                 <div className="space-y-1">
@@ -154,7 +104,7 @@ export function FeaturesBento() {
                 {/* Simulated Records */}
                 <div className="space-y-2 pt-2">
                   <div className="p-2 rounded-lg bg-white/[0.04] border border-white/5 space-y-1">
-                    <div className="h-2 w-4/5 bg-emerald-400/40 rounded" />
+                    <div className="h-2 w-4/5 bg-indigo-400/40 rounded" />
                     <div className="h-1.5 w-full bg-white/10 rounded" />
                     <div className="h-1.5 w-2/3 bg-white/10 rounded" />
                   </div>
@@ -168,7 +118,7 @@ export function FeaturesBento() {
               {/* Verified Ledger Seal */}
               <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[9px] font-mono text-neutral-400">
                 <span>SHA-256 #0x7F2A</span>
-                <span className="text-emerald-400">28 Verified</span>
+                <span className="text-indigo-400">28 Verified</span>
               </div>
             </motion.div>
 
@@ -191,11 +141,11 @@ export function FeaturesBento() {
                     <span className="font-extrabold text-xs tracking-tight text-neutral-950 block">
                       Alex Rivera
                     </span>
-                    <span className="text-[9px] font-mono text-emerald-600 block">
+                    <span className="text-[9px] font-mono text-indigo-600 block">
                       Staff Platform Engineer
                     </span>
                   </div>
-                  <span className="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                     ATS 100%
                   </span>
                 </div>
@@ -236,7 +186,7 @@ export function FeaturesBento() {
 
               <div className="pt-2 border-t border-neutral-100 flex items-center justify-between text-[8px] font-mono text-neutral-500">
                 <span>Greenhouse / Workday</span>
-                <span className="text-emerald-600 font-bold">Linear DOM</span>
+                <span className="text-indigo-600 font-bold">Linear DOM</span>
               </div>
             </motion.div>
 
@@ -260,7 +210,7 @@ export function FeaturesBento() {
                   Transform
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                   <span className="text-[10px] font-mono text-neutral-400">Live</span>
                 </div>
               </div>
@@ -315,11 +265,11 @@ export function FeaturesBento() {
                     className={cn(
                       "w-full flex flex-col items-center justify-center p-1.5 rounded-lg border transition-all text-center cursor-pointer",
                       activeTool === "crop"
-                        ? "border-[#22c55e] bg-emerald-50/50 shadow-xs text-neutral-900 ring-1 ring-[#22c55e]/40"
+                        ? "border-indigo-600 bg-indigo-50/60 shadow-xs text-neutral-900 ring-1 ring-indigo-500/40"
                         : "border-neutral-200/60 hover:border-neutral-300"
                     )}
                   >
-                    <Crop className="h-3.5 w-3.5 text-[#22c55e]" />
+                    <Crop className="h-3.5 w-3.5 text-indigo-600" />
                     <span className="text-[8px] font-mono mt-1 font-bold">Crop</span>
                   </button>
 
@@ -393,7 +343,7 @@ export function FeaturesBento() {
 
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] text-neutral-400">ATS Match</span>
-                  <span className="text-[#22c55e] font-bold text-[10px]">
+                  <span className="text-indigo-600 font-bold text-[10px]">
                     99.4% Verified ✓
                   </span>
                 </div>
@@ -401,18 +351,18 @@ export function FeaturesBento() {
             </motion.div>
           </div>
 
-          {/* ─── RIGHT COLUMN: Copy & Green Glow Pill Button (Vizurio Headline) ─── */}
+          {/* ─── RIGHT COLUMN: Copy & Theme Glow Pill Button ─── */}
           <div className="lg:col-span-5 space-y-6 lg:pl-6 text-left">
-            {/* Rectangular Green Outline Badge (Exact match: [OUR PRODUCT]) */}
+            {/* Rectangular Theme Outline Badge (Tailr Indigo Accent) */}
             <div>
-              <div className="inline-block border border-[#22c55e] text-[#22c55e] px-3 py-1 text-xs font-mono font-bold uppercase tracking-widest">
+              <div className="inline-block border border-indigo-500 text-indigo-400 bg-indigo-500/5 px-3 py-1 text-xs font-mono font-bold uppercase tracking-widest">
                 OUR PRODUCT
               </div>
             </div>
 
             {/* Bold Headline: Vizurio / Tailr Typography */}
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] font-sans">
-              <span className="text-[#22c55e] block">Tailr:</span>
+              <span className="text-indigo-400 block">Tailr:</span>
               <span className="block mt-1">Design smarter.</span>
               <span className="block mt-1">Sell Faster.</span>
             </h2>
@@ -424,50 +374,17 @@ export function FeaturesBento() {
               zero hallucinations, and print-ready ATS output — all in one seamless platform.
             </p>
 
-            {/* Glowing Pill Button (Linear / Vizurio Style with Green Glow) */}
+            {/* Glowing Pill Button (Linear / Tailr Signature Purple-Indigo Glow) */}
             <div className="pt-2">
               <Link
                 href="/register"
-                className="btn-pill-glow-green px-8 py-3.5 text-sm font-semibold tracking-wide inline-flex items-center gap-2.5 text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                className="btn-pill-glow px-8 py-3.5 text-sm font-semibold tracking-wide inline-flex items-center gap-2.5 text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <span>Visit Tailr</span>
-                <ArrowRight className="h-4 w-4 text-[#22c55e]" />
+                <ArrowRight className="h-4 w-4 text-indigo-400" />
               </Link>
             </div>
           </div>
-        </div>
-
-        {/* ─── 4 CORE ARCHITECTURE PILLARS (Below the split showcase) ─── */}
-        <div className="mt-16 sm:mt-24 pt-12 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {PLATFORM_PILLARS.map((pillar) => {
-            const IconComponent = pillar.icon;
-            return (
-              <div
-                key={pillar.num}
-                className="group relative p-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] hover:border-[#22c55e]/40 transition-all duration-300 space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono font-bold text-neutral-500 group-hover:text-[#22c55e] transition-colors">
-                    {pillar.num}
-                  </span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-neutral-400 border border-white/5">
-                    {pillar.badge}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <IconComponent className="h-4 w-4 text-[#22c55e]" />
-                  <h3 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
-                    {pillar.title}
-                  </h3>
-                </div>
-
-                <p className="text-xs text-neutral-400 leading-relaxed font-sans">
-                  {pillar.description}
-                </p>
-              </div>
-            );
-          })}
         </div>
       </div>
     </section>
