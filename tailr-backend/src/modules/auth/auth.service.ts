@@ -562,7 +562,7 @@ export class AuthService {
     const fullName = profile.name?.trim() || "User";
     const now = new Date();
 
-    // 3. Find or create user
+    // 3. Find or create user (Unified Account Linking by Email)
     let user = await db.query.users.findFirst({
       where: eq(users.email, normalizedEmail),
     });
@@ -593,18 +593,29 @@ export class AuthService {
         to: user.email,
         fullName: user.fullName,
       }).catch((err) => console.error("[Google OAuth] Welcome email error:", err));
-    } else if (!user.isVerified) {
-      // Auto-verify existing account on Google authentication
-      const [updated] = await db
-        .update(users)
-        .set({
-          isVerified: true,
-          updatedAt: now,
-        })
-        .where(eq(users.id, user.id))
-        .returning();
+    } else {
+      // Existing user found with the same email address — link directly to this exact account!
+      // 1. If previously unverified (e.g. registered via email/password without completing OTP),
+      //    automatically verify because Google verified ownership of this email address.
+      // 2. If fullName was missing or generic "User", enrich with the Google profile name.
+      const shouldVerify = !user.isVerified;
+      const shouldUpdateName =
+        (!user.fullName || user.fullName === "User" || user.fullName.trim() === "") &&
+        fullName !== "User";
 
-      user = updated;
+      if (shouldVerify || shouldUpdateName) {
+        const [updated] = await db
+          .update(users)
+          .set({
+            ...(shouldVerify ? { isVerified: true } : {}),
+            ...(shouldUpdateName ? { fullName } : {}),
+            updatedAt: now,
+          })
+          .where(eq(users.id, user.id))
+          .returning();
+
+        user = updated;
+      }
     }
 
     // Pre-warm user cache in Redis

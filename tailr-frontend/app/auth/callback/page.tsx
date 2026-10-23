@@ -4,15 +4,18 @@ import * as React from "react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAppDispatch } from "@/shared/store/hooks";
 import { setCredentials } from "@/shared/store/auth-slice";
 import { saveStoredAuth, setSessionCookie } from "@/shared/lib/cookie";
+import { authQueryKeys } from "@/shared/hooks/auth/use-auth-mutations";
 import type { User } from "@/shared/types/auth";
 
 function CallbackHandler() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -41,10 +44,19 @@ function CallbackHandler() {
       setSessionCookie();
       saveStoredAuth(user, accessToken, refreshToken);
 
-      // 2. Hydrate Redux in-memory store
+      // 2. Clear stale cache from any prior account and prime the fresh session
+      queryClient.clear();
+      queryClient.cancelQueries({ queryKey: authQueryKeys.refresh });
+      queryClient.setQueryData(authQueryKeys.refresh, {
+        success: true,
+        message: "Authenticated via Google OAuth",
+        data: { user, accessToken },
+      });
+
+      // 3. Hydrate Redux in-memory store
       dispatch(setCredentials({ user, accessToken }));
 
-      // 3. Navigate to Dashboard
+      // 4. Navigate to Dashboard
       router.replace("/dashboard");
     } catch (err) {
       console.error("[OAuth Callback] Failed to parse user session payload:", err);
@@ -54,7 +66,7 @@ function CallbackHandler() {
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [router, searchParams, dispatch]);
+  }, [router, searchParams, dispatch, queryClient]);
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4 text-center">

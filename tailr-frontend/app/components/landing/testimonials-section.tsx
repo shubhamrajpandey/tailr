@@ -234,7 +234,7 @@ export function TestimonialsSection() {
               </p>
 
               <div className="mt-auto pt-4 border-t border-neutral-100 dark:border-white/5 w-full flex items-center justify-center text-[11px] text-neutral-400 group-hover:text-indigo-500 transition-colors">
-                ← Click to view review
+                Click to view review
               </div>
             </div>
 

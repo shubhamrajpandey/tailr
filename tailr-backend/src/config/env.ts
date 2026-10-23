@@ -87,8 +87,12 @@ function getEnv(): EnvConfig {
     AI_COOLDOWN_SECONDS: parseInt(process.env.AI_COOLDOWN_SECONDS || "20", 10),
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM || "Tailr Security <noreply@tailr.shubhamrajpandey.com.np>",
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_CLIENT_ID:
+      process.env.GOOGLE_CLIENT_ID ||
+      (NODE_ENV === "test" ? "test-google-client-id.apps.googleusercontent.com" : undefined),
+    GOOGLE_CLIENT_SECRET:
+      process.env.GOOGLE_CLIENT_SECRET ||
+      (NODE_ENV === "test" ? "test-google-client-secret" : undefined),
     GOOGLE_REDIRECT_URI:
       process.env.GOOGLE_REDIRECT_URI ||
       `${NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001"}/auth/google/callback`,
