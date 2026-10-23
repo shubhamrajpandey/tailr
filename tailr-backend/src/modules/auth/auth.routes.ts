@@ -6,6 +6,8 @@ import {
   VerifyOtpBody,
   ResendOtpBody,
   LoginBody,
+  ForgotPasswordBody,
+  ResetPasswordBody,
 } from "./auth.model";
 import { authRateLimiter, otpResendRateLimiter } from "../../middleware/rate-limiter";
 import { authGuard } from "../../middleware/auth-guard";
@@ -92,7 +94,61 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     },
   })
 
-  // 4. User Login -> Validates Credentials & Returns JWT + Sets HttpOnly Cookie
+  // 4. Request Password Reset -> Triggers 6-Digit OTP Email via Resend
+  .use(authRateLimiter)
+  .post(
+    "/forgot-password",
+    ({ body }) => authController.forgotPassword({ body }),
+    {
+      body: ForgotPasswordBody,
+      detail: {
+        tags: ["Auth"],
+        summary: "Request password reset OTP email",
+        description:
+          "Generates a single-use 6-digit password reset OTP and sends instructions via Resend email. Anti-enumeration protected (returns generic success regardless of whether email exists).",
+        responses: {
+          200: {
+            description: "Password reset instructions dispatched.",
+          },
+          400: {
+            description: "Invalid email format.",
+          },
+          429: {
+            description: "Rate limit exceeded.",
+          },
+        },
+      },
+    }
+  )
+
+  // 5. Reset Password -> Validates OTP & Updates Password Hash
+  .use(authRateLimiter)
+  .post(
+    "/reset-password",
+    ({ body }) => authController.resetPassword({ body }),
+    {
+      body: ResetPasswordBody,
+      detail: {
+        tags: ["Auth"],
+        summary: "Reset password using 6-digit OTP code",
+        description:
+          "Validates single-use 6-digit OTP code with purpose 'password_reset', updates password hash using Bun-native argon2id, revokes all active sessions for security, and sends a security confirmation email.",
+        responses: {
+          200: {
+            description: "Password reset successfully.",
+          },
+          400: {
+            description: "Invalid or expired reset code or passwords do not match.",
+          },
+          429: {
+            description: "Rate limit exceeded.",
+          },
+        },
+      },
+    }
+  )
+
+  // 6. User Login -> Validates Credentials & Returns JWT + Sets HttpOnly Cookie
   .use(authRateLimiter)
   .post(
     "/login",

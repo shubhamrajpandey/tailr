@@ -36,6 +36,10 @@ import {
   type SignupResponse,
   type VerifyOtpRequest,
   type VerifyOtpResponse,
+  type ForgotPasswordRequest,
+  type ForgotPasswordResponse,
+  type ResetPasswordRequest,
+  type ResetPasswordResponse,
 } from "@/shared/types/auth";
 
 // ─── Query Keys ─────────────────────────────────────────────────────────────────
@@ -137,6 +141,36 @@ export function useResendOtpMutation() {
   return useMutation<ResendOtpResponse, AxiosError<ApiErrorBody>, ResendOtpRequest>({
     mutationFn: (body) =>
       authApiClient.post<ResendOtpResponse>("/auth/resend-otp", body).then((res) => res.data),
+  });
+}
+
+// ─── useForgotPasswordMutation ──────────────────────────────────────────────────
+
+/**
+ * POST /auth/forgot-password
+ * Triggers a 6-digit password reset OTP email via Resend.
+ */
+export function useForgotPasswordMutation() {
+  return useMutation<ForgotPasswordResponse, AxiosError<ApiErrorBody>, ForgotPasswordRequest>({
+    mutationFn: (body) =>
+      authApiClient
+        .post<ForgotPasswordResponse>("/auth/forgot-password", body)
+        .then((res) => res.data),
+  });
+}
+
+// ─── useResetPasswordMutation ───────────────────────────────────────────────────
+
+/**
+ * POST /auth/reset-password
+ * Validates the 6-digit OTP code and updates the account password.
+ */
+export function useResetPasswordMutation() {
+  return useMutation<ResetPasswordResponse, AxiosError<ApiErrorBody>, ResetPasswordRequest>({
+    mutationFn: (body) =>
+      authApiClient
+        .post<ResetPasswordResponse>("/auth/reset-password", body)
+        .then((res) => res.data),
   });
 }
 

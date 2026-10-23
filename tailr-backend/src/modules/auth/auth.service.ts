@@ -10,10 +10,22 @@ import {
 } from "../../middleware/error";
 import { hashToken, generateSecureRandomToken } from "../../utils/crypto";
 import { generateNumericOtp } from "../../utils/otp";
-import { sendOtpEmail } from "../../utils/mailer";
+import {
+  sendOtpEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
+  sendWelcomeEmail,
+} from "../../utils/mailer";
 import { env } from "../../config/env";
 import { redis } from "../../config/redis";
-import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
+import type {
+  SignupInput,
+  VerifyOtpInput,
+  ResendOtpInput,
+  LoginInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+} from "./auth.model";
 
 export class AuthService {
   /**
@@ -136,10 +148,11 @@ export class AuthService {
 
     if (!isDevBypass) {
       // ── Normal OTP path ─────────────────────────────────────────────────────
-      // Find the latest active unconsumed OTP
+      // Find the latest active unconsumed OTP for signup verification
       const activeOtp = await db.query.otps.findFirst({
         where: and(
           eq(otps.email, email),
+          eq(otps.purpose, "signup_verification"),
           isNull(otps.consumedAt),
           gt(otps.expiresAt, now)
         ),
@@ -173,8 +186,6 @@ export class AuthService {
       );
     }
 
-
-
     // Activate the user account
     const [verifiedUser] = await db
       .update(users)
@@ -188,6 +199,12 @@ export class AuthService {
     if (!verifiedUser) {
       throw new NotFoundError("Associated user account was not found.");
     }
+
+    // Dispatch welcome onboarding email asynchronously via Resend
+    sendWelcomeEmail({
+      to: verifiedUser.email,
+      fullName: verifiedUser.fullName,
+    }).catch((err) => console.error("[Mailer] Failed to send welcome email:", err));
 
     return verifiedUser;
   }
@@ -239,6 +256,168 @@ export class AuthService {
       success: true,
       message: "A new 6-digit verification code has been dispatched to your email.",
       email,
+    };
+  }
+
+  /**
+   * Generates single-use password reset OTP code and dispatches instructions via Resend.
+   * Anti-enumeration protected: returns identical generic success even if email does not exist.
+   */
+  async forgotPassword(input: ForgotPasswordInput) {
+    const email = input.email.trim().toLowerCase();
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    // Anti-enumeration protection: prevent disclosing whether user exists
+    if (!user) {
+      return {
+        success: true,
+        message: "If an account with that email exists, we've sent password reset instructions.",
+        email,
+      };
+    }
+
+    // Invalidate existing active password_reset OTPs for this email
+    await db
+      .update(otps)
+      .set({ consumedAt: new Date() })
+      .where(
+        and(
+          eq(otps.email, email),
+          eq(otps.purpose, "password_reset"),
+          isNull(otps.consumedAt)
+        )
+      );
+
+    // Generate fresh single-use 6-digit OTP
+    const rawOtp = generateNumericOtp();
+    const codeHash = hashToken(rawOtp);
+    const expiryMinutes = 15;
+    const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
+
+    await db.insert(otps).values({
+      email,
+      codeHash,
+      purpose: "password_reset",
+      expiresAt,
+    });
+
+    const resetLink = `${env.FRONTEND_URL}/reset-password?email=${encodeURIComponent(email)}&code=${rawOtp}`;
+
+    await sendPasswordResetEmail({
+      to: email,
+      otp: rawOtp,
+      resetLink,
+      fullName: user.fullName,
+      expiryMinutes,
+    });
+
+    return {
+      success: true,
+      message: "If an account with that email exists, we've sent password reset instructions.",
+      email,
+    };
+  }
+
+  /**
+   * Validates password reset OTP code, updates user password hash with Bun argon2id,
+   * revokes all active sessions for security, and sends a security confirmation email.
+   */
+  async resetPassword(input: ResetPasswordInput) {
+    if (input.newPassword !== input.confirmPassword) {
+      throw new BadRequestError("Passwords do not match.");
+    }
+
+    const email = input.email.trim().toLowerCase();
+    const code = input.code.trim();
+    const now = new Date();
+
+    const DEV_BYPASS_CODE = "696969";
+    const isDevBypass = env.NODE_ENV !== "production" && code === DEV_BYPASS_CODE;
+
+    if (!isDevBypass) {
+      // Find latest active unconsumed password_reset OTP
+      const activeOtp = await db.query.otps.findFirst({
+        where: and(
+          eq(otps.email, email),
+          eq(otps.purpose, "password_reset"),
+          isNull(otps.consumedAt),
+          gt(otps.expiresAt, now)
+        ),
+        orderBy: [desc(otps.createdAt)],
+      });
+
+      if (!activeOtp) {
+        throw new BadRequestError("Password reset code is invalid or has expired. Please request a new code.");
+      }
+
+      // Timing-safe SHA-256 comparison
+      const inputHashBuffer = Buffer.from(hashToken(code), "hex");
+      const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
+      const hashesMatch =
+        inputHashBuffer.length === storedHashBuffer.length &&
+        crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer);
+
+      if (!hashesMatch) {
+        throw new BadRequestError("Invalid password reset code. Please check and try again.");
+      }
+
+      // Mark OTP as consumed
+      await db
+        .update(otps)
+        .set({ consumedAt: now })
+        .where(eq(otps.id, activeOtp.id));
+    }
+
+    const user = await db.query.users.findFirst({
+      where: eq(users.email, email),
+    });
+
+    if (!user) {
+      throw new NotFoundError("Associated user account was not found.");
+    }
+
+    // Hash new password using Bun-native argon2id
+    const passwordHash = await Bun.password.hash(input.newPassword, {
+      algorithm: "argon2id",
+      memoryCost: 65536,
+      timeCost: 3,
+    });
+
+    // Update user credentials
+    await db
+      .update(users)
+      .set({
+        passwordHash,
+        updatedAt: now,
+      })
+      .where(eq(users.id, user.id));
+
+    // Revoke all active refresh tokens for this user across all devices
+    await db
+      .update(refreshTokens)
+      .set({ revokedAt: now })
+      .where(
+        and(
+          eq(refreshTokens.userId, user.id),
+          isNull(refreshTokens.revokedAt)
+        )
+      );
+
+    // Evict cached session in Redis
+    await invalidateUserCache(user.id);
+
+    // Send security alert notification asynchronously
+    sendPasswordChangedEmail({
+      to: user.email,
+      fullName: user.fullName,
+    }).catch((err) => console.error("[Mailer] Failed to send password changed alert:", err));
+
+    return {
+      success: true,
+      message: "Your password has been successfully reset. You may now sign in with your new password.",
     };
   }
 

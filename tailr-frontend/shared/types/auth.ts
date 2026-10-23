@@ -107,6 +107,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  code: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 // ─── Endpoint Response Data ─────────────────────────────────────────────────────
 
 export interface SignupResponseData {
@@ -132,6 +143,10 @@ export interface MeResponseData {
   user: User;
 }
 
+export interface ForgotPasswordResponseData {
+  email: string;
+}
+
 // ─── Typed API Response Aliases ──────────────────────────────────────────────────
 
 export type SignupResponse = ApiResponse<SignupResponseData>;
@@ -141,3 +156,6 @@ export type LoginResponse = ApiResponse<LoginResponseData>;
 export type RefreshResponse = ApiResponse<RefreshResponseData>;
 export type MeResponse = ApiResponse<MeResponseData>;
 export type LogoutResponse = ApiResponse<Record<string, never>>;
+export type ForgotPasswordResponse = ApiResponse<ForgotPasswordResponseData>;
+export type ResetPasswordResponse = ApiResponse<Record<string, never>>;
+

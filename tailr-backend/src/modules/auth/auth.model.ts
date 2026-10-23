@@ -90,6 +90,48 @@ export const LoginBody = t.Object({
 export type LoginInput = typeof LoginBody.static;
 
 /**
+ * Validation schema for Forgot Password request.
+ */
+export const ForgotPasswordBody = t.Object({
+  email: t.String({
+    format: "email",
+    maxLength: 255,
+    error: "Please provide a valid email address.",
+  }),
+});
+
+export type ForgotPasswordInput = typeof ForgotPasswordBody.static;
+
+/**
+ * Validation schema for Reset Password request.
+ */
+export const ResetPasswordBody = t.Object({
+  email: t.String({
+    format: "email",
+    maxLength: 255,
+    error: "Please provide a valid email address.",
+  }),
+  code: t.String({
+    minLength: 6,
+    maxLength: 6,
+    pattern: "^[0-9]{6}$",
+    error: "Reset verification code must be exactly 6 numeric digits.",
+  }),
+  newPassword: t.String({
+    minLength: 8,
+    maxLength: 128,
+    error: "New password must be between 8 and 128 characters.",
+  }),
+  confirmPassword: t.String({
+    minLength: 8,
+    maxLength: 128,
+    error: "Confirm password must match the new password.",
+  }),
+});
+
+export type ResetPasswordInput = typeof ResetPasswordBody.static;
+
+/**
  * Safe public user representation (excluding sensitive credentials).
  */
 export const SafeUserSchema = t.Object({
@@ -101,3 +143,4 @@ export const SafeUserSchema = t.Object({
 });
 
 export type SafeUser = typeof SafeUserSchema.static;
+

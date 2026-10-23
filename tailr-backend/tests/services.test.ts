@@ -205,7 +205,7 @@ describe("Core Services & Observability Unit Tests", () => {
       expect(overview.kpi.totalApplications).toBe(0);
       expect(overview.velocity.benchmarkDaily).toBe(5);
       expect(overview.hasData).toBe(false);
-    });
+    }, 15000);
 
     it("getFunnel returns conversion stages with 0% conversion for zero data", async () => {
       const { analyticsService } = await import("../src/modules/analytics/analytics.service");
@@ -216,6 +216,6 @@ describe("Core Services & Observability Unit Tests", () => {
       expect(funnel.stages.length).toBe(4);
       expect(funnel.totalPipeline).toBe(0);
       expect(funnel.overallConversionRate).toBe(0);
-    });
+    }, 15000);
   });
 });

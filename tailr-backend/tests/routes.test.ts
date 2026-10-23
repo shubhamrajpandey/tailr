@@ -88,6 +88,79 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
+  it("POST /auth/forgot-password rejects invalid email formatting", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "invalid-email-address",
+        }),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("POST /auth/forgot-password returns 200 with anti-enumeration response", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "unregistered_user@tailr.io",
+        }),
+      })
+    );
+
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    expect(body.message).toContain("password reset instructions");
+  });
+
+  it("POST /auth/reset-password rejects mismatched passwords", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "test@tailr.io",
+          code: "123456",
+          newPassword: "NewSecurePassword123!",
+          confirmPassword: "DifferentPassword456!",
+        }),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+  });
+
+  it("POST /auth/reset-password rejects non-6-digit code", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: "test@tailr.io",
+          code: "123", // too short
+          newPassword: "NewSecurePassword123!",
+          confirmPassword: "NewSecurePassword123!",
+        }),
+      })
+    );
+
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.success).toBe(false);
+    expect(body.error.code).toBe("VALIDATION_ERROR");
+  });
+
   it("POST /auth/verify-otp validates 6-digit numeric pattern", async () => {
     const res = await app.handle(
       new Request("http://localhost:3001/auth/verify-otp", {

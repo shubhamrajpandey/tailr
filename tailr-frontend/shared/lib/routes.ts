@@ -14,6 +14,7 @@ export const ROUTES = {
   // Authentication Routes
   LOGIN: "/login",
   SIGNUP: "/signup",
+  RESET_PASSWORD: "/reset-password",
 
   // Authenticated Dashboard Routes
   DASHBOARD: "/dashboard",
@@ -38,7 +39,11 @@ export const ROUTES = {
 /**
  * Routes restricted to unauthenticated guests (redirects active sessions to dashboard).
  */
-export const AUTH_ROUTES: readonly string[] = [ROUTES.LOGIN, ROUTES.SIGNUP];
+export const AUTH_ROUTES: readonly string[] = [
+  ROUTES.LOGIN,
+  ROUTES.SIGNUP,
+  ROUTES.RESET_PASSWORD,
+];
 
 /**
  * Route prefixes requiring an active authentication session.

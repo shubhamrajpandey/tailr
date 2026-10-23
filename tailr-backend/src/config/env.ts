@@ -83,7 +83,7 @@ function getEnv(): EnvConfig {
     DAILY_COVER_LETTER_LIMIT: parseInt(process.env.DAILY_COVER_LETTER_LIMIT || "2", 10),
     AI_COOLDOWN_SECONDS: parseInt(process.env.AI_COOLDOWN_SECONDS || "20", 10),
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-    EMAIL_FROM: process.env.EMAIL_FROM || "Tailr Security <noreply@tailr.io>",
+    EMAIL_FROM: process.env.EMAIL_FROM || "Tailr Security <noreply@tailr.shubhamrajpandey.com.np>",
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   });

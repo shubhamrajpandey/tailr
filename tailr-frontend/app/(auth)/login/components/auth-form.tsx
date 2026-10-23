@@ -27,7 +27,11 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/shared/store/hooks";
 import { setAuthStep } from "@/shared/store/auth-slice";
 import { SocialAuthButtons } from "./social-auth-buttons";
-import { useLoginMutation, extractErrorMessage } from "@/shared/hooks/auth/use-auth-mutations";
+import {
+  useLoginMutation,
+  useForgotPasswordMutation,
+  extractErrorMessage,
+} from "@/shared/hooks/auth/use-auth-mutations";
 
 export function AuthForm() {
   const router = useRouter();
@@ -70,9 +74,10 @@ export function AuthForm() {
   const [forgotPasswordOpen, setForgotPasswordOpen] = React.useState(false);
   const [forgotEmail, setForgotEmail] = React.useState("");
   const [forgotSubmitted, setForgotSubmitted] = React.useState(false);
-  const [isForgotLoading, setIsForgotLoading] = React.useState(false);
+  const [forgotError, setForgotError] = React.useState<string | null>(null);
 
   const loginMutation = useLoginMutation();
+  const forgotPasswordMutation = useForgotPasswordMutation();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,18 +116,26 @@ export function AuthForm() {
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!forgotEmail) return;
-    setIsForgotLoading(true);
-    // TODO: wire to /auth/forgot-password when endpoint is added
-    setTimeout(() => {
-      setIsForgotLoading(false);
-      setForgotSubmitted(true);
-    }, 700);
+    setForgotError(null);
+
+    forgotPasswordMutation.mutate(
+      { email: forgotEmail.trim().toLowerCase() },
+      {
+        onSuccess: () => {
+          setForgotSubmitted(true);
+        },
+        onError: (error) => {
+          setForgotError(extractErrorMessage(error, "Failed to send reset code. Please try again."));
+        },
+      }
+    );
   };
 
   const handleOpenForgotPassword = (e: React.MouseEvent) => {
     e.preventDefault();
     setForgotEmail(email || "");
     setForgotSubmitted(false);
+    setForgotError(null);
     setForgotPasswordOpen(true);
   };
 
@@ -324,25 +337,45 @@ export function AuthForm() {
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <p className="text-sm font-semibold text-neutral-900 dark:text-white">
-                Password reset link sent!
+                Password reset instructions sent!
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400 max-w-xs">
-                We sent instructions to{" "}
+                We sent a 6-digit reset code and instructions via Resend email to{" "}
                 <span className="font-semibold text-neutral-800 dark:text-neutral-200">
                   {forgotEmail}
                 </span>
                 . Check your inbox and spam folders.
               </p>
-              <Button
-                type="button"
-                onClick={() => setForgotPasswordOpen(false)}
-                className="mt-2 text-xs h-10 sm:h-9 rounded-lg w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold cursor-pointer shadow-xs shadow-indigo-500/20"
-              >
-                Done
-              </Button>
+              <div className="flex flex-col-reverse sm:flex-row gap-2 w-full mt-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setForgotPasswordOpen(false)}
+                  className="text-xs h-10 sm:h-9 rounded-lg flex-1 cursor-pointer"
+                >
+                  Done
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setForgotPasswordOpen(false);
+                    router.push(`/reset-password?email=${encodeURIComponent(forgotEmail)}`);
+                  }}
+                  className="text-xs h-10 sm:h-9 rounded-lg flex-1 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold cursor-pointer shadow-xs shadow-indigo-500/20"
+                >
+                  Enter Reset Code →
+                </Button>
+              </div>
             </div>
           ) : (
             <form onSubmit={handleForgotPasswordSubmit} className="space-y-4 pt-2">
+              {forgotError && (
+                <div className="flex items-center gap-2 p-2.5 text-xs text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 rounded-xl">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{forgotError}</span>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <label
                   htmlFor="forgot-password-email"
@@ -375,10 +408,10 @@ export function AuthForm() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isForgotLoading || !forgotEmail}
+                  disabled={forgotPasswordMutation.isPending || !forgotEmail}
                   className="w-full sm:w-auto text-xs h-10 sm:h-9 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-xs shadow-indigo-500/20 border border-indigo-500/30 font-semibold cursor-pointer"
                 >
-                  {isForgotLoading ? (
+                  {forgotPasswordMutation.isPending ? (
                     <span className="flex items-center justify-center gap-1.5">
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
                       <span>Sending...</span>

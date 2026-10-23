@@ -2,7 +2,14 @@ import { authService } from "./auth.service";
 import { generateSecureRandomToken } from "../../utils/crypto";
 import { BadRequestError, UnauthorizedError } from "../../middleware/error";
 import { env } from "../../config/env";
-import type { SignupInput, VerifyOtpInput, ResendOtpInput, LoginInput } from "./auth.model";
+import type {
+  SignupInput,
+  VerifyOtpInput,
+  ResendOtpInput,
+  LoginInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+} from "./auth.model";
 import type { AuthUserContext } from "../../middleware/auth-guard";
 
 export interface JwtSigner {
@@ -124,6 +131,25 @@ export class AuthController {
       data: {
         email: result.email,
       },
+    };
+  }
+
+  async forgotPassword({ body }: { body: ForgotPasswordInput }) {
+    const result = await authService.forgotPassword(body);
+    return {
+      success: true,
+      message: result.message,
+      data: {
+        email: result.email,
+      },
+    };
+  }
+
+  async resetPassword({ body }: { body: ResetPasswordInput }) {
+    const result = await authService.resetPassword(body);
+    return {
+      success: true,
+      message: result.message,
     };
   }
 

@@ -7,6 +7,13 @@ import {
   ForbiddenError,
   TooManyRequestsError,
 } from "../src/middleware/error";
+import {
+  sendOtpEmail,
+  sendPasswordResetEmail,
+  sendPasswordChangedEmail,
+  sendWelcomeEmail,
+  sendNotificationEmail,
+} from "../src/utils/mailer";
 
 describe("Production Security & Cryptography Unit Tests", () => {
   it("generates 6-digit numeric OTPs within [100000, 999999]", () => {
@@ -72,4 +79,56 @@ describe("Production Security & Cryptography Unit Tests", () => {
     expect(rateLimit.statusCode).toBe(429);
     expect(rateLimit.code).toBe("TOO_MANY_REQUESTS");
   });
+
+  describe("Resend Mailer & Transactional Notifications", () => {
+    it("dispatches OTP verification emails with 6-digit code", async () => {
+      const result = await sendOtpEmail({
+        to: "engineer@example.com",
+        otp: "847291",
+        fullName: "Jane Developer",
+        expiryMinutes: 10,
+      });
+      expect(result).toBe(true);
+    });
+
+    it("dispatches password reset emails with OTP code and reset link", async () => {
+      const result = await sendPasswordResetEmail({
+        to: "engineer@example.com",
+        otp: "593812",
+        resetLink: "http://localhost:3000/reset-password?email=engineer%40example.com&code=593812",
+        fullName: "Jane Developer",
+        expiryMinutes: 15,
+      });
+      expect(result).toBe(true);
+    });
+
+    it("dispatches security alert when password is changed", async () => {
+      const result = await sendPasswordChangedEmail({
+        to: "engineer@example.com",
+        fullName: "Jane Developer",
+      });
+      expect(result).toBe(true);
+    });
+
+    it("dispatches welcome onboarding email upon account verification", async () => {
+      const result = await sendWelcomeEmail({
+        to: "engineer@example.com",
+        fullName: "Jane Developer",
+      });
+      expect(result).toBe(true);
+    });
+
+    it("dispatches general transactional notification emails", async () => {
+      const result = await sendNotificationEmail({
+        to: "engineer@example.com",
+        subject: "Monthly AI Quota Reset",
+        title: "Your Tailr AI Quotas Have Been Refreshed",
+        message: "Your monthly resume and cover letter tailoring allowances have been reset to maximum.",
+        actionText: "Tailor a Resume",
+        actionUrl: "http://localhost:3000/resume/tailor",
+      });
+      expect(result).toBe(true);
+    });
+  });
 });
+
