@@ -63,7 +63,7 @@ export function WorkflowCard({ step, index, style, isMobile = false }: WorkflowC
       {/* Inner Content: Fades to 0 when card is covered in the stack to prevent any text clutter or overlap */}
       <motion.div
         style={isMobile ? undefined : { opacity: contentOpacity }}
-        className="relative p-6 sm:p-8 lg:p-9 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-stretch min-h-[420px] sm:min-h-[460px] md:min-h-[470px]"
+        className="relative p-4 sm:p-8 lg:p-9 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 lg:gap-10 items-stretch min-h-0 md:min-h-[470px]"
       >
         {/* Left Column: Step Info & Narrative */}
         <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
@@ -108,7 +108,7 @@ export function WorkflowCard({ step, index, style, isMobile = false }: WorkflowC
 
           {/* Bottom Action Row */}
           <div className="pt-4 border-t border-neutral-200/80 dark:border-white/10 flex items-center justify-between">
-            <Link href="/register" className="group/btn inline-flex items-center gap-2.5">
+            <Link href="/signup" className="group/btn inline-flex items-center gap-2.5">
               <span className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white group-hover/btn:text-purple-600 dark:group-hover/btn:text-purple-400 transition-colors">
                 Get Started
               </span>

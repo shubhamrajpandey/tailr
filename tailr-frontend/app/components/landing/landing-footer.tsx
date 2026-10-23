@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Sparkles, ShieldCheck, ExternalLink, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { ExternalLink } from "lucide-react";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -42,11 +43,15 @@ export function LandingFooter() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-neutral-200/80 dark:border-white/[0.06]">
           {/* Brand Info & Mission Statement */}
-          <div className="md:col-span-4 space-y-4">
+          <div className="md:col-span-6 lg:col-span-7 space-y-4">
             <Link href="/" className="inline-flex items-center gap-2.5 group">
-              <div className="h-8.5 w-8.5 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-200">
-                <Sparkles className="h-4.5 w-4.5" />
-              </div>
+              <Image
+                src="/main_logo.png"
+                alt="Tailr Logo"
+                width={36}
+                height={36}
+                className="w-9 h-9 object-contain group-hover:scale-105 transition-transform"
+              />
               <span className="font-extrabold text-xl tracking-tight text-neutral-950 dark:text-white font-sans group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                 Tailr
               </span>
@@ -55,139 +60,52 @@ export function LandingFooter() {
             <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-400 max-w-sm leading-relaxed">
               The deterministic career operating system. Master resume storage, context-aware AI tailoring, ATS-standard exports, and a modern application pipeline CRM.
             </p>
-
-            {/* Live Operational Status Indicator */}
-            <div className="pt-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 shadow-2xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                </span>
-                <span className="font-mono">All Systems Operational</span>
-                <span className="text-emerald-500/60 dark:text-emerald-400/50">•</span>
-                <span className="text-[10px] uppercase font-bold tracking-wider">Public Beta</span>
-              </div>
-            </div>
           </div>
 
-          {/* Navigation Links Columns */}
-          <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-8">
-            {/* Column 1: Core Platform */}
+          {/* Navigation Links Columns: Navigation & Connect */}
+          <div className="md:col-span-6 lg:col-span-5 grid grid-cols-2 gap-8 sm:gap-12 md:justify-items-end">
+            {/* Column 1: Navigation (Home, Features, Benefits, Trusted) */}
             <div className="space-y-3.5">
               <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono">
-                Platform
+                Navigation
               </h4>
               <ul className="space-y-2.5 text-xs">
                 <li>
                   <Link
-                    href="/resume"
+                    href="/"
                     className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                   >
-                    Master Resume
+                    Home
                   </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/resume/tailor"
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                  >
-                    AI Tailoring Engine
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/applications"
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                  >
-                    Pipeline Kanban CRM
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/analytics"
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                  >
-                    Callback Analytics
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/cover-letter"
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                  >
-                    Cover Letter Generator
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 2: Architecture & Guides */}
-            <div className="space-y-3.5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono">
-                Product
-              </h4>
-              <ul className="space-y-2.5 text-xs">
-                <li>
-                  <a
-                    href="#workflow"
-                    className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-                  >
-                    4-Step Workflow
-                  </a>
                 </li>
                 <li>
                   <a
                     href="#features"
                     className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                   >
-                    Core Capabilities
+                    Features
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#pricing"
+                    href="#workflow"
                     className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                   >
-                    Access & Pricing
+                    Benefits
                   </a>
                 </li>
                 <li>
                   <a
-                    href="#faq"
+                    href="#preview"
                     className="text-neutral-600 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                   >
-                    Frequently Asked Questions
+                    Trusted
                   </a>
                 </li>
               </ul>
             </div>
 
-            {/* Column 3: Trust & Security */}
-            <div className="space-y-3.5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono">
-                Security & Trust
-              </h4>
-              <ul className="space-y-2.5 text-xs">
-                <li className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  <span>Argon2id & AES-256</span>
-                </li>
-                <li className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>Private Isolation</span>
-                </li>
-                <li className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>Zero Public Training</span>
-                </li>
-                <li className="flex items-center gap-1.5 text-neutral-600 dark:text-neutral-400">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
-                  <span>ATS-Verified Engine</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 4: Resources & Community */}
+            {/* Column 2: Connect */}
             <div className="space-y-3.5">
               <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-900 dark:text-white font-mono">
                 Connect
@@ -215,7 +133,7 @@ export function LandingFooter() {
                 </li>
                 <li>
                   <Link
-                    href="/register"
+                    href="/signup"
                     className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
                   >
                     Create Free Account →
@@ -234,7 +152,7 @@ export function LandingFooter() {
             <span>Deterministic Career Operating System</span>
           </div>
 
-          <div className="flex items-center gap-6 text-[11px] text-neutral-500 dark:text-neutral-400">
+          <div className="flex flex-wrap justify-center sm:justify-end gap-x-4 sm:gap-x-6 gap-y-2 text-[11px] text-neutral-500 dark:text-neutral-400">
             <Link href="/support" className="hover:text-neutral-900 dark:hover:text-white transition-colors">
               Privacy & Data Protection
             </Link>

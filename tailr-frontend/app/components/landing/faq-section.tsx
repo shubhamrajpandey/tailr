@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { ChevronDown, HelpCircle, MessageCircle, Sparkles } from "lucide-react";
+import { ChevronDown, HelpCircle, MessageCircle, Sparkles, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
+import { PillGlowButton } from "@/shared/components/ui/button";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 import { FoldingText } from "@/shared/components/ui/folding-text";
 import { AnimatedDescription } from "@/shared/components/ui/animated-description";
@@ -198,12 +199,14 @@ export function FaqSection() {
           </div>
 
           <Link href="/support" className="shrink-0 w-full sm:w-auto">
-            <button
-              type="button"
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-neutral-950 dark:bg-white text-white dark:text-neutral-950 hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-all cursor-pointer shadow-xs active:scale-[0.98]"
+            <PillGlowButton
+              size="default"
+              className="w-full sm:w-auto px-6 h-10 text-xs sm:text-sm font-semibold gap-2"
+              wrapperClassName="w-full sm:w-auto"
             >
-              Contact Support
-            </button>
+              <span>Contact Support</span>
+              <ArrowRight className="h-4 w-4" />
+            </PillGlowButton>
           </Link>
         </div>
       </div>

@@ -124,7 +124,7 @@ export function WorkflowSection() {
       className="relative h-auto w-full bg-neutral-100/40 dark:bg-transparent border-y border-neutral-200/80 dark:border-white/5 py-12 md:h-[320vh] md:py-0 select-none"
     >
       {/* Sticky Viewport Container on Desktop (accounts for fixed navbar with pt-16/20) */}
-      <div className="relative flex h-auto w-full flex-col items-center justify-start overflow-hidden px-4 pt-16 sm:px-8 md:sticky md:top-0 md:h-screen md:justify-center md:pt-16 lg:pt-20 md:pb-4 lg:pb-6">
+      <div className="relative flex h-auto w-full flex-col items-center justify-start overflow-hidden px-4 pt-2 sm:pt-6 md:sticky md:top-0 md:h-screen md:justify-center md:pt-16 lg:pt-20 md:pb-4 lg:pb-6 sm:px-8">
         {/* Subtle Ambient Glow Decoration */}
         <div
           aria-hidden="true"

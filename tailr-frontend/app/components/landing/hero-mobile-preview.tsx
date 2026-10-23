@@ -4,7 +4,7 @@ import { Briefcase, MessageSquareText, Sparkles, BarChart3, CheckCircle2 } from 
 
 export function HeroMobilePreview() {
   return (
-    <div className="block md:hidden bg-slate-50/70 dark:bg-[#0c0d12] p-4 space-y-3.5 transition-colors">
+    <div className="block md:hidden bg-slate-50/70 dark:bg-[#0c0d12] p-3 sm:p-4 space-y-3 sm:space-y-3.5 transition-colors">
       {/* Mobile App Bar */}
       <div className="flex items-center justify-between pb-2 border-b border-neutral-200/80 dark:border-white/[0.06]">
         <div className="flex items-center gap-2.5">

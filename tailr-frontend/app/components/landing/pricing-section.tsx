@@ -47,7 +47,7 @@ export function PricingSection() {
       price: "$0",
       period: "forever",
       cta: "Get Started Free",
-      href: "/register",
+      href: "/signup",
       popular: false,
       features: [
         "1 free tailored resume per day",
@@ -64,7 +64,7 @@ export function PricingSection() {
       period: "per month",
       subtext: billingCycle === "annual" ? "billed annually ($180/yr)" : "billed monthly",
       cta: "Start 7-Day Free Trial",
-      href: "/register?plan=pro",
+      href: "/signup?plan=pro",
       popular: true,
       features: [
         "Unlimited tailored resume generations",
@@ -83,7 +83,7 @@ export function PricingSection() {
       period: "one-time",
       subtext: "lifetime access & all future updates",
       cta: "Claim Lifetime Access",
-      href: "/register?plan=founder",
+      href: "/signup?plan=founder",
       popular: false,
       features: [
         "All Pro Career features included forever",
@@ -338,9 +338,9 @@ export function PricingSection() {
               className="pointer-events-none absolute bottom-6 right-[15%] w-1.5 h-1.5 rounded-full bg-purple-400/60 blur-[1px] animate-pulse duration-[4200ms]"
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 p-6 sm:p-9 lg:p-11 items-stretch relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 p-5 sm:p-9 lg:p-11 items-stretch relative z-10">
               {/* Left Column: Clear & Grounded Beta Summary */}
-              <div className="lg:col-span-4 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/[0.08] pb-8 lg:pb-0 lg:pr-8">
+              <div className="lg:col-span-4 flex flex-col justify-between border-b-0 lg:border-r border-white/[0.08] pb-0 lg:pr-8">
                 <div>
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 mb-3">
                     <span className="relative flex h-2 w-2">
@@ -370,7 +370,7 @@ export function PricingSection() {
                   </p>
 
                   <div className="mt-6 sm:mt-8">
-                    <Link href="/register" className="w-full block">
+                    <Link href="/signup" className="w-full block">
                       <PillGlowButton
                         size="lg"
                         className="w-full font-semibold text-sm sm:text-base gap-2 group/btn"
@@ -405,8 +405,8 @@ export function PricingSection() {
                 </div>
               </div>
 
-              {/* Right Column: Clean, Structured Capabilities */}
-              <div className="lg:col-span-8 flex flex-col justify-center">
+              {/* Right Column: Clean, Structured Capabilities (Visible on Desktop only) */}
+              <div className="hidden lg:flex lg:col-span-8 flex-col justify-center">
                 <div className="mb-5 flex items-center justify-between">
                   <h4 className="text-xs font-bold text-neutral-300 uppercase tracking-wider flex items-center gap-2">
                     <span>What you get right now</span>
@@ -420,7 +420,7 @@ export function PricingSection() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
                   {betaCapabilities.map((item, index) => {
                     const Icon = item.icon;
                     return (
@@ -430,7 +430,7 @@ export function PricingSection() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, margin: "-20px" }}
                         transition={{ duration: 0.45, delay: index * 0.06, ease: "easeOut" }}
-                        className="group/item relative p-4 sm:p-4.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-default"
+                        className="group/item relative p-3 sm:p-4.5 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06] hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 hover:-translate-y-0.5 transition-all duration-200 cursor-default"
                       >
                         {/* Subtle top edge glow on card hover */}
                         <div
@@ -446,7 +446,7 @@ export function PricingSection() {
                             {item.title}
                           </h5>
                         </div>
-                        <p className="text-[12px] sm:text-[12.5px] text-neutral-400 leading-relaxed pl-9.5">
+                        <p className="text-[12px] sm:text-[12.5px] text-neutral-400 leading-relaxed pl-0 sm:pl-9.5">
                           {item.description}
                         </p>
                       </motion.div>

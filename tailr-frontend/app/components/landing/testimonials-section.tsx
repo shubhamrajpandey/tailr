@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { Star, Users, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Star, Users, CheckCircle2 } from "lucide-react";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 import { FoldingText } from "@/shared/components/ui/folding-text";
 import { AnimatedDescription } from "@/shared/components/ui/animated-description";
@@ -108,10 +108,6 @@ export function TestimonialsSection() {
 
   const handlePrev = React.useCallback(() => {
     setActiveIndex((prev) => (prev - 1 + total) % total);
-  }, [total]);
-
-  const handleSelect = React.useCallback((index: number) => {
-    setActiveIndex(index % total);
   }, [total]);
 
   // Robust Auto-advance: Always bounded in [0, total - 1] via modulo. Never drifts.
@@ -245,7 +241,7 @@ export function TestimonialsSection() {
             {/* ─── CENTER HERO CARD (Active Testimonial) ─── */}
             <div
               className={cn(
-                "group relative flex flex-col items-center text-center w-full max-w-[360px] sm:max-w-[390px] min-h-[410px] rounded-[28px] px-7 py-8 sm:px-8 sm:py-9 border transition-all duration-500 ease-out cursor-default select-none shrink-0 z-20",
+                "group relative flex flex-col items-center text-center w-full max-w-[330px] xs:max-w-[360px] sm:max-w-[390px] min-h-[380px] sm:min-h-[410px] rounded-[24px] sm:rounded-[28px] px-5 py-6 sm:px-8 sm:py-9 border transition-all duration-500 ease-out cursor-default select-none shrink-0 z-20",
                 "bg-white dark:bg-[#121318] border-indigo-500/50 dark:border-indigo-500/60 shadow-[0_20px_50px_-10px_rgba(99,102,241,0.22)] dark:shadow-[0_25px_60px_-15px_rgba(99,102,241,0.28)] -translate-y-2 scale-[1.02] sm:scale-[1.03]"
               )}
             >
@@ -364,45 +360,6 @@ export function TestimonialsSection() {
                 Click to view review →
               </div>
             </div>
-          </div>
-
-          {/* Interactive Navigation Controls & Pagination Indicators */}
-          <div className="flex items-center justify-center gap-3.5 mt-6 sm:mt-8">
-            <button
-              type="button"
-              onClick={handlePrev}
-              className="p-2 sm:p-2.5 rounded-full border border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-white/[0.05] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all cursor-pointer shadow-xs active:scale-95"
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            {/* Pagination Dots with Active Pill Expansion */}
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-neutral-100/80 dark:bg-white/[0.03] border border-neutral-200/80 dark:border-white/5">
-              {testimonials.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleSelect(i)}
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-300 cursor-pointer",
-                    activeIndex === i
-                      ? "w-7 bg-indigo-600 dark:bg-indigo-400 shadow-xs"
-                      : "w-2 bg-neutral-300 dark:bg-white/20 hover:bg-neutral-400 dark:hover:bg-white/40"
-                  )}
-                  aria-label={`Go to testimonial ${i + 1}`}
-                />
-              ))}
-            </div>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="p-2 sm:p-2.5 rounded-full border border-neutral-200 dark:border-white/10 bg-white/90 dark:bg-white/[0.05] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white hover:border-indigo-500/40 dark:hover:border-indigo-500/40 transition-all cursor-pointer shadow-xs active:scale-95"
-              aria-label="Next testimonial"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </div>

@@ -16,10 +16,12 @@ export function HeroSection() {
   React.useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      // Scroll-driven 3D flip: smoothly maps scrollY (0 -> 400px) to rotateX (18deg -> 0deg)
+      const isMobile = window.innerWidth < 768;
+      // Scroll-driven 3D flip: smoothly maps scrollY (0 -> 400px) to rotateX (18deg -> 0deg on desktop, gentle on mobile)
+      const maxAngle = isMobile ? 6 : 18;
       const progress = Math.min(Math.max(scrollY / 380, 0), 1);
-      setRotateX(18 - progress * 18);
-      setScale(0.95 + progress * 0.05);
+      setRotateX(maxAngle - progress * maxAngle);
+      setScale(isMobile ? 1 : 0.95 + progress * 0.05);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -28,7 +30,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative pt-24 pb-0 sm:pt-36 sm:pb-0 overflow-hidden select-none">
+    <section className="relative pt-20 pb-0 sm:pt-36 sm:pb-0 overflow-hidden select-none">
       {/* ─── Soft Ambient Radial Glow ─── */}
       <div
         aria-hidden="true"
@@ -105,7 +107,7 @@ export function HeroSection() {
             lines={["All-in-One Workspace", "for Tailored Resumes"]}
             highlightWords={["Workspace", "Tailored", "Resumes"]}
             as="h1"
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.12] sm:leading-[1.08] font-sans break-words"
+            className="text-[28px] xs:text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.12] sm:leading-[1.08] font-sans break-words"
           />
         </div>
 
@@ -120,7 +122,7 @@ export function HeroSection() {
 
         {/* ─── 7. CTA Buttons ─── */}
         <div className="mt-7 sm:mt-9 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 w-full max-w-xs sm:max-w-none mx-auto">
-          <Link href="/register" className="w-full sm:w-auto">
+          <Link href="/signup" className="w-full sm:w-auto">
             <PillGlowButton size="lg" className="w-full sm:w-auto font-bold gap-2">
               <span>Try It Free</span>
               <ArrowRight className="h-4 w-4" />
@@ -137,7 +139,7 @@ export function HeroSection() {
         </div>
 
         {/* ─── 8. 3D Scroll-Driven Perspective Flip Dashboard Mockup (Matches Screenshot 1 UI) ─── */}
-        <div className="mt-10 sm:mt-18 relative [perspective:1400px]">
+        <div className="mt-8 sm:mt-18 relative [perspective:1400px]">
           {/* Ambient soft glow beneath the mockup */}
           <div
             aria-hidden="true"

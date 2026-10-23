@@ -30,7 +30,7 @@ export function FinalCta() {
           onMouseMove={handleMouseMove}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
-          className="relative group rounded-[24px] sm:rounded-[32px] border border-neutral-800/80 dark:border-white/10 bg-[#07080c] py-8 sm:py-12 md:py-14 px-6 sm:px-12 md:px-16 text-center overflow-hidden shadow-2xl shadow-black/80 transition-all duration-300"
+          className="relative group rounded-[24px] sm:rounded-[32px] border border-neutral-800/80 dark:border-white/10 bg-[#07080c] py-7 sm:py-12 md:py-14 px-4 sm:px-12 md:px-16 text-center overflow-hidden shadow-2xl shadow-black/80 transition-all duration-300"
         >
           {/* Top Edge Border Highlight */}
           <div
@@ -139,7 +139,7 @@ export function FinalCta() {
 
             {/* Centered Glowing Pill CTA Button */}
             <div className="mt-5 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/register" className="w-full sm:w-auto">
+              <Link href="/signup" className="w-full sm:w-auto">
                 <PillGlowButton
                   size="default"
                   className="w-full sm:w-auto px-7 sm:px-8 h-11 text-xs sm:text-sm font-semibold gap-2 shadow-xl"

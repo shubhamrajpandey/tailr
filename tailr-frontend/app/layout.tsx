@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Urbanist, Geist_Mono, Noto_Sans_Devanagari } from "next/font/google";
 import { ThemeProvider } from "@/shared/components/providers/theme-provider";
 import { ReduxProvider } from "@/shared/components/providers/redux-provider";
@@ -34,6 +34,12 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
   fallback: ["sans-serif"],
   adjustFontFallback: true,
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: {

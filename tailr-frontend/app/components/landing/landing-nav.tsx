@@ -84,7 +84,7 @@ export function LandingNav() {
               >
                 Log In
               </Link>
-              <Link href="/register">
+              <Link href="/signup">
                 <PillGlowButton size="default">
                   <span>Sign Up (Free)</span>
                 </PillGlowButton>
@@ -145,7 +145,7 @@ export function LandingNav() {
                     Log In
                   </Button>
                 </Link>
-                <Link href="/register" className="w-full" onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/signup" className="w-full" onClick={() => setMobileMenuOpen(false)}>
                   <PillGlowButton size="lg" className="w-full" wrapperClassName="w-full">
                     <span>Sign Up (Free)</span>
                     <ArrowRight className="h-4 w-4" />

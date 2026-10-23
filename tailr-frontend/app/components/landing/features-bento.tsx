@@ -166,6 +166,14 @@ function TailrDraftingPen({ isWriting, isCompleted }: TailrDraftingPenProps) {
 export function FeaturesBento() {
   const [selectedRoleIdx, setSelectedRoleIdx] = React.useState(0);
   const [elapsedMs, setElapsedMs] = React.useState(0);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const activeRole = SAMPLE_ROLES[selectedRoleIdx];
 
@@ -280,9 +288,11 @@ export function FeaturesBento() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="relative w-full max-w-[490px] rounded-2xl bg-white text-neutral-900 p-5 sm:p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85),-4px_4px_0_rgba(240,242,248,0.9),-8px_8px_0_rgba(200,205,220,0.35)] border border-neutral-200/90 font-sans text-left z-10"
+              className="relative w-full max-w-[490px] rounded-2xl bg-white text-neutral-900 p-4 xs:p-5 sm:p-7 shadow-[0_30px_70px_rgba(0,0,0,0.85),-4px_4px_0_rgba(240,242,248,0.9),-8px_8px_0_rgba(200,205,220,0.35)] border border-neutral-200/90 font-sans text-left z-10"
               style={{
-                transform: "perspective(1200px) rotateY(-5deg) rotateX(4deg)",
+                transform: isMobile
+                  ? "none"
+                  : "perspective(1200px) rotateY(-5deg) rotateX(4deg)",
               }}
             >
               {/* 1. Header: Candidate Name, Title & Contact Details (Pure Clean Resume) */}
@@ -293,13 +303,13 @@ export function FeaturesBento() {
                 <div className="text-[10px] font-semibold text-neutral-800 font-mono tracking-wide">
                   Staff Software Engineer • Distributed Systems
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[9px] font-mono text-neutral-500 pt-0.5">
+                <div className="flex flex-wrap items-center justify-center gap-x-1.5 xs:gap-x-2 gap-y-0.5 text-[8.5px] xs:text-[9px] font-mono text-neutral-500 pt-0.5">
                   <span>San Francisco, CA</span>
                   <span>•</span>
                   <span className="text-neutral-800 font-medium">alex.rivera@tailr.dev</span>
-                  <span>•</span>
+                  <span className="hidden xs:inline">•</span>
                   <span>(415) 890-2341</span>
-                  <span>•</span>
+                  <span className="hidden xs:inline">•</span>
                   <span className="text-neutral-800 font-medium">linkedin.com/in/arivera</span>
                 </div>
               </div>
@@ -449,9 +459,9 @@ export function FeaturesBento() {
             <motion.div
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -bottom-4 sm:-bottom-6 right-2 sm:-right-4 z-20 rounded-2xl bg-[#0c0d14]/90 backdrop-blur-xl px-5 py-3.5 shadow-[0_25px_50px_rgba(0,0,0,0.85)] border border-white/15 text-center"
+              className="absolute -bottom-3 sm:-bottom-6 right-1 sm:-right-4 z-20 rounded-xl sm:rounded-2xl bg-[#0c0d14]/90 backdrop-blur-xl px-3.5 py-2 sm:px-5 sm:py-3.5 shadow-[0_25px_50px_rgba(0,0,0,0.85)] border border-white/15 text-center"
             >
-              <span className="text-lg sm:text-xl font-serif italic font-medium tracking-tight text-white whitespace-nowrap">
+              <span className="text-sm xs:text-base sm:text-xl font-serif italic font-medium tracking-tight text-white whitespace-nowrap">
                 Make your resume best
               </span>
             </motion.div>
@@ -472,7 +482,7 @@ export function FeaturesBento() {
               highlightWords={["Tailr:", "smarter.", "Faster."]}
               align="left"
               as="h2"
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] font-sans"
+              className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.08] font-sans"
             />
 
             {/* Subtitle / Paragraph with Cinematic Blur-Slide Animation */}
@@ -485,7 +495,7 @@ export function FeaturesBento() {
             {/* Glowing Pill Button (Linear / Tailr Signature Purple-Indigo Glow) */}
             <div className="pt-2">
               <Link
-                href="/register"
+                href="/signup"
                 className="btn-pill-glow px-8 py-3.5 text-sm font-semibold tracking-wide inline-flex items-center gap-2.5 text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <span>Visit Tailr</span>
