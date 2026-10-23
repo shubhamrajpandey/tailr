@@ -74,7 +74,7 @@ interface TailrDraftingPenProps {
 
 function TailrDraftingPen({ isWriting, isCompleted }: TailrDraftingPenProps) {
   return (
-    <motion.div
+    <motion.span
       initial={false}
       animate={
         isCompleted
@@ -107,57 +107,57 @@ function TailrDraftingPen({ isWriting, isCompleted }: TailrDraftingPenProps) {
               ease: "easeOut",
             }
       }
-      className="pointer-events-none absolute -left-[7px] -top-1 z-30 select-none"
+      className="pointer-events-none absolute -left-[7px] -top-1 z-30 select-none block"
       style={{
         transformOrigin: "7px 0px", // Exact tip of the nib
       }}
     >
       {/* Pen Cast Shadow on Paper */}
-      <div
+      <span
         className={cn(
-          "absolute top-3 left-1 w-11 h-2.5 bg-neutral-900/30 rounded-full rotate-[16deg] transition-all",
+          "block absolute top-3 left-1 w-11 h-2.5 bg-neutral-900/30 rounded-full rotate-[16deg] transition-all",
           isCompleted ? "opacity-15 blur-[4px]" : "opacity-35 blur-[2px]"
         )}
       />
 
       {/* Pen Body & Nib assembly */}
-      <div className="relative w-[14px] flex flex-col items-center">
+      <span className="relative w-[14px] flex flex-col items-center">
         {/* Glowing ink point on paper right at the nib tip */}
-        <div className="absolute -top-1 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
+        <span className="block absolute -top-1 left-1/2 -translate-x-1/2 z-30 pointer-events-none">
           <span
             className={cn(
               "block w-2 h-2 rounded-full bg-indigo-500 blur-[0.6px] transition-all",
               isWriting ? "animate-pulse scale-110" : "scale-75 opacity-70"
             )}
           />
-        </div>
+        </span>
 
         {/* Pen Nib (Sharp metallic drafting tip pointing UP to y=0) */}
-        <div className="relative w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[9px] border-b-neutral-850 z-20" />
+        <span className="block relative w-0 h-0 border-l-[3.5px] border-l-transparent border-r-[3.5px] border-r-transparent border-b-[9px] border-b-neutral-850 z-20" />
 
         {/* Nib Collar (Chrome polished ring) */}
-        <div className="w-2 h-2.5 bg-gradient-to-r from-neutral-300 via-white to-neutral-400 rounded-xs shadow-2xs border-x border-neutral-400 z-10" />
+        <span className="block w-2 h-2.5 bg-gradient-to-r from-neutral-300 via-white to-neutral-400 rounded-xs shadow-2xs border-x border-neutral-400 z-10" />
 
         {/* Pen Grip Section (Titanium textured grip) */}
-        <div className="w-2.5 h-5 bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-900 border-x border-white/20 shadow-inner" />
+        <span className="block w-2.5 h-5 bg-gradient-to-r from-neutral-800 via-neutral-700 to-neutral-900 border-x border-white/20 shadow-inner" />
 
         {/* Center Accent Indigo Trim Ring (Tailr Signature Indigo) */}
-        <div className="w-3 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-400 to-indigo-600 shadow-xs" />
+        <span className="block w-3 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-400 to-indigo-600 shadow-xs" />
 
         {/* Main Pen Barrel (Dark titanium body with specular light reflection) */}
-        <div className="w-3 h-16 bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-950 rounded-b-sm border-x border-white/10 relative overflow-hidden shadow-lg">
+        <span className="block w-3 h-16 bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-950 rounded-b-sm border-x border-white/10 relative overflow-hidden shadow-lg">
           {/* Specular highlight along edge */}
-          <div className="absolute top-0 bottom-0 left-0.5 w-[1px] bg-white/40" />
+          <span className="block absolute top-0 bottom-0 left-0.5 w-[1px] bg-white/40" />
           {/* Tailr brand mark engraved on barrel */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 text-[5.5px] font-mono font-bold text-white/60 tracking-widest rotate-90">
+          <span className="block absolute top-3 left-1/2 -translate-x-1/2 text-[5.5px] font-mono font-bold text-white/60 tracking-widest rotate-90">
             TAILR
-          </div>
-        </div>
+          </span>
+        </span>
 
         {/* Pen Top Crown / Stylus Tip */}
-        <div className="w-2 h-2 bg-gradient-to-r from-neutral-400 via-white to-neutral-300 rounded-b-full -mt-0.5" />
-      </div>
-    </motion.div>
+        <span className="block w-2 h-2 bg-gradient-to-r from-neutral-400 via-white to-neutral-300 rounded-b-full -mt-0.5" />
+      </span>
+    </motion.span>
   );
 }
 
@@ -311,7 +311,7 @@ export function FeaturesBento() {
                     Professional Summary
                   </span>
                 </div>
-                <p className="text-[9px] text-neutral-700 leading-relaxed font-sans relative">
+                <div className="text-[9px] text-neutral-700 leading-relaxed font-sans relative">
                   <span>{summaryWritten}</span>
                   {isSummaryActive && (
                     <span className="relative inline-block w-0 h-0 align-baseline overflow-visible">
@@ -321,7 +321,7 @@ export function FeaturesBento() {
                   <span className="opacity-0 select-none pointer-events-none">
                     {summaryRemaining}
                   </span>
-                </p>
+                </div>
               </div>
 
               {/* 3. Work Experience */}
@@ -346,7 +346,7 @@ export function FeaturesBento() {
 
                   <div className="space-y-1 text-[8.5px] text-neutral-700 leading-relaxed">
                     {/* Tailored Bullet 1 (Written live by the 3D Pen) */}
-                    <p
+                    <div
                       className={cn(
                         "pl-2 border-l-2 py-0.5 rounded-r relative transition-colors duration-200",
                         isBullet1Active
@@ -365,10 +365,10 @@ export function FeaturesBento() {
                       <span className="opacity-0 select-none pointer-events-none">
                         {bullet1Remaining}
                       </span>
-                    </p>
+                    </div>
 
                     {/* Tailored Bullet 2 (Written live by the 3D Pen) */}
-                    <p className="relative pl-2">
+                    <div className="relative pl-2">
                       <span>• {bullet2Written}</span>
                       {isBullet2Active && (
                         <span className="relative inline-block w-0 h-0 align-baseline overflow-visible">
@@ -383,7 +383,7 @@ export function FeaturesBento() {
                           <TailrDraftingPen isWriting={false} isCompleted={true} />
                         </span>
                       )}
-                    </p>
+                    </div>
                   </div>
                 </div>
 

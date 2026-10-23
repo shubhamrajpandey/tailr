@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ROUTES, isProtectedRoute, isAuthRoute } from "./shared/lib/routes";
+import { ROUTES, isProtectedRoute } from "./shared/lib/routes";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Retrieve the client-managed session indicator cookie.
@@ -14,20 +14,23 @@ export function middleware(request: NextRequest) {
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {
     console.info(
-      `[${new Date().toISOString()}] [INFO] [Middleware] Redirecting unauthenticated request: "${pathname}" -> "${ROUTES.LOGIN}"`
+      `[${new Date().toISOString()}] [INFO] [Proxy] Redirecting unauthenticated request: "${pathname}" -> "${ROUTES.LOGIN}"`
     );
     const loginUrl = new URL(ROUTES.LOGIN, request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Note: We deliberately do NOT redirect /login or /signup at the Edge Middleware layer.
-  // Edge middleware cannot verify whether backend tokens are still valid or expired in the database.
+  // Note: We deliberately do NOT redirect /login or /signup at the Edge Proxy layer.
+  // Edge proxy cannot verify whether backend tokens are still valid or expired in the database.
   // Redirecting auth routes at the edge causes an infinite redirect loop if a session expires.
   // Legitimate authenticated users visiting /login are redirected cleanly by client-side auth state.
 
   return NextResponse.next();
 }
+
+// Backwards-compatibility alias
+export const middleware = proxy;
 
 /**
  * Exclude static assets, Next.js internal files, favicon, etc.
