@@ -46,14 +46,10 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
         {/* Center: URL pill */}
         <div className="flex items-center gap-1.5 px-3 py-0.5 rounded-md bg-white dark:bg-white/[0.05] border border-neutral-200/80 dark:border-white/[0.08] text-[11px] text-neutral-600 dark:text-neutral-300 font-mono shadow-2xs">
           <Lock className="w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span className="text-[10px] sm:text-[11px] tracking-tight">app.tailr.ai/dashboard</span>
+          <span className="text-[10px] sm:text-[11px] tracking-tight">tailr.shubhamrajpandey.com.np</span>
         </div>
 
-        {/* Right: Clean Live Status Indicator */}
-        <div className="flex items-center gap-1.5 shrink-0 text-[10px] sm:text-[11px] font-mono font-semibold text-neutral-500 dark:text-neutral-400">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="hidden sm:inline">LIVE DEMO</span>
-        </div>
+
       </div>
 
       {/* ─── MOBILE VIEW: Native Mobile App Dashboard (Shown on screens < md) ─── */}
@@ -76,11 +72,6 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <div className="flex items-center gap-1 px-2 py-1 rounded-md border border-neutral-200/70 dark:border-white/10 text-[11px] text-neutral-600 dark:text-neutral-300">
-                <Globe className="h-3 w-3" />
-                <span>ENG</span>
-                <ChevronDown className="h-2.5 w-2.5" />
-              </div>
               <div className="p-1 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer">
                 <Moon className="h-3.5 w-3.5" />
               </div>
@@ -89,10 +80,7 @@ export function HeroPreviewCard({ rotateX, scale }: HeroPreviewCardProps) {
                 <span>Last week</span>
                 <ChevronDown className="h-2.5 w-2.5" />
               </div>
-              <div className="relative p-1 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white cursor-pointer">
-                <Bell className="h-3.5 w-3.5" />
-                <span className="absolute top-0.5 right-0.5 h-1.5 w-1.5 rounded-full bg-indigo-600" />
-              </div>
+
               <div className="flex items-center gap-1.5 pl-2 border-l border-neutral-200 dark:border-white/10">
                 <div className="h-6 w-6 rounded-full bg-slate-200 dark:bg-white/10 text-[10px] font-bold text-neutral-700 dark:text-neutral-200 flex items-center justify-center">
                   SS

@@ -167,22 +167,20 @@ export function PricingSection() {
                 <button
                   type="button"
                   onClick={() => setBillingCycle("monthly")}
-                  className={`px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer ${
-                    billingCycle === "monthly"
+                  className={`px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer ${billingCycle === "monthly"
                       ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                       : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                  }`}
+                    }`}
                 >
                   Monthly Billing
                 </button>
                 <button
                   type="button"
                   onClick={() => setBillingCycle("annual")}
-                  className={`px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
-                    billingCycle === "annual"
+                  className={`px-3 sm:px-4 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${billingCycle === "annual"
                       ? "bg-white dark:bg-neutral-800 text-neutral-950 dark:text-white shadow-2xs"
                       : "text-neutral-500 hover:text-neutral-900 dark:hover:text-white"
-                  }`}
+                    }`}
                 >
                   <span>Annual Billing</span>
                   <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
@@ -196,11 +194,10 @@ export function PricingSection() {
               {paidPlans.map((plan) => (
                 <div
                   key={plan.name}
-                  className={`rounded-2xl p-5 sm:p-8 flex flex-col justify-between transition-all duration-200 relative ${
-                    plan.popular
+                  className={`rounded-2xl p-5 sm:p-8 flex flex-col justify-between transition-all duration-200 relative ${plan.popular
                       ? "border-2 border-indigo-600 dark:border-indigo-500 bg-white dark:bg-[#0e0f14] shadow-xl shadow-indigo-500/10 md:scale-[1.02] z-10"
                       : "border border-neutral-200 dark:border-white/10 bg-white dark:bg-[#0c0d10] shadow-xs hover:border-neutral-300 dark:hover:border-white/20"
-                  }`}
+                    }`}
                 >
                   <div>
                     <h3 className="text-xl font-bold text-neutral-950 dark:text-white">
@@ -358,10 +355,10 @@ export function PricingSection() {
                     <span className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
                       $0
                     </span>
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    {/* <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                       free while in beta
-                    </span>
+                    </span> */}
                   </div>
 
                   <p className="mt-4 text-xs sm:text-[13.5px] text-neutral-400 leading-relaxed">
