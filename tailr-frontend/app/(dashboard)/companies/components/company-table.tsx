@@ -9,6 +9,7 @@ import {
   RotateCcw,
   LayoutGrid,
   Table as TableIcon,
+  Plus,
 } from "lucide-react";
 import { Company } from "@/shared/types/company";
 import {
@@ -34,6 +35,7 @@ interface CompanyTableProps {
   selectedCompanyId?: string | null;
   onSelectCompany: (company: Company) => void;
   onResetFilters?: () => void;
+  onOpenAddCompany?: (initialName?: string) => void;
 }
 
 export function CompanyTable({
@@ -43,6 +45,7 @@ export function CompanyTable({
   selectedCompanyId,
   onSelectCompany,
   onResetFilters,
+  onOpenAddCompany,
 }: CompanyTableProps) {
   const [sortField, setSortField] = React.useState<CompanySortField>("name");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
@@ -168,18 +171,31 @@ export function CompanyTable({
                 filters.
               </p>
             </div>
-            {onResetFilters && (
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={onResetFilters}
-                className="gap-1.5"
-              >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span>Reset Filters</span>
-              </Button>
-            )}
+            <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+              {onResetFilters && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={onResetFilters}
+                  className="gap-1.5"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset Filters</span>
+                </Button>
+              )}
+              {onOpenAddCompany && (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => onOpenAddCompany()}
+                  className="gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Company</span>
+                </Button>
+              )}
+            </div>
           </div>
         ) : (
           sortedCompanies.map((company) => (
@@ -323,18 +339,31 @@ export function CompanyTable({
                           active filters.
                         </p>
                       </div>
-                      {onResetFilters && (
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          onClick={onResetFilters}
-                          className="mt-2 gap-1.5"
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                          <span>Reset Filters</span>
-                        </Button>
-                      )}
+                      <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+                        {onResetFilters && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            onClick={onResetFilters}
+                            className="mt-2 gap-1.5"
+                          >
+                            <RotateCcw className="h-3.5 w-3.5" />
+                            <span>Reset Filters</span>
+                          </Button>
+                        )}
+                        {onOpenAddCompany && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => onOpenAddCompany()}
+                            className="mt-2 gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white"
+                          >
+                            <Plus className="h-3.5 w-3.5" />
+                            <span>Add Company</span>
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>

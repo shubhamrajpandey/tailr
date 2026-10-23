@@ -1,9 +1,14 @@
 "use client";
 
-import { useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient, type InfiniteData } from "@tanstack/react-query";
 import { useDebounce } from "@/shared/hooks/use-debounce";
 import { authApiClient } from "@/shared/lib/auth-api-client";
-import type { Company, CompanyListResponse, CompanyDetailResponse } from "@/shared/types/company";
+import type {
+  Company,
+  CompanyListResponse,
+  CompanyDetailResponse,
+  CreateCompanyInput,
+} from "@/shared/types/company";
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
@@ -163,4 +168,22 @@ export function flattenCompanyPages(
 ): Company[] {
   if (!data) return [];
   return data.pages.flatMap((page) => page.data);
+}
+
+/**
+ * Hook to create a new company entry.
+ * Can be called anonymously or authenticated. Invalidates company lists on success.
+ */
+export function useCreateCompanyMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Company, Error, CreateCompanyInput>({
+    mutationFn: async (input: CreateCompanyInput) => {
+      const { data } = await authApiClient.post<CompanyDetailResponse>("/companies", input);
+      return data.data.company;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: companyKeys.lists() });
+    },
+  });
 }

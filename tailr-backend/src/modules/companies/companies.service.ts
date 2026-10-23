@@ -52,10 +52,9 @@ export type PublicCompany = ReturnType<typeof toPublicCompany>;
 
 export class CompaniesService {
   /**
-   * Creates a new company entry. Admin-only — adminId is taken from the
-   * verified JWT payload, never from the request body.
+   * Creates a new company entry. Accessible publicly or with authenticated creator ID.
    */
-  async create(input: CreateCompanyInput, adminId: string): Promise<PublicCompany> {
+  async create(input: CreateCompanyInput, creatorId?: string | null): Promise<PublicCompany> {
     const sectorVal = input.sector?.trim() || input.industry?.trim() || "Technology";
     const values: NewCompany = {
       name: input.name.trim(),
@@ -70,7 +69,7 @@ export class CompaniesService {
       hrLinkedin: input.hrLinkedin?.trim() ?? null,
       logoUrl: input.logoUrl?.trim() ?? null,
       techStack: input.techStack ?? [],
-      createdBy: adminId,
+      createdBy: creatorId ?? null,
     };
 
     const [created] = await db.insert(companies).values(values).returning();

@@ -9,6 +9,7 @@ export const ROUTES = {
   // Public Routes
   HOME: "/",
   SUPPORT: "/support",
+  COMPANIES: "/companies",
 
   // Authentication Routes
   LOGIN: "/login",
@@ -31,7 +32,6 @@ export const ROUTES = {
   COVER_LETTER_DETAIL: (id: string) => `/cover-letter/${id}`,
 
   ANALYTICS: "/analytics",
-  COMPANIES: "/companies",
   SETTINGS: "/settings",
 } as const;
 
@@ -50,7 +50,6 @@ export const PROTECTED_ROUTE_PREFIXES: readonly string[] = [
   ROUTES.RESUMES_LEGACY,
   ROUTES.ANALYTICS,
   ROUTES.SETTINGS,
-  ROUTES.COMPANIES,
   ROUTES.COVER_LETTER,
 ];
 

@@ -39,3 +39,18 @@ export interface CompanyDetailResponse {
   success: boolean;
   data: { company: Company };
 }
+
+export interface CreateCompanyInput {
+  name: string;
+  description?: string | null;
+  sector?: string;
+  industry?: string;
+  websiteUrl?: string | null;
+  linkedinUrl?: string | null;
+  location?: string;
+  hrName?: string | null;
+  hrEmail?: string | null;
+  hrLinkedin?: string | null;
+  logoUrl?: string | null;
+  techStack?: string[];
+}

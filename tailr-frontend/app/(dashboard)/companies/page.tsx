@@ -9,7 +9,9 @@ import { CompanySearch } from "./components/company-search";
 import { CompanyTable } from "./components/company-table";
 import { CompanyPagination } from "./components/company-pagination";
 import { CompanyDetailDialog } from "./components/company-detail-dialog";
-import { RotateCcw } from "lucide-react";
+import { AddCompanyDialog } from "./components/add-company-dialog";
+import { NotFoundCompanyCard } from "./components/not-found-company-card";
+import { RotateCcw, Plus } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ScrollToTop } from "@/shared/components/ui/scroll-to-top";
 
@@ -69,6 +71,15 @@ export default function CompaniesPage() {
     setIsDetailOpen(false);
   }, []);
 
+  // ── Add company dialog state ────────────────────────────────────────────
+  const [isAddOpen, setIsAddOpen] = React.useState<boolean>(false);
+  const [addInitialName, setAddInitialName] = React.useState<string>("");
+
+  const handleOpenAddCompany = React.useCallback((initialName?: string) => {
+    setAddInitialName(initialName || "");
+    setIsAddOpen(true);
+  }, []);
+
   return (
     <>
       {/* Page Header */}
@@ -94,12 +105,21 @@ export default function CompaniesPage() {
               data. Click any row or card for deep details and AI resume tailoring.
             </p>
           </div>
+
+          <Button
+            type="button"
+            onClick={() => handleOpenAddCompany()}
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs self-start sm:self-center shrink-0 cursor-pointer"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add Company</span>
+          </Button>
         </div>
       </header>
 
       {/* Content */}
       <main className="px-4 sm:px-6 lg:px-8 pb-44 sm:pb-16 flex-1 space-y-4">
-        {/* Controls: Search + Sector Filters */}
+        {/* Controls: Search + Actions */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <CompanySearch
@@ -109,18 +129,30 @@ export default function CompaniesPage() {
               className="w-full sm:max-w-md"
             />
 
-            {hasActiveFilters && (
+            <div className="flex items-center gap-2 self-start sm:self-auto">
+              {hasActiveFilters && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleResetFilters}
+                  className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white gap-1.5"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset Filters</span>
+                </Button>
+              )}
+
               <Button
                 type="button"
-                variant="ghost"
                 size="sm"
-                onClick={handleResetFilters}
-                className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white gap-1.5 self-start sm:self-auto"
+                onClick={() => handleOpenAddCompany()}
+                className="sm:hidden inline-flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-xs"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span>Reset Filters</span>
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add Company</span>
               </Button>
-            )}
+            </div>
           </div>
 
           {/* Mobile Alphabet quick-jump horizontal bar */}
@@ -169,7 +201,11 @@ export default function CompaniesPage() {
               selectedCompanyId={selectedCompany?.id}
               onSelectCompany={handleSelectCompany}
               onResetFilters={handleResetFilters}
+              onOpenAddCompany={handleOpenAddCompany}
             />
+
+            {/* "Not found company? Add it" section near table */}
+            <NotFoundCompanyCard onOpenAddCompany={handleOpenAddCompany} />
 
             {/* Pagination Controls */}
             <CompanyPagination
@@ -238,6 +274,17 @@ export default function CompaniesPage() {
         company={selectedCompany}
         isOpen={isDetailOpen}
         onClose={handleCloseModal}
+      />
+
+      {/* Add company dialog */}
+      <AddCompanyDialog
+        isOpen={isAddOpen}
+        onClose={() => setIsAddOpen(false)}
+        initialName={addInitialName}
+        onCompanyCreated={(company) => {
+          setSelectedCompany(company);
+          setIsDetailOpen(true);
+        }}
       />
 
       {/* Floating Scroll to Top button */}

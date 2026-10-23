@@ -311,11 +311,12 @@ describe("Elysia Routes & Middleware Tests", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: "Acme Corp",
+          name: "Acme Test Route Creation",
+          sector: "Technology",
         }),
       })
     );
-    expect(resCompanyPost.status).toBe(401);
+    expect(resCompanyPost.status).toBe(201);
 
     const resCompanyPatch = await app.handle(
       new Request("http://localhost:3001/companies/12345678-1234-1234-1234-123456789abc", {

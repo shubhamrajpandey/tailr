@@ -129,8 +129,7 @@ export const companies = pgTable(
       .default(sql`'{}'::text[]`)
       .notNull(),
     createdBy: uuid("created_by")
-      .notNull()
-      .references(() => users.id, { onDelete: "restrict" }),
+      .references(() => users.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

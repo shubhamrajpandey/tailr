@@ -24,56 +24,56 @@ import { createAuthGuard } from "../../middleware/auth-guard";
 export const companiesRoutes = new Elysia({ prefix: "" })
   .use(createAuthGuard("companies"))
 
-  // ── Public endpoints (any authenticated user) ───────────────────────────
-  .guard(
+  // ── Public endpoints (open to all users and visitors) ─────────────────────
+  .get(
+    "/companies",
+    ({ query, set }) => companiesController.list({ query, set }),
     {
-      beforeHandle: ({ authUser }: { authUser?: { id: string; role?: string } | null }) => {
-        if (!authUser) {
-          throw new UnauthorizedError(
-            "Authentication required. Please provide a valid Bearer token."
-          );
-        }
+      query: CompanyListQuery,
+      detail: {
+        tags: ["Companies"],
+        summary: "List companies",
+        description:
+          "Public endpoint. Returns a paginated list of IT companies. Use `search` for partial name matching or `letter` for A–Z filtering.",
+        responses: {
+          200: { description: "Paginated company list." },
+        },
       },
-    },
-    (app) =>
-      app
-        .get(
-          "/companies",
-          ({ query, set }) => companiesController.list({ query, set }),
-          {
-            query: CompanyListQuery,
-            detail: {
-              tags: ["Companies"],
-              summary: "List companies",
-              description:
-                "Returns a cursor-paginated list of IT companies. Use `search` for partial name matching or `letter` for A–Z filtering — they are mutually exclusive (search wins). Requires a valid Bearer token.",
-              security: [{ bearerAuth: [] }],
-              responses: {
-                200: { description: "Paginated company list." },
-                401: { description: "Missing or invalid access token." },
-              },
-            },
-          }
-        )
-        .get(
-          "/companies/:id",
-          ({ params, set }) => companiesController.getById({ params, set }),
-          {
-            params: CompanyIdParam,
-            detail: {
-              tags: ["Companies"],
-              summary: "Get company by ID",
-              description:
-                "Returns full details for a single company. Requires a valid Bearer token.",
-              security: [{ bearerAuth: [] }],
-              responses: {
-                200: { description: "Company details." },
-                401: { description: "Missing or invalid access token." },
-                404: { description: "Company not found." },
-              },
-            },
-          }
-        )
+    }
+  )
+  .get(
+    "/companies/:id",
+    ({ params, set }) => companiesController.getById({ params, set }),
+    {
+      params: CompanyIdParam,
+      detail: {
+        tags: ["Companies"],
+        summary: "Get company by ID",
+        description:
+          "Public endpoint. Returns full details for a single company.",
+        responses: {
+          200: { description: "Company details." },
+          404: { description: "Company not found." },
+        },
+      },
+    }
+  )
+  .post(
+    "/companies",
+    ({ body, authUser, set }) =>
+      companiesController.create({ body, authUser: authUser ?? null, set }),
+    {
+      body: CreateCompanyBody,
+      detail: {
+        tags: ["Companies"],
+        summary: "Add a company",
+        description:
+          "Public endpoint. Creates/submits a new IT company entry in the directory.",
+        responses: {
+          201: { description: "Company created successfully." },
+        },
+      },
+    }
   )
 
   // ── Admin-only endpoints (Standard RESTful on /companies + legacy /admin/companies aliases) ──
@@ -92,27 +92,6 @@ export const companiesRoutes = new Elysia({ prefix: "" })
     },
     (app) =>
       app
-        // Standard REST: POST /companies (Admin)
-        .post(
-          "/companies",
-          ({ body, authUser, set }) =>
-            companiesController.create({ body, authUser: authUser!, set }),
-          {
-            body: CreateCompanyBody,
-            detail: {
-              tags: ["Companies"],
-              summary: "Create a company (Admin)",
-              description:
-                "Admin-only. Creates a new IT company entry in the directory.",
-              security: [{ bearerAuth: [] }],
-              responses: {
-                201: { description: "Company created successfully." },
-                401: { description: "Missing or invalid access token." },
-                403: { description: "Admin role required." },
-              },
-            },
-          }
-        )
         // Standard REST: PATCH /companies/:id (Admin)
         .patch(
           "/companies/:id",

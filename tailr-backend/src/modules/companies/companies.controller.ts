@@ -16,10 +16,10 @@ export class CompaniesController {
     set,
   }: {
     body: CreateCompanyInput;
-    authUser: { id: string; role: string };
+    authUser?: { id: string; role?: string } | null;
     set: { status?: number | string };
   }) {
-    const company = await companiesService.create(body, authUser.id);
+    const company = await companiesService.create(body, authUser?.id ?? null);
     set.status = 201;
     return {
       success: true,
