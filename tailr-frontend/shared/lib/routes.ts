@@ -15,6 +15,7 @@ export const ROUTES = {
   LOGIN: "/login",
   SIGNUP: "/signup",
   RESET_PASSWORD: "/reset-password",
+  AUTH_CALLBACK: "/auth/callback",
 
   // Authenticated Dashboard Routes
   DASHBOARD: "/dashboard",
@@ -43,6 +44,7 @@ export const AUTH_ROUTES: readonly string[] = [
   ROUTES.LOGIN,
   ROUTES.SIGNUP,
   ROUTES.RESET_PASSWORD,
+  ROUTES.AUTH_CALLBACK,
 ];
 
 /**

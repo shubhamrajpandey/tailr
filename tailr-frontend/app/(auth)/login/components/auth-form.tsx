@@ -109,9 +109,26 @@ export function AuthForm() {
   };
 
   const handleSocialSignIn = () => {
-    // Google OAuth — placeholder until OAuth integration is added
-    setFormError("Google sign-in is not yet configured. Please use email and password.");
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
+    window.location.href = `${apiUrl}/auth/google`;
   };
+
+  // Check for error parameters passed from OAuth redirect
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const errorParam = params.get("error");
+      if (errorParam) {
+        setFormError(
+          errorParam === "google_auth_failed" || errorParam === "access_denied"
+            ? "Google sign-in was cancelled or denied. Please try again."
+            : decodeURIComponent(errorParam)
+        );
+      }
+    }
+  }, []);
 
   const handleForgotPasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();

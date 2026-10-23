@@ -148,7 +148,49 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     }
   )
 
-  // 6. User Login -> Validates Credentials & Returns JWT + Sets HttpOnly Cookie
+  // 6. Google OAuth 2.0 - Start Redirect Flow
+  .get("/google", () => authController.googleAuth(), {
+    detail: {
+      tags: ["Auth"],
+      summary: "Initiate Google OAuth 2.0 flow",
+      description: "Generates CSRF state and redirects browser to Google OAuth consent screen.",
+      responses: {
+        302: { description: "Redirect to Google consent screen." },
+      },
+    },
+  })
+
+  // 7. Google OAuth 2.0 - Callback Handler
+  .get(
+    "/google/callback",
+    ({ query, jwtAccess, cookie }) =>
+      authController.googleCallback({
+        query: query as { code?: string; state?: string; error?: string },
+        jwtAccess,
+        cookie,
+      }),
+    {
+      query: t.Object({
+        code: t.Optional(t.String()),
+        state: t.Optional(t.String()),
+        error: t.Optional(t.String()),
+        scope: t.Optional(t.String()),
+        authuser: t.Optional(t.String()),
+        prompt: t.Optional(t.String()),
+      }),
+      detail: {
+        tags: ["Auth"],
+        summary: "Handle Google OAuth 2.0 callback",
+        description:
+          "Exchanges authorization code for Google profile, provisions/links user account, sets HttpOnly cookies, and redirects to frontend.",
+        responses: {
+          302: { description: "Redirect to frontend dashboard with authenticated session." },
+        },
+      },
+    }
+  )
+
+  // 8. User Login -> Validates Credentials & Returns JWT + Sets HttpOnly Cookie
   .use(authRateLimiter)
   .post(
     "/login",

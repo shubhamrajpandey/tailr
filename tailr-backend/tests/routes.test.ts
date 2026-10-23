@@ -161,6 +161,28 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
+  it("GET /auth/google redirects to Google OAuth consent screen with client_id", async () => {
+    const res = await app.handle(new Request("http://localhost:3001/auth/google"));
+    expect(res.status).toBe(302);
+    const location = res.headers.get("location");
+    expect(location).toBeDefined();
+    expect(location).toContain("accounts.google.com");
+    expect(location).toContain("client_id=");
+    expect(location).toContain("response_type=code");
+    expect(location).toContain("scope=openid");
+  });
+
+  it("GET /auth/google/callback redirects to login with error when code is missing or denied", async () => {
+    const res = await app.handle(
+      new Request("http://localhost:3001/auth/google/callback?error=access_denied")
+    );
+    expect(res.status).toBe(302);
+    const location = res.headers.get("location");
+    expect(location).toBeDefined();
+    expect(location).toContain("/login");
+    expect(location).toContain("error=access_denied");
+  });
+
   it("POST /auth/verify-otp validates 6-digit numeric pattern", async () => {
     const res = await app.handle(
       new Request("http://localhost:3001/auth/verify-otp", {

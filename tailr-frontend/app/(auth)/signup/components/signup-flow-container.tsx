@@ -73,8 +73,10 @@ export function SignupFlowContainer() {
   };
 
   const handleGoogleSignIn = () => {
-    // Google OAuth — placeholder until OAuth integration is added
-    setSignupError("Google sign-up is not yet configured. Please use email and password.");
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   // authStep from Redux drives which step is showing:

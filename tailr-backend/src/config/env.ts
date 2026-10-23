@@ -25,6 +25,9 @@ interface EnvConfig {
   AI_COOLDOWN_SECONDS: number;
   RESEND_API_KEY?: string;
   EMAIL_FROM?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  GOOGLE_REDIRECT_URI?: string;
   UPSTASH_REDIS_REST_URL?: string;
   UPSTASH_REDIS_REST_TOKEN?: string;
 }
@@ -84,6 +87,11 @@ function getEnv(): EnvConfig {
     AI_COOLDOWN_SECONDS: parseInt(process.env.AI_COOLDOWN_SECONDS || "20", 10),
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM || "Tailr Security <noreply@tailr.shubhamrajpandey.com.np>",
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    GOOGLE_REDIRECT_URI:
+      process.env.GOOGLE_REDIRECT_URI ||
+      `${NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001"}/auth/google/callback`,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   });

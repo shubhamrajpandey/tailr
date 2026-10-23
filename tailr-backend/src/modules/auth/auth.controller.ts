@@ -153,6 +153,73 @@ export class AuthController {
     };
   }
 
+  async googleAuth() {
+    const url = await authService.getGoogleAuthUrl();
+    return Response.redirect(url, 302);
+  }
+
+  async googleCallback({
+    query,
+    jwtAccess,
+    cookie,
+  }: {
+    query: { code?: string; state?: string; error?: string };
+    jwtAccess: JwtSigner;
+    cookie: CookieJar;
+  }) {
+    if (query.error || !query.code) {
+      const err = query.error || "google_auth_failed";
+      return Response.redirect(`${env.FRONTEND_URL}/login?error=${encodeURIComponent(err)}`, 302);
+    }
+
+    try {
+      const user = await authService.handleGoogleCallback({
+        code: query.code,
+        state: query.state,
+      });
+
+      // Issue JWT Access Token
+      const accessToken = await jwtAccess.sign({
+        sub: user.id,
+        email: user.email,
+        name: user.fullName,
+        role: user.role,
+      });
+
+      // Issue Secure Refresh Token
+      const rawRefreshToken = generateSecureRandomToken(32);
+      await authService.persistRefreshToken(user.id, rawRefreshToken);
+
+      // Store in cookies
+      cookie.refreshToken.set({
+        value: rawRefreshToken,
+        ...getRefreshTokenCookieOptions(),
+      });
+      cookie.accessToken.set({
+        value: accessToken,
+        ...getAccessTokenCookieOptions(),
+      });
+
+      const safeUser = {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      };
+
+      const callbackUrl = new URL("/auth/callback", env.FRONTEND_URL);
+      callbackUrl.searchParams.set("accessToken", accessToken);
+      callbackUrl.searchParams.set("refreshToken", rawRefreshToken);
+      callbackUrl.searchParams.set("user", JSON.stringify(safeUser));
+
+      return Response.redirect(callbackUrl.toString(), 302);
+    } catch (err: any) {
+      console.error("[Google OAuth] Callback handler error:", err);
+      const message = err?.message || "Google authentication encountered an error.";
+      return Response.redirect(`${env.FRONTEND_URL}/login?error=${encodeURIComponent(message)}`, 302);
+    }
+  }
+
   async login({
     body,
     jwtAccess,

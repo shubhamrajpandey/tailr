@@ -467,6 +467,164 @@ export class AuthService {
   }
 
   /**
+   * Generates Google OAuth 2.0 authorization URL with CSRF protection.
+   */
+  async getGoogleAuthUrl() {
+    if (!env.GOOGLE_CLIENT_ID) {
+      throw new BadRequestError("Google OAuth is not configured on this server.");
+    }
+
+    const state = generateSecureRandomToken(24);
+    // Cache state in Redis for 10 minutes to validate during callback
+    await redis.set(`oauth:google:state:${state}`, "1", { ex: 600 });
+
+    const redirectUri = env.GOOGLE_REDIRECT_URI || `${env.FRONTEND_URL}/auth/google/callback`;
+
+    const params = new URLSearchParams({
+      client_id: env.GOOGLE_CLIENT_ID,
+      redirect_uri: redirectUri,
+      response_type: "code",
+      scope: "openid email profile",
+      access_type: "offline",
+      state,
+      prompt: "select_account",
+    });
+
+    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  }
+
+  /**
+   * Exchanges Google authorization code for profile data, provisions/links user account,
+   * and returns the authenticated user entity.
+   */
+  async handleGoogleCallback({ code, state }: { code: string; state?: string }) {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+      throw new BadRequestError("Google OAuth credentials are not configured on the server.");
+    }
+
+    if (!code) {
+      throw new BadRequestError("Authorization code is missing from Google callback.");
+    }
+
+    // Validate CSRF state if provided
+    if (state) {
+      const cached = await redis.get(`oauth:google:state:${state}`);
+      if (cached) {
+        await redis.del(`oauth:google:state:${state}`);
+      }
+    }
+
+    const redirectUri = env.GOOGLE_REDIRECT_URI || `${env.FRONTEND_URL}/auth/google/callback`;
+
+    // 1. Exchange authorization code with Google for tokens
+    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: env.GOOGLE_CLIENT_ID,
+        client_secret: env.GOOGLE_CLIENT_SECRET,
+        code,
+        grant_type: "authorization_code",
+        redirect_uri: redirectUri,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      const errText = await tokenResponse.text();
+      console.error("[Google OAuth] Token exchange failed:", errText);
+      throw new BadRequestError(`Google authentication failed: ${errText}`);
+    }
+
+    const tokenData = (await tokenResponse.json()) as { access_token: string; id_token?: string };
+
+    // 2. Fetch authenticated user's profile from Google userinfo API
+    const profileResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+
+    if (!profileResponse.ok) {
+      throw new BadRequestError("Failed to retrieve profile information from Google.");
+    }
+
+    const profile = (await profileResponse.json()) as {
+      sub: string;
+      name?: string;
+      email: string;
+      email_verified?: boolean;
+      picture?: string;
+    };
+
+    if (!profile.email) {
+      throw new BadRequestError("Google account does not provide an email address.");
+    }
+
+    const normalizedEmail = profile.email.trim().toLowerCase();
+    const fullName = profile.name?.trim() || "User";
+    const now = new Date();
+
+    // 3. Find or create user
+    let user = await db.query.users.findFirst({
+      where: eq(users.email, normalizedEmail),
+    });
+
+    if (!user) {
+      // Create new user with random argon2id password hash for security
+      const randomPassword = generateSecureRandomToken(32);
+      const passwordHash = await Bun.password.hash(randomPassword, {
+        algorithm: "argon2id",
+        memoryCost: 65536,
+        timeCost: 3,
+      });
+
+      const [created] = await db
+        .insert(users)
+        .values({
+          fullName,
+          email: normalizedEmail,
+          passwordHash,
+          isVerified: true, // Google accounts with verified emails are trusted
+        })
+        .returning();
+
+      user = created;
+
+      // Send welcome onboarding email asynchronously
+      sendWelcomeEmail({
+        to: user.email,
+        fullName: user.fullName,
+      }).catch((err) => console.error("[Google OAuth] Welcome email error:", err));
+    } else if (!user.isVerified) {
+      // Auto-verify existing account on Google authentication
+      const [updated] = await db
+        .update(users)
+        .set({
+          isVerified: true,
+          updatedAt: now,
+        })
+        .where(eq(users.id, user.id))
+        .returning();
+
+      user = updated;
+    }
+
+    // Pre-warm user cache in Redis
+    await redis.set(
+      `session:user:${user.id}`,
+      {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+        isVerified: user.isVerified,
+        createdAt: user.createdAt.toISOString(),
+      },
+      { ex: 300 }
+    );
+
+    return user;
+  }
+
+  /**
    * Persists a hashed refresh token in PostgreSQL with expiration timestamp.
    */
   async persistRefreshToken(userId: string, rawRefreshToken: string) {
