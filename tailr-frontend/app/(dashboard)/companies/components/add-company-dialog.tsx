@@ -160,20 +160,13 @@ export function AddCompanyDialog({
         </div>
 
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-neutral-200 dark:border-white/10 bg-neutral-50/80 dark:bg-white/[0.03] shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-indigo-600/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
-              <Building2 className="h-5 w-5" />
-            </div>
-            <div>
-              <DialogTitle className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white">
-                Add Company to Directory
-              </DialogTitle>
-              <DialogDescription className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                Can&apos;t find an organization? Contribute verified company and HR details for everyone.
-              </DialogDescription>
-            </div>
-          </div>
+        <div className="p-4 sm:p-5 border-b border-neutral-200 dark:border-white/10 shrink-0">
+          <DialogTitle className="text-base sm:text-lg font-bold text-neutral-900 dark:text-white">
+            Add Company
+          </DialogTitle>
+          <DialogDescription className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+            Contribute verified company details, tech stack, and recruiter contacts to the directory.
+          </DialogDescription>
         </div>
 
         {/* Scrollable Form Body */}

@@ -1,13 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Building2, Plus, Sparkles, ArrowRight } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
-import { Input } from "@/shared/components/ui/input";
-import { Badge } from "@/shared/components/ui/badge";
+import { Plus, Building2 } from "lucide-react";
 
 interface NotFoundCompanyCardProps {
-  onOpenAddCompany: (initialName?: string) => void;
+  onOpenAddCompany: () => void;
   className?: string;
 }
 
@@ -15,70 +12,32 @@ export function NotFoundCompanyCard({
   onOpenAddCompany,
   className,
 }: NotFoundCompanyCardProps) {
-  const [companyName, setCompanyName] = React.useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onOpenAddCompany(companyName.trim());
-    setCompanyName("");
-  };
-
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-dashed border-indigo-500/30 dark:border-indigo-500/25 bg-gradient-to-r from-indigo-500/[0.04] via-purple-500/[0.03] to-transparent dark:from-indigo-950/25 dark:via-purple-950/15 p-4 sm:p-5 backdrop-blur-xs transition-all hover:border-indigo-500/50 ${
+      className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-neutral-200 dark:border-white/10 bg-white dark:bg-neutral-900/40 text-xs shadow-2xs transition-colors ${
         className || ""
       }`}
     >
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        {/* Left copy & icon */}
-        <div className="flex items-start gap-3.5">
-          <div className="h-10 w-10 rounded-xl bg-indigo-600/10 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-            <Building2 className="h-5 w-5" />
-          </div>
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-sm sm:text-base font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
-                <span>Not found your company?</span>
-              </h3>
-              <Badge
-                variant="outline"
-                className="text-[10px] py-0 px-2 h-4.5 border-indigo-500/30 text-indigo-600 dark:text-indigo-400 font-semibold gap-1"
-              >
-                <Sparkles className="h-2.5 w-2.5" />
-                <span>Community Directory</span>
-              </Badge>
-            </div>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400 max-w-xl leading-relaxed">
-              Missing an organization? Add it here with tech stack and HR details so everyone can
-              tailor their resumes accurately.
-            </p>
-          </div>
-        </div>
-
-        {/* Right quick form */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto shrink-0"
-        >
-          <div className="relative min-w-0 sm:w-64 lg:w-72">
-            <Input
-              type="text"
-              placeholder="Enter company name..."
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              className="h-9 text-xs pr-2"
-            />
-          </div>
-          <Button
-            type="submit"
-            size="sm"
-            className="h-9 gap-1.5 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shrink-0 shadow-xs cursor-pointer"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Company</span>
-          </Button>
-        </form>
+      <div className="flex items-center gap-2.5 min-w-0">
+        <Building2 className="h-4 w-4 text-neutral-400 dark:text-neutral-500 shrink-0" />
+        <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
+          <span className="font-semibold text-neutral-900 dark:text-neutral-200">
+            Not found your company?
+          </span>{" "}
+          <span className="hidden sm:inline text-neutral-500 dark:text-neutral-400">
+            Add it to the directory.
+          </span>
+        </p>
       </div>
+
+      <button
+        type="button"
+        onClick={onOpenAddCompany}
+        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-semibold bg-neutral-900 hover:bg-neutral-800 text-white dark:bg-white dark:hover:bg-neutral-200 dark:text-neutral-900 transition-colors shrink-0 cursor-pointer shadow-2xs"
+      >
+        <Plus className="h-3.5 w-3.5" />
+        <span>Add Company</span>
+      </button>
     </div>
   );
 }
