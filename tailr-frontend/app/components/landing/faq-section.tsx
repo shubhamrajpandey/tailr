@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import Link from "next/link";
 import { ChevronDown, HelpCircle, MessageCircle, Sparkles, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { PillGlowButton } from "@/shared/components/ui/button";
+import { SupportDialog } from "@/shared/components/ui/support-dialog";
 import { RotatingBorderBadge } from "@/shared/components/ui/rotating-badge";
 import { FoldingText } from "@/shared/components/ui/folding-text";
 import { AnimatedDescription } from "@/shared/components/ui/animated-description";
@@ -23,34 +23,35 @@ const faqs: FaqItem[] = [
       "Never. Tailr is engineered with strict deterministic guardrails. The AI only reorganizes, highlights, and articulates verified achievements from your Master Resume to match the keywords and requirements in the target job description. It will never invent companies, degrees, dates, or skills you did not list.",
   },
   {
-    question: "Will the generated PDF pass modern ATS scanners?",
+    question: "What ATS formats does Tailr export to?",
     answer:
-      "Yes, 100%. Our PDF export pipeline strictly adheres to parsing standards from Greenhouse, Workday, Lever, and Taleo. We generate single-column, clean semantic typography without complex multi-column graphic tables, text boxes, or non-standard fonts that break automated ATS parsers.",
+      "Tailr generates single-column, machine-parseable PDFs engineered specifically for Workday, Greenhouse, Lever, Taleo, and iCIMS. No tables, columns, floating shapes, or nested text boxes that cause ATS parsing errors.",
   },
   {
-    question: "Which AI models power Tailr's tailoring engine?",
+    question: "How does the Master Resume system work?",
     answer:
-      "Tailr utilizes Google's state-of-the-art Gemini 2.5 Flash and Gemini 2.5 Pro models. Flash provides sub-second keyword extraction and alignment, while Pro handles deep role synthesis, metric quantification, and contextual bullet point enhancement.",
+      "Your Master Resume is your permanent source of truth. You enter your comprehensive career history once—every role, skill, metric, and bullet point. Tailr then synthesizes and pulls relevant items from this repository for each tailored job submission.",
   },
   {
-    question: "Is my personal career data kept secure and private?",
+    question: "Is my personal career data private and secure?",
     answer:
-      "Absolutely. All user records are stored in private isolated tenant databases with Argon2id cryptographic encryption. Your career data, master resumes, and targeted applications are never sold or used to train public machine learning models.",
+      "Yes, absolutely. Your career data is encrypted in transit and at rest. We never sell your resume data, and we do not use your proprietary career achievements to train public foundation models.",
   },
   {
-    question: "Can I manually review, override, or edit any bullet point?",
+    question: "Can I manage multiple applications simultaneously?",
     answer:
-      "Yes. Tailr features a full Diff & Transparency Inspector. Before generating your final PDF, you can review side-by-side comparisons, accept or reject changes, fine-tune wording, or rewrite any bullet point manually.",
+      "Yes. Tailr includes an integrated Kanban Applications CRM pipeline. You can drag and drop submissions across Applied, Interviewing, Offer, and Rejected stages while tracking tailored versions and interview dates.",
   },
   {
-    question: "What is the difference between Master Resume and Tailored Versions?",
+    question: "What is the 3-second ATS scoring engine?",
     answer:
-      "Your Master Resume is your single source of truth—a comprehensive ledger holding every project, metric, and promotion across your career. When tailoring for a role, Tailr extracts and aligns only the top 3-4 most relevant achievements per role to generate a high-impact, targeted version.",
+      "Our scoring engine cross-references your tailored PDF directly against the job posting requirements across keyword density, section hierarchy, hard skills coverage, and impact metric density in real time.",
   },
 ];
 
 export function FaqSection() {
   const [openIndex, setOpenIndex] = React.useState<number | null>(0);
+  const [supportOpen, setSupportOpen] = React.useState<boolean>(false);
 
   const toggle = (idx: number) => {
     setOpenIndex((prev) => (prev === idx ? null : idx));
@@ -112,66 +113,59 @@ export function FaqSection() {
                   />
                 )}
 
-                {/* Question Trigger Header */}
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="w-full p-4 sm:p-5 md:p-6 text-left flex items-center justify-between gap-4 cursor-pointer select-none"
+                  className="w-full py-4 sm:py-5 px-5 sm:px-6 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-hidden"
                   aria-expanded={isOpen}
                 >
-                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                    {/* Numeric Step Tag */}
-                    <span
-                      className={cn(
-                        "font-mono text-xs font-semibold px-2 py-0.5 rounded-md transition-colors shrink-0",
-                        isOpen
-                          ? "bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30"
-                          : "bg-neutral-100 dark:bg-white/[0.05] text-neutral-400 border border-transparent group-hover:text-neutral-700 dark:group-hover:text-neutral-200"
-                      )}
-                    >
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-
-                    <span
-                      className={cn(
-                        "font-semibold text-sm sm:text-base md:text-[17px] leading-snug transition-colors",
-                        isOpen
-                          ? "text-indigo-600 dark:text-white"
-                          : "text-neutral-900 dark:text-neutral-200 group-hover:text-neutral-950 dark:group-hover:text-white"
-                      )}
-                    >
-                      {faq.question}
-                    </span>
-                  </div>
-
-                  {/* Animated Chevron Badge */}
                   <span
                     className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300",
+                      "text-sm sm:text-base font-bold transition-colors duration-200",
                       isOpen
-                        ? "bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white shadow-xs shadow-indigo-500/30 rotate-180"
-                        : "bg-neutral-100 dark:bg-white/[0.05] text-neutral-400 group-hover:bg-neutral-200/80 dark:group-hover:bg-white/10 group-hover:text-neutral-700 dark:group-hover:text-white"
+                        ? "text-indigo-600 dark:text-indigo-400"
+                        : "text-neutral-900 dark:text-neutral-200 group-hover:text-neutral-950 dark:group-hover:text-white"
                     )}
                   >
-                    <ChevronDown className="h-4 w-4" />
+                    {faq.question}
+                  </span>
+
+                  <span
+                    className={cn(
+                      "w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center shrink-0 border transition-all duration-300",
+                      isOpen
+                        ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-500/30 text-indigo-600 dark:text-indigo-400 rotate-180"
+                        : "bg-neutral-100 dark:bg-white/5 border-neutral-200/60 dark:border-white/10 text-neutral-500 dark:text-neutral-400 group-hover:border-neutral-300 dark:group-hover:border-white/20"
+                    )}
+                  >
+                    <ChevronDown className="w-4 h-4" />
                   </span>
                 </button>
 
-                {/* Animated Expandable Answer Body */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
                       key="content"
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{
-                        height: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
-                        opacity: { duration: 0.25, ease: "easeInOut" },
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                        transition: {
+                          height: { duration: 0.35, ease: [0.04, 0.62, 0.23, 0.98] },
+                          opacity: { duration: 0.25, delay: 0.1 },
+                        },
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        transition: {
+                          height: { duration: 0.25, ease: [0.04, 0.62, 0.23, 0.98] },
+                          opacity: { duration: 0.15 },
+                        },
                       }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1 text-xs sm:text-sm md:text-[15px] text-neutral-600 dark:text-neutral-300/90 leading-relaxed border-t border-neutral-100 dark:border-white/[0.06]">
+                      <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-1 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed border-t border-neutral-100 dark:border-white/[0.04]">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -198,18 +192,21 @@ export function FaqSection() {
             </div>
           </div>
 
-          <Link href="/support" className="shrink-0 w-full sm:w-auto">
+          <div className="shrink-0 w-full sm:w-auto">
             <PillGlowButton
+              onClick={() => setSupportOpen(true)}
               size="default"
-              className="w-full sm:w-auto px-6 h-10 text-xs sm:text-sm font-semibold gap-2"
+              className="w-full sm:w-auto px-6 h-10 text-xs sm:text-sm font-semibold gap-2 cursor-pointer"
               wrapperClassName="w-full sm:w-auto"
             >
               <span>Contact Support</span>
               <ArrowRight className="h-4 w-4" />
             </PillGlowButton>
-          </Link>
+          </div>
         </div>
       </div>
+
+      <SupportDialog open={supportOpen} onOpenChange={setSupportOpen} />
     </section>
   );
 }

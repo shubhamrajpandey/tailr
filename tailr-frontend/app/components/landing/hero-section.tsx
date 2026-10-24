@@ -14,14 +14,24 @@ export function HeroSection() {
   const [scale, setScale] = React.useState(0.95);
 
   React.useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      const scrollY = window.scrollY;
-      const isMobile = window.innerWidth < 768;
-      // Scroll-driven 3D flip: smoothly maps scrollY (0 -> 400px) to rotateX (18deg -> 0deg on desktop, gentle on mobile)
-      const maxAngle = isMobile ? 6 : 18;
-      const progress = Math.min(Math.max(scrollY / 380, 0), 1);
-      setRotateX(maxAngle - progress * maxAngle);
-      setScale(isMobile ? 1 : 0.95 + progress * 0.05);
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        const isMobile = window.innerWidth < 768;
+        if (isMobile) {
+          setRotateX(0);
+          setScale(1);
+          ticking = false;
+          return;
+        }
+        const scrollY = window.scrollY;
+        const progress = Math.min(Math.max(scrollY / 380, 0), 1);
+        setRotateX(18 - progress * 18);
+        setScale(0.95 + progress * 0.05);
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });

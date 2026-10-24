@@ -8,7 +8,6 @@
 export const ROUTES = {
   // Public Routes
   HOME: "/",
-  SUPPORT: "/support",
   COMPANIES: "/companies",
 
   // Authentication Routes

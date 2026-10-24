@@ -26,13 +26,13 @@ export default function NotFound() {
             Tailr
           </span>
         </Link>
-        <Link
-          href="/support"
+        <a
+          href="mailto:shubhamrajpandey88@gmail.com"
           className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1.5"
         >
           <HelpCircle className="w-3.5 h-3.5" />
           <span>Need help?</span>
-        </Link>
+        </a>
       </header>
 
       {/* Main 404 Hero */}
@@ -62,15 +62,15 @@ export default function NotFound() {
           <Link href="/" className="w-full sm:w-auto">
             <Button variant="outline" className="w-full sm:w-auto">
               <Home className="w-4 h-4 mr-1.5" />
-              <span>Return Home</span>
+              <span>Back to Home</span>
             </Button>
           </Link>
         </div>
       </main>
 
-      {/* Footer info */}
-      <footer className="relative z-10 text-center text-xs text-neutral-400 font-mono">
-        Tailr v1.0 • Precision Job Application Tracking & ATS Engineering
+      {/* Footer Meta */}
+      <footer className="relative z-10 text-center text-xs text-neutral-500 dark:text-neutral-500">
+        &copy; {new Date().getFullYear()} Tailr. Deterministic Career Operating System.
       </footer>
     </div>
   );

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { LandingNav } from "./components/landing/landing-nav";
 import { HeroSection } from "./components/landing/hero-section";
-
 import { FeaturesBento } from "./components/landing/features-bento";
 import { WorkflowSection } from "./components/landing/workflow-section";
 import { PricingSection } from "./components/landing/pricing-section";
@@ -9,6 +8,7 @@ import { TestimonialsSection } from "./components/landing/testimonials-section";
 import { FaqSection } from "./components/landing/faq-section";
 import { FinalCta } from "./components/landing/final-cta";
 import { LandingFooter } from "./components/landing/landing-footer";
+import { ScrollToTop } from "./components/landing/scroll-to-top";
 
 export const metadata: Metadata = {
   title: "Tailr — The AI-Powered Career Operating System",
@@ -77,6 +77,9 @@ export default function LandingPage() {
         <FinalCta />
       </main>
       <LandingFooter />
+
+      {/* Interactive Animated Scroll to Top */}
+      <ScrollToTop />
     </div>
   );
 }
