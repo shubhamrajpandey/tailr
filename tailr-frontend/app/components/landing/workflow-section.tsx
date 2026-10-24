@@ -8,21 +8,14 @@ import { FoldingText } from "@/shared/components/ui/folding-text";
 import { AnimatedDescription } from "@/shared/components/ui/animated-description";
 import { WORKFLOW_STEPS } from "./workflow-steps-data";
 import { WorkflowCard } from "./workflow-card";
+import { WorkflowMobileView } from "./workflow-mobile-view";
 
 export function WorkflowSection() {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [isMobile, setIsMobile] = React.useState(false);
   const steps = WORKFLOW_STEPS;
 
-  React.useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  // Track scroll progress across the 320vh height of the section
+  // Track scroll progress across the 320vh height of the section (desktop only)
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -131,7 +124,7 @@ export function WorkflowSection() {
           className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[360px] bg-purple-500/[0.03] dark:bg-purple-500/[0.06] rounded-full blur-3xl"
         />
 
-        <div className="relative z-10 flex h-auto w-full max-w-7xl flex-col justify-start gap-6 sm:gap-7 py-0 md:h-full md:justify-center md:gap-8 lg:gap-10">
+        <div className="relative z-10 flex h-auto w-full max-w-7xl flex-col justify-start gap-5 sm:gap-7 py-0 md:h-full md:justify-center md:gap-8 lg:gap-10">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto shrink-0">
             <RotatingBorderBadge
@@ -157,14 +150,17 @@ export function WorkflowSection() {
             </div>
           </div>
 
-          {/* Stacking Cards Box */}
-          <div className="relative flex h-auto w-full flex-col items-center justify-center gap-6 pt-2 md:block md:h-[530px] lg:h-[540px] md:gap-0 md:pt-0">
+          {/* Mobile View: High-Engagement Interactive Step Showcase (Shown on mobile only) */}
+          <div className="block md:hidden w-full max-w-lg mx-auto">
+            <WorkflowMobileView />
+          </div>
+
+          {/* Desktop View: Cinematic Sticky Stacking Cards (Shown on md: screens and above) */}
+          <div className="hidden md:block relative w-full h-[530px] lg:h-[540px]">
             {steps.map((step, index) => {
-              const styleValues = isMobile
+              const styleValues = shouldReduceMotion
                 ? { y: 0, scale: 1, opacity: 1, contentOpacity: 1, dimOpacity: 0 }
-                : shouldReduceMotion
-                  ? { y: 0, scale: 1, opacity: 1, contentOpacity: 1, dimOpacity: 0 }
-                  : cardStyles[index];
+                : cardStyles[index];
 
               return (
                 <WorkflowCard
@@ -172,7 +168,7 @@ export function WorkflowSection() {
                   step={step}
                   index={index}
                   style={styleValues}
-                  isMobile={isMobile}
+                  isMobile={false}
                 />
               );
             })}
