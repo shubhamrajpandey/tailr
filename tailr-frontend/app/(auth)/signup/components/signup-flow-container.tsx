@@ -73,10 +73,7 @@ export function SignupFlowContainer() {
   };
 
   const handleGoogleSignIn = () => {
-    const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL ||
-      (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
-    window.location.href = `${apiUrl}/auth/google`;
+    window.location.href = "/api/auth/google";
   };
 
   // authStep from Redux drives which step is showing:

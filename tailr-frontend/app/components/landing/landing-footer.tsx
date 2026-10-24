@@ -142,7 +142,7 @@ export function LandingFooter() {
                       href="/signup"
                       className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
                     >
-                      Create Free Account →
+                      Create Free Account {"→"}
                     </Link>
                   </li>
                 </ul>
@@ -153,8 +153,8 @@ export function LandingFooter() {
           {/* Bottom Bar: Copyright & Subtext */}
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-500 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
-              <span>&copy; {currentYear} Tailr. All rights reserved.</span>
-              <span className="hidden sm:inline text-neutral-300 dark:text-white/20">•</span>
+              <span>© {currentYear} Tailr. All rights reserved.</span>
+              <span className="hidden sm:inline text-neutral-300 dark:text-white/20">{"•"}</span>
               <span>Deterministic Career Operating System</span>
             </div>
 

@@ -154,7 +154,7 @@ export function EnhanceBulletModal({
             Original Text:
           </span>
           <p className="text-xs text-neutral-700 dark:text-neutral-300 italic">
-            "{originalBullet}"
+            &ldquo;{originalBullet}&rdquo;
           </p>
         </div>
 

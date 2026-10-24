@@ -67,12 +67,26 @@ function notifySubscribers(token: string) {
 
 // ─── Axios Instance ─────────────────────────────────────────────────────────────
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001");
+export function getAuthApiBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    const { hostname, protocol } = window.location;
+    if (
+      process.env.NODE_ENV !== "production" &&
+      hostname !== "localhost" &&
+      hostname !== "127.0.0.1" &&
+      !process.env.NEXT_PUBLIC_API_URL?.includes(hostname)
+    ) {
+      return `${protocol}//${hostname}:3001`;
+    }
+  }
+  return (
+    process.env.NEXT_PUBLIC_API_URL ||
+    (process.env.NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001")
+  );
+}
 
 export const authApiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: getAuthApiBaseUrl(),
   withCredentials: true, // required — sends the HttpOnly refresh cookie
   headers: {
     "Content-Type": "application/json",
@@ -85,6 +99,7 @@ export const authApiClient = axios.create({
 
 authApiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    config.baseURL = getAuthApiBaseUrl();
     let token = store.getState().auth.accessToken;
     if (!token) {
       const stored = getStoredAuth();

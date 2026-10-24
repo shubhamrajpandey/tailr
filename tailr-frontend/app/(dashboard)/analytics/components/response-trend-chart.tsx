@@ -55,6 +55,11 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
 
 export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const maxVal = React.useMemo(() => {
     if (data.length === 0) return 0;
@@ -84,8 +89,9 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
         </div>
       }
     >
-      <div className="h-64 w-full">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-64 min-h-[256px] w-full min-w-0">
+        {isMounted ? (
+          <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={200}>
           <BarChart
             data={data}
             margin={{ top: 20, right: 10, left: -25, bottom: 5 }}
@@ -168,6 +174,9 @@ export function ResponseTrendChart({ data, hasData }: ResponseTrendChartProps) {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+        ) : (
+          <div className="w-full h-full min-h-[200px]" />
+        )}
       </div>
     </AnalyticsChartCard>
   );

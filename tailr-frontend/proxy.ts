@@ -8,8 +8,10 @@ export function proxy(request: NextRequest) {
   // Retrieve the client-managed session indicator cookie.
   // Access tokens are stored in Redux memory only (never written to document.cookie)
   // to prevent XSS exfiltration. The lightweight boolean cookie (tailr_session)
-  // is set upon successful auth and removed upon logout or 401 expiration.
-  const hasValidSession = request.cookies.get("tailr_session")?.value === "1";
+  const hasValidSession =
+    request.cookies.get("tailr_session")?.value === "1" ||
+    Boolean(request.cookies.get("accessToken")?.value) ||
+    Boolean(request.cookies.get("refreshToken")?.value);
 
   // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {

@@ -64,6 +64,11 @@ export function ApplicationVolumeChart({
 }: ApplicationVolumeChartProps) {
   const [range, setRange] = React.useState("Last week");
   const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
+  const [isMounted, setIsMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Peak application value for reference line
   const peakVal = Math.max(...data.map((d) => d.applications));
@@ -137,77 +142,81 @@ export function ApplicationVolumeChart({
       </div>
 
       {/* Main Bar Chart */}
-      <div className="mt-4 flex-1 min-h-[190px] w-full relative">
-        <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={190}>
-          <BarChart
-            data={data}
-            margin={{ top: 20, right: 8, left: -24, bottom: 0 }}
-            onMouseMove={(state) => {
-              if (state && state.activeTooltipIndex !== undefined) {
-                const idx = Number(state.activeTooltipIndex);
-                setHoveredIndex(Number.isNaN(idx) ? null : idx);
-              }
-            }}
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {/* Dotted Reference Baseline */}
-            <ReferenceLine
-              y={peakVal}
-              stroke="currentColor"
-              className="text-neutral-300 dark:text-white/10"
-              strokeDasharray="4 4"
-            />
-
-            <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "currentColor", fontSize: 12, fontWeight: 500 }}
-              className="text-neutral-500 dark:text-neutral-400"
-              dy={6}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fill: "currentColor", fontSize: 11, fontWeight: 500 }}
-              className="text-neutral-400 dark:text-neutral-500"
-              allowDecimals={false}
-              dx={-5}
-            />
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ fill: "rgba(100, 116, 139, 0.08)", radius: 6 }}
-            />
-            <Bar dataKey="applications" radius={[6, 6, 2, 2]} maxBarSize={38}>
-              {data.map((entry, index) => {
-                const isHovered = hoveredIndex === index;
-                const isPeak = entry.isPeak;
-
-                let fill = "rgba(99, 102, 241, 0.25)";
-                if (isPeak) {
-                  fill = "url(#peakBarGradient)";
-                } else if (isHovered) {
-                  fill = "rgba(99, 102, 241, 0.45)";
+      <div className="mt-4 flex-1 min-h-[190px] w-full min-w-0 relative">
+        {isMounted ? (
+          <ResponsiveContainer width="100%" height="100%" minWidth={100} minHeight={190}>
+            <BarChart
+              data={data}
+              margin={{ top: 20, right: 8, left: -24, bottom: 0 }}
+              onMouseMove={(state) => {
+                if (state && state.activeTooltipIndex !== undefined) {
+                  const idx = Number(state.activeTooltipIndex);
+                  setHoveredIndex(Number.isNaN(idx) ? null : idx);
                 }
+              }}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              {/* Dotted Reference Baseline */}
+              <ReferenceLine
+                y={peakVal}
+                stroke="currentColor"
+                className="text-neutral-300 dark:text-white/10"
+                strokeDasharray="4 4"
+              />
 
-                return (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={fill}
-                    className="transition-all duration-200 cursor-pointer"
-                  />
-                );
-              })}
-            </Bar>
-            <defs>
-              <linearGradient id="peakBarGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.95} />
-                <stop offset="70%" stopColor="#818cf8" stopOpacity={0.6} />
-                <stop offset="100%" stopColor="#a5b4fc" stopOpacity={0.3} />
-              </linearGradient>
-            </defs>
-          </BarChart>
-        </ResponsiveContainer>
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "currentColor", fontSize: 12, fontWeight: 500 }}
+                className="text-neutral-500 dark:text-neutral-400"
+                dy={6}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "currentColor", fontSize: 11, fontWeight: 500 }}
+                className="text-neutral-400 dark:text-neutral-500"
+                allowDecimals={false}
+                dx={-5}
+              />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ fill: "rgba(100, 116, 139, 0.08)", radius: 6 }}
+              />
+              <Bar dataKey="applications" radius={[6, 6, 2, 2]} maxBarSize={38}>
+                {data.map((entry, index) => {
+                  const isHovered = hoveredIndex === index;
+                  const isPeak = entry.isPeak;
+
+                  let fill = "rgba(99, 102, 241, 0.25)";
+                  if (isPeak) {
+                    fill = "url(#peakBarGradient)";
+                  } else if (isHovered) {
+                    fill = "rgba(99, 102, 241, 0.45)";
+                  }
+
+                  return (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={fill}
+                      className="transition-all duration-200 cursor-pointer"
+                    />
+                  );
+                })}
+              </Bar>
+              <defs>
+                <linearGradient id="peakBarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#6366f1" stopOpacity={0.95} />
+                  <stop offset="70%" stopColor="#818cf8" stopOpacity={0.6} />
+                  <stop offset="100%" stopColor="#a5b4fc" stopOpacity={0.3} />
+                </linearGradient>
+              </defs>
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="w-full h-full min-h-[190px]" />
+        )}
       </div>
     </div>
   );

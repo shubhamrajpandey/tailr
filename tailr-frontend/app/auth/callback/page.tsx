@@ -19,26 +19,45 @@ function CallbackHandler() {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const error = searchParams.get("error");
+    // Resilient parameter reader supporting searchParams with window.location fallback
+    const getParam = (key: string): string | null => {
+      const fromSearch = searchParams.get(key);
+      if (fromSearch) return fromSearch;
+      if (typeof window !== "undefined") {
+        return new URLSearchParams(window.location.search).get(key);
+      }
+      return null;
+    };
+
+    const error = getParam("error");
     if (error) {
-      router.replace(`/login?error=${encodeURIComponent(error)}`);
+      window.location.replace(`/login?error=${encodeURIComponent(error)}`);
       return;
     }
 
-    const accessToken = searchParams.get("accessToken");
-    const refreshToken = searchParams.get("refreshToken") || undefined;
-    const userParam = searchParams.get("user");
+    const accessToken = getParam("accessToken");
+    const refreshToken = getParam("refreshToken") || undefined;
+    const userParam = getParam("user");
 
     if (!accessToken || !userParam) {
       setErrorMessage("No authentication credentials found. Redirecting to sign in...");
       const timer = setTimeout(() => {
-        router.replace("/login?error=missing_credentials");
+        window.location.replace("/login?error=missing_credentials");
       }, 1500);
       return () => clearTimeout(timer);
     }
 
     try {
-      const user = JSON.parse(decodeURIComponent(userParam)) as User;
+      let user: User;
+      try {
+        user = JSON.parse(userParam) as User;
+      } catch {
+        user = JSON.parse(decodeURIComponent(userParam)) as User;
+      }
+
+      if (!user || !user.email) {
+        throw new Error("Invalid user profile format");
+      }
 
       // 1. Persist session indicators and local credentials
       setSessionCookie();
@@ -56,17 +75,17 @@ function CallbackHandler() {
       // 3. Hydrate Redux in-memory store
       dispatch(setCredentials({ user, accessToken }));
 
-      // 4. Navigate to Dashboard
-      router.replace("/dashboard");
+      // 4. Perform full window navigation to Dashboard so edge middleware receives tailr_session cookie reliably
+      window.location.replace("/dashboard");
     } catch (err) {
       console.error("[OAuth Callback] Failed to parse user session payload:", err);
       setErrorMessage("Authentication session parsing error. Redirecting to sign in...");
       const timer = setTimeout(() => {
-        router.replace("/login?error=session_parse_error");
+        window.location.replace("/login?error=session_parse_error");
       }, 1500);
       return () => clearTimeout(timer);
     }
-  }, [router, searchParams, dispatch, queryClient]);
+  }, [searchParams, dispatch, queryClient]);
 
   return (
     <div className="flex flex-col items-center justify-center space-y-4 text-center">
