@@ -7,9 +7,11 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(res.status).toBe(200);
 
     const body = await res.json();
+    expect(["healthy", "degraded"]).toContain(body.status);
     expect(body.uptime).toBeDefined();
     expect(body.timestamp).toBeDefined();
     expect(body.services).toBeDefined();
+    expect(body.services.database).toBe("connected");
   }, 10000);
 
   it("POST /auth/signup rejects invalid email formatting via Elysia TypeBox", async () => {

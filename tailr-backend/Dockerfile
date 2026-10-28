@@ -28,7 +28,7 @@ EXPOSE 3001
 
 # Production Container Healthcheck
 HEALTHCHECK --interval=15s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost:3001/health | grep -q "healthy" || exit 1
+  CMD wget -qO- http://localhost:3001/health | grep -q -E '"status":\s*"(healthy|degraded)"' || exit 1
 
 # Start production server
 CMD ["bun", "run", "src/index.ts"]

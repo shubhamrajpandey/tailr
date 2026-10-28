@@ -17,7 +17,7 @@ import { analyticsRoutes } from "./modules/analytics/analytics.routes";
 import { settingsRoutes } from "./modules/settings/settings.routes";
 import { quotaRoutes } from "./modules/quota/quota.routes";
 import { searchRoutes } from "./modules/search/search.routes";
-import { checkDatabaseHealth } from "./db/client";
+import { checkDatabaseHealth, closeDatabase } from "./db/client";
 import { redis } from "./config/redis";
 
 /**
@@ -210,12 +210,18 @@ if (isSwaggerEnabled) {
 
 app
   // 7. System Health Check Endpoint
-  .get("/health", async () => {
+  .get("/health", async ({ set }) => {
     const isDbConnected = await checkDatabaseHealth();
     const redisHealth = await redis.checkHealth();
     const isHealthy = isDbConnected && redisHealth.status === "connected";
+    const status = isHealthy ? "healthy" : isDbConnected ? "degraded" : "unhealthy";
+
+    if (!isDbConnected) {
+      set.status = 503;
+    }
+
     return {
-      status: isHealthy ? "healthy" : isDbConnected ? "degraded" : "unhealthy",
+      status,
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
       services: {
@@ -272,6 +278,25 @@ if (import.meta.main || !isTestEnv) {
   logger.info(
     `🩺 Health & Database Status Probe: http://localhost:${app.server?.port || env.PORT}/health`
   );
+
+  // 17. Graceful Process Shutdown Handler
+  const handleShutdown = async (signal: string) => {
+    logger.info(`Received ${signal}. Initiating graceful shutdown...`);
+    try {
+      if (app.server) {
+        app.server.stop();
+      }
+      await closeDatabase();
+      logger.info("Graceful shutdown completed successfully.");
+      process.exit(0);
+    } catch (err) {
+      logger.error("Error during graceful shutdown:", {}, err);
+      process.exit(1);
+    }
+  };
+
+  process.on("SIGTERM", () => handleShutdown("SIGTERM"));
+  process.on("SIGINT", () => handleShutdown("SIGINT"));
 }
 
 export type App = typeof app;

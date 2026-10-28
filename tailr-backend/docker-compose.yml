@@ -34,6 +34,10 @@ services:
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
+      UPSTASH_REDIS_REST_URL: ${UPSTASH_REDIS_REST_URL:-}
+      UPSTASH_REDIS_REST_TOKEN: ${UPSTASH_REDIS_REST_TOKEN:-}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
     depends_on:
       postgres:
         condition: service_healthy

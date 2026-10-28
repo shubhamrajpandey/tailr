@@ -1,3 +1,5 @@
+import path from "node:path";
+import fs from "node:fs";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import postgres from "postgres";
@@ -16,7 +18,14 @@ async function runMigrations() {
   const db = drizzle(migrationClient);
 
   try {
-    await migrate(db, { migrationsFolder: "./src/db/migrations" });
+    const candidateFolders = [
+      path.resolve(__dirname, "../src/db/migrations"),
+      path.resolve(process.cwd(), "src/db/migrations"),
+      path.resolve(process.cwd(), "tailr-backend/src/db/migrations"),
+    ];
+    const migrationsFolder = candidateFolders.find((f) => fs.existsSync(f)) || candidateFolders[0];
+
+    await migrate(db, { migrationsFolder });
     logger.info("Database schema migrations completed successfully.");
   } catch (error) {
     logger.error("Database migration failed:", {}, error);
