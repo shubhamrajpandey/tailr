@@ -188,64 +188,70 @@ export class ResumeController {
     // 1. Enforce authenticated user, anti-spam cooldown, and rolling 24h quota
     const quotaCheck = await assertAiQuota(authUser.id, "RESUME_TAILOR", set);
 
-    // Determine baseline resume to tailor from:
-    // 1. Provided directly in payload body.resumeData
-    // 2. OR provided by body.resumeId (strictly verified against authUser.id)
-    // 3. OR current active master resume in DB for authUser.id
-    let baseResume = body.resumeData;
-    if (!baseResume) {
-      if (body.resumeId) {
-        const found = await resumeService.getResumeById(authUser.id, body.resumeId);
-        if (found) {
-          baseResume = {
-            basics: {
-              fullName: found.fullName,
-              email: found.email || undefined,
-              phone: found.phone || undefined,
-              location: found.location || undefined,
-              linkedinUrl: found.linkedinUrl || undefined,
-              githubUrl: found.githubUrl || undefined,
-              portfolioUrl: found.portfolioUrl || undefined,
-            },
-            careerSummary: found.careerSummary || "",
-            technicalSkills: found.technicalSkills as StructuredResumeData["technicalSkills"],
-            workExperience: found.workExperience as StructuredResumeData["workExperience"],
-            education: found.education as StructuredResumeData["education"],
-            projects: found.projects as StructuredResumeData["projects"],
-          };
+    try {
+      // Determine baseline resume to tailor from:
+      // 1. Provided directly in payload body.resumeData
+      // 2. OR provided by body.resumeId (strictly verified against authUser.id)
+      // 3. OR current active master resume in DB for authUser.id
+      let baseResume = body.resumeData;
+      if (!baseResume) {
+        if (body.resumeId) {
+          const found = await resumeService.getResumeById(authUser.id, body.resumeId);
+          if (found) {
+            baseResume = {
+              basics: {
+                fullName: found.fullName,
+                email: found.email || undefined,
+                phone: found.phone || undefined,
+                location: found.location || undefined,
+                linkedinUrl: found.linkedinUrl || undefined,
+                githubUrl: found.githubUrl || undefined,
+                portfolioUrl: found.portfolioUrl || undefined,
+              },
+              careerSummary: found.careerSummary || "",
+              technicalSkills: found.technicalSkills as StructuredResumeData["technicalSkills"],
+              workExperience: found.workExperience as StructuredResumeData["workExperience"],
+              education: found.education as StructuredResumeData["education"],
+              projects: found.projects as StructuredResumeData["projects"],
+            };
+          }
+        }
+
+        if (!baseResume) {
+          const master = await resumeService.getMasterResume(authUser.id);
+          baseResume = master.data;
         }
       }
 
-      if (!baseResume) {
-        const master = await resumeService.getMasterResume(authUser.id);
-        baseResume = master.data;
-      }
-    }
+      const result = await resumeService.tailorResume(body, baseResume, authUser.id);
 
-    const result = await resumeService.tailorResume(body, baseResume, authUser.id);
+      // 2. Record successful AI usage event in database and clear in-flight reservation
+      await quotaService.confirmUsage(authUser.id, "RESUME_TAILOR", {
+        tailoredResumeId: result.id,
+        companyName: body.companyName,
+        positionTitle: body.positionTitle,
+      });
 
-    // 2. Record successful AI usage event in database
-    await quotaService.recordUsage(authUser.id, "RESUME_TAILOR", {
-      tailoredResumeId: result.id,
-      companyName: body.companyName,
-      positionTitle: body.positionTitle,
-    });
+      const remaining = Math.max(0, quotaCheck.remaining - 1);
+      set.headers["X-RateLimit-Remaining"] = String(remaining);
 
-    const remaining = Math.max(0, quotaCheck.remaining - 1);
-    set.headers["X-RateLimit-Remaining"] = String(remaining);
-
-    set.status = 200;
-    return {
-      success: true,
-      data: {
-        ...result,
-        quota: {
-          limit: quotaCheck.limit,
-          used: quotaCheck.used + 1,
-          remaining,
+      set.status = 200;
+      return {
+        success: true,
+        data: {
+          ...result,
+          quota: {
+            limit: quotaCheck.limit,
+            used: quotaCheck.used + 1,
+            remaining,
+          },
         },
-      },
-    };
+      };
+    } catch (err) {
+      // Release reservation on failure so user is not penalized
+      await quotaService.releaseQuota(authUser.id, "RESUME_TAILOR");
+      throw err;
+    }
   }
 
   /**

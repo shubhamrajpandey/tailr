@@ -5,11 +5,68 @@ import { StructuredResumeData } from "./resume.model";
  */
 export function escapeLatex(text: string): string {
   if (!text) return "";
-  return text
-    .replace(/\\/g, "\\textbackslash{}")
-    .replace(/([&%$#_{}])/g, "\\$1")
-    .replace(/~/g, "\\textasciitilde{}")
-    .replace(/\^/g, "\\textasciicircum{}");
+  return text.replace(/[\\&%$#_{}~^<>]/g, (match) => {
+    switch (match) {
+      case "\\":
+        return "\\textbackslash{}";
+      case "&":
+        return "\\&";
+      case "%":
+        return "\\%";
+      case "$":
+        return "\\$";
+      case "#":
+        return "\\#";
+      case "_":
+        return "\\_";
+      case "{":
+        return "\\{";
+      case "}":
+        return "\\}";
+      case "~":
+        return "\\textasciitilde{}";
+      case "^":
+        return "\\textasciicircum{}";
+      case "<":
+        return "\\textless{}";
+      case ">":
+        return "\\textgreater{}";
+      default:
+        return match;
+    }
+  });
+}
+
+/**
+ * Validates and encodes a URL for safe inclusion inside LaTeX \href{URL}{TEXT} commands.
+ * Prevents command injection, brace breakout, and comment truncation.
+ */
+export function sanitizeLatexUrl(rawUrl?: string | null): string | null {
+  if (!rawUrl || typeof rawUrl !== "string") return null;
+  const trimmed = rawUrl.trim();
+  if (!trimmed || trimmed === "#") return null;
+
+  // Block dangerous pseudo-protocols
+  if (/^(javascript|data|file|vbscript):/i.test(trimmed)) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    const protocol = parsed.protocol.toLowerCase();
+    if (protocol !== "http:" && protocol !== "https:" && protocol !== "mailto:") {
+      return null;
+    }
+
+    // Escape characters that could break out of LaTeX argument boundaries: \, {, }, quotes, spaces
+    return parsed.href
+      .replace(/\\/g, "/")
+      .replace(/%/g, "\\%")
+      .replace(/#/g, "\\#")
+      .replace(/[{}]/g, "");
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -172,10 +229,22 @@ export function renderLatexPreamble(): string {
  */
 export function renderHeaderSection(basics: StructuredResumeData["basics"]): string {
   const headerLinks: string[] = [];
-  if (basics.email) headerLinks.push(`\\href{mailto:${basics.email}}{${escapeLatex(basics.email)}}`);
-  if (basics.linkedinUrl) headerLinks.push(`\\href{${basics.linkedinUrl}}{LinkedIn}`);
-  if (basics.githubUrl) headerLinks.push(`\\href{${basics.githubUrl}}{GitHub}`);
-  if (basics.portfolioUrl) headerLinks.push(`\\href{${basics.portfolioUrl}}{Portfolio}`);
+  if (basics.email) {
+    const safeMail = sanitizeLatexUrl(`mailto:${basics.email}`);
+    if (safeMail) {
+      headerLinks.push(`\\href{${safeMail}}{${escapeLatex(basics.email)}}`);
+    } else {
+      headerLinks.push(escapeLatex(basics.email));
+    }
+  }
+  const safeLinkedin = sanitizeLatexUrl(basics.linkedinUrl);
+  if (safeLinkedin) headerLinks.push(`\\href{${safeLinkedin}}{LinkedIn}`);
+
+  const safeGithub = sanitizeLatexUrl(basics.githubUrl);
+  if (safeGithub) headerLinks.push(`\\href{${safeGithub}}{GitHub}`);
+
+  const safePortfolio = sanitizeLatexUrl(basics.portfolioUrl);
+  if (safePortfolio) headerLinks.push(`\\href{${safePortfolio}}{Portfolio}`);
 
   const linksLine = headerLinks.join(" $|$\n  ");
 
@@ -274,9 +343,12 @@ export function renderProjectsSection(projects?: StructuredResumeData["projects"
         .map((bullet) => `      \\resumeItem{${escapeLatex(bullet)}}`)
         .join("\n");
 
+      const safeLiveUrl = sanitizeLatexUrl(proj.liveUrl);
+      const urlTarget = safeLiveUrl || "#";
+
       return `  \\resumeProjectHeading
     {${headerTitle}}
-    {${proj.liveUrl || "#"}}
+    {${urlTarget}}
     {${escapeLatex(proj.year || "")}}
     \\resumeItemListStart
 ${bulletItems}
@@ -309,3 +381,5 @@ export function generateLatexFromStructuredResume(data: StructuredResumeData): s
 
   return sections.join("\n\n").trim();
 }
+
+export const generateLatexResume = generateLatexFromStructuredResume;

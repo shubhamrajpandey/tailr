@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authApiClient } from "@/shared/lib/auth-api-client";
+import { store } from "@/shared/store";
 import {
   CoverLetterJobDetails,
   CoverLetterPreferences,
@@ -161,10 +162,19 @@ export function useGenerateCoverLetterMutation() {
         );
       }
 
-      // 2. Fallback call via Next.js proxy route
+      // 2. Fallback call via Next.js proxy route with authenticated user credentials
+      const token =
+        store.getState().auth.accessToken ||
+        (typeof window !== "undefined"
+          ? (await import("@/shared/lib/cookie")).getStoredAuth()?.accessToken
+          : undefined);
+
       const fallbackRes = await fetch("/api/cover-letter/generate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           masterResume: variables.masterResume,
           companyName: variables.jobDetails.companyName,

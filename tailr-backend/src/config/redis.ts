@@ -140,6 +140,29 @@ class RedisService {
   }
 
   /**
+   * Atomically decrement integer key and return next value (never drops below 0).
+   */
+  async decr(key: string): Promise<number> {
+    if (this.client && this.isAvailable) {
+      try {
+        const val = await this.client.decr(key);
+        return Math.max(0, val);
+      } catch (err: unknown) {
+        logger.warn(`[Redis DECR] Fallback on key "${key}": ${err instanceof Error ? err.message : String(err)}`);
+      }
+    }
+
+    // Memory fallback
+    const currentItem = this.fallbackStore.get(key);
+    const currentVal = Math.max(0, (typeof currentItem?.value === "number" ? currentItem.value : 0) - 1);
+    this.fallbackStore.set(key, {
+      value: currentVal,
+      expiresAt: currentItem?.expiresAt ?? null,
+    });
+    return currentVal;
+  }
+
+  /**
    * Set key expiration in seconds.
    */
   async expire(key: string, seconds: number): Promise<void> {
@@ -180,20 +203,24 @@ class RedisService {
   }
 
   /**
-   * Delete key from store.
+   * Delete key from store. Returns number of keys deleted (1 if existed, 0 if not).
    */
-  async del(key: string): Promise<void> {
+  async del(key: string): Promise<number> {
     if (this.client && this.isAvailable) {
       try {
-        await this.client.del(key);
-        return;
+        const count = await this.client.del(key);
+        return typeof count === "number" ? count : 1;
       } catch (err: unknown) {
         logger.warn(`[Redis DEL] Fallback on key "${key}": ${err instanceof Error ? err.message : String(err)}`);
       }
     }
 
     // Memory fallback
+    const item = this.fallbackStore.get(key);
+    if (!item) return 0;
+    const isExpired = item.expiresAt !== null && item.expiresAt <= Date.now();
     this.fallbackStore.delete(key);
+    return isExpired ? 0 : 1;
   }
 
   get isConnected(): boolean {

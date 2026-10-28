@@ -30,10 +30,29 @@ interface EnvConfig {
   GOOGLE_REDIRECT_URI?: string;
   UPSTASH_REDIS_REST_URL?: string;
   UPSTASH_REDIS_REST_TOKEN?: string;
+  TRUST_PROXY?: string;
 }
 
-function getOrGenerateDevSecret(envVarName: string, envVal: string | undefined): string {
-  if (envVal && envVal.length >= 32) return envVal;
+export const INSECURE_DEFAULT_SECRETS = new Set([
+  "default_dev_access_secret_must_be_32_characters_long!",
+  "default_dev_refresh_secret_must_be_32_characters_long!",
+  "your_super_secret_access_token_key_change_in_production_32chars!",
+  "your_super_secret_refresh_token_key_change_in_production_32chars!",
+  "your_jwt_access_secret_here_must_be_32_chars_long",
+  "your_jwt_refresh_secret_here_must_be_32_chars_long",
+  "12345678901234567890123456789012",
+  "abcdefghijklmnopqrstuvwxyz123456",
+]);
+
+export function getOrGenerateDevSecret(envVarName: string, envVal: string | undefined): string {
+  if (envVal && envVal.length >= 32) {
+    if (process.env.NODE_ENV === "production" && INSECURE_DEFAULT_SECRETS.has(envVal.trim())) {
+      throw new Error(
+        `FATAL: ${envVarName} is set to a known insecure default secret. A strong, random secret must be generated for production.`
+      );
+    }
+    return envVal;
+  }
   if (process.env.NODE_ENV === "production") {
     throw new Error(`FATAL: ${envVarName} must be provided and >= 32 characters in production.`);
   }
@@ -47,6 +66,28 @@ function getOrGenerateDevSecret(envVarName: string, envVal: string | undefined):
   return generated;
 }
 
+export function validateProductionEnv(envConfig: {
+  NODE_ENV: string;
+  DATABASE_URL?: string;
+  GEMINI_API_KEY?: string;
+  GROQ_API_KEY?: string;
+}) {
+  if (envConfig.NODE_ENV === "production") {
+    if (!envConfig.DATABASE_URL) {
+      throw new Error("FATAL: DATABASE_URL must be provided in production.");
+    }
+    if (/postgres:\/\/postgres:postgres@/i.test(envConfig.DATABASE_URL)) {
+      throw new Error(
+        "FATAL: DATABASE_URL must not use default 'postgres:postgres' credentials in production."
+      );
+    }
+    const hasAiKey = Boolean(envConfig.GEMINI_API_KEY || envConfig.GROQ_API_KEY);
+    if (!hasAiKey) {
+      throw new Error("FATAL: Either GEMINI_API_KEY or GROQ_API_KEY must be provided in production for AI tailoring.");
+    }
+  }
+}
+
 function getEnv(): EnvConfig {
   const NODE_ENV = (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development";
   const PORT = parseInt(process.env.PORT || "3001", 10);
@@ -55,15 +96,12 @@ function getEnv(): EnvConfig {
   const JWT_ACCESS_SECRET = getOrGenerateDevSecret("JWT_ACCESS_SECRET", process.env.JWT_ACCESS_SECRET);
   const JWT_REFRESH_SECRET = getOrGenerateDevSecret("JWT_REFRESH_SECRET", process.env.JWT_REFRESH_SECRET);
 
-  if (NODE_ENV === "production") {
-    if (!process.env.DATABASE_URL) {
-      throw new Error("FATAL: DATABASE_URL must be provided in production.");
-    }
-    const hasAiKey = Boolean(process.env.GEMINI_API_KEY || process.env.GROQ_API_KEY);
-    if (!hasAiKey) {
-      throw new Error("FATAL: Either GEMINI_API_KEY or GROQ_API_KEY must be provided in production for AI tailoring.");
-    }
-  }
+  validateProductionEnv({
+    NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    GROQ_API_KEY: process.env.GROQ_API_KEY,
+  });
 
   return Object.freeze({
     PORT,
@@ -98,6 +136,7 @@ function getEnv(): EnvConfig {
       `${NODE_ENV === "production" ? "https://api.tailr.ai" : "http://localhost:3001"}/auth/google/callback`,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    TRUST_PROXY: process.env.TRUST_PROXY,
   });
 }
 

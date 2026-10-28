@@ -11,9 +11,30 @@ export function proxy(request: NextRequest) {
   const hasValidSession =
     request.cookies.get("tailr_session")?.value === "1" ||
     Boolean(request.cookies.get("accessToken")?.value) ||
+    Boolean(request.cookies.get("tailr_access_token")?.value) ||
     Boolean(request.cookies.get("refreshToken")?.value);
 
-  // 1. Unauthenticated visitor accessing a protected route -> redirect to /login
+  // 1. Edge protection for internal API routes
+  if (pathname.startsWith("/api/")) {
+    // Whitelist public endpoints: OAuth initiation/callback, public insights, health
+    if (
+      pathname.startsWith("/api/auth/") ||
+      pathname === "/api/insights-fallback"
+    ) {
+      return NextResponse.next();
+    }
+
+    const authHeader = request.headers.get("authorization");
+    if (!hasValidSession && !authHeader) {
+      return NextResponse.json(
+        { error: "Unauthorized. Authentication required to access API endpoint." },
+        { status: 401 }
+      );
+    }
+    return NextResponse.next();
+  }
+
+  // 2. Unauthenticated visitor accessing a protected route -> redirect to /login
   if (isProtectedRoute(pathname) && !hasValidSession) {
     console.info(
       `[${new Date().toISOString()}] [INFO] [Proxy] Redirecting unauthenticated request: "${pathname}" -> "${ROUTES.LOGIN}"`
@@ -40,13 +61,12 @@ export const middleware = proxy;
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
+     * Match all request paths except for:
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      * - images, icons, and static assets (.png, .jpg, .svg, etc.)
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

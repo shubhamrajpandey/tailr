@@ -47,9 +47,17 @@ export function useResumeTailoring() {
         setStatus("validating");
         setStatusMessage("Verifying zero-hallucination guardrail against Master Resume...");
 
+        const token =
+          typeof window !== "undefined"
+            ? (await import("@/shared/lib/cookie")).getStoredAuth()?.accessToken
+            : undefined;
+
         const response = await fetch("/api/resume/tailor", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
           body: JSON.stringify({
             masterResume,
             jobDescription,

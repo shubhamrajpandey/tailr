@@ -60,17 +60,26 @@ export const companiesRoutes = new Elysia({ prefix: "" })
   )
   .post(
     "/companies",
-    ({ body, authUser, set }) =>
-      companiesController.create({ body, authUser: authUser ?? null, set }),
+    ({ body, authUser, set }) => {
+      if (!authUser) {
+        throw new UnauthorizedError(
+          "Authentication required. Please log in to submit a company to the directory."
+        );
+      }
+      return companiesController.create({ body, authUser, set });
+    },
     {
       body: CreateCompanyBody,
       detail: {
         tags: ["Companies"],
         summary: "Add a company",
         description:
-          "Public endpoint. Creates/submits a new IT company entry in the directory.",
+          "Authenticated endpoint. Submits a new IT company entry in the directory.",
+        security: [{ bearerAuth: [] }],
         responses: {
           201: { description: "Company created successfully." },
+          401: { description: "Authentication required." },
+          409: { description: "Company with this name already exists." },
         },
       },
     }

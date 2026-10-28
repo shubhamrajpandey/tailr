@@ -4,15 +4,15 @@ services:
     container_name: tailr-postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: tailr
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be provided}
+      POSTGRES_DB: ${POSTGRES_DB:-tailr}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tailr"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-tailr}"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -27,11 +27,11 @@ services:
       - "3001:3001"
     environment:
       PORT: 3001
-      NODE_ENV: production
-      DATABASE_URL: postgres://postgres:postgres@postgres:5432/tailr
-      JWT_ACCESS_SECRET: default_dev_access_secret_must_be_32_characters_long!
-      JWT_REFRESH_SECRET: default_dev_refresh_secret_must_be_32_characters_long!
-      FRONTEND_URL: http://localhost:3000
+      NODE_ENV: ${NODE_ENV:-production}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL must be provided}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET must be provided and >= 32 chars}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be provided and >= 32 chars}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
     depends_on:

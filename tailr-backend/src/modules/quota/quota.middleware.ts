@@ -1,7 +1,7 @@
 import { TooManyRequestsError, UnauthorizedError } from "../../middleware/error";
 import { quotaService } from "./quota.service";
 import { env } from "../../config/env";
-import { globalCache } from "../../utils/cache";
+import { redis } from "../../config/redis";
 import type { QuotaAction } from "./quota.model";
 
 export interface QuotaCheckResult {
@@ -12,7 +12,7 @@ export interface QuotaCheckResult {
 }
 
 /**
- * Asserts anti-spam cooldown and daily quota availability for an AI action.
+ * Asserts anti-spam cooldown and atomically reserves daily quota for an AI action.
  * Throws 429 TooManyRequestsError if either cooldown is active or daily limit is exceeded.
  */
 export async function assertAiQuota(
@@ -25,12 +25,14 @@ export async function assertAiQuota(
   }
 
   const cooldownSeconds = env.AI_COOLDOWN_SECONDS || 20;
-  const cooldownMs = cooldownSeconds * 1000;
-  const cooldownKey = `${action}:${userId}`;
+  const cooldownKey = `cooldown:${action}:${userId}`;
   const now = Date.now();
 
-  // 1. Anti-Spam Cooldown check
-  const lastRequestTime = globalCache.get<number>(`cooldown:${cooldownKey}`);
+  // 1. Distributed Anti-Spam Cooldown check via Redis
+  const lastRequestTimeStr = await redis.get<number | string>(cooldownKey);
+  const lastRequestTime = lastRequestTimeStr ? Number(lastRequestTimeStr) : null;
+  const cooldownMs = cooldownSeconds * 1000;
+
   if (lastRequestTime && now - lastRequestTime < cooldownMs) {
     const remainingSeconds = Math.max(1, Math.ceil((lastRequestTime + cooldownMs - now) / 1000));
     set.headers["Retry-After"] = String(remainingSeconds);
@@ -46,8 +48,8 @@ export async function assertAiQuota(
     );
   }
 
-  // 2. Rolling 24-hour Quota check
-  const quota = await quotaService.checkQuota(userId, action);
+  // 2. Atomic Quota Reservation
+  const quota = await quotaService.reserveQuota(userId, action);
 
   set.headers["X-RateLimit-Limit"] = String(quota.limit);
   set.headers["X-RateLimit-Remaining"] = String(quota.remaining);
@@ -73,8 +75,8 @@ export async function assertAiQuota(
     );
   }
 
-  // Register cooldown timestamp
-  globalCache.set(`cooldown:${cooldownKey}`, now, cooldownSeconds * 2);
+  // Register distributed cooldown timestamp in Redis
+  await redis.set(cooldownKey, now, { ex: cooldownSeconds });
 
   return {
     userId,

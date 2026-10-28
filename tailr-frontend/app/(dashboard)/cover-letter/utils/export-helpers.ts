@@ -4,6 +4,10 @@
  */
 
 import { CoverLetterTemplate } from "../types";
+import {
+  escapeHtml,
+  sanitizeHtmlContent,
+} from "@/shared/utils/sanitize";
 
 export interface CoverLetterExportMetadata {
   companyName: string;
@@ -23,14 +27,19 @@ export interface CoverLetterExportMetadata {
  * Employs standard Office XML/HTML formatting so all paragraph styles, margins, and headers are preserved.
  */
 export function downloadCoverLetterAsDocx(content: string, meta: CoverLetterExportMetadata) {
-  const candidateName = meta.candidateName || "Applicant";
-  const dateStr =
+  const candidateName = escapeHtml(meta.candidateName || "Applicant");
+  const positionTitle = escapeHtml(meta.positionTitle || "");
+  const companyName = escapeHtml(meta.companyName || "");
+  const recipientName = escapeHtml(meta.recipientName || "Hiring Team");
+  const recipientTitle = meta.recipientTitle ? escapeHtml(meta.recipientTitle) : "";
+  const dateStr = escapeHtml(
     meta.date ||
-    new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+      new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+  );
 
   // Sanitize content into paragraphs
   const paragraphs = content
@@ -44,6 +53,7 @@ export function downloadCoverLetterAsDocx(content: string, meta: CoverLetterExpo
 
   const contactBlock = [meta.candidateLocation, meta.candidateEmail, meta.candidatePhone]
     .filter(Boolean)
+    .map((item) => escapeHtml(item))
     .join(" • ");
 
   const htmlDoc = `
@@ -118,13 +128,13 @@ export function downloadCoverLetterAsDocx(content: string, meta: CoverLetterExpo
   <div class="meta-date">${dateStr}</div>
 
   <div class="recipient-block">
-    <strong>${meta.recipientName || "Hiring Team"}</strong><br/>
-    ${meta.recipientTitle ? `<span>${meta.recipientTitle}</span><br/>` : ""}
-    <span>${meta.companyName}</span>
+    <strong>${recipientName}</strong><br/>
+    ${recipientTitle ? `<span>${recipientTitle}</span><br/>` : ""}
+    <span>${companyName}</span>
   </div>
 
   <div class="letter-body">
-    ${paragraphs.map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("\n    ")}
+    ${paragraphs.map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`).join("\n    ")}
   </div>
 </body>
 </html>
@@ -148,17 +158,23 @@ export function downloadCoverLetterAsDocx(content: string, meta: CoverLetterExpo
 export function printCoverLetterDirectly(content: string, meta: CoverLetterExportMetadata) {
   if (typeof window === "undefined") return;
 
-  const candidateName = meta.candidateName || "Applicant";
-  const dateStr =
+  const candidateName = escapeHtml(meta.candidateName || "Applicant");
+  const positionTitle = escapeHtml(meta.positionTitle || "");
+  const companyName = escapeHtml(meta.companyName || "");
+  const recipientName = escapeHtml(meta.recipientName || "Hiring Team");
+  const recipientTitle = meta.recipientTitle ? escapeHtml(meta.recipientTitle) : "";
+  const dateStr = escapeHtml(
     meta.date ||
-    new Date().toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
+      new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+  );
 
   const contactBlock = [meta.candidateLocation, meta.candidateEmail, meta.candidatePhone]
     .filter(Boolean)
+    .map((item) => escapeHtml(item))
     .join(" • ");
 
   const paragraphs = content
@@ -171,7 +187,7 @@ export function printCoverLetterDirectly(content: string, meta: CoverLetterExpor
 <html>
 <head>
   <meta charset="utf-8">
-  <title>${candidateName} - Cover Letter for ${meta.positionTitle} at ${meta.companyName}</title>
+  <title>${candidateName} - Cover Letter for ${positionTitle} at ${companyName}</title>
   <style>
     @page {
       size: letter portrait;
@@ -230,12 +246,12 @@ export function printCoverLetterDirectly(content: string, meta: CoverLetterExpor
   </div>
   <div class="date">${dateStr}</div>
   <div class="recipient">
-    <strong>${meta.recipientName || "Hiring Team"}</strong><br/>
-    ${meta.recipientTitle ? `<span>${meta.recipientTitle}</span><br/>` : ""}
-    <span>${meta.companyName}</span>
+    <strong>${recipientName}</strong><br/>
+    ${recipientTitle ? `<span>${recipientTitle}</span><br/>` : ""}
+    <span>${companyName}</span>
   </div>
   <div class="body">
-    ${paragraphs.map((p) => `<p>${p.replace(/\n/g, "<br/>")}</p>`).join("\n    ")}
+    ${paragraphs.map((p) => `<p>${escapeHtml(p).replace(/\n/g, "<br/>")}</p>`).join("\n    ")}
   </div>
 </body>
 </html>
@@ -258,7 +274,7 @@ export function printCoverLetterDirectly(content: string, meta: CoverLetterExpor
   }
 
   doc.open();
-  doc.write(printHtml);
+  doc.write(sanitizeHtmlContent(printHtml));
   doc.close();
 
   setTimeout(() => {

@@ -422,8 +422,8 @@ describe("Elysia Routes & Middleware Tests", () => {
     );
     expect(resCoverLetterGenerations.status).toBe(401);
 
-    // 4. Standard REST company mutations
-    const resCompanyPost = await app.handle(
+    // 4. Standard REST company mutations (unauthenticated -> 401)
+    const resCompanyPostUnauth = await app.handle(
       new Request("http://localhost:3001/companies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -433,7 +433,7 @@ describe("Elysia Routes & Middleware Tests", () => {
         }),
       })
     );
-    expect(resCompanyPost.status).toBe(201);
+    expect(resCompanyPostUnauth.status).toBe(401);
 
     const resCompanyPatch = await app.handle(
       new Request("http://localhost:3001/companies/12345678-1234-1234-1234-123456789abc", {

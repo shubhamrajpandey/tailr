@@ -16,8 +16,28 @@ interface CoverLetterRequestBody {
   customInstructions?: string;
 }
 
+import { verifyServerSession } from "@/shared/lib/server-auth";
+
 export async function POST(request: NextRequest) {
   try {
+    // 1. Mandatory server-side authentication check
+    const session = await verifyServerSession(request);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { error: session.error || "Authentication required. Please log in." },
+        { status: session.status || 401 }
+      );
+    }
+
+    // 2. Request body validation & size limit
+    const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
+    if (contentLength > 2 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Payload too large. Maximum request body is 2MB." },
+        { status: 413 }
+      );
+    }
+
     const body: CoverLetterRequestBody = await request.json();
     const {
       masterResume,
@@ -47,11 +67,14 @@ export async function POST(request: NextRequest) {
 
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
-    // Call the Elysia backend directly
+    // 3. Call Elysia backend with the verified session token
     try {
       const backendRes = await fetch(`${backendUrl}/cover-letter/generate`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.token}`,
+        },
         body: JSON.stringify({
           jobDetails: {
             companyName,
@@ -94,8 +117,17 @@ export async function POST(request: NextRequest) {
         const backendData = await backendRes.json();
         return NextResponse.json(backendData);
       }
+
+      // If backend explicitly rejected due to auth or rate limit/quota, return status directly
+      if (backendRes.status === 401 || backendRes.status === 403 || backendRes.status === 429) {
+        const errPayload = await backendRes.json().catch(() => ({}));
+        return NextResponse.json(
+          { error: errPayload.message || errPayload.error || "Request failed on backend" },
+          { status: backendRes.status }
+        );
+      }
     } catch (backendError) {
-      console.warn("Backend Elysia call error, engaging local resilient fallback:", backendError);
+      console.warn("Backend Elysia call error for authenticated user, engaging resilient fallback:", backendError);
     }
 
     // Fallback if backend is momentarily unreachable

@@ -28,32 +28,38 @@ class CoverLetterController {
       );
     }
 
-    // 1. Assert anti-spam cooldown and rolling 24h daily quota
+    // 1. Assert anti-spam cooldown and rolling 24h daily quota (atomically reserves 1 quota unit)
     const quotaCheck = await assertAiQuota(authUser.id, "COVER_LETTER_GENERATE", set);
 
-    // 2. Execute AI generation
-    const result = await coverLetterService.generate(body);
+    try {
+      // 2. Execute AI generation
+      const result = await coverLetterService.generate(body);
 
-    // 3. Record successful generation in database
-    await quotaService.recordUsage(authUser.id, "COVER_LETTER_GENERATE", {
-      companyName: body.jobDetails.companyName,
-      positionTitle: body.jobDetails.positionTitle,
-    });
+      // 3. Record successful generation in database and clear reservation
+      await quotaService.confirmUsage(authUser.id, "COVER_LETTER_GENERATE", {
+        companyName: body.jobDetails.companyName,
+        positionTitle: body.jobDetails.positionTitle,
+      });
 
-    const remaining = Math.max(0, quotaCheck.remaining - 1);
-    set.headers["X-RateLimit-Remaining"] = String(remaining);
+      const remaining = Math.max(0, quotaCheck.remaining - 1);
+      set.headers["X-RateLimit-Remaining"] = String(remaining);
 
-    return {
-      success: true,
-      data: {
-        ...result,
-        quota: {
-          limit: quotaCheck.limit,
-          used: quotaCheck.used + 1,
-          remaining,
+      return {
+        success: true,
+        data: {
+          ...result,
+          quota: {
+            limit: quotaCheck.limit,
+            used: quotaCheck.used + 1,
+            remaining,
+          },
         },
-      },
-    };
+      };
+    } catch (err) {
+      // Release reserved quota unit on generation error so user is not charged for failed attempts
+      await quotaService.releaseQuota(authUser.id, "COVER_LETTER_GENERATE");
+      throw err;
+    }
   }
 
   async list({

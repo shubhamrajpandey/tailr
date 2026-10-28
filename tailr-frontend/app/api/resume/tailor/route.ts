@@ -51,8 +51,28 @@ function validateAgainstMaster(
   };
 }
 
+import { verifyServerSession } from "@/shared/lib/server-auth";
+
 export async function POST(request: NextRequest) {
   try {
+    // 1. Mandatory server-side authentication check
+    const session = await verifyServerSession(request);
+    if (!session.authenticated) {
+      return NextResponse.json(
+        { error: session.error || "Authentication required. Please log in." },
+        { status: session.status || 401 }
+      );
+    }
+
+    // 2. Request body size limit
+    const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
+    if (contentLength > 2 * 1024 * 1024) {
+      return NextResponse.json(
+        { error: "Payload too large. Maximum request body is 2MB." },
+        { status: 413 }
+      );
+    }
+
     const body = await request.json();
     const {
       masterResume,

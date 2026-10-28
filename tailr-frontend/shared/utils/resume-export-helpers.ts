@@ -93,6 +93,14 @@ export async function copyLatexToClipboard(latexSource: string): Promise<boolean
   }
 }
 
+import {
+  escapeHtml,
+  escapeHtmlAttr,
+  sanitizeUrl,
+  sanitizeEmail,
+  sanitizeHtmlContent,
+} from "./sanitize";
+
 /**
  * Builds the standalone HTML string for the ATS resume document.
  */
@@ -101,22 +109,49 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
   const linkedinUrl = data.linkedinUrl || data.basics?.linkedinUrl;
   const githubUrl = data.githubUrl || data.basics?.githubUrl;
   const portfolioUrl = data.portfolioUrl || data.basics?.portfolioUrl;
-  const fullName = data.fullName || data.basics?.fullName || "Candidate";
-  const location = data.location || data.basics?.location || "";
+  const fullName = escapeHtml(data.fullName || data.basics?.fullName || "Candidate");
+  const location = escapeHtml(data.location || data.basics?.location || "");
 
   const headerLinks: string[] = [];
-  if (email) headerLinks.push(`<a href="mailto:${email}">${email}</a>`);
-  if (linkedinUrl) headerLinks.push(`<a href="${linkedinUrl}">LinkedIn</a>`);
-  if (githubUrl) headerLinks.push(`<a href="${githubUrl}">GitHub</a>`);
-  if (portfolioUrl) headerLinks.push(`<a href="${portfolioUrl}">Portfolio</a>`);
+  const { text: emailText, mailto: emailMailto } = sanitizeEmail(email);
+  if (emailText) {
+    headerLinks.push(
+      emailMailto
+        ? `<a href="${escapeHtmlAttr(emailMailto)}">${emailText}</a>`
+        : emailText
+    );
+  }
+
+  const safeLinkedin = sanitizeUrl(linkedinUrl);
+  if (safeLinkedin) {
+    headerLinks.push(
+      `<a href="${escapeHtmlAttr(safeLinkedin)}" target="_blank" rel="noopener noreferrer">LinkedIn</a>`
+    );
+  }
+
+  const safeGithub = sanitizeUrl(githubUrl);
+  if (safeGithub) {
+    headerLinks.push(
+      `<a href="${escapeHtmlAttr(safeGithub)}" target="_blank" rel="noopener noreferrer">GitHub</a>`
+    );
+  }
+
+  const safePortfolio = sanitizeUrl(portfolioUrl);
+  if (safePortfolio) {
+    headerLinks.push(
+      `<a href="${escapeHtmlAttr(safePortfolio)}" target="_blank" rel="noopener noreferrer">Portfolio</a>`
+    );
+  }
 
   const linksHtml = headerLinks.join(" &bull; ");
 
   // Technical Skills
   const skillsHtml = (data.technicalSkills || [])
     .map((item) => {
-      const skillsStr = Array.isArray(item.skills) ? item.skills.join(", ") : item.skills;
-      return `<li style="margin-bottom: 2.5px;"><strong>${item.category}:</strong> ${skillsStr}</li>`;
+      const skillsStr = Array.isArray(item.skills)
+        ? item.skills.map((s) => escapeHtml(s)).join(", ")
+        : escapeHtml(item.skills);
+      return `<li style="margin-bottom: 2.5px;"><strong>${escapeHtml(item.category)}:</strong> ${skillsStr}</li>`;
     })
     .join("");
 
@@ -124,19 +159,19 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
   const expHtml = (data.workExperience || [])
     .map((exp) => {
       const bullets = (exp.bullets || [])
-        .map((b) => `<li style="margin-bottom: 2px;">${b}</li>`)
+        .map((b) => `<li style="margin-bottom: 2px;">${escapeHtml(b)}</li>`)
         .join("");
 
       return `
       <div style="margin-bottom: 10px;">
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 2px;">
           <tr>
-            <td style="font-weight: 700; font-size: 10.5pt; text-align: left;">${exp.role}</td>
-            <td style="font-size: 9.5pt; text-align: right; font-style: italic; color: #333;">${exp.startDate} &ndash; ${exp.endDate}</td>
+            <td style="font-weight: 700; font-size: 10.5pt; text-align: left;">${escapeHtml(exp.role)}</td>
+            <td style="font-size: 9.5pt; text-align: right; font-style: italic; color: #333;">${escapeHtml(exp.startDate)} &ndash; ${escapeHtml(exp.endDate)}</td>
           </tr>
           <tr>
-            <td style="font-style: italic; font-size: 9.5pt; color: #444; text-align: left;">${exp.company}</td>
-            <td style="font-style: italic; font-size: 9.5pt; color: #666; text-align: right;">${exp.location || ""}</td>
+            <td style="font-style: italic; font-size: 9.5pt; color: #444; text-align: left;">${escapeHtml(exp.company)}</td>
+            <td style="font-style: italic; font-size: 9.5pt; color: #666; text-align: right;">${escapeHtml(exp.location || "")}</td>
           </tr>
         </table>
         <ul style="margin: 3px 0 0 16px; padding: 0; font-size: 9.5pt; line-height: 1.38; list-style-type: disc;">
@@ -149,16 +184,17 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
   // Education
   const eduHtml = (data.education || [])
     .map((edu) => {
+      const startStr = edu.startDate ? `${escapeHtml(edu.startDate)} &ndash; ` : "";
       return `
       <div style="margin-bottom: 8px;">
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="font-weight: 700; font-size: 10pt; text-align: left;">${edu.institution}</td>
-            <td style="font-size: 9pt; text-align: right; font-style: italic; color: #444;">${edu.location || ""}</td>
+            <td style="font-weight: 700; font-size: 10pt; text-align: left;">${escapeHtml(edu.institution)}</td>
+            <td style="font-size: 9pt; text-align: right; font-style: italic; color: #444;">${escapeHtml(edu.location || "")}</td>
           </tr>
           <tr>
-            <td style="font-style: italic; font-size: 9.5pt; color: #444; text-align: left;">${edu.degree}</td>
-            <td style="font-style: italic; font-size: 9pt; color: #444; text-align: right;">${edu.startDate ? `${edu.startDate} &ndash; ` : ""}${edu.endDate}</td>
+            <td style="font-style: italic; font-size: 9.5pt; color: #444; text-align: left;">${escapeHtml(edu.degree)}</td>
+            <td style="font-style: italic; font-size: 9pt; color: #444; text-align: right;">${startStr}${escapeHtml(edu.endDate)}</td>
           </tr>
         </table>
       </div>`;
@@ -169,16 +205,16 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
   const projectsHtml = (data.projects || [])
     .map((proj) => {
       const titleWithTech = proj.technologies
-        ? `${proj.title} <span style="font-weight: normal; color: #555;">| ${proj.technologies}</span>`
-        : proj.title;
+        ? `${escapeHtml(proj.title)} <span style="font-weight: normal; color: #555;">| ${escapeHtml(proj.technologies)}</span>`
+        : escapeHtml(proj.title);
 
-      const linkHtml =
-        proj.liveUrl && proj.liveUrl !== "#"
-          ? ` | <a href="${proj.liveUrl}" style="text-decoration: underline; color: #2563eb;">Live Demo</a>`
-          : "";
+      const safeLiveUrl = sanitizeUrl(proj.liveUrl);
+      const linkHtml = safeLiveUrl
+        ? ` | <a href="${escapeHtmlAttr(safeLiveUrl)}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: #2563eb;">Live Demo</a>`
+        : "";
 
       const bullets = (proj.bullets || [])
-        .map((b) => `<li style="margin-bottom: 2px;">${b}</li>`)
+        .map((b) => `<li style="margin-bottom: 2px;">${escapeHtml(b)}</li>`)
         .join("");
 
       return `
@@ -186,7 +222,7 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
         <table style="width: 100%; border-collapse: collapse; margin-bottom: 2px;">
           <tr>
             <td style="font-weight: 700; font-size: 10pt; text-align: left;">${titleWithTech}${linkHtml}</td>
-            <td style="font-size: 9pt; text-align: right; color: #555;">${proj.year || ""}</td>
+            <td style="font-size: 9pt; text-align: right; color: #555;">${escapeHtml(proj.year || "")}</td>
           </tr>
         </table>
         <ul style="margin: 3px 0 0 16px; padding: 0; font-size: 9.5pt; line-height: 1.38; list-style-type: disc;">
@@ -196,7 +232,7 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
     })
     .join("");
 
-  return `
+  const rawDocument = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -274,7 +310,7 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
   ${
     data.careerSummary
       ? `<div class="section-title">Career Summary</div>
-         <div class="summary-text">${data.careerSummary}</div>`
+         <div class="summary-text">${escapeHtml(data.careerSummary)}</div>`
       : ""
   }
 
@@ -308,6 +344,8 @@ export function buildAtsResumeHtml(data: ResumeExportData, fontFamily?: string):
 </body>
 </html>
   `.trim();
+
+  return sanitizeHtmlContent(rawDocument);
 }
 
 /**
@@ -336,7 +374,7 @@ export function printAtsResumeDirectly(data: ResumeExportData, fontFamily?: stri
   }
 
   doc.open();
-  doc.write(printDocument);
+  doc.write(sanitizeHtmlContent(printDocument));
   doc.close();
 
   setTimeout(() => {

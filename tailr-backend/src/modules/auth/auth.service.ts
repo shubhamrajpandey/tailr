@@ -485,12 +485,14 @@ export class AuthService {
       throw new BadRequestError("Authorization code is missing from Google callback.");
     }
 
-    // Validate CSRF state if provided
-    if (state) {
-      const cached = await redis.get(`oauth:google:state:${state}`);
-      if (cached) {
-        await redis.del(`oauth:google:state:${state}`);
-      }
+    if (!state || typeof state !== "string" || state.trim().length === 0) {
+      throw new BadRequestError("OAuth state parameter is missing from Google callback.");
+    }
+
+    // Atomically validate and consume CSRF state from Redis (single-use)
+    const consumed = await redis.del(`oauth:google:state:${state}`);
+    if (!consumed) {
+      throw new BadRequestError("Invalid, expired, or replayed OAuth state parameter.");
     }
 
     const redirectUri = env.GOOGLE_REDIRECT_URI || `${env.FRONTEND_URL}/auth/google/callback`;

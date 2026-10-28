@@ -1,7 +1,7 @@
 import { eq, and, ilike, sql, or, lt, desc } from "drizzle-orm";
 import { db } from "../../db/client";
 import { companies, type Company, type NewCompany } from "../../db/schema";
-import { NotFoundError } from "../../middleware/error";
+import { NotFoundError, ConflictError } from "../../middleware/error";
 import { globalCache } from "../../utils/cache";
 import type {
   CreateCompanyInput,
@@ -52,12 +52,23 @@ export type PublicCompany = ReturnType<typeof toPublicCompany>;
 
 export class CompaniesService {
   /**
-   * Creates a new company entry. Accessible publicly or with authenticated creator ID.
+   * Creates a new company entry. Requires authenticated creator ID and enforces deduplication.
    */
-  async create(input: CreateCompanyInput, creatorId?: string | null): Promise<PublicCompany> {
+  async create(input: CreateCompanyInput, creatorId: string): Promise<PublicCompany> {
+    const trimmedName = input.name.trim();
+
+    // Deduplication check: case-insensitive name lookup
+    const existing = await db.query.companies.findFirst({
+      where: ilike(companies.name, trimmedName),
+    });
+
+    if (existing) {
+      throw new ConflictError(`A company named "${trimmedName}" already exists in the directory.`);
+    }
+
     const sectorVal = input.sector?.trim() || input.industry?.trim() || "Technology";
     const values: NewCompany = {
-      name: input.name.trim(),
+      name: trimmedName,
       description: input.description?.trim() ?? null,
       sector: sectorVal,
       industry: sectorVal,

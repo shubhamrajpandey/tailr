@@ -5,6 +5,8 @@ import type {
   CompanyListQueryInput,
 } from "./companies.model";
 
+import { UnauthorizedError } from "../../middleware/error";
+
 /**
  * Thin controller that handles HTTP request shaping.
  * All business logic lives in CompaniesService.
@@ -19,7 +21,10 @@ export class CompaniesController {
     authUser?: { id: string; role?: string } | null;
     set: { status?: number | string };
   }) {
-    const company = await companiesService.create(body, authUser?.id ?? null);
+    if (!authUser || !authUser.id) {
+      throw new UnauthorizedError("Authentication required to create a company.");
+    }
+    const company = await companiesService.create(body, authUser.id);
     set.status = 201;
     return {
       success: true,

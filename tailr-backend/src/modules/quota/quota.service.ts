@@ -138,9 +138,73 @@ export class QuotaService {
   }
 
   /**
-   * Persists a recorded usage event in the database.
+   * Atomically reserves 1 quota unit prior to external AI invocation.
+   * Prevents concurrent requests from bypassing the daily rolling quota limit.
    */
-  async recordUsage(
+  async reserveQuota(
+    userId: string,
+    action: QuotaAction
+  ): Promise<{
+    allowed: boolean;
+    limit: number;
+    used: number;
+    remaining: number;
+    resetsAt: string | null;
+    resetsInSeconds: number;
+  }> {
+    const limit = this.getLimit(action);
+    const reservationKey = `quota:res:${userId}:${action}`;
+
+    // Atomically increment active reservation counter
+    const activeReservations = await redis.incr(reservationKey);
+    // 2-minute safety TTL to auto-expire orphaned reservations if process crashes
+    await redis.expire(reservationKey, 120);
+
+    const { used, oldestCreatedAt } = await this.getRollingUsage(userId, action);
+    const totalCommitted = used + activeReservations;
+
+    if (totalCommitted > limit) {
+      // Roll back this reservation
+      await redis.decr(reservationKey);
+
+      const resetTime = oldestCreatedAt
+        ? new Date(oldestCreatedAt.getTime() + 24 * 60 * 60 * 1000)
+        : new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const resetsInSeconds = Math.max(1, Math.ceil((resetTime.getTime() - Date.now()) / 1000));
+
+      return {
+        allowed: false,
+        limit,
+        used: Math.min(limit, used + activeReservations - 1),
+        remaining: 0,
+        resetsAt: resetTime.toISOString(),
+        resetsInSeconds,
+      };
+    }
+
+    const remaining = Math.max(0, limit - totalCommitted);
+    return {
+      allowed: true,
+      limit,
+      used: totalCommitted - 1,
+      remaining,
+      resetsAt: null,
+      resetsInSeconds: 0,
+    };
+  }
+
+  /**
+   * Releases an unconsumed quota reservation when an AI generation fails or errors out.
+   */
+  async releaseQuota(userId: string, action: QuotaAction): Promise<void> {
+    const reservationKey = `quota:res:${userId}:${action}`;
+    await redis.decr(reservationKey);
+  }
+
+  /**
+   * Confirms quota usage by persisting the log record and clearing the active reservation.
+   */
+  async confirmUsage(
     userId: string,
     action: QuotaAction,
     metadata: Record<string, any> = {}
@@ -155,7 +219,21 @@ export class QuotaService {
       await redis.del(`quota:rolling:${userId}:${action}`);
     } catch (err) {
       console.error(`[QuotaService] Failed to record AI usage log for user ${userId}:`, err);
+    } finally {
+      // Always release the in-flight reservation
+      await this.releaseQuota(userId, action);
     }
+  }
+
+  /**
+   * Persists a recorded usage event in the database (legacy direct recording).
+   */
+  async recordUsage(
+    userId: string,
+    action: QuotaAction,
+    metadata: Record<string, any> = {}
+  ): Promise<void> {
+    await this.confirmUsage(userId, action, metadata);
   }
 
   /**

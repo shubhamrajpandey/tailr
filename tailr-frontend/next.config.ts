@@ -18,19 +18,29 @@ if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_API_URL) {
 const isDev = process.env.NODE_ENV !== "production";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
+const scriptSrcDirectives = [
+  "'self'",
+  "'unsafe-inline'",
+  isDev ? "'unsafe-eval'" : "",
+  "https://va.vercel-scripts.com",
+]
+  .filter(Boolean)
+  .join(" ");
+
 const connectSrcDirectives = [
   "'self'",
-  "https:",
-  "wss:",
   apiUrl,
   isDev ? "http://localhost:* http://127.0.0.1:* ws://localhost:* ws://127.0.0.1:*" : "",
+  "https://*.sentry.io",
+  "https://va.vercel-scripts.com",
+  "https://vitals.vercel-insights.com",
 ]
   .filter(Boolean)
   .join(" ");
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https:;
+  script-src ${scriptSrcDirectives};
   style-src 'self' 'unsafe-inline' https:;
   img-src 'self' blob: data: https:;
   font-src 'self' data: https:;

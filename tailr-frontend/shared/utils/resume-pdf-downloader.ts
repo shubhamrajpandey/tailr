@@ -1,6 +1,7 @@
 "use client";
 
 import { logger } from "@/shared/lib/logger";
+import { sanitizeHtmlContent } from "./sanitize";
 
 export interface DownloadPdfOptions {
   filename?: string;
@@ -34,7 +35,7 @@ export async function downloadResumePdf(options: DownloadPdfOptions = {}): Promi
       temporaryContainer.style.background = "#ffffff";
       temporaryContainer.style.color = "#000000";
       temporaryContainer.style.zIndex = "-9999";
-      temporaryContainer.innerHTML = htmlContent;
+      temporaryContainer.innerHTML = sanitizeHtmlContent(htmlContent);
       document.body.appendChild(temporaryContainer);
       targetElement = (temporaryContainer.firstElementChild as HTMLElement) || temporaryContainer;
     } else {
