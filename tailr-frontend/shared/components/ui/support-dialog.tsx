@@ -19,6 +19,18 @@ function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
+function GitHubIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+      />
+    </svg>
+  );
+}
+
 export interface SupportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,11 +39,15 @@ export interface SupportDialogProps {
 export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
   const [copiedType, setCopiedType] = React.useState<"phone" | "email" | null>(null);
 
-  const phoneNumber = "9740858524";
-  const whatsappUrl =
-    "https://wa.me/9779740858524?text=Hi%20Shubham%2C%20I%20need%20assistance%20with%20Tailr.";
-  const emailAddress = "shubhamrajpandey88@gmail.com";
+  const emailAddress = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@tailr.io";
   const mailtoUrl = `mailto:${emailAddress}?subject=Tailr%20Platform%20Support%20Request`;
+  const phoneNumber = process.env.NEXT_PUBLIC_SUPPORT_PHONE || "";
+  const whatsappUrl = phoneNumber
+    ? `https://wa.me/${phoneNumber.replace(/[^0-9]/g, "")}?text=Hi%2C%20I%20need%20assistance%20with%20Tailr.`
+    : "";
+  const githubIssuesUrl =
+    process.env.NEXT_PUBLIC_GITHUB_ISSUES_URL ||
+    "https://github.com/shubhamrajpandey/tailr/issues";
 
   const copyToClipboard = (text: string, type: "phone" | "email") => {
     navigator.clipboard.writeText(text);
@@ -55,69 +71,110 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
             <div>
               <DialogTitle className="text-base sm:text-lg font-bold">Contact Support</DialogTitle>
               <DialogDescription className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                Reach out directly via WhatsApp or email for fast assistance.
+                {phoneNumber
+                  ? "Reach out directly via WhatsApp, phone, or email for assistance."
+                  : "Reach out directly via email or our GitHub issue tracker for assistance."}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
 
         <div className="space-y-3 pt-2">
-          {/* WhatsApp Direct Option */}
-          <div className="p-3.5 sm:p-4 rounded-2xl border border-emerald-200/80 dark:border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/15 space-y-2.5 transition-all hover:border-emerald-300 dark:hover:border-emerald-500/30">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-[#25D366]/15 text-[#25D366] shrink-0">
-                  <WhatsAppIcon className="h-5 w-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-xs font-bold text-neutral-900 dark:text-white">
-                      WhatsApp Support
-                    </span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
-                      Fastest
-                    </span>
+          {phoneNumber ? (
+            /* WhatsApp / Phone Direct Option (Only if NEXT_PUBLIC_SUPPORT_PHONE is configured) */
+            <div className="p-3.5 sm:p-4 rounded-2xl border border-emerald-200/80 dark:border-emerald-500/20 bg-emerald-50/40 dark:bg-emerald-950/15 space-y-2.5 transition-all hover:border-emerald-300 dark:hover:border-emerald-500/30">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-[#25D366]/15 text-[#25D366] shrink-0">
+                    <WhatsAppIcon className="h-5 w-5" />
                   </div>
-                  <p className="text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mt-0.5">
-                    {phoneNumber}
-                  </p>
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold text-neutral-900 dark:text-white">
+                        WhatsApp Support
+                      </span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+                        Fastest
+                      </span>
+                    </div>
+                    <p className="text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mt-0.5">
+                      {phoneNumber}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => copyToClipboard(phoneNumber, "phone")}
+                  className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
+                  title="Copy phone number"
+                  aria-label="Copy phone number"
+                >
+                  {copiedType === "phone" ? (
+                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold shadow-xs transition-colors"
+                >
+                  <WhatsAppIcon className="h-4 w-4 shrink-0" />
+                  <span>Chat Now</span>
+                </a>
+                <a
+                  href={`tel:${phoneNumber}`}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-white/10 hover:bg-neutral-100 dark:hover:bg-white/15 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-white/10 text-xs font-semibold shadow-xs transition-colors"
+                >
+                  <Phone className="h-3.5 w-3.5 shrink-0" />
+                  <span>Direct Call</span>
+                </a>
+              </div>
+            </div>
+          ) : (
+            /* GitHub Issue Tracker Direct Option */
+            <div className="p-3.5 sm:p-4 rounded-2xl border border-neutral-200/80 dark:border-white/10 bg-neutral-50/60 dark:bg-white/[0.03] space-y-2.5 transition-all hover:border-neutral-300 dark:hover:border-white/20">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-neutral-900/10 dark:bg-white/10 text-neutral-900 dark:text-white shrink-0">
+                    <GitHubIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-xs font-bold text-neutral-900 dark:text-white">
+                        GitHub Issue Tracker
+                      </span>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.2 rounded-full bg-neutral-200 dark:bg-white/10 text-neutral-700 dark:text-neutral-300">
+                        Community
+                      </span>
+                    </div>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                      File bug reports & feature requests
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => copyToClipboard(phoneNumber, "phone")}
-                className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer"
-                title="Copy phone number"
-                aria-label="Copy phone number"
-              >
-                {copiedType === "phone" ? (
-                  <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </button>
+              <div className="pt-1">
+                <a
+                  href={githubIssuesUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-neutral-900 hover:bg-neutral-800 dark:bg-white/10 dark:hover:bg-white/15 text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
+                >
+                  <GitHubIcon className="h-4 w-4 shrink-0" />
+                  <span>Open GitHub Issues</span>
+                  <ExternalLink className="h-3.5 w-3.5 ml-0.5 opacity-70" />
+                </a>
+              </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-2 pt-1">
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#20ba5a] text-white text-xs font-semibold shadow-xs transition-colors"
-              >
-                <WhatsAppIcon className="h-4 w-4 shrink-0" />
-                <span>Chat Now</span>
-              </a>
-              <a
-                href={`tel:${phoneNumber}`}
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-white/10 hover:bg-neutral-100 dark:hover:bg-white/15 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-white/10 text-xs font-semibold shadow-xs transition-colors"
-              >
-                <Phone className="h-3.5 w-3.5 shrink-0" />
-                <span>Direct Call</span>
-              </a>
-            </div>
-          </div>
+          )}
 
           {/* Email Direct Option */}
           <div className="p-3.5 sm:p-4 rounded-2xl border border-indigo-200/80 dark:border-indigo-500/20 bg-indigo-50/40 dark:bg-indigo-950/15 space-y-2.5 transition-all hover:border-indigo-300 dark:hover:border-indigo-500/30">
@@ -159,11 +216,11 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
             <div className="pt-1">
               <a
                 href={mailtoUrl}
-                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all"
+                className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white dark:text-white border border-indigo-400/30 text-xs font-semibold shadow-md shadow-indigo-500/20 transition-all cursor-pointer"
               >
                 <Mail className="h-3.5 w-3.5 shrink-0" />
                 <span>Open Mail Client</span>
-                <ExternalLink className="h-3 w-3 ml-0.5 opacity-70" />
+                <ExternalLink className="h-3.5 w-3.5 ml-0.5 opacity-70" />
               </a>
             </div>
           </div>

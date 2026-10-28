@@ -50,10 +50,10 @@ export const STORAGE_AUTH_KEY = "tailr_auth_session_v1";
  * Persists session credentials to client storage for resilient cross-route and page-reload hydration.
  * Serves as an unforgeable fallback when cross-origin HttpOnly cookies are blocked by modern browsers.
  */
-export function saveStoredAuth(user: User, accessToken: string, refreshToken?: string): void {
+export function saveStoredAuth(user: User, accessToken: string): void {
   if (typeof window === "undefined") return;
   try {
-    const payload = JSON.stringify({ user, accessToken, refreshToken });
+    const payload = JSON.stringify({ user, accessToken });
     sessionStorage.setItem(STORAGE_AUTH_KEY, payload);
     localStorage.setItem(STORAGE_AUTH_KEY, payload);
   } catch (err) {
@@ -62,17 +62,18 @@ export function saveStoredAuth(user: User, accessToken: string, refreshToken?: s
 }
 
 /**
- * Retrieves cached session credentials from client storage if unexpired or refreshable.
+ * Retrieves cached session credentials from client storage if unexpired.
+ * Refresh tokens are NEVER read from or persisted to browser storage.
  */
-export function getStoredAuth(): { user: User; accessToken: string; refreshToken?: string } | null {
+export function getStoredAuth(): { user: User; accessToken: string } | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = sessionStorage.getItem(STORAGE_AUTH_KEY) || localStorage.getItem(STORAGE_AUTH_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (parsed && parsed.accessToken && parsed.user) {
-      if (isTokenValid(parsed.accessToken) || parsed.refreshToken) {
-        return parsed;
+      if (isTokenValid(parsed.accessToken)) {
+        return { user: parsed.user, accessToken: parsed.accessToken };
       }
     }
   } catch (err) {

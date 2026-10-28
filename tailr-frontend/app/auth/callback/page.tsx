@@ -36,7 +36,6 @@ function CallbackHandler() {
     }
 
     const accessToken = getParam("accessToken");
-    const refreshToken = getParam("refreshToken") || undefined;
     const userParam = getParam("user");
 
     if (!accessToken || !userParam) {
@@ -59,9 +58,9 @@ function CallbackHandler() {
         throw new Error("Invalid user profile format");
       }
 
-      // 1. Persist session indicators and local credentials
+      // 1. Persist session indicators and local credentials (in-memory + unexpired access token fallback)
       setSessionCookie();
-      saveStoredAuth(user, accessToken, refreshToken);
+      saveStoredAuth(user, accessToken);
 
       // 2. Clear stale cache from any prior account and prime the fresh session
       queryClient.clear();

@@ -1,11 +1,27 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { isTokenValid, removeAuthCookie, getUserFromToken, setSessionCookie } from "./cookie";
+import {
+  isTokenValid,
+  removeAuthCookie,
+  getUserFromToken,
+  setSessionCookie,
+  saveStoredAuth,
+  getStoredAuth,
+  clearStoredAuth,
+  STORAGE_AUTH_KEY,
+} from "./cookie";
+import type { User } from "@/shared/types/auth";
 
 describe("cookie utilities", () => {
   beforeEach(() => {
-    // Clear mock document cookies
+    // Clear mock document cookies and web storage
     if (typeof document !== "undefined") {
       document.cookie = "";
+    }
+    if (typeof sessionStorage !== "undefined") {
+      sessionStorage.clear();
+    }
+    if (typeof localStorage !== "undefined") {
+      localStorage.clear();
     }
   });
 
@@ -74,6 +90,73 @@ describe("cookie utilities", () => {
       expect(user?.email).toBe("alex@example.com");
       expect(user?.fullName).toBe("Alex Morgan");
       expect(user?.isVerified).toBe(true);
+    });
+  });
+
+  describe("session storage persistence (P1.1 security)", () => {
+    const mockUser: User = {
+      id: "usr_abc",
+      email: "test@tailr.io",
+      fullName: "Test User",
+      isVerified: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    it("persists only user and accessToken, never saving refresh tokens to storage", () => {
+      const futureExp = Math.floor(Date.now() / 1000) + 3600;
+      const validToken = `eyJhbGciOiJIUzI1NiJ9.${btoa(
+        JSON.stringify({ sub: mockUser.id, exp: futureExp })
+      )}.sig`;
+
+      saveStoredAuth(mockUser, validToken);
+
+      const sessionRaw = sessionStorage.getItem(STORAGE_AUTH_KEY);
+      const localRaw = localStorage.getItem(STORAGE_AUTH_KEY);
+
+      expect(sessionRaw).not.toBeNull();
+      expect(localRaw).not.toBeNull();
+
+      const parsedSession = JSON.parse(sessionRaw!);
+      const parsedLocal = JSON.parse(localRaw!);
+
+      // Verify accessToken and user are stored
+      expect(parsedSession.accessToken).toBe(validToken);
+      expect(parsedSession.user.email).toBe(mockUser.email);
+
+      // Verify refreshToken is strictly NOT present in client storage
+      expect(parsedSession.refreshToken).toBeUndefined();
+      expect(parsedLocal.refreshToken).toBeUndefined();
+
+      // Verify getStoredAuth can retrieve it
+      const retrieved = getStoredAuth();
+      expect(retrieved).not.toBeNull();
+      expect(retrieved?.accessToken).toBe(validToken);
+      expect((retrieved as any)?.refreshToken).toBeUndefined();
+    });
+
+    it("returns null from getStoredAuth when access token is expired", () => {
+      const pastExp = Math.floor(Date.now() / 1000) - 3600;
+      const expiredToken = `eyJhbGciOiJIUzI1NiJ9.${btoa(
+        JSON.stringify({ sub: mockUser.id, exp: pastExp })
+      )}.sig`;
+
+      saveStoredAuth(mockUser, expiredToken);
+
+      const retrieved = getStoredAuth();
+      expect(retrieved).toBeNull();
+    });
+
+    it("clears storage completely on clearStoredAuth and removeAuthCookie", () => {
+      const futureExp = Math.floor(Date.now() / 1000) + 3600;
+      const validToken = `eyJhbGciOiJIUzI1NiJ9.${btoa(
+        JSON.stringify({ sub: mockUser.id, exp: futureExp })
+      )}.sig`;
+
+      saveStoredAuth(mockUser, validToken);
+      clearStoredAuth();
+
+      expect(sessionStorage.getItem(STORAGE_AUTH_KEY)).toBeNull();
+      expect(localStorage.getItem(STORAGE_AUTH_KEY)).toBeNull();
     });
   });
 

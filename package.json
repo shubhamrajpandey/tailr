@@ -1,7 +1,7 @@
 {
   "name": "tailr",
   "version": "1.0.0",
-  "description": "<div align=\"center\">",
+  "description": "Precision AI resume tailoring & job application tracker — with zero hallucination.",
   "main": "index.js",
   "scripts": {
     "dev": "npm --prefix tailr-frontend run dev",
@@ -15,9 +15,16 @@
     "type": "git",
     "url": "git+https://github.com/shubhamrajpandey/tailr.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "resume-builder",
+    "ai-resume",
+    "job-tracker",
+    "ats-resume",
+    "nextjs",
+    "elysia"
+  ],
+  "author": "Shubham Raj Pandey",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/shubhamrajpandey/tailr/issues"
   },

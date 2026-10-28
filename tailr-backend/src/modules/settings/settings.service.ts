@@ -195,33 +195,29 @@ class SettingsService {
         let isVerified = false;
 
         if (input.otp) {
-          // Dev bypass or cryptographic OTP validation
-          if (env.NODE_ENV !== "production" && input.otp === "696969") {
-            isVerified = true;
-          } else {
-            const now = new Date();
-            const activeOtp = await db.query.otps.findFirst({
-              where: and(
-                or(eq(otps.email, newEmail), eq(otps.email, user.email)),
-                isNull(otps.consumedAt),
-                gt(otps.expiresAt, now)
-              ),
-              orderBy: [desc(otps.createdAt)],
-            });
+          // Cryptographic OTP validation
+          const now = new Date();
+          const activeOtp = await db.query.otps.findFirst({
+            where: and(
+              or(eq(otps.email, newEmail), eq(otps.email, user.email)),
+              isNull(otps.consumedAt),
+              gt(otps.expiresAt, now)
+            ),
+            orderBy: [desc(otps.createdAt)],
+          });
 
-            if (activeOtp) {
-              const inputHashBuffer = Buffer.from(hashToken(input.otp), "hex");
-              const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
-              if (
-                inputHashBuffer.length === storedHashBuffer.length &&
-                crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer)
-              ) {
-                isVerified = true;
-                await db
-                  .update(otps)
-                  .set({ consumedAt: new Date() })
-                  .where(eq(otps.id, activeOtp.id));
-              }
+          if (activeOtp) {
+            const inputHashBuffer = Buffer.from(hashToken(input.otp), "hex");
+            const storedHashBuffer = Buffer.from(activeOtp.codeHash, "hex");
+            if (
+              inputHashBuffer.length === storedHashBuffer.length &&
+              crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer)
+            ) {
+              isVerified = true;
+              await db
+                .update(otps)
+                .set({ consumedAt: new Date() })
+                .where(eq(otps.id, activeOtp.id));
             }
           }
 

@@ -268,7 +268,37 @@ describe("Elysia Routes & Middleware Tests", () => {
   });
 
   it("enforces strict CORS origin whitelist and blocks unauthorized origins", async () => {
-    // 1. Whitelisted local origin receives CORS allow headers
+    const { isOriginAllowed } = await import("../src/index");
+
+    // 1. Exact legitimate production origins
+    expect(isOriginAllowed("https://tailr.io")).toBe(true);
+    expect(isOriginAllowed("https://www.tailr.io")).toBe(true);
+    expect(isOriginAllowed("https://tailr-swart.vercel.app")).toBe(true);
+    expect(isOriginAllowed("https://tailr.shubhamrajpandey.com.np")).toBe(true);
+
+    // 2. Approved local development origins
+    expect(isOriginAllowed("http://localhost:3000")).toBe(true);
+    expect(isOriginAllowed("http://localhost:3001")).toBe(true);
+
+    // 3. Unrelated or attacker Vercel applications MUST be blocked (regression for former wildcard regex)
+    expect(isOriginAllowed("https://tailr-phishing.vercel.app")).toBe(false);
+    expect(isOriginAllowed("https://tailr-attacker.vercel.app")).toBe(false);
+    expect(isOriginAllowed("https://tailr-random123.vercel.app")).toBe(false);
+    expect(isOriginAllowed("https://evil-tailr.vercel.app")).toBe(false);
+
+    // 4. Lookalike domains & prefix/suffix trickery MUST be blocked
+    expect(isOriginAllowed("https://attacker-tailr.io")).toBe(false);
+    expect(isOriginAllowed("https://tailr.io.attacker.com")).toBe(false);
+    expect(isOriginAllowed("https://tailr-swart.vercel.app.attacker.com")).toBe(false);
+
+    // 5. Malformed, null, or empty origins MUST be blocked
+    expect(isOriginAllowed(null)).toBe(false);
+    expect(isOriginAllowed(undefined)).toBe(false);
+    expect(isOriginAllowed("")).toBe(false);
+    expect(isOriginAllowed("not-a-valid-url")).toBe(false);
+    expect(isOriginAllowed("javascript:alert(1)")).toBe(false);
+
+    // 6. Whitelisted origin receives CORS allow headers on live endpoint
     const allowedRes = await app.handle(
       new Request("http://localhost:3001/health", {
         headers: { origin: "http://localhost:3000" },
@@ -276,15 +306,7 @@ describe("Elysia Routes & Middleware Tests", () => {
     );
     expect(allowedRes.headers.get("access-control-allow-origin")).toBe("http://localhost:3000");
 
-    // 2. Deployed frontend origin (tailr-swart.vercel.app) receives CORS allow headers
-    const vercelRes = await app.handle(
-      new Request("http://localhost:3001/health", {
-        headers: { origin: "https://tailr-swart.vercel.app" },
-      })
-    );
-    expect(vercelRes.headers.get("access-control-allow-origin")).toBe("https://tailr-swart.vercel.app");
-
-    // 3. Preflight OPTIONS request for /auth/login passes with allow headers and credentials
+    // 7. Preflight OPTIONS request passes with allow headers and credentials for allowed origin
     const preflightRes = await app.handle(
       new Request("http://localhost:3001/auth/login", {
         method: "OPTIONS",
@@ -299,13 +321,13 @@ describe("Elysia Routes & Middleware Tests", () => {
     expect(preflightRes.headers.get("access-control-allow-credentials")).toBe("true");
     expect(preflightRes.headers.get("access-control-max-age")).toBe("86400");
 
-    // 4. Malicious / unauthorized origin does NOT receive CORS allow headers
-    const blockedRes = await app.handle(
+    // 8. Arbitrary Vercel subdomains do NOT receive CORS allow headers
+    const blockedVercelRes = await app.handle(
       new Request("http://localhost:3001/health", {
-        headers: { origin: "https://evil-tailr.vercel.app" },
+        headers: { origin: "https://tailr-phishing.vercel.app" },
       })
     );
-    expect(blockedRes.headers.get("access-control-allow-origin")).toBeNull();
+    expect(blockedVercelRes.headers.get("access-control-allow-origin")).toBeNull();
 
     const blockedDomainRes = await app.handle(
       new Request("http://localhost:3001/health", {

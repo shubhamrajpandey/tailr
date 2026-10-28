@@ -209,7 +209,6 @@ export class AuthController {
 
       const callbackUrl = new URL("/auth/callback", env.FRONTEND_URL);
       callbackUrl.searchParams.set("accessToken", accessToken);
-      callbackUrl.searchParams.set("refreshToken", rawRefreshToken);
       callbackUrl.searchParams.set("user", JSON.stringify(safeUser));
 
       return Response.redirect(callbackUrl.toString(), 302);

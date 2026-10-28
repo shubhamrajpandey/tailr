@@ -20,7 +20,6 @@ import {
   setSessionCookie,
   removeAuthCookie,
   saveStoredAuth,
-  getStoredAuth,
 } from "@/shared/lib/cookie";
 import {
   getErrorMessage,
@@ -112,9 +111,8 @@ export function useVerifyOtpMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
-      const refreshToken = (data.data as any).refreshToken;
       setSessionCookie();
-      saveStoredAuth(user, accessToken, refreshToken);
+      saveStoredAuth(user, accessToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -195,9 +193,8 @@ export function useLoginMutation() {
 
     onSuccess: (data) => {
       const { user, accessToken } = data.data;
-      const refreshToken = (data.data as any).refreshToken;
       setSessionCookie();
-      saveStoredAuth(user, accessToken, refreshToken);
+      saveStoredAuth(user, accessToken);
       dispatch(setCredentials({ user, accessToken }));
 
       // Cancel any pending bootstrap refresh query and prime the cache
@@ -270,12 +267,8 @@ export function useRefreshQuery(enabled = true) {
   return useQuery<RefreshResponse, AxiosError<ApiErrorBody>>({
     queryKey: authQueryKeys.refresh,
     queryFn: () => {
-      const stored = getStoredAuth();
-      const payload = stored?.refreshToken ? { refreshToken: stored.refreshToken } : {};
       return authApiClient
-        .post<RefreshResponse>("/auth/refresh", payload, {
-          headers: stored?.refreshToken ? { "x-refresh-token": stored.refreshToken } : undefined,
-        })
+        .post<RefreshResponse>("/auth/refresh", {})
         .then((res) => res.data);
     },
 

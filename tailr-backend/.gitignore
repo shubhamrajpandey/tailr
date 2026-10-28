@@ -1,43 +1,42 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
+# Dependencies
+node_modules/
+.pnp
 .pnp.js
 
-# testing
-/coverage
+# Build & runtime outputs
+build/
+dist/
+*.tsbuildinfo
+**/*.trace
+**/*.bun
 
-# next.js
-/.next/
-/out/
+# Testing & Coverage
+coverage/
 
-# production
-/build
+# Environment files (preserve templates only)
+.env*
+!.env.example
 
-# misc
-.DS_Store
-*.pem
+# Local database files & backups
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.db.backup
 
-# debug
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Secrets & Keys
+*.pem
+*.key
+*.cert
 
-# vercel
+# Misc / OS
+.DS_Store
+Thumbs.db
 .vercel
-
-**/*.trace
-**/*.zip
-**/*.tar.gz
-**/*.tgz
-**/*.log
 package-lock.json
-**/*.bun

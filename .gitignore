@@ -3,21 +3,29 @@ node_modules/
 .pnp
 .pnp.js
 
-# Next.js / Build outputs
+# Build outputs
 .next/
 out/
 build/
 dist/
 *.tsbuildinfo
 
-# Testing
+# Testing & Coverage
 coverage/
+.nyc_output/
 
-# Environment files
-.env
-.env*.local
-.env.production
-.env.development
+# Environment files (preserve templates only)
+.env*
+!.env.example
+
+# Local database files & backups
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.db.backup
+*.backup
+*.bak
 
 # Logs
 *.log
@@ -26,7 +34,17 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Misc / OS
+# Secrets & Certificates
+*.pem
+*.key
+*.cert
+*.crt
+
+# Misc / OS / IDE
 .DS_Store
 Thumbs.db
 .vercel
+.idea/
+.vscode/
+*.swp
+*.swo

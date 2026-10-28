@@ -102,7 +102,7 @@ flowchart TD
 | **Backend** | [ElysiaJS](https://elysiajs.com/) | Ergonomic, end-to-end type-safe web framework |
 | **Runtime** | [Bun](https://bun.sh/) | Lightning-fast JavaScript & TypeScript runtime and package manager |
 | **AI Engine** | [Google Gemini API](https://ai.google.dev/) | Structured JSON output via server-side route handlers |
-| **Database** | SQLite / Supabase PostgreSQL | Lightweight, portable persistence layer |
+| **Database** | [PostgreSQL](https://www.postgresql.org/) (Docker / Neon / Supabase) | Robust, relational persistence layer |
 | **ORM** | [Drizzle ORM](https://orm.drizzle.team/) | Type-safe SQL schema, migrations, and queries |
 | **Validation**| [Zod](https://zod.dev/) | End-to-end schema validation for resumes and API payloads |
 
@@ -113,19 +113,22 @@ flowchart TD
 ```text
 tailr/
 ├── tailr-frontend/          # Next.js App Router frontend application
-│   ├── app/                 # Routes: /dashboard, /resume, /applications
-│   ├── components/          # shadcn/ui and custom UI components
+│   ├── app/                 # Routes: /dashboard, /resume, /applications, /settings
+│   ├── shared/              # Reusable components, hooks, stores, and API clients
 │   ├── public/              # Static assets and icons
 │   └── package.json
 │
 ├── tailr-backend/           # ElysiaJS + Bun high-performance API server
 │   ├── src/
-│   │   ├── index.ts         # Server entry point & route definitions
-│   │   ├── services/        # Gemini integration & validation logic
-│   │   └── db/              # Drizzle ORM schema & database client
+│   │   ├── index.ts         # Server entry point, CORS & route definitions
+│   │   ├── modules/         # Auth, Resumes, Cover Letters, Applications, Analytics
+│   │   └── db/              # Drizzle ORM schema & PostgreSQL client
+│   ├── tests/               # Test suites for auth, security, routes, and services
+│   ├── docker-compose.yml   # Local PostgreSQL service
 │   ├── bun.lock
 │   └── package.json
 │
+├── CONTRIBUTING.md          # Guidelines for open source contributors
 ├── tailr-v1-spec.md         # Product and architectural specification
 ├── .gitignore               # Root git ignore rules
 └── README.md                # Project documentation
@@ -139,7 +142,8 @@ tailr/
 
 - [Bun](https://bun.sh/) (`v1.2+` installed)
 - [Node.js](https://nodejs.org/) (`v20+` installed)
-- A [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+- [Docker](https://www.docker.com/) (recommended for local PostgreSQL) or a managed PostgreSQL instance ([Neon](https://neon.tech/) / [Supabase](https://supabase.com/))
+- A [Google Gemini API Key](https://aistudio.google.com/app/apikey) (free tier available)
 
 ### 1. Clone the Repository
 
@@ -154,18 +158,35 @@ cd tailr
 cd tailr-backend
 bun install
 
-# Configure environment variables
+# Start local PostgreSQL database container:
+docker-compose up -d
+
+# Configure environment variables:
 cp .env.example .env
 ```
 
-Add your credentials to `tailr-backend/.env`:
+Configure your environment variables in `tailr-backend/.env`:
 ```env
 PORT=3001
+NODE_ENV=development
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/tailr
+JWT_ACCESS_SECRET=your_minimum_32_character_jwt_secret_here!
+JWT_REFRESH_SECRET=your_minimum_32_character_jwt_secret_here!
+FRONTEND_URL=http://localhost:3000
 GEMINI_API_KEY=your_gemini_api_key_here
-DATABASE_URL=file:./dev.db
 ```
 
-Start the backend server:
+Run database migrations to initialize tables:
+```bash
+bun run db:migrate
+```
+
+*(Optional)* Run test suite to verify backend health:
+```bash
+bun test
+```
+
+Start the backend development server:
 ```bash
 bun run dev
 ```

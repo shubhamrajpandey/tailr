@@ -166,18 +166,12 @@ authApiClient.interceptors.response.use(
     isRefreshing = true;
 
     try {
-      // POST /auth/refresh — browser sends the HttpOnly cookie automatically.
-      // Additionally send stored refreshToken in payload/headers as fallback when cross-origin cookies are blocked.
-      const stored = getStoredAuth();
-      const refreshPayload = stored?.refreshToken ? { refreshToken: stored.refreshToken } : {};
-      const { data } = await authApiClient.post<RefreshResponse>("/auth/refresh", refreshPayload, {
-        headers: stored?.refreshToken ? { "x-refresh-token": stored.refreshToken } : undefined,
-      });
+      // POST /auth/refresh — browser sends the HttpOnly cookie automatically via withCredentials: true.
+      const { data } = await authApiClient.post<RefreshResponse>("/auth/refresh", {});
       const { user, accessToken: newToken } = data.data;
-      const newRefreshToken = (data.data as any).refreshToken || stored?.refreshToken;
 
       // Hydrate storage and Redux memory
-      saveStoredAuth(user, newToken, newRefreshToken);
+      saveStoredAuth(user, newToken);
       store.dispatch(setCredentials({ user, accessToken: newToken }));
 
       // Retry all queued requests with the new token.

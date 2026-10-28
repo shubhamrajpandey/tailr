@@ -21,34 +21,63 @@ import { checkDatabaseHealth } from "./db/client";
 import { redis } from "./config/redis";
 
 /**
- * Strict origin whitelist for Cross-Origin Resource Sharing.
- * Eliminates insecure substring wildcard matching (e.g. evil-tailr.vercel.app or attacker-tailr.com).
- * Supports explicit whitelisted domains, environment-configured origins,
- * and authenticated Tailr Vercel deployment subdomains.
+ * Strict origin allowlist for Cross-Origin Resource Sharing.
+ * Eliminates insecure substring wildcard matching and arbitrary third-party Vercel subdomains.
+ * Only exact whitelisted domains, verified application URLs, and explicit
+ * CORS_ALLOWED_ORIGINS environment variables are permitted.
  */
-const configuredExtraOrigins = (process.env.CORS_ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
+function buildAllowedOrigins(): Set<string> {
+  const origins = new Set<string>();
 
-export const ALLOWED_ORIGINS = new Set([
-  env.FRONTEND_URL,
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://tailr.io",
-  "https://www.tailr.io",
-  "https://tailr-swart.vercel.app",
-  "https://tailr.shubhamrajpandey.com.np",
-  ...configuredExtraOrigins,
-]);
+  const addIfValid = (urlStr?: string | null) => {
+    if (!urlStr || typeof urlStr !== "string") return;
+    const trimmed = urlStr.trim();
+    if (!trimmed) return;
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+        origins.add(parsed.origin);
+      }
+    } catch {
+      // Ignore malformed URLs safely
+    }
+  };
 
-// Matches https://tailr.vercel.app or https://tailr-<deployment>.vercel.app (e.g., tailr-swart.vercel.app)
-const TAILR_VERCEL_REGEX = /^https:\/\/tailr(-[a-z0-9-]+)?\.vercel\.app$/i;
+  // Base production & local development origins
+  addIfValid(env.FRONTEND_URL);
+  addIfValid("http://localhost:3000");
+  addIfValid("http://localhost:3001");
+  addIfValid("https://tailr.io");
+  addIfValid("https://www.tailr.io");
+  addIfValid("https://tailr-swart.vercel.app");
+  addIfValid("https://tailr.shubhamrajpandey.com.np");
+
+  // Dynamic extra origins from environment variable (comma-separated)
+  const configuredExtraOrigins = (process.env.CORS_ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  for (const extra of configuredExtraOrigins) {
+    addIfValid(extra);
+  }
+
+  return origins;
+}
+
+export const ALLOWED_ORIGINS = buildAllowedOrigins();
 
 export const isOriginAllowed = (origin: string | null | undefined): boolean => {
-  if (!origin) return false;
-  if (ALLOWED_ORIGINS.has(origin)) return true;
-  return TAILR_VERCEL_REGEX.test(origin);
+  if (!origin || typeof origin !== "string") return false;
+  const trimmed = origin.trim();
+  if (!trimmed) return false;
+
+  try {
+    const parsed = new URL(trimmed);
+    return ALLOWED_ORIGINS.has(parsed.origin);
+  } catch {
+    return false;
+  }
 };
 
 /**

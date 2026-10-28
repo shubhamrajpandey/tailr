@@ -37,6 +37,13 @@ yarn-error.log*
 # vercel
 .vercel
 
+# Database & Secrets
+*.db
+*.sqlite*
+*.pem
+*.key
+*.cert
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

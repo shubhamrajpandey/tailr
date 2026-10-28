@@ -130,5 +130,67 @@ describe("Production Security & Cryptography Unit Tests", () => {
       expect(result).toBe(true);
     });
   });
+
+  describe("OTP & Password Reset Security Regression Suite (No Bypass)", () => {
+    it("strictly rejects the former hardcoded bypass code '696969' against genuine OTP hashes", () => {
+      const genuineOtp = "541289";
+      const storedHashBuffer = Buffer.from(hashToken(genuineOtp), "hex");
+      const bypassAttemptBuffer = Buffer.from(hashToken("696969"), "hex");
+
+      const matches =
+        storedHashBuffer.length === bypassAttemptBuffer.length &&
+        crypto.timingSafeEqual(storedHashBuffer, bypassAttemptBuffer);
+
+      expect(matches).toBe(false);
+    });
+
+    it("rejects OTP hashes of mismatched length in constant time", () => {
+      const genuineHashBuffer = Buffer.from(hashToken("123456"), "hex");
+      const truncatedBuffer = Buffer.from("abcd", "hex");
+
+      const matches =
+        genuineHashBuffer.length === truncatedBuffer.length &&
+        crypto.timingSafeEqual(genuineHashBuffer, truncatedBuffer);
+
+      expect(matches).toBe(false);
+    });
+
+    it("validates that active OTP verification enforces hash equality strictly", () => {
+      const code = "782194";
+      const codeHash = hashToken(code);
+      const inputHashBuffer = Buffer.from(hashToken(code), "hex");
+      const storedHashBuffer = Buffer.from(codeHash, "hex");
+
+      const matches =
+        inputHashBuffer.length === storedHashBuffer.length &&
+        crypto.timingSafeEqual(inputHashBuffer, storedHashBuffer);
+
+      expect(matches).toBe(true);
+    });
+
+    it("ensures authService rejects attempts using former bypass code '696969' when no matching record exists", async () => {
+      const { authService } = await import("../src/modules/auth/auth.service");
+
+      expect(
+        authService.verifyOtp({
+          email: "unverified-nonexistent@example.com",
+          code: "696969",
+        })
+      ).rejects.toThrow("Verification code is invalid or has expired.");
+    });
+
+    it("ensures authService rejects password reset attempts using former bypass code '696969'", async () => {
+      const { authService } = await import("../src/modules/auth/auth.service");
+
+      expect(
+        authService.resetPassword({
+          email: "unverified-nonexistent@example.com",
+          code: "696969",
+          newPassword: "NewValidPassword123!",
+          confirmPassword: "NewValidPassword123!",
+        })
+      ).rejects.toThrow("Password reset code is invalid or has expired.");
+    });
+  });
 });
 

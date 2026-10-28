@@ -1,4 +1,4 @@
-export PATH="/c/Users/Pandey/.bun/bin:$USERPROFILE/.bun/bin:$HOME/.bun/bin:$PATH"
+export PATH="$BUN_INSTALL/bin:$HOME/.bun/bin:$USERPROFILE/.bun/bin:$PATH"
 
 echo "Running lint-staged..."
 npx lint-staged

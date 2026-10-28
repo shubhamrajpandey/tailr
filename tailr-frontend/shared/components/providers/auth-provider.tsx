@@ -51,8 +51,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    const hasSessionCookie =
-      Boolean(getCookie(SESSION_COOKIE_NAME)) || Boolean(stored?.refreshToken);
+    const hasSessionCookie = Boolean(getCookie(SESSION_COOKIE_NAME));
     if (hasSessionCookie) {
       setCanAttemptRefresh(true);
     } else {
@@ -67,8 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     if (data?.data?.user && data?.data?.accessToken) {
       setSessionCookie();
-      const refreshToken = (data.data as any).refreshToken;
-      saveStoredAuth(data.data.user, data.data.accessToken, refreshToken);
+      saveStoredAuth(data.data.user, data.data.accessToken);
       dispatch(
         setCredentials({
           user: data.data.user,

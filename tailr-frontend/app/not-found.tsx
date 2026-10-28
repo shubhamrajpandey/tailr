@@ -27,7 +27,7 @@ export default function NotFound() {
           </span>
         </Link>
         <a
-          href="mailto:shubhamrajpandey88@gmail.com"
+          href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@tailr.io"}`}
           className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors inline-flex items-center gap-1.5"
         >
           <HelpCircle className="w-3.5 h-3.5" />

@@ -29,5 +29,7 @@
     "drizzle-kit": "^0.31.11",
     "typescript": "^5.8.2"
   },
-  "module": "src/index.js"
+  "module": "src/index.js",
+  "author": "Shubham Raj Pandey",
+  "license": "MIT"
 }
