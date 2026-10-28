@@ -127,9 +127,11 @@ tailr/
 │   ├── docker-compose.yml   # Local PostgreSQL service
 │   ├── bun.lock
 │   └── package.json
-│
+├── docs/                    # Architecture audits, specifications, and deployment runbooks
+│   ├── architecture/        # Architecture & code audit reports
+│   ├── deployment/          # Production deployment guide
+│   └── specs/               # Product and architectural specification (tailr-v1-spec.md)
 ├── CONTRIBUTING.md          # Guidelines for open source contributors
-├── tailr-v1-spec.md         # Product and architectural specification
 ├── .gitignore               # Root git ignore rules
 └── README.md                # Project documentation
 ```

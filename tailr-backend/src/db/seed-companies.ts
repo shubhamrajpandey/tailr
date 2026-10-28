@@ -71,7 +71,11 @@ interface CompanyEntry {
 // ── Source 1: Parse ttcom.md ──────────────────────────────────────────────────
 
 function parseMdCompanies(): Map<string, CompanyEntry> {
-  const mdPath = path.resolve(__dirname, "../../../ttcom.md");
+  const candidatePaths = [
+    path.resolve(__dirname, "../../data/ttcom.md"),
+    path.resolve(__dirname, "../../../ttcom.md"),
+  ];
+  const mdPath = candidatePaths.find((p) => fs.existsSync(p)) || candidatePaths[0];
   if (!fs.existsSync(mdPath)) {
     console.warn(`[seed] WARNING: ttcom.md not found at ${mdPath}, skipping.`);
     return new Map();
@@ -131,10 +135,11 @@ async function parseXlsxCompanies(): Promise<Map<string, CompanyEntry>> {
     return new Map();
   }
 
-  const xlsxPath = path.resolve(
-    __dirname,
-    "../../../nepal_it_companies.xlsx"
-  );
+  const candidateXlsxPaths = [
+    path.resolve(__dirname, "../../data/nepal_it_companies.xlsx"),
+    path.resolve(__dirname, "../../../nepal_it_companies.xlsx"),
+  ];
+  const xlsxPath = candidateXlsxPaths.find((p) => fs.existsSync(p)) || candidateXlsxPaths[0];
   if (!fs.existsSync(xlsxPath)) {
     console.warn(
       `[seed] WARNING: nepal_it_companies.xlsx not found at ${xlsxPath}, skipping.`

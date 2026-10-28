@@ -5,7 +5,7 @@ import type { AxiosInstance } from "axios";
 import type { Application, ApplicationStatus } from "@/shared/types/application";
 import type { ApplicationFormValues } from "@/shared/lib/validations/application";
 import { authApiClient } from "@/shared/lib/auth-api-client";
-import { generateSampleApplications } from "@/shared/lib/sample-applications";
+import { generateSampleApplications } from "@/shared/fixtures/sample-applications";
 import { isUuidV4 } from "@/shared/lib/utils";
 import { toast } from "@/shared/lib/toast";
 import { logger } from "@/shared/lib/logger";
