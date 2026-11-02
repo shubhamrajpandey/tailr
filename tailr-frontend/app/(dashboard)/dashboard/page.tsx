@@ -2,242 +2,141 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Briefcase, MessageSquareText, Sparkles, Plus, BarChart2, History } from "lucide-react";
-import dynamic from "next/dynamic";
-import { StatCard } from "./components/stat-card";
-import { ActivityFeed } from "./components/activity-feed";
-import { ApplicationsTable } from "./components/applications-table";
-
-const ApplicationVolumeChart = dynamic(
-  () => import("./components/application-volume-chart").then((mod) => mod.ApplicationVolumeChart),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[340px] w-full rounded-2xl border border-neutral-200/80 dark:border-white/[0.08] bg-white/70 dark:bg-white/[0.02] p-5 flex flex-col justify-between animate-pulse">
-        <div className="flex items-center justify-between">
-          <div className="h-5 w-36 rounded bg-neutral-200 dark:bg-white/10" />
-          <div className="h-7 w-24 rounded bg-neutral-100 dark:bg-white/5" />
-        </div>
-        <div className="h-48 w-full rounded-xl bg-neutral-100/80 dark:bg-white/[0.03]" />
-      </div>
-    ),
-  }
-);
-import { useDashboardData } from "@/shared/hooks/use-dashboard-data";
-import { useAppSelector } from "@/shared/store/hooks";
-import { cn } from "@/shared/lib/utils";
-import { Button } from "@/shared/components/ui/button";
+import { ArrowRight, SlidersHorizontal } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { ToolCard } from "./components/tool-card";
+import { ToolFilters } from "./components/tool-filters";
+import { DASHBOARD_TOOLS, type ToolCategory } from "./lib/dashboard-tools";
 import { ROUTES } from "@/shared/lib/routes";
 
-let currentMinuteCache = 0;
-function subscribeMinute(callback: () => void) {
-  const intervalId = setInterval(() => {
-    currentMinuteCache = Math.floor(Date.now() / 60000);
-    callback();
-  }, 60000);
-  return () => clearInterval(intervalId);
-}
-function getMinuteSnapshot(): number {
-  if (currentMinuteCache === 0 && typeof window !== "undefined") {
-    currentMinuteCache = Math.floor(Date.now() / 60000);
-  }
-  return currentMinuteCache;
-}
-function getMinuteServerSnapshot(): number {
-  return 0;
-}
-
 export default function DashboardPage() {
-  const user = useAppSelector((state) => state.auth.user);
-  const [mobileTab, setMobileTab] = React.useState<"chart" | "activity">("chart");
-  const { applications, activities, stats, trendData, updateApplicationStatus, deleteApplication } =
-    useDashboardData();
+  const [selectedCategory, setSelectedCategory] = React.useState<ToolCategory>("all");
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const currentMinute = React.useSyncExternalStore(
-    subscribeMinute,
-    getMinuteSnapshot,
-    getMinuteServerSnapshot
-  );
+  const filteredTools = React.useMemo(() => {
+    let tools = DASHBOARD_TOOLS;
 
-  // Computed weekly volume comparison: compares past 7 days against previous 7-day window
-  const weeklyDelta = React.useMemo(() => {
-    if (applications.length === 0) return "0% vs last week";
-
-    const now = currentMinute > 0 ? currentMinute * 60000 : 0;
-    if (now === 0) return "0% vs last week";
-
-    const MS_7_DAYS = 7 * 24 * 60 * 60 * 1000;
-    const MS_14_DAYS = 14 * 24 * 60 * 60 * 1000;
-
-    let currentWeekCount = 0;
-    let previousWeekCount = 0;
-
-    for (const app of applications) {
-      const dateStr = app.appliedDate || app.createdAt;
-      if (!dateStr) continue;
-      const appTime = new Date(dateStr).getTime();
-      const age = now - appTime;
-
-      if (age >= 0 && age < MS_7_DAYS) {
-        currentWeekCount++;
-      } else if (age >= MS_7_DAYS && age < MS_14_DAYS) {
-        previousWeekCount++;
-      }
+    // Filter by category
+    if (selectedCategory !== "all") {
+      tools = tools.filter((tool) => tool.category === selectedCategory);
     }
 
-    if (previousWeekCount === 0) {
-      return currentWeekCount > 0 ? `+${currentWeekCount} this week` : "0% vs last week";
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      tools = tools.filter(
+        (tool) =>
+          tool.title.toLowerCase().includes(q) ||
+          tool.description.toLowerCase().includes(q) ||
+          tool.categoryLabel.toLowerCase().includes(q) ||
+          tool.keywords.some((k) => k.toLowerCase().includes(q))
+      );
     }
 
-    const percentChange = Math.round(
-      ((currentWeekCount - previousWeekCount) / previousWeekCount) * 100
-    );
-    const prefix = percentChange > 0 ? "+" : "";
-    return `${prefix}${percentChange}% vs last week`;
-  }, [applications, currentMinute]);
-  const firstName = user?.fullName?.split(" ")[0] || "there";
+    return tools;
+  }, [selectedCategory, searchQuery]);
 
   return (
-    <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-28 sm:pb-12 space-y-5 sm:space-y-6">
-      {/* Greeting Header & Quick Actions */}
-      <div className="pt-4 sm:pt-6 pb-1 space-y-3 sm:space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-950 dark:text-white font-sans">
-              Hello, {firstName}
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 font-medium">
-              Here are the latest insights from your job applications and tailoring pipeline.
-            </p>
-          </div>
+    <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col justify-between overflow-hidden">
+      {/* Ambient background glow for visual depth (removes flat AI-look) */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[340px] bg-gradient-to-b from-indigo-500/[0.12] via-purple-500/[0.04] to-transparent blur-3xl pointer-events-none -z-10" />
 
-          {/* Desktop Direct Action Button */}
-          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
-            <Link href={ROUTES.RESUME_TAILOR}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-1.5 bg-indigo-50/50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100/70 dark:hover:bg-indigo-500/20"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>AI Tailor Workspace</span>
-              </Button>
-            </Link>
-            <Link href={ROUTES.NEW_APPLICATION}>
-              <Button variant="primary" size="sm" className="gap-1.5">
-                <Plus className="h-3.5 w-3.5" />
-                <span>New Application</span>
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <main className="flex-1 w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 2xl:px-12 pt-4 sm:pt-8 pb-32 sm:pb-20">
+        {/* Hero Header with Entrance Animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="text-center space-y-3 max-w-3xl mx-auto pb-6 sm:pb-8"
+        >
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-extrabold tracking-tight text-neutral-950 dark:text-white leading-[1.18]">
+            Every tool you need to land your dream job in one place
+          </h1>
 
-      {/* Stat Cards: Full-Width Snap Carousel on Mobile, 3-Col Grid on Desktop */}
-      <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-2 pt-0.5 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible no-scrollbar">
-        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
-          <StatCard
-            label="Total Applications"
-            value={stats.totalApplications}
-            delta={stats.totalApplicationsDelta}
-            direction="up"
-            icon={Briefcase}
-            sparklineColor="purple"
-            sparklineData={[3, 5, 8, 12, 10, 16, 20]}
+          <p className="text-xs sm:text-sm md:text-base text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed max-w-2xl mx-auto px-2">
+            Every tool you need at your fingertips. Tailor resumes, track applications, craft cover
+            letters, and crack interviews with zero hallucination.
+          </p>
+        </motion.div>
+
+        {/* Filter Category Pills & Search Bar */}
+        <div className="pb-8">
+          <ToolFilters
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            totalCount={DASHBOARD_TOOLS.length}
+            filteredCount={filteredTools.length}
           />
         </div>
-        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
-          <StatCard
-            label="Response Rate"
-            value={`${stats.responseRate}%`}
-            delta={stats.responseRateDelta}
-            direction="up"
-            icon={MessageSquareText}
-            sparklineColor="purple"
-            sparklineData={[15, 20, 18, 25, 22, 28, 30]}
-          />
-        </div>
-        <div className="w-full min-w-full sm:min-w-0 sm:w-auto shrink-0 sm:shrink snap-center flex flex-col">
-          <StatCard
-            label="Interview Conversion"
-            value={`${stats.interviewConversion}%`}
-            delta={stats.interviewConversionDelta}
-            direction="up"
-            icon={Sparkles}
-            sparklineColor="purple"
-            sparklineData={[8, 10, 9, 14, 12, 18, 22]}
-          />
-        </div>
-      </div>
 
-      {/* MOBILE VIEW SWITCHER (< lg): Toggle between Trends and Activity */}
-      <div className="lg:hidden space-y-4">
-        <div className="flex items-center p-1 rounded-xl bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200/80 dark:border-white/[0.06]">
-          <button
-            type="button"
-            onClick={() => setMobileTab("chart")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              mobileTab === "chart"
-                ? "bg-white dark:bg-[#15161c] text-neutral-900 dark:text-white shadow-xs"
-                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-            )}
+        {/* Dynamic Tool Cards Grid with Fluid Responsive Breakpoints */}
+        {filteredTools.length > 0 ? (
+          <motion.div
+            layout
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 sm:gap-5 lg:gap-5.5"
           >
-            <BarChart2 className="h-3.5 w-3.5" />
-            <span>Volume Trends</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileTab("activity")}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer",
-              mobileTab === "activity"
-                ? "bg-white dark:bg-[#15161c] text-neutral-900 dark:text-white shadow-xs"
-                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
-            )}
-          >
-            <History className="h-3.5 w-3.5" />
-            <span>Recent Updates ({activities.length})</span>
-          </button>
-        </div>
-
-        {mobileTab === "chart" ? (
-          <ApplicationVolumeChart
-            data={trendData}
-            totalWeekly={applications.length}
-            weeklyDelta={weeklyDelta}
-          />
+            <AnimatePresence mode="popLayout">
+              {filteredTools.map((tool) => (
+                <ToolCard key={tool.id} tool={tool} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
         ) : (
-          <ActivityFeed activities={activities} />
+          /* Empty Search State */
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center py-16 px-4 rounded-2xl border border-dashed border-neutral-300 dark:border-white/10 bg-neutral-50/50 dark:bg-white/[0.02] max-w-md mx-auto shadow-xs"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-neutral-100 dark:bg-white/[0.05] flex items-center justify-center mx-auto text-neutral-400">
+              <SlidersHorizontal className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-neutral-900 dark:text-white mt-4">
+              No matching tools
+            </h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              No tool matched &ldquo;{searchQuery}&rdquo;. Try another keyword or reset the filter.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedCategory("all");
+              }}
+              className="mt-4 px-4 py-2 text-xs font-semibold rounded-lg bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 active:scale-95 transition cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </motion.div>
         )}
-      </div>
 
-      {/* DESKTOP VIEW (>= lg): Side-by-Side 8/12 Chart + 4/12 Activity Feed */}
-      <div className="hidden lg:grid lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left 65% Column (8/12 grid cols) */}
-        <div className="lg:col-span-8 flex flex-col h-full">
-          <ApplicationVolumeChart
-            data={trendData}
-            totalWeekly={applications.length}
-            weeklyDelta={weeklyDelta}
-            className="h-full"
-          />
+        {/* Bottom Quick-Access Banner */}
+        <div className="mt-14 pt-6 border-t border-neutral-200/80 dark:border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Tailr Zero-Hallucination Career Suite</span>
+          </div>
+          <div className="flex items-center gap-4 flex-wrap justify-center">
+            <Link
+              href={ROUTES.APPLICATIONS}
+              className="font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+            >
+              <span>Application Kanban Board</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-neutral-300 dark:text-white/20 hidden sm:inline">•</span>
+            <Link
+              href={ROUTES.RESUME_TAILOR}
+              className="font-semibold text-neutral-700 dark:text-neutral-300 hover:underline flex items-center gap-1"
+            >
+              <span>AI Tailor Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
-
-        {/* Right 35% Column (4/12 grid cols): Activity Feed Panel */}
-        <div className="lg:col-span-4 flex flex-col h-full min-h-0">
-          <ActivityFeed activities={activities} className="h-full" />
-        </div>
-      </div>
-
-      {/* Bottom Section: Applications Pipeline (Mobile Card View on < md, Table on >= md) */}
-      <div className="w-full">
-        <ApplicationsTable
-          applications={applications}
-          onStatusChange={updateApplicationStatus}
-          onDelete={deleteApplication}
-        />
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

@@ -395,7 +395,7 @@ export const userSettings = pgTable(
     defaultApplicationSortOrder: varchar("default_application_sort_order", { length: 50 }).default("applied_date_desc").notNull(),
     ghostedThresholdDays: integer("ghosted_threshold_days").default(45),
     // Appearance & Privacy Settings
-    theme: varchar("theme", { length: 50 }).default("system").notNull(),
+    theme: varchar("theme", { length: 50 }).default("light").notNull(),
     density: varchar("density", { length: 50 }).default("comfortable").notNull(),
     highContrast: boolean("high_contrast").default(false).notNull(),
     analyticsOptIn: boolean("analytics_opt_in").default(false).notNull(),

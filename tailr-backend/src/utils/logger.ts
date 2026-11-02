@@ -33,11 +33,14 @@ class Logger {
   private formatError(err: unknown) {
     if (!err) return undefined;
     if (err instanceof Error) {
+      const cause = (err as any).cause;
+      const causeMsg = cause instanceof Error ? cause.message : cause ? String(cause) : undefined;
       return {
         name: err.name,
-        message: err.message,
+        message: causeMsg ? `${err.message} | Cause: ${causeMsg}` : err.message,
         stack: err.stack,
-        code: (err as any).code || (err as any).statusCode,
+        code: (err as any).code || (err as any).statusCode || (cause as any)?.code,
+        cause: causeMsg,
       };
     }
     return { message: String(err) };

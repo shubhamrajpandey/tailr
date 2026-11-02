@@ -76,8 +76,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <I18nProvider>
                 <ThemeProvider
                   attribute="class"
-                  defaultTheme="dark"
-                  enableSystem
+                  defaultTheme="light"
+                  enableSystem={false}
                   disableTransitionOnChange
                 >
                   {children}

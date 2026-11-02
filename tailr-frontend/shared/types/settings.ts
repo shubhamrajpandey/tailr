@@ -126,7 +126,7 @@ export const DEFAULT_USER_SETTINGS: UserSettings = {
     securityAlerts: true,
   },
   appearance: {
-    theme: "system",
+    theme: "light",
     density: "comfortable",
     highContrast: false,
   },

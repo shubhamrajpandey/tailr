@@ -30,12 +30,13 @@ import { CommandPalette } from "./command-palette";
 const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
 
 function getSidebarCollapsedSnapshot(): boolean {
-  if (typeof window === "undefined") return false;
-  return localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === "true";
+  if (typeof window === "undefined") return true;
+  const stored = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
+  return stored !== null ? stored === "true" : true;
 }
 
 function getSidebarCollapsedServerSnapshot(): boolean {
-  return false;
+  return true;
 }
 
 function subscribeSidebarCollapsed(callback: () => void) {

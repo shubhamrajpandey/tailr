@@ -124,7 +124,10 @@ export const errorHandler = (app: Elysia) =>
     }
 
     // 4. PostgreSQL duplicate key violation (23505)
-    if ((error as any)?.code === "23505") {
+    const errAny = error as any;
+    const cause = errAny?.cause || errAny;
+
+    if (errAny?.code === "23505" || cause?.code === "23505") {
       set.status = 409;
       return {
         success: false,
@@ -136,13 +139,30 @@ export const errorHandler = (app: Elysia) =>
       };
     }
 
-    // 5. PostgreSQL connection / network failures (e.g. ECONNREFUSED)
-    const errAny = error as any;
+    // 5. Database quota exceeded (Neon / PostgreSQL 53000)
+    if (
+      cause?.code === "53000" ||
+      cause?.message?.includes("exceeded the quota") ||
+      errAny?.message?.includes("exceeded the quota")
+    ) {
+      logger.error("Database quota exceeded (PostgreSQL / Neon limit reached)", { code }, error);
+      set.status = 503;
+      return {
+        success: false,
+        error: {
+          code: "DATABASE_QUOTA_EXCEEDED",
+          message: "Your PostgreSQL database quota has been exceeded (Neon limit reached). Please check your Neon dashboard or switch database.",
+        },
+        timestamp,
+      };
+    }
+
+    // 6. PostgreSQL connection / network failures (e.g. ECONNREFUSED)
     if (
       errAny?.code === "ECONNREFUSED" ||
-      errAny?.cause?.code === "ECONNREFUSED" ||
+      cause?.code === "ECONNREFUSED" ||
       errAny?.message?.includes("ECONNREFUSED") ||
-      errAny?.message?.includes("connect ECONNREFUSED")
+      cause?.message?.includes("ECONNREFUSED")
     ) {
       logger.error("Database connection refused - PostgreSQL service unreachable", { code }, error);
       set.status = 503;
@@ -150,13 +170,13 @@ export const errorHandler = (app: Elysia) =>
         success: false,
         error: {
           code: "DATABASE_UNAVAILABLE",
-          message: "Database service is currently unreachable. Ensure PostgreSQL is active on port 5432.",
+          message: "Database service is currently unreachable. Ensure PostgreSQL is active.",
         },
         timestamp,
       };
     }
 
-    // 6. Unhandled internal server errors
+    // 7. Unhandled internal server errors
     logger.error("Unhandled Server Error", { code }, error);
     set.status = 500;
     return {
