@@ -114,7 +114,6 @@ export function Sidebar() {
                 type="button"
                 onClick={toggleCollapse}
                 className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 flex items-center justify-center p-1 text-neutral-600 dark:text-neutral-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 transition-all cursor-pointer shadow-xs"
-                title="Expand Sidebar"
                 aria-label="Expand sidebar"
               >
                 <PanelLeftOpen className="h-4 w-4" />
@@ -141,15 +140,27 @@ export function Sidebar() {
               </kbd>
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={() => window.dispatchEvent(new CustomEvent("tailr_open_search"))}
-              title="Search anything (⌘K or Ctrl+K)"
-              aria-label="Search applications and resumes"
-              className="w-10 h-10 mx-auto flex items-center justify-center rounded-lg border border-neutral-200 dark:border-white/[0.07] text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
-            >
-              <Search className="h-4 w-4" />
-            </button>
+            <div className="relative group/tooltip flex items-center justify-center">
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("tailr_open_search"))}
+                aria-label="Search applications and resumes"
+                className="w-10 h-10 mx-auto flex items-center justify-center rounded-lg border border-neutral-200 dark:border-white/[0.07] text-neutral-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-neutral-100 dark:hover:bg-white/[0.04] transition-colors cursor-pointer"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+
+              {/* Floating Tooltip */}
+              <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+                <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 text-xs font-semibold whitespace-nowrap shadow-xl shadow-black/25">
+                  <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+                  <span>Search</span>
+                  <kbd className="px-1.5 py-0.5 rounded bg-white/15 dark:bg-white/10 text-[10px] font-mono text-neutral-300">
+                    ⌘K
+                  </kbd>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

@@ -105,7 +105,7 @@ export default function DashboardPage() {
                 setSearchQuery("");
                 setSelectedCategory("all");
               }}
-              className="mt-4 px-4 py-2 text-xs font-semibold rounded-lg bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 active:scale-95 transition cursor-pointer"
+              className="mt-4 px-4 py-2 text-xs font-semibold rounded-lg bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/25 hover:from-indigo-500 hover:to-violet-500 active:scale-95 transition cursor-pointer"
             >
               Reset Filters
             </button>

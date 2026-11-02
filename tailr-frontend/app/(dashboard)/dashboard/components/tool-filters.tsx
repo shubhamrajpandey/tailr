@@ -52,8 +52,8 @@ export function ToolFilters({
                 className={cn(
                   "relative shrink-0 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold transition-all cursor-pointer select-none active:scale-95",
                   isActive
-                    ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-950 shadow-md shadow-neutral-950/10 dark:shadow-white/10"
-                    : "bg-white/80 dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-400 border border-neutral-200/90 dark:border-white/[0.08] hover:bg-neutral-100 dark:hover:bg-white/[0.08] hover:text-neutral-950 dark:hover:text-white"
+                    ? "bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/30 border border-indigo-400/40"
+                    : "bg-white dark:bg-white/[0.04] text-neutral-600 dark:text-neutral-400 border border-neutral-200/90 dark:border-white/[0.08] hover:bg-indigo-50/70 dark:hover:bg-white/[0.08] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-500/30"
                 )}
               >
                 {cat.label}

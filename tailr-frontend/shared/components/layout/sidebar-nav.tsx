@@ -164,7 +164,12 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
   ];
 
   return (
-    <div className="flex-1 overflow-y-auto px-2 py-2 space-y-5 overflow-x-hidden">
+    <div
+      className={cn(
+        "flex-1 px-2 py-2 space-y-5",
+        isCollapsed ? "overflow-visible" : "overflow-y-auto overflow-x-hidden"
+      )}
+    >
       {/* Main Navigation */}
       <div>
         {!isCollapsed && (
@@ -193,26 +198,93 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
             const isHighlighted = isDirectActive || hasActiveSub;
 
             if (isCollapsed) {
-              // Collapsed mode: icon only with tooltip
-              const targetHref = item.href || item.subItems?.[0]?.href || "#";
+              // Collapsed mode: icon with rich floating tooltip / flyout on hover
+              if (item.subItems) {
+                return (
+                  <div key={item.title} className="relative group/tooltip flex items-center justify-center">
+                    <Link
+                      href={item.subItems[0].href}
+                      aria-label={item.title}
+                      className={cn(
+                        "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative",
+                        isHighlighted
+                          ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
+                          : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                      {isHighlighted && (
+                        <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                      )}
+                    </Link>
+
+                    {/* Floating Sub-menu Flyout */}
+                    <div className="absolute left-full top-1/2 -translate-y-1/2 pl-3 z-50 pointer-events-none group-hover/tooltip:pointer-events-auto opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+                      <div className="relative w-48 p-1.5 rounded-xl bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 shadow-2xl shadow-black/35">
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+
+                        <div className="px-2.5 py-1 text-[11px] font-semibold text-neutral-400 uppercase tracking-wider border-b border-neutral-800 dark:border-white/10 mb-1">
+                          {item.title}
+                        </div>
+
+                        <div className="space-y-0.5">
+                          {item.subItems.map((sub) => {
+                            const isSubActive = sub.isActive ?? pathname === sub.href;
+                            return (
+                              <Link
+                                key={sub.title}
+                                href={sub.href}
+                                className={cn(
+                                  "flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                                  isSubActive
+                                    ? "bg-indigo-600 text-white font-semibold"
+                                    : "text-neutral-300 hover:text-white hover:bg-white/10"
+                                )}
+                              >
+                                <span>{sub.title}</span>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              // Standard single item
+              const targetHref = item.href || "#";
               return (
-                <Link
-                  key={item.title}
-                  href={targetHref}
-                  title={item.title}
-                  aria-label={item.title}
-                  className={cn(
-                    "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative group",
-                    isHighlighted
-                      ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
-                      : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  {isHighlighted && (
-                    <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
-                  )}
-                </Link>
+                <div key={item.title} className="relative group/tooltip flex items-center justify-center">
+                  <Link
+                    href={targetHref}
+                    aria-label={item.title}
+                    className={cn(
+                      "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative",
+                      isHighlighted
+                        ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
+                        : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {isHighlighted && (
+                      <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                    )}
+                  </Link>
+
+                  {/* Floating Tooltip */}
+                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+                    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 text-xs font-semibold whitespace-nowrap shadow-xl shadow-black/25">
+                      <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+                      <span>{item.title}</span>
+                      {item.badge !== undefined && (
+                        <span className="px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono text-[10px] font-bold">
+                          {item.badge}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
               );
             }
 
@@ -340,20 +412,28 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
 
             if (isCollapsed) {
               return (
-                <Link
-                  key={item.title}
-                  href={item.href || "#"}
-                  title={item.title}
-                  aria-label={item.title}
-                  className={cn(
-                    "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors",
-                    isActive
-                      ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
-                      : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                </Link>
+                <div key={item.title} className="relative group/tooltip flex items-center justify-center">
+                  <Link
+                    href={item.href || "#"}
+                    aria-label={item.title}
+                    className={cn(
+                      "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative",
+                      isActive
+                        ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400"
+                        : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </Link>
+
+                  {/* Floating Tooltip */}
+                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+                    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 text-xs font-semibold whitespace-nowrap shadow-xl shadow-black/25">
+                      <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+                      <span>{item.title}</span>
+                    </div>
+                  </div>
+                </div>
               );
             }
 
@@ -399,23 +479,31 @@ export function SidebarNav({ isCollapsed }: { isCollapsed: boolean }) {
 
             if (isCollapsed) {
               return (
-                <Link
-                  key={item.title}
-                  href={item.href || "#"}
-                  title={item.title}
-                  aria-label={item.title}
-                  className={cn(
-                    "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative group",
-                    isDirectActive
-                      ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
-                      : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  {isDirectActive && (
-                    <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
-                  )}
-                </Link>
+                <div key={item.title} className="relative group/tooltip flex items-center justify-center">
+                  <Link
+                    href={item.href || "#"}
+                    aria-label={item.title}
+                    className={cn(
+                      "flex items-center justify-center h-10 w-10 mx-auto rounded-lg transition-colors relative",
+                      isDirectActive
+                        ? "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold"
+                        : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-white/[0.04]"
+                    )}
+                  >
+                    <Icon className="h-5 w-5" />
+                    {isDirectActive && (
+                      <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                    )}
+                  </Link>
+
+                  {/* Floating Tooltip */}
+                  <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 pointer-events-none opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+                    <div className="relative flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 text-xs font-semibold whitespace-nowrap shadow-xl shadow-black/25">
+                      <div className="absolute right-full top-1/2 -translate-y-1/2 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+                      <span>{item.title}</span>
+                    </div>
+                  </div>
+                </div>
               );
             }
 

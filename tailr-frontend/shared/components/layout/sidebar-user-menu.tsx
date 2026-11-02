@@ -89,13 +89,13 @@ export function SidebarUserMenu({ isCollapsed }: SidebarUserMenuProps) {
           </DropdownMenu>
         </div>
       ) : (
-        <div className="flex justify-center p-1.5">
+        <div className="flex justify-center p-1.5 relative group/tooltip">
           <DropdownMenu>
             <DropdownMenuTrigger>
               <button
                 type="button"
                 className="relative cursor-pointer"
-                title={`${fullName} (${userEmail})`}
+                aria-label={`${fullName} profile options`}
               >
                 <Avatar
                   fallback={initials}
@@ -134,6 +134,15 @@ export function SidebarUserMenu({ isCollapsed }: SidebarUserMenuProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          {/* Floating Tooltip */}
+          <div className="absolute left-full ml-3 bottom-1.5 z-50 pointer-events-none opacity-0 -translate-x-1 group-hover/tooltip:opacity-100 group-hover/tooltip:translate-x-0 transition-all duration-200 ease-out">
+            <div className="relative flex flex-col px-3 py-1.5 rounded-lg bg-neutral-900 text-white dark:bg-[#1c1d24] dark:text-neutral-100 border border-neutral-800 dark:border-white/10 text-xs whitespace-nowrap shadow-xl shadow-black/25">
+              <div className="absolute right-full bottom-3 w-0 h-0 border-y-[5px] border-y-transparent border-r-[6px] border-r-neutral-900 dark:border-r-[#1c1d24]" />
+              <span className="font-semibold">{fullName}</span>
+              <span className="text-[11px] text-neutral-400 font-normal">{userEmail}</span>
+            </div>
+          </div>
         </div>
       )}
     </div>
