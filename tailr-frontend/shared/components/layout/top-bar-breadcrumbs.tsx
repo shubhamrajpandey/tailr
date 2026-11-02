@@ -4,8 +4,10 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { PanelLeftOpen } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 import { ROUTES } from "@/shared/lib/routes";
+import { useSidebarCollapse } from "./sidebar";
 
 export interface BreadcrumbItem {
   label: string;
@@ -145,6 +147,7 @@ interface TopBarBreadcrumbsProps {
 export function TopBarBreadcrumbs({ breadcrumbs }: TopBarBreadcrumbsProps) {
   const pathname = usePathname();
   const resolvedBreadcrumbs = breadcrumbs || getDefaultBreadcrumbs(pathname);
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse();
 
   return (
     <div className="flex items-center gap-2">
@@ -166,6 +169,17 @@ export function TopBarBreadcrumbs({ breadcrumbs }: TopBarBreadcrumbsProps) {
       </Link>
 
       <nav aria-label="Breadcrumbs" className="hidden lg:flex items-center gap-2 text-sm">
+        {isCollapsed && (
+          <button
+            type="button"
+            onClick={toggleCollapse}
+            className="h-8 w-8 -ml-1 mr-1 rounded-lg border border-neutral-200/80 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] flex items-center justify-center text-neutral-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 hover:bg-neutral-100 dark:hover:bg-white/5 transition-all cursor-pointer shadow-2xs"
+            title="Expand Sidebar"
+            aria-label="Expand sidebar"
+          >
+            <PanelLeftOpen className="h-4 w-4" />
+          </button>
+        )}
         <span className="h-2 w-2 rounded-full bg-indigo-500 shadow-xs shadow-indigo-500/50 inline-block shrink-0 animate-pulse" />
         <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
           {resolvedBreadcrumbs.map((crumb, idx) => {

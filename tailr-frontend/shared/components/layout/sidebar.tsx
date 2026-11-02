@@ -27,19 +27,19 @@ import { CommandPalette } from "./command-palette";
  *   - `SidebarUserMenu`: Profile popover, credentials display, and authenticated logout action.
  */
 
-const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
+export const SIDEBAR_COLLAPSE_KEY = "tailr_sidebar_collapsed";
 
-function getSidebarCollapsedSnapshot(): boolean {
+export function getSidebarCollapsedSnapshot(): boolean {
   if (typeof window === "undefined") return true;
   const stored = localStorage.getItem(SIDEBAR_COLLAPSE_KEY);
   return stored !== null ? stored === "true" : true;
 }
 
-function getSidebarCollapsedServerSnapshot(): boolean {
+export function getSidebarCollapsedServerSnapshot(): boolean {
   return true;
 }
 
-function subscribeSidebarCollapsed(callback: () => void) {
+export function subscribeSidebarCollapsed(callback: () => void) {
   if (typeof window === "undefined") return () => {};
   const handleCustom = () => callback();
   const handleStorage = (e: StorageEvent) => {
@@ -55,7 +55,7 @@ function subscribeSidebarCollapsed(callback: () => void) {
   };
 }
 
-export function Sidebar() {
+export function useSidebarCollapse() {
   const isCollapsed = React.useSyncExternalStore(
     subscribeSidebarCollapsed,
     getSidebarCollapsedSnapshot,
@@ -67,6 +67,12 @@ export function Sidebar() {
     localStorage.setItem(SIDEBAR_COLLAPSE_KEY, (!current).toString());
     window.dispatchEvent(new Event("tailr_sidebar_collapsed_changed"));
   }, []);
+
+  return { isCollapsed, toggleCollapse };
+}
+
+export function Sidebar() {
+  const { isCollapsed, toggleCollapse } = useSidebarCollapse();
 
   return (
     <>
@@ -110,14 +116,20 @@ export function Sidebar() {
             </>
           ) : (
             <div className="w-full flex items-center justify-center">
-              <button
-                type="button"
-                onClick={toggleCollapse}
-                className="h-9 w-9 rounded-lg bg-neutral-100 dark:bg-white/[0.04] border border-neutral-200 dark:border-white/10 flex items-center justify-center p-1 text-neutral-600 dark:text-neutral-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500/40 transition-all cursor-pointer shadow-xs"
-                aria-label="Expand sidebar"
+              <Link
+                href="/dashboard"
+                className="flex items-center justify-center w-12 h-12 rounded-xl hover:bg-neutral-100 dark:hover:bg-white/[0.06] transition-all group"
+                aria-label="Tailr Dashboard"
               >
-                <PanelLeftOpen className="h-4 w-4" />
-              </button>
+                <Image
+                  src="/main_logo.png"
+                  alt="Tailr Logo"
+                  width={48}
+                  height={48}
+                  className="w-12 h-12 object-contain group-hover:scale-105 transition-transform"
+                  priority
+                />
+              </Link>
             </div>
           )}
         </div>
